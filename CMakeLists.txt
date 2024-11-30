@@ -132,7 +132,7 @@ endif ()
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install/${arch})
 
-find_library(JPEG jpeg PATHS libs/libjpeg-turbo/build-${arch}/release/lib)
+find_library(JPEG jpeg PATHS libs/libjpeg-turbo/build-${arch}/release/lib REQUIRED NO_DEFAULT_PATH)
 target_link_libraries(${PROJECT_NAME} "${JPEG}")
 
 target_link_libraries(${PROJECT_NAME} zlib)

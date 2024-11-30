@@ -12,20 +12,23 @@ ARM_OPTS=$(ARM_HOST) \
          $(ARM_CXX)
 
 patch:
-	cd imgui && git apply --check ../imgui.patch && {git apply ../imgui.patch} || true
-	cd glfw && git apply --check ../glfw.patch && {git apply ../glfw.patch} || true
+	-cd imgui && git apply ../imgui.patch
+	-cd glfw && git apply ../glfw.patch
 
 alsa-lib/src:
 	make -C alsa-lib
 
+ImageMagick/build-x86: IMAGE=nw-crosstool
 ImageMagick/build-x86:
+	$(DOCKER) bash -c "\
 	cd ImageMagick && \
-	CFLAGS=" \
+	PKG_CONFIG_PATH=../libjpeg-turbo/build-x86/release/lib/pkgconfig/ \
+	CFLAGS=\" \
 		-DMAGICKCORE_HDRI_ENABLE=1 \
 		-DMAGICKCORE_CHANNEL_MASK_DEPTH=32 \
 		-I../libjpeg-turbo/build-x86/release/include/ \
-	" \
-	LDFLAGS="-L../libjpeg-turbo/build-x86/release/lib" \
+	\" \
+	LDFLAGS=-L../libjpeg-turbo/build-x86/release/lib \
 	./configure \
 		--without-x \
 		--without-zlib \
@@ -36,7 +39,7 @@ ImageMagick/build-x86:
 		--disable-docs \
 	&& \
 	make && \
-	make install
+	make install"
 
 ImageMagick/build-arm: IMAGE=nw-crosstool
 ImageMagick/build-arm:

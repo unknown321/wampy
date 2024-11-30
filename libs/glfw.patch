@@ -1,5 +1,5 @@
 diff --git a/include/GLFW/glfw3.h b/include/GLFW/glfw3.h
-index 79b06288..cd4fee64 100644
+index 79b06288..910fc394 100644
 --- a/include/GLFW/glfw3.h
 +++ b/include/GLFW/glfw3.h
 @@ -238,7 +238,7 @@ extern "C" {
@@ -11,18 +11,534 @@ index 79b06288..cd4fee64 100644
    #if defined(GLFW_INCLUDE_GLEXT)
     #include <GL/glext.h>
    #endif
+@@ -518,6 +518,15 @@ extern "C" {
+ 
+ #define GLFW_KEY_LAST               GLFW_KEY_MENU
+ 
++
++#define GLFW_KEY_VOLUMEDOWN      114
++#define GLFW_KEY_VOLUMEUP        115
++#define GLFW_KEY_HOLD           35
++#define GLFW_KEY_NEXT 106
++#define GLFW_KEY_PREV 105
++#define GLFW_KEY_PLAY 28
++#define GLFW_KEY_POWER 116
++
+ /*! @} */
+ 
+ /*! @defgroup mods Modifier key flags
+diff --git a/src/init.c b/src/init.c
+index dbd5a900..9561c552 100644
+--- a/src/init.c
++++ b/src/init.c
+@@ -33,6 +33,12 @@
+ #include <stdarg.h>
+ #include <assert.h>
+ 
++#include <fcntl.h>
++
++
++const static char * KEYBOARD_PATH = "/dev/input/event4";
++const static char * KEYBOARD_POWER_PATH = "/dev/input/event0";
++const static char * TOUCHSCREEN_PATH = "/dev/input/event1";
+ 
+ // NOTE: The global variables below comprise all mutable global data in GLFW
+ //       Any other mutable global variable is a bug
+@@ -423,6 +429,27 @@ GLFWAPI int glfwInit(void)
+     _glfwPlatformInitTimer();
+     _glfw.timer.offset = _glfwPlatformGetTimerValue();
+ 
++
++    if (_glfw.platform.platformID == GLFW_PLATFORM_NULL) {
++        _glfw.keyboard.fd = open(KEYBOARD_PATH, O_RDONLY | O_NONBLOCK | O_CLOEXEC);
++        if (_glfw.keyboard.fd == -1) {
++            return GLFW_FALSE;
++        }
++
++        _glfw.keyboard.fdPower = open(KEYBOARD_POWER_PATH, O_RDONLY | O_NONBLOCK | O_CLOEXEC);
++        if (_glfw.keyboard.fdPower == -1) {
++            return GLFW_FALSE;
++        }
++    }
++
++    if (_glfw.platform.platformID == GLFW_PLATFORM_NULL) {
++        _glfw.touchscreen.fd = open(TOUCHSCREEN_PATH, O_RDONLY | O_NONBLOCK | O_CLOEXEC);
++        if (_glfw.touchscreen.fd == -1) {
++            return GLFW_FALSE;
++        }
++    }
++
++
+     _glfw.initialized = GLFW_TRUE;
+ 
+     glfwDefaultWindowHints();
+diff --git a/src/internal.h b/src/internal.h
+index 4f097aa8..820df7a0 100644
+--- a/src/internal.h
++++ b/src/internal.h
+@@ -880,6 +880,21 @@ struct _GLFWlibrary
+         GLFWjoystickfun joystick;
+     } callbacks;
+ 
++    struct {
++        int fd;
++        int fdPower;
++    } keyboard;
++
++    struct {
++        int fd;
++        int x;
++        int y;
++        int pressure;
++        bool ready;
++        int bufX;
++        int bufY;
++    } touchscreen;
++
+     // These are defined in platform.h
+     GLFW_PLATFORM_LIBRARY_WINDOW_STATE
+     GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 diff --git a/src/null_monitor.c b/src/null_monitor.c
-index a9b528f0..9c66e025 100644
+index a9b528f0..1af83747 100644
 --- a/src/null_monitor.c
 +++ b/src/null_monitor.c
-@@ -36,8 +36,8 @@
- static GLFWvidmode getVideoMode(void)
- {
+@@ -33,11 +33,10 @@
+ 
+ // The the sole (fake) video mode of our (sole) fake monitor
+ //
+-static GLFWvidmode getVideoMode(void)
+-{
++static GLFWvidmode getVideoMode(void) {
      GLFWvidmode mode;
 -    mode.width = 1920;
 -    mode.height = 1080;
-+    mode.width = 800;
++    mode.width = 480;
 +    mode.height = 800;
      mode.redBits = 8;
      mode.greenBits = 8;
      mode.blueBits = 8;
+@@ -49,11 +48,11 @@ static GLFWvidmode getVideoMode(void)
+ //////                       GLFW internal API                      //////
+ //////////////////////////////////////////////////////////////////////////
+ 
+-void _glfwPollMonitorsNull(void)
+-{
+-    const float dpi = 141.f;
++void _glfwPollMonitorsNull(void) {
++//    const float dpi = 141.f;
++    const float dpi = 100.f;
+     const GLFWvidmode mode = getVideoMode();
+-    _GLFWmonitor* monitor = _glfwAllocMonitor("Null SuperNoop 0",
++    _GLFWmonitor *monitor = _glfwAllocMonitor("Null SuperNoop 0",
+                                               (int) (mode.width * 25.4f / dpi),
+                                               (int) (mode.height * 25.4f / dpi));
+     _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_FIRST);
+@@ -63,98 +62,87 @@ void _glfwPollMonitorsNull(void)
+ //////                       GLFW platform API                      //////
+ //////////////////////////////////////////////////////////////////////////
+ 
+-void _glfwFreeMonitorNull(_GLFWmonitor* monitor)
+-{
++void _glfwFreeMonitorNull(_GLFWmonitor *monitor) {
+     _glfwFreeGammaArrays(&monitor->null.ramp);
+ }
+ 
+-void _glfwGetMonitorPosNull(_GLFWmonitor* monitor, int* xpos, int* ypos)
+-{
++void _glfwGetMonitorPosNull(_GLFWmonitor *monitor, int *xpos, int *ypos) {
+     if (xpos)
+         *xpos = 0;
+     if (ypos)
+         *ypos = 0;
+ }
+ 
+-void _glfwGetMonitorContentScaleNull(_GLFWmonitor* monitor,
+-                                     float* xscale, float* yscale)
+-{
++void _glfwGetMonitorContentScaleNull(_GLFWmonitor *monitor,
++                                     float *xscale, float *yscale) {
+     if (xscale)
+         *xscale = 1.f;
+     if (yscale)
+         *yscale = 1.f;
+ }
+ 
+-void _glfwGetMonitorWorkareaNull(_GLFWmonitor* monitor,
+-                                 int* xpos, int* ypos,
+-                                 int* width, int* height)
+-{
++void _glfwGetMonitorWorkareaNull(_GLFWmonitor *monitor,
++                                 int *xpos, int *ypos,
++                                 int *width, int *height) {
+     const GLFWvidmode mode = getVideoMode();
+ 
+     if (xpos)
+         *xpos = 0;
+     if (ypos)
+-        *ypos = 10;
++        *ypos = 0;
+     if (width)
+         *width = mode.width;
+     if (height)
+-        *height = mode.height - 10;
++        *height = mode.height;
+ }
+ 
+-GLFWvidmode* _glfwGetVideoModesNull(_GLFWmonitor* monitor, int* found)
+-{
+-    GLFWvidmode* mode = _glfw_calloc(1, sizeof(GLFWvidmode));
++GLFWvidmode *_glfwGetVideoModesNull(_GLFWmonitor *monitor, int *found) {
++    GLFWvidmode *mode = _glfw_calloc(1, sizeof(GLFWvidmode));
+     *mode = getVideoMode();
+     *found = 1;
+     return mode;
+ }
+ 
+-GLFWbool _glfwGetVideoModeNull(_GLFWmonitor* monitor, GLFWvidmode* mode)
+-{
++GLFWbool _glfwGetVideoModeNull(_GLFWmonitor *monitor, GLFWvidmode *mode) {
+     *mode = getVideoMode();
+     return GLFW_TRUE;
+ }
+ 
+-GLFWbool _glfwGetGammaRampNull(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
+-{
+-    if (!monitor->null.ramp.size)
+-    {
++GLFWbool _glfwGetGammaRampNull(_GLFWmonitor *monitor, GLFWgammaramp *ramp) {
++    if (!monitor->null.ramp.size) {
+         unsigned int i;
+ 
+         _glfwAllocGammaArrays(&monitor->null.ramp, 256);
+ 
+-        for (i = 0;  i < monitor->null.ramp.size;  i++)
+-        {
++        for (i = 0; i < monitor->null.ramp.size; i++) {
+             const float gamma = 2.2f;
+             float value;
+             value = i / (float) (monitor->null.ramp.size - 1);
+             value = powf(value, 1.f / gamma) * 65535.f + 0.5f;
+             value = fminf(value, 65535.f);
+ 
+-            monitor->null.ramp.red[i]   = (unsigned short) value;
++            monitor->null.ramp.red[i] = (unsigned short) value;
+             monitor->null.ramp.green[i] = (unsigned short) value;
+-            monitor->null.ramp.blue[i]  = (unsigned short) value;
++            monitor->null.ramp.blue[i] = (unsigned short) value;
+         }
+     }
+ 
+     _glfwAllocGammaArrays(ramp, monitor->null.ramp.size);
+-    memcpy(ramp->red,   monitor->null.ramp.red,   sizeof(short) * ramp->size);
++    memcpy(ramp->red, monitor->null.ramp.red, sizeof(short) * ramp->size);
+     memcpy(ramp->green, monitor->null.ramp.green, sizeof(short) * ramp->size);
+-    memcpy(ramp->blue,  monitor->null.ramp.blue,  sizeof(short) * ramp->size);
++    memcpy(ramp->blue, monitor->null.ramp.blue, sizeof(short) * ramp->size);
+     return GLFW_TRUE;
+ }
+ 
+-void _glfwSetGammaRampNull(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
+-{
+-    if (monitor->null.ramp.size != ramp->size)
+-    {
++void _glfwSetGammaRampNull(_GLFWmonitor *monitor, const GLFWgammaramp *ramp) {
++    if (monitor->null.ramp.size != ramp->size) {
+         _glfwInputError(GLFW_PLATFORM_ERROR,
+                         "Null: Gamma ramp size must match current ramp size");
+         return;
+     }
+ 
+-    memcpy(monitor->null.ramp.red,   ramp->red,   sizeof(short) * ramp->size);
++    memcpy(monitor->null.ramp.red, ramp->red, sizeof(short) * ramp->size);
+     memcpy(monitor->null.ramp.green, ramp->green, sizeof(short) * ramp->size);
+-    memcpy(monitor->null.ramp.blue,  ramp->blue,  sizeof(short) * ramp->size);
++    memcpy(monitor->null.ramp.blue, ramp->blue, sizeof(short) * ramp->size);
+ }
+ 
+diff --git a/src/null_window.c b/src/null_window.c
+index f0e1dcc9..d5432305 100644
+--- a/src/null_window.c
++++ b/src/null_window.c
+@@ -30,6 +30,16 @@
+ #include <stdlib.h>
+ #include <string.h>
+ 
++#include <unistd.h>
++#include <stdio.h>
++#include <linux/input.h>
++#include "math.h"
++
++#include <sys/inotify.h>
++#include "poll.h"
++#include "errno.h"
++#include <fcntl.h>
++
+ static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
+ {
+     if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
+@@ -485,8 +495,264 @@ GLFWbool _glfwWindowVisibleNull(_GLFWwindow* window)
+     return window->null.visible;
+ }
+ 
+-void _glfwPollEventsNull(void)
++void handleKeyEvent(int key, int value) {
++    _glfwInputKey(_glfw.windowListHead, key, 0, value, 0);
++}
++
++char* repr(int key) {
++    char* qwe = malloc(37);
++    switch (key) {
++        case ABS_MT_TOUCH_MAJOR	:
++           return "ABS_MT_TOUCH_MAJOR";// 0x30	/* Major axis of touching ellipse */
++        case ABS_MT_TOUCH_MINOR	:
++           return "ABS_MT_TOUCH_MINOR";// 0x31	/* Minor axis (omit if circular) */
++        case ABS_MT_WIDTH_MAJOR	:
++           return "ABS_MT_WIDTH_MAJOR";// 0x32	/* Major axis of approaching ellipse */
++        case ABS_MT_WIDTH_MINOR	:
++           return "ABS_MT_WIDTH_MINOR";// 0x33	/* Minor axis (omit if circular) */
++        case ABS_MT_ORIENTATION	:
++           return "ABS_MT_ORIENTATION";// 0x34	/* Ellipse orientation */
++        case ABS_MT_POSITION_X	:
++           return "ABS_MT_POSITION_X";// 0x35	/* Center X ellipse position */
++        case ABS_MT_POSITION_Y	:
++           return "ABS_MT_POSITION_Y";// 0x36	/* Center Y ellipse position */
++        case ABS_MT_TOOL_TYPE	:
++           return "ABS_MT_TOOL_TYPE";// 0x37	/* Type of touching device */
++        case ABS_MT_BLOB_ID		:
++           return "ABS_MT_BLOB_ID	";// 0x38	/* Group a set of packets as a blob */
++        case ABS_MT_TRACKING_ID	:
++           return "ABS_MT_TRACKING_ID";// 0x39	/* Unique ID of initiated contact */
++        case ABS_PRESSURE:
++            return "ABS_PRESSURE"; // 0x18
++       default:
++            sprintf(qwe, "unknown touchscreen key %d", key);
++            return qwe;
++    }
++}
++
++const float r = (-90.0f) * (M_PI / 180);
++const int sinr = -1;
++const int cosr = 0;
++const int originX = 0;
++const int originY = 0;
++
++void handleTSEvent(int key, int value, int type) {
++//    if ((key != ABS_MT_POSITION_X) && (key != ABS_MT_POSITION_Y) && (key != ABS_PRESSURE)) {
++//       return;
++//    }
++
++//    fprintf(stderr, "ts %s %d\n", repr(key), value);
++
++    if (type == EV_ABS) {
++        switch (key) {
++            case ABS_MT_POSITION_X:
++                _glfw.touchscreen.bufX = value;
++                break;
++            case ABS_MT_POSITION_Y:
++                _glfw.touchscreen.bufY = value;
++                break;
++        }
++
++        return;
++    }
++
++    if (type == EV_SYN) {
++//        int y =  _glfw.touchscreen.bufY;
++//        int x =  _glfw.touchscreen.bufX;
++
++//        int newX = ((x - originX) * cosr - (y - originY) * sinr) + originX;
++//        int newY = ((x - originX) * sinr + (y - originY) * cosr) + originY;
++//                float newX = ((x - originX) * cosf(r) - (y - originY) * sinf(r)) + originX;
++//                float newY = ((x - originX) * sinf(r) + (y - originY) * cos(r)) + originY;
++//        _glfw.touchscreen.x = (int)(newX);
++//        _glfw.touchscreen.y = (int)(newY + (480*2));
++
++        _glfw.touchscreen.x = ((_glfw.touchscreen.bufX - originX) * cosr - (_glfw.touchscreen.bufY - originY)*sinr) + originX;
++        _glfw.touchscreen.y = ((_glfw.touchscreen.bufX - originX) * sinr + (-_glfw.touchscreen.bufY - originY) * cosr) + originY + 480*2;
++
++
++//        _glfw.touchscreen.x = _glfw.touchscreen.bufX;
++//        _glfw.touchscreen.y = _glfw.touchscreen.bufY;
++//         printf("syn! %d %d\n", _glfw.touchscreen.x, _glfw.touchscreen.y);
++        _glfwInputCursorPos(_glfw.windowListHead, _glfw.touchscreen.x/2, _glfw.touchscreen.y/2);
++        _glfwSetCursorPosNull(_glfw.windowListHead, _glfw.touchscreen.x/2, _glfw.touchscreen.y/2);
++        return;
++    }
++
++    if (type == EV_KEY) {
++         if (key == BTN_TOUCH) {
++//             if (value == 1) {
++//                 printf("touch! %d %d\n", _glfw.touchscreen.x, _glfw.touchscreen.y);
++//             }
++             _glfwInputMouseClick(_glfw.windowListHead, GLFW_MOUSE_BUTTON_1, value, 0);
++         }
++    }
++
++//    if (key == ABS_PRESSURE) {
++//        if (_glfw.touchscreen.pressure != value) {
++//            _glfwInputMouseClick(_glfw.windowListHead, GLFW_MOUSE_BUTTON_1, value, 0);
++//        }
++//
++//        _glfw.touchscreen.pressure = value;
++//    }
++
++}
++
++const static char * KEYBOARD_PATH = "/dev/input/event4";
++const static char * KEYBOARD_POWER_PATH = "/dev/input/event0";
++const static char * TOUCHSCREEN_PATH = "/dev/input/event1";
++
++// man inotify
++static void
++handle_events(int fd, int *wd)
++{
++   /* Some systems cannot read integer variables if they are not
++      properly aligned. On other systems, incorrect alignment may
++      decrease performance. Hence, the buffer used for reading from
++      the inotify file descriptor should have the same alignment as
++      struct inotify_event. */
++
++   char buf[4096]
++       __attribute__ ((aligned(__alignof__(struct inotify_event))));
++   const struct inotify_event *event;
++   ssize_t len;
++
++   /* Loop while events can be read from inotify file descriptor. */
++
++   struct input_event e;
++
++   for (;;) {
++       /* Read some events. */
++       len = read(fd, buf, sizeof(buf));
++       if (len == -1 && errno != EAGAIN) {
++           perror("read");
++           exit(EXIT_FAILURE);
++       }
++
++       /* If the nonblocking read() found no events to read, then
++          it returns -1 with errno set to EAGAIN. In that case,
++          we exit the loop. */
++
++       if (len <= 0)
++           break;
++
++       /* Loop over all events in the buffer. */
++
++       for (char *ptr = buf; ptr < buf + len; ptr += sizeof(struct inotify_event) + event->len) {
++           event = (const struct inotify_event *) ptr;
++
++           for (size_t i = 0; i < 3; ++i) {
++               if (wd[i] == event->wd) {
++                   memset(&e, 0, sizeof e);
++                   if (i == 0) {
++                       if (read(_glfw.keyboard.fdPower, &e, sizeof(e)) >= 0) {
++                           if (e.type == EV_KEY) {
++                               handleKeyEvent(e.code, e.value);
++                           }
++                       }
++                   }
++
++                   if (i == 1) {
++                       if (read(_glfw.keyboard.fd, &e, sizeof(e)) >= 0) {
++                           if (e.type == EV_KEY) {
++                               handleKeyEvent(e.code, e.value);
++                           }
++                       }
++                   }
++
++                   if (i == 2) {
++                       if (read(_glfw.touchscreen.fd, &e, sizeof(e)) >= 0 ) {
++                               handleTSEvent(e.code, e.value, e.type);
++                       }
++                   }
++
++                   break;
++               }
++           }
++       }
++   }
++}
++
++
++void _glfwPollEventsNull(void) {
++    int fd, poll_num;
++    struct pollfd fds[1];
++    int nfds = 1;
++    int *wd;
++
++    wd = calloc(3, sizeof(int));
++    if (wd == NULL) {
++       perror("calloc");
++       exit(EXIT_FAILURE);
++    }
++
++    fd = inotify_init1(IN_NONBLOCK);
++    if (fd == -1) {
++        perror("inotify_init1");
++        exit(EXIT_FAILURE);
++    }
++
++    wd[0] = inotify_add_watch(fd, KEYBOARD_POWER_PATH, IN_ACCESS);
++    if (wd[0] < 0) {
++        perror("inotify_add_watch");
++        exit(EXIT_FAILURE);
++    }
++
++    wd[1] = inotify_add_watch(fd, KEYBOARD_PATH, IN_ACCESS);
++    if (wd[1] < 0) {
++        perror("inotify_add_watch");
++        exit(EXIT_FAILURE);
++    }
++
++    // touchscreen events are not written if file is not in use (read)
++    // if there are no applications reading from it, there will be no events
++    wd[2] = inotify_add_watch(fd, TOUCHSCREEN_PATH, IN_ACCESS);
++    if (wd[2] < 0) {
++        perror("inotify_add_watch");
++        exit(EXIT_FAILURE);
++    }
++
++    fds[0].fd = fd;
++    fds[0].events = POLLIN;
++    while (true) {
++        poll_num = poll(fds, nfds, -1);
++        if (poll_num == -1) {
++            if (errno == EINTR)
++                continue;
++            perror("failed to poll null window");
++            exit(EXIT_FAILURE);
++        }
++
++        if (poll_num > 0) {
++            if (fds[0].revents & POLLIN) {
++                handle_events(fd, wd);
++            }
++        }
++    }
++}
++
++void _glfwPollEventsNull_old(void)
+ {
++    // Read all queued events (non-blocking)
++    struct input_event e;
++    memset(&e, 0, sizeof e);
++    if (read(_glfw.keyboard.fdPower, &e, sizeof(e)) >= 0) {
++        if (e.type == EV_KEY) {
++            handleKeyEvent(e.code, e.value);
++        }
++    }
++
++    memset(&e, 0, sizeof e);
++    if (read(_glfw.keyboard.fd, &e, sizeof(e)) >= 0) {
++        if (e.type == EV_KEY) {
++            handleKeyEvent(e.code, e.value);
++        }
++    }
++
++    memset(&e, 0, sizeof e);
++    if (read(_glfw.touchscreen.fd, &e, sizeof(e)) >= 0 ) {
++            handleTSEvent(e.code, e.value, e.type);
++    }
+ }
+ 
+ void _glfwWaitEventsNull(void)
