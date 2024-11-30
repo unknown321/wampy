@@ -1,0 +1,17 @@
+/cmake-build-debug-walkman-scrob/
+/cmake-build-debug-docker/
+/build/
+/install/
+skins/*.wsz
+skins/hpcalc_hp49g/
+src/cassette/res
+removeme
+*.svg
+*.out
+*.prof
+*.pprof
+libs/libEGL.so
+libs/libGLESv2.so
+libs/libMali_linux.so
+*.otf
+skins/**

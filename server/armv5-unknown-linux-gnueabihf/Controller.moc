@@ -1,0 +1,146 @@
+#include <QFile>
+#include <QWindow>
+#include <QQmlContext>
+#include <QQuickItem>
+
+#include "Provider.moc"
+#include "command.pb.h"
+
+#define DETAILS_POPUP_MENU_ID 3
+#define CLOCK_UPDATE_INTERVAL_SECONDS 10
+
+// Controller is in charge of:
+//  - preparing the device to be ready to serve data
+//  - performing actions such as changing tracks or play state
+// Preparing includes:
+// - finding necessary QObjects
+// - navigating to music player screen
+// - spawning details popup
+// - connecting QObjects to Provider
+class Controller : public QObject {
+Q_OBJECT
+
+private:
+    int setup();
+
+    void setupConnects();
+
+    void getVolumeInHeader();
+
+    void findViewModels(QQuickItem *swipeItem);
+
+    void initBasicPlayerControls();
+
+    void initNavBar();
+
+    void initScreenTransitionController();
+
+    void jsFromFile();
+
+    bool goToPlayer();
+
+    bool isOnPlayerScreen();
+
+    QQuickItem *getDetailPopup();
+
+    void connectDetailInfoProvider();
+
+    bool detailsAfterTransition();
+
+    QVariant jsExpression(const char *text);
+
+    QWindow *window = nullptr;
+    QQmlContext *context = nullptr;
+    QObject *FrameWork = nullptr;
+    QObject *MSC = nullptr;
+    QObject *DAC = nullptr;
+    QObject *PopupParent = nullptr;
+    QObject *MusicPlayer = nullptr; // MusicPlayerDefault_QMLTYPE_
+    QObject *MusicWindow = nullptr; // PlayerWindow_QMLTYPE_
+    QObject *BasicPlayerControls = nullptr; // dmpapp::BasicPlayerControls
+    QObject *ContentDetailedInfo = nullptr; // dmpapp::ContentDetailedInfo
+    QObject *NavBar = nullptr; // dmpapp::NavigationBarForSettings
+    QObject *ScreenTransitionController = nullptr; // dmpapp::ScreenTransitionController
+    QObject *DACViewModel = nullptr; // dmpapp::DACViewModel
+    QObject *MusicPlayerModel = nullptr; // dmpapp::MusicPlayerDefaultViewModel
+//    QObject *MusicWindowViewModel = nullptr; // dmpapp::MusicWindowViewModel
+
+    QMetaObject::Connection transitionToDetailsPopup{}; // screen transition happened (want only player screen)
+    QMetaObject::Connection popupParentChildrenChanged{}; // popup added/removed
+    QMetaObject::Connection detailInfoPopupPositionReset{}; // new data is loaded into details popup
+    QMetaObject::Connection seekAfterPause{}; // used to "stop" song. "Stop" means pause + seek to 0 in winamp terms
+    QMetaObject::Connection updateTitleWithArtistBigCover{}; // track changed -> add artist to title. Big Cover only.
+    QList<QMetaObject::Connection> popupReadyConnections{}; // list of popup "ready" signal connections
+    QMetaObject::Connection timeInHeader{}; // updates time in header on timer
+
+    QQuickItem *volumeValueInHeader = nullptr;
+    QTimer *timer = nullptr;
+
+    //if details popup is not ready but window is already
+    // hidden, there will be no data in popup until window is visible
+    // Therefore window must be hidden only after popup is ready
+    bool waitingForHide = false;
+
+    // DAC is unaware of volume value until it's changed
+    bool volumeFirstPull = false;
+
+    // trigger first detailed info update
+    bool detailsFirstPull = false;
+
+    bool initialized = false;
+    bool ready = false;
+
+public:
+    Provider provider;
+
+    Controller();
+
+    int Initialize();
+
+    void Hide(Command::Command *c);
+
+    void Show(Command::Command *c);
+
+    void GetWindowStatus(Command::Command *s);
+
+    void SetVolume(Command::Command *c);
+
+    // seconds * 1000
+    void Seek(Command::Command *c);
+
+    void GetStatus(Command::Command *c);
+
+    void Repeat(Command::Command *c);
+
+    void Shuffle(Command::Command *c);
+
+    void Prev(Command::Command *c);
+
+    void Next(Command::Command *c);
+
+    void Play(Command::Command *c);
+
+    void Pause(Command::Command *c);
+
+    void Stop(Command::Command *c);
+
+    void TestCommand(Command::Command *c);
+
+    void FeatureBigCover(Command::Command *c);
+
+    void FeatureShowClock(Command::Command *c);
+
+public slots:
+
+    void invokeDetailsPopup();
+
+    void popupAdded();
+
+    void popupReady();
+
+    void SeekToZero();
+
+    void UpdateTitleWithArtist();
+
+    void UpdateTime(bool with_time = true);
+};

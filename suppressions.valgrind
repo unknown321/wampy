@@ -1,0 +1,69 @@
+{
+   MarqueeCalcTextSize
+   Memcheck:Addr4
+   fun:_ZNK6ImFont13CalcTextSizeAEfffPKcS1_PS1_
+   fun:_ZN6Winamp14MarqueeInFrameEv
+   fun:_ZN6Winamp7MarqueeEv
+   fun:_ZZN6Winamp13MarqueeThreadEvENKUlvE_clEv
+   fun:_ZSt13__invoke_implIvZN6Winamp13MarqueeThreadEvEUlvE_JEET_St14__invoke_otherOT0_DpOT1_
+   fun:_ZSt8__invokeIZN6Winamp13MarqueeThreadEvEUlvE_JEENSt15__invoke_resultIT_JDpT0_EE4typeEOS3_DpOS4_
+   fun:_ZNSt6thread8_InvokerISt5tupleIJZN6Winamp13MarqueeThreadEvEUlvE_EEE9_M_invokeIJLm0EEEEvSt12_Index_tupleIJXspT_EEE
+   fun:_ZNSt6thread8_InvokerISt5tupleIJZN6Winamp13MarqueeThreadEvEUlvE_EEEclEv
+   fun:_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZN6Winamp13MarqueeThreadEvEUlvE_EEEEE6_M_runEv
+   obj:/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30
+   fun:start_thread
+   fun:clone
+}
+{
+   weird malloc
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   weird calloc
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   MagickResize
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:allocate_stack
+   fun:pthread_create@@GLIBC_2.34
+   obj:/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+   fun:GOMP_parallel
+   fun:HorizontalFilter
+   fun:ResizeImage
+   fun:_ZN6Magick5Image4zoomERKNS_8GeometryE
+   fun:_ZN8MyMagick7UpscaleEPN6Magick5ImageERNS0_8GeometryEb
+   fun:_ZN11FlatTexture7UpscaleEv
+   fun:_ZN11FlatTexture4loadEv
+}

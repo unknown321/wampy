@@ -1,0 +1,3 @@
+moc_*.cpp
+/build
+*.swp

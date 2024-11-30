@@ -1,0 +1,61 @@
+diff --git a/backends/imgui_impl_glfw.cpp b/backends/imgui_impl_glfw.cpp
+index 3c95f178..abcecb33 100644
+--- a/backends/imgui_impl_glfw.cpp
++++ b/backends/imgui_impl_glfw.cpp
+@@ -295,6 +295,13 @@ static ImGuiKey ImGui_ImplGlfw_KeyToImGuiKey(int key)
+         case GLFW_KEY_F22: return ImGuiKey_F22;
+         case GLFW_KEY_F23: return ImGuiKey_F23;
+         case GLFW_KEY_F24: return ImGuiKey_F24;
++        case GLFW_KEY_VOLUMEDOWN: return ImGuiKey_VolumeDown;
++        case GLFW_KEY_VOLUMEUP: return ImGuiKey_VolumeUp;
++        case GLFW_KEY_HOLD: return ImGuiKey_Hold;
++        case GLFW_KEY_NEXT: return ImGuiKey_Next;
++        case GLFW_KEY_PREV: return ImGuiKey_Prev;
++        case GLFW_KEY_PLAY: return ImGuiKey_Play;
++        case GLFW_KEY_POWER: return ImGuiKey_Power;
+         default: return ImGuiKey_None;
+     }
+ }
+diff --git a/backends/imgui_impl_opengl3.cpp b/backends/imgui_impl_opengl3.cpp
+index bbe96c42..0e69aa0f 100644
+--- a/backends/imgui_impl_opengl3.cpp
++++ b/backends/imgui_impl_opengl3.cpp
+@@ -603,7 +603,7 @@ void    ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
+                     continue;
+ 
+                 // Apply scissor/clipping rectangle (Y is inverted in OpenGL)
+-                GL_CALL(glScissor((int)clip_min.x, (int)((float)fb_height - clip_max.y), (int)(clip_max.x - clip_min.x), (int)(clip_max.y - clip_min.y)));
++//                GL_CALL(glScissor((int)clip_min.x, (int)((float)fb_height - clip_max.y), (int)(clip_max.x - clip_min.x), (int)(clip_max.y - clip_min.y)));
+ 
+                 // Bind texture, Draw
+                 GL_CALL(glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->GetTexID()));
+diff --git a/imgui.cpp b/imgui.cpp
+index 31220bdf..b014fa5f 100644
+--- a/imgui.cpp
++++ b/imgui.cpp
+@@ -8479,6 +8479,7 @@ static const char* const GKeyNames[] =
+     "Keypad7", "Keypad8", "Keypad9", "KeypadDecimal", "KeypadDivide", "KeypadMultiply",
+     "KeypadSubtract", "KeypadAdd", "KeypadEnter", "KeypadEqual",
+     "AppBack", "AppForward",
++    "VolDown", "VolUp", "Hold", "Next", "Prev", "Play", "Power",
+     "GamepadStart", "GamepadBack",
+     "GamepadFaceLeft", "GamepadFaceRight", "GamepadFaceUp", "GamepadFaceDown",
+     "GamepadDpadLeft", "GamepadDpadRight", "GamepadDpadUp", "GamepadDpadDown",
+diff --git a/imgui.h b/imgui.h
+index a22e7ae9..651ec16b 100644
+--- a/imgui.h
++++ b/imgui.h
+@@ -1420,6 +1420,13 @@ enum ImGuiKey : int
+     ImGuiKey_KeypadEqual,
+     ImGuiKey_AppBack,               // Available on some keyboard/mouses. Often referred as "Browser Back"
+     ImGuiKey_AppForward,
++    ImGuiKey_VolumeDown,
++    ImGuiKey_VolumeUp,
++    ImGuiKey_Hold,
++    ImGuiKey_Next,
++    ImGuiKey_Prev,
++    ImGuiKey_Play,
++    ImGuiKey_Power,
+ 
+     // Gamepad (some of those are analog values, 0.0f to 1.0f)                          // NAVIGATION ACTION
+     // (download controller mapping PNG/PSD at http://dearimgui.com/controls_sheets)

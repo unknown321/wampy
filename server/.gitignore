@@ -1,0 +1,6 @@
+Qt-5.3.2.tar.gz
+/build
+/qt
+*.swp
+/qmls
+libMali_linux.so

@@ -1,0 +1,30 @@
+#include <QObject>
+#include <QtNetwork/QLocalServer>
+#include "Controller.moc"
+
+class WampyServer : public QObject {
+Q_OBJECT
+
+public:
+    WampyServer(QObject *parent = 0);
+
+    ~WampyServer();
+
+    void Serve();
+
+public slots:
+
+    void newConnection();
+
+    void read();
+
+    void respond(QLocalSocket *socket, QByteArray data);
+
+private:
+    Controller controller{};
+
+    QLocalServer server{};
+
+    QByteArray handle(QByteArray data);
+
+};

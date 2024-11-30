@@ -1,0 +1,86 @@
+#include <QObject>
+#include <QQmlContext>
+#include <QWindow>
+#include <QQuickItem>
+
+#define PLAYLIST_LENGTH 20
+
+struct Track {
+    QString Artist = "";
+    QString Title = "";
+    int Track = 0;
+    int Duration = 0;
+    bool Active = false;
+};
+
+// Provider updates and keeps following data:
+// play status, volume, playlist, current track details, usb mass storage status
+// basically everything user actually wants
+class Provider : public QObject {
+Q_OBJECT
+
+private:
+    QQuickItem *gridArea = nullptr;
+
+    void updatePlaylist(QObject *trackSequenceView);
+
+public:
+    Provider();
+
+    int bitRate{}; // kbps
+    int bitDepth{};
+    int sampleRate{}; // kHz
+    Track playlist[PLAYLIST_LENGTH]{};
+
+    int volume = 0;
+    int curTime = 0;
+    int time = 0;
+    QString artist{};
+    QString album{};
+    QString title{};
+    bool isPlaying{};
+    QString codec{};
+    int repeat{};
+    bool shuffle{};
+//    int playState{};
+    bool usbMounted{};
+    bool hires{};
+
+    // playlist might be at wrong position so that active track is not in visible part of playlist
+    bool playlistActiveFound = false;
+
+    QMetaObject::Connection MSCHandle{};
+    QMetaObject::Connection MusicPlayerHandle{};
+    QMetaObject::Connection MusicPlayerElapsedHandle{};
+    QMetaObject::Connection DACHandle{};
+    QMetaObject::Connection MusicWindowHandle{};
+
+    void GetPlaylist();
+
+    void FromMSC(QObject *MSC);
+
+    void FromMusicPlayer(QObject *o);
+
+    void FromDAC(QObject *o);
+
+    void FromMusicWindow(QObject *o);
+
+    void FromDetailsPopup();
+
+    void parseDetailsPopupEntry(QQuickItem *o, int index);
+
+public slots:
+
+    void VolumeSlot();
+
+    void MusicPlayerSlot();
+
+    void MSCSlot();
+
+    void MusicWindowSlot();
+
+    void UpdateElapsed();
+
+    void UpdateDetails();
+
+};

@@ -1,0 +1,28 @@
+diff --git a/include/GLFW/glfw3.h b/include/GLFW/glfw3.h
+index 79b06288..cd4fee64 100644
+--- a/include/GLFW/glfw3.h
++++ b/include/GLFW/glfw3.h
+@@ -238,7 +238,7 @@ extern "C" {
+ 
+  #else /*__APPLE__*/
+ 
+-  #include <GL/gl.h>
++//  #include <GL/gl.h>
+   #if defined(GLFW_INCLUDE_GLEXT)
+    #include <GL/glext.h>
+   #endif
+diff --git a/src/null_monitor.c b/src/null_monitor.c
+index a9b528f0..9c66e025 100644
+--- a/src/null_monitor.c
++++ b/src/null_monitor.c
+@@ -36,8 +36,8 @@
+ static GLFWvidmode getVideoMode(void)
+ {
+     GLFWvidmode mode;
+-    mode.width = 1920;
+-    mode.height = 1080;
++    mode.width = 800;
++    mode.height = 800;
+     mode.redBits = 8;
+     mode.greenBits = 8;
+     mode.blueBits = 8;

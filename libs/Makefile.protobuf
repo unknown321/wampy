@@ -1,0 +1,31 @@
+ARCH=$(shell uname -m)
+
+protobuf/configure:
+	cd protobuf && \
+	git submodule update --init --recursive && \
+	./autogen.sh
+
+protobuf/build-$(ARCH)/bin/protoc:
+	cd protobuf && \
+    ./configure --disable-shared --prefix=`pwd`/build-$(ARCH) && \
+    make -j6 && \
+    make install
+
+protobuf/build-armv5/bin/protoc:
+	cd protobuf && \
+	make clean && \
+	export CC=/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-gcc && \
+	export CXX=/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-g++ && \
+	./configure \
+		--prefix=`pwd`/build-armv5 \
+		--host=armv5-unknown-linux-gnueabihf \
+		--with-sysroot=/x-tools/armv5-unknown-linux-gnueabihf/armv5-unknown-linux-gnueabihf/sysroot \
+		--with-protoc=`pwd`/build-$(ARCH)/bin/protoc && \
+	make -j6 && \
+	make install
+
+build: protobuf/configure protobuf/build-$(ARCH)/bin/protoc protobuf/build-armv5/bin/protoc
+
+.DEFAULT_GOAL := build
+
+.PHONY=build

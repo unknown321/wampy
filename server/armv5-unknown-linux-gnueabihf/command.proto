@@ -1,0 +1,96 @@
+syntax = "proto2";
+
+package Command;
+
+enum Type {
+  CMD_UNKNOWN = 0;
+  CMD_GET_WINDOW_STATUS = 1;
+  CMD_HIDE_WINDOW = 2;
+  CMD_SHOW_WINDOW = 3;
+  CMD_GET_STATUS = 4;
+  CMD_TEST = 5;
+  CMD_SET_VOLUME = 6;
+  CMD_SEEK = 7;
+  CMD_TOGGLE_SHUFFLE = 8;
+  CMD_TOGGLE_REPEAT = 9;
+  CMD_NEXT_TRACK = 10;
+  CMD_PREV_TRACK = 11;
+  CMD_PLAY = 12;
+  CMD_PAUSE = 13;
+  CMD_STOP = 14;
+  CMD_FEATURE_BIG_COVER = 15;
+  CMD_FEATURE_SHOW_CLOCK = 16;
+  CMD_FAILURE = 17;
+}
+
+enum ResponseCode {
+  UNKNOWN = 0;
+  FAIL = 1;
+  OK = 2;
+}
+
+enum WindowVisible {
+  VISIBILITY_UNKNOWN = 0;
+  VISIBILITY_YES = 1;
+  VISIBILITY_NO = 2;
+}
+
+message Command {
+  required Type Type = 1;
+  required ResponseCode Code = 2;
+
+  oneof msg {
+    WindowStatus WindowStatus = 3;
+    Status Status = 4;
+    SetVolume SetVolume = 5;
+    Seek Seek = 6;
+    FeatureBigCover FeatureBigCover = 7;
+    FeatureShowClock FeatureShowClock = 8;
+  }
+}
+
+message FeatureBigCover {
+  required bool enabled = 1;
+}
+
+message FeatureShowClock {
+  required bool enabled = 1;
+}
+
+message WindowStatus {
+  required WindowVisible Visible = 1;
+}
+
+message SetVolume {
+  required int32 valuePercent = 1;
+}
+
+message Seek {
+  required int32 value = 1;
+}
+
+message Track {
+  required int32 Track = 1;
+  required string Artist = 2;
+  required string Title = 3;
+  required int32 Duration = 4;
+  required bool Active = 5;
+}
+
+message Playlist {
+  repeated Track Track = 1;
+}
+
+message Status {
+  required string Codec = 1;
+  required int32 Elapsed = 2;
+  required int32 PlayState = 3;
+  required bool HiRes = 4;
+  required bool Shuffle = 5;
+  required int32 Repeat = 6;
+  required int32 Volume = 7;
+  optional int32 BitRate = 8;
+  optional float SampleRate = 9;
+  optional int32 BitDepth = 10;
+  required Playlist Playlist = 11;
+}

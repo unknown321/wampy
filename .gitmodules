@@ -1,0 +1,29 @@
+[submodule "libs/zlib"]
+	path = libs/zlib
+	url = https://github.com/madler/zlib.git
+	ignore = dirty
+[submodule "libs/ImageMagick"]
+	path = libs/ImageMagick
+	url = https://github.com/ImageMagick/ImageMagick.git
+	ignore = dirty
+[submodule "libs/glm"]
+	path = libs/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "libs/libjpeg-turbo"]
+	path = libs/libjpeg-turbo
+	url = https://github.com/libjpeg-turbo/libjpeg-turbo
+	ignore = untracked
+[submodule "libs/mINI"]
+	path = libs/mINI
+	url = https://github.com/metayeti/mINI.git
+[submodule "libs/protobuf"]
+	path = libs/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
+	ignore = dirty
+[submodule "libs/imgui"]
+	path = libs/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "libs/glfw"]
+	path = libs/glfw
+	url = https://github.com/glfw/glfw.git
+	ignore = dirty
