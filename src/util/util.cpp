@@ -163,6 +163,10 @@ void printFPS() {
 }
 
 std::string CalculateTextWidth(std::string text, float maxWidth) {
+    if (text.empty()) {
+        return "";
+    }
+
     if (ImGui::CalcTextSize(text.c_str()).x > maxWidth) {
         while (ImGui::CalcTextSize(text.c_str()).x > maxWidth) {
             int l = utfLen(text);

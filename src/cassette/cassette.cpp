@@ -299,6 +299,7 @@ namespace Cassette {
     int Cassette::Load(std::string filename, ImFont *FontRegular) {
         loading = true;
 
+        SelectTape(true);
         LoadImages();
 
         AddFonts(FontRegular);
@@ -330,8 +331,7 @@ namespace Cassette {
                 c = std::toupper(c);
             }
 
-            song.Artist = CalculateTextWidth(song.Artist,
-                                             Tapes[config->Get(tapeType)->tape].titleWidth);
+            song.Artist = CalculateTextWidth(song.Artist, Tapes[config->Get(tapeType)->tape].titleWidth);
             song.Title = CalculateTextWidth(song.Title, Tapes[config->Get(tapeType)->tape].titleWidth);
             song.PlaylistStringsCalculated = true;
         }
