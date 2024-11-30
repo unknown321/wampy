@@ -1,0 +1,7 @@
+on boot
+  start wampy
+
+service wampy /bin/logwrapper /system/vendor/unknown321/bin/wampy
+  user root
+  group root
+  oneshot

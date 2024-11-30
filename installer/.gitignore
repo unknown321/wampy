@@ -1,0 +1,6 @@
+*.so
+wampy
+userdata.tar
+lib*
+*.tar
+*.wsz
