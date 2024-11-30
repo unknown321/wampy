@@ -1,8 +1,8 @@
 ARCH=$(shell uname -m)
 
+#git submodule update --init --recursive &&
 protobuf/configure:
 	cd protobuf && \
-	git submodule update --init --recursive && \
 	./autogen.sh
 
 protobuf/build-$(ARCH)/bin/protoc:
