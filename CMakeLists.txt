@@ -139,7 +139,7 @@ target_link_libraries(${PROJECT_NAME} zlib)
 
 # dynamic linking
 set(ENV{PKG_CONFIG_LIBDIR} "${CMAKE_SOURCE_DIR}/libs/ImageMagick/build-${arch}/lib/pkgconfig")
-find_package(ImageMagick COMPONENTS MagickCore MagickWand Magick++)
+find_package(ImageMagick COMPONENTS MagickCore MagickWand Magick++ REQUIRED)
 include_directories(${ImageMagick_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${ImageMagick_LIBRARIES})
 

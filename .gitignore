@@ -1,5 +1,5 @@
-/cmake-build-debug-walkman-scrob/
-/cmake-build-debug-docker/
+/cmake-build-*/
+/.idea/
 /build/
 /install/
 skins/*.wsz
