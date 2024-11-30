@@ -21,9 +21,7 @@ class QEglFSmt8590Hooks : public QEglFSHooks {
     virtual bool hasCapability(QPlatformIntegration::Capability cap) const;
     virtual QByteArray fbDeviceName() const;
     virtual EGLNativeDisplayType platformDisplay() const;
-    virtual EGLNativeWindowType
-    createNativeWindow(QPlatformWindow *platformWindow, const QSize &size,
-                       const QSurfaceFormat &format);
+    virtual EGLNativeWindowType createNativeWindow(QPlatformWindow *platformWindow, const QSize &size, const QSurfaceFormat &format);
     virtual void destroyNativeWindow(EGLNativeWindowType window);
     virtual int screenDepth() const;
     virtual QDpi logicalDpi() const;
@@ -31,8 +29,7 @@ class QEglFSmt8590Hooks : public QEglFSHooks {
     virtual bool filterConfig(EGLDisplay display, EGLConfig config) const;
 };
 
-bool QEglFSmt8590Hooks::hasCapability(
-    QPlatformIntegration::Capability cap) const {
+bool QEglFSmt8590Hooks::hasCapability(QPlatformIntegration::Capability cap) const {
     switch (cap) {
     case QPlatformIntegration::ThreadedPixmaps:
     case QPlatformIntegration::OpenGL:
@@ -51,19 +48,14 @@ QByteArray QEglFSmt8590Hooks::fbDeviceName() const {
     return fbDev;
 }
 
-EGLNativeDisplayType QEglFSmt8590Hooks::platformDisplay() const {
-    return (EGLNativeDisplayType)framebufferIndex();
-}
+EGLNativeDisplayType QEglFSmt8590Hooks::platformDisplay() const { return (EGLNativeDisplayType)framebufferIndex(); }
 
 EGLNativeWindowType
-QEglFSmt8590Hooks::createNativeWindow(QPlatformWindow *platformWindow,
-                                      const QSize &size,
-                                      const QSurfaceFormat &format) {
+QEglFSmt8590Hooks::createNativeWindow(QPlatformWindow *platformWindow, const QSize &size, const QSurfaceFormat &format) {
 
     Start();
 
-    fbdev_window *fbwin =
-        reinterpret_cast<fbdev_window *>(malloc(sizeof(fbdev_window)));
+    fbdev_window *fbwin = reinterpret_cast<fbdev_window *>(malloc(sizeof(fbdev_window)));
     if (NULL == fbwin)
         return 0;
 
@@ -88,14 +80,9 @@ QDpi QEglFSmt8590Hooks::logicalDpi() const {
     return retDpi;
 }
 
-void QEglFSmt8590Hooks::waitForVSync() const {
-    QEglFSHooks::waitForVSync();
-}
+void QEglFSmt8590Hooks::waitForVSync() const { QEglFSHooks::waitForVSync(); }
 
-bool QEglFSmt8590Hooks::filterConfig(EGLDisplay display,
-                                     EGLConfig config) const {
-    return QEglFSHooks::filterConfig(display, config);
-}
+bool QEglFSmt8590Hooks::filterConfig(EGLDisplay display, EGLConfig config) const { return QEglFSHooks::filterConfig(display, config); }
 
 QEglFSmt8590Hooks eglFSmt8590Hooks;
 QEglFSHooks *platformHooks = &eglFSmt8590Hooks;

@@ -17,16 +17,19 @@ void inspectObject(QObject *o, int depth) {
         return;
     }
 
-    for (const auto &v: cc) {
-        DLOG("%sname: %s, meta: %s\n", std::string(depth, '\t').c_str(),
-             qPrintable(v->objectName()),
-             qPrintable(v->metaObject()->className()));
+    for (const auto &v : cc) {
+        DLOG(
+            "%sname: %s, meta: %s\n",
+            std::string(depth, '\t').c_str(),
+            qPrintable(v->objectName()),
+            qPrintable(v->metaObject()->className())
+        );
         inspectObject(v, depth + 1);
     }
 }
 
 QObject *findObject(QQuickItem *parent, const char *name) {
-    for (const auto &v: parent->childItems()) {
+    for (const auto &v : parent->childItems()) {
         auto vv = v->findChildren<QObject *>(name);
         if (vv.length() > 0) {
             return vv.at(0);
@@ -43,7 +46,7 @@ QObject *findObjectByMetaType(QObject *o, QString t) {
         return nullptr;
     }
 
-    for (const auto &kid: cc) {
+    for (const auto &kid : cc) {
         auto cn = QString(kid->metaObject()->className());
         if (cn.indexOf(t, 0) == 0) {
             return kid;
@@ -64,12 +67,10 @@ static void dump_props(QObject *o) {
         DLOG("### Class %s\n", qPrintable(mo->className()));
         std::vector<std::pair<QString, QVariant>> v;
         v.reserve(mo->propertyCount() - mo->propertyOffset());
-        for (int i = mo->propertyOffset(); i < mo->propertyCount();
-             ++i)
-            v.emplace_back(mo->property(i).name(),
-                           mo->property(i).read(o));
+        for (int i = mo->propertyOffset(); i < mo->propertyCount(); ++i)
+            v.emplace_back(mo->property(i).name(), mo->property(i).read(o));
         std::sort(v.begin(), v.end());
-        for (auto &i: v)
+        for (auto &i : v)
             DLOG("%s\n", qPrintable(i.first));
     } while ((mo = mo->superClass()));
 }
@@ -117,7 +118,7 @@ QString labelToQString(QQuickItem *label) {
 }
 
 void dumpBytes(std::string res) {
-    for (auto c: res) {
+    for (auto c : res) {
         fprintf(stderr, "0x%02x ", c);
     }
     fprintf(stderr, "\n");

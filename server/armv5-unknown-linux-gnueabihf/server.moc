@@ -1,18 +1,18 @@
+#include "Controller.moc"
 #include <QObject>
 #include <QtNetwork/QLocalServer>
-#include "Controller.moc"
 
 class WampyServer : public QObject {
-Q_OBJECT
+    Q_OBJECT
 
-public:
+  public:
     WampyServer(QObject *parent = 0);
 
     ~WampyServer();
 
     void Serve();
 
-public slots:
+  public slots:
 
     void newConnection();
 
@@ -20,11 +20,10 @@ public slots:
 
     void respond(QLocalSocket *socket, QByteArray data);
 
-private:
+  private:
     Controller controller{};
 
     QLocalServer server{};
 
     QByteArray handle(QByteArray data);
-
 };

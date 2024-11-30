@@ -1,7 +1,7 @@
 #include <QObject>
 #include <QQmlContext>
-#include <QWindow>
 #include <QQuickItem>
+#include <QWindow>
 
 #define PLAYLIST_LENGTH 20
 
@@ -17,14 +17,14 @@ struct Track {
 // play status, volume, playlist, current track details, usb mass storage status
 // basically everything user actually wants
 class Provider : public QObject {
-Q_OBJECT
+    Q_OBJECT
 
-private:
+  private:
     QQuickItem *gridArea = nullptr;
 
     void updatePlaylist(QObject *trackSequenceView);
 
-public:
+  public:
     Provider();
 
     int bitRate{}; // kbps
@@ -42,7 +42,7 @@ public:
     QString codec{};
     int repeat{};
     bool shuffle{};
-//    int playState{};
+    //    int playState{};
     bool usbMounted{};
     bool hires{};
 
@@ -69,7 +69,7 @@ public:
 
     void parseDetailsPopupEntry(QQuickItem *o, int index);
 
-public slots:
+  public slots:
 
     void VolumeSlot();
 
@@ -82,5 +82,4 @@ public slots:
     void UpdateElapsed();
 
     void UpdateDetails();
-
 };

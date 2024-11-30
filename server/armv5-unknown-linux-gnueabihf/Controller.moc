@@ -1,7 +1,7 @@
 #include <QFile>
-#include <QWindow>
 #include <QQmlContext>
 #include <QQuickItem>
+#include <QWindow>
 
 #include "Provider.moc"
 #include "command.pb.h"
@@ -18,9 +18,9 @@
 // - spawning details popup
 // - connecting QObjects to Provider
 class Controller : public QObject {
-Q_OBJECT
+    Q_OBJECT
 
-private:
+  private:
     int setup();
 
     void setupConnects();
@@ -55,30 +55,30 @@ private:
     QObject *MSC = nullptr;
     QObject *DAC = nullptr;
     QObject *PopupParent = nullptr;
-    QObject *MusicPlayer = nullptr; // MusicPlayerDefault_QMLTYPE_
-    QObject *MusicWindow = nullptr; // PlayerWindow_QMLTYPE_
-    QObject *BasicPlayerControls = nullptr; // dmpapp::BasicPlayerControls
-    QObject *ContentDetailedInfo = nullptr; // dmpapp::ContentDetailedInfo
-    QObject *NavBar = nullptr; // dmpapp::NavigationBarForSettings
+    QObject *MusicPlayer = nullptr;                // MusicPlayerDefault_QMLTYPE_
+    QObject *MusicWindow = nullptr;                // PlayerWindow_QMLTYPE_
+    QObject *BasicPlayerControls = nullptr;        // dmpapp::BasicPlayerControls
+    QObject *ContentDetailedInfo = nullptr;        // dmpapp::ContentDetailedInfo
+    QObject *NavBar = nullptr;                     // dmpapp::NavigationBarForSettings
     QObject *ScreenTransitionController = nullptr; // dmpapp::ScreenTransitionController
-    QObject *DACViewModel = nullptr; // dmpapp::DACViewModel
-    QObject *MusicPlayerModel = nullptr; // dmpapp::MusicPlayerDefaultViewModel
-//    QObject *MusicWindowViewModel = nullptr; // dmpapp::MusicWindowViewModel
+    QObject *DACViewModel = nullptr;               // dmpapp::DACViewModel
+    QObject *MusicPlayerModel = nullptr;           // dmpapp::MusicPlayerDefaultViewModel
+                                                   //    QObject *MusicWindowViewModel = nullptr; // dmpapp::MusicWindowViewModel
 
-    QMetaObject::Connection transitionToDetailsPopup{}; // screen transition happened (want only player screen)
-    QMetaObject::Connection popupParentChildrenChanged{}; // popup added/removed
-    QMetaObject::Connection detailInfoPopupPositionReset{}; // new data is loaded into details popup
-    QMetaObject::Connection seekAfterPause{}; // used to "stop" song. "Stop" means pause + seek to 0 in winamp terms
+    QMetaObject::Connection transitionToDetailsPopup{};      // screen transition happened (want only player screen)
+    QMetaObject::Connection popupParentChildrenChanged{};    // popup added/removed
+    QMetaObject::Connection detailInfoPopupPositionReset{};  // new data is loaded into details popup
+    QMetaObject::Connection seekAfterPause{};                // used to "stop" song. "Stop" means pause + seek to 0 in winamp terms
     QMetaObject::Connection updateTitleWithArtistBigCover{}; // track changed -> add artist to title. Big Cover only.
-    QList<QMetaObject::Connection> popupReadyConnections{}; // list of popup "ready" signal connections
-    QMetaObject::Connection timeInHeader{}; // updates time in header on timer
+    QList<QMetaObject::Connection> popupReadyConnections{};  // list of popup "ready" signal connections
+    QMetaObject::Connection timeInHeader{};                  // updates time in header on timer
 
     QQuickItem *volumeValueInHeader = nullptr;
     QTimer *timer = nullptr;
 
-    //if details popup is not ready but window is already
-    // hidden, there will be no data in popup until window is visible
-    // Therefore window must be hidden only after popup is ready
+    // if details popup is not ready but window is already
+    //  hidden, there will be no data in popup until window is visible
+    //  Therefore window must be hidden only after popup is ready
     bool waitingForHide = false;
 
     // DAC is unaware of volume value until it's changed
@@ -90,7 +90,7 @@ private:
     bool initialized = false;
     bool ready = false;
 
-public:
+  public:
     Provider provider;
 
     Controller();
@@ -130,7 +130,7 @@ public:
 
     void FeatureShowClock(Command::Command *c);
 
-public slots:
+  public slots:
 
     void invokeDetailsPopup();
 

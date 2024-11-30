@@ -1,6 +1,6 @@
 DOCKER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` toolchain
-DEVICE_SERIAL=10458B75388765
-ADB=adb -s $(DEVICE_SERIAL) wait-for-device
+#DEVICE_SERIAL=-s 10458B75388765
+ADB=adb $(DEVICE_SERIAL) wait-for-device
 IMAGE=wampy-builder
 NAME=wampy
 
@@ -40,9 +40,7 @@ push:
 	$(ADB) push install/arm/lib/libjpeg.so.62.4.0 $(VENDOR)/lib/
 	$(ADB) shell ln -s  $(VENDOR)/lib/libjpeg.so.62.4.0 $(VENDOR)/lib/libjpeg.so.62
 	$(ADB) push skins/base-2.91.wsz $(VENDOR)/usr/share/skins/winamp/base-2.91.wsz
-	$(ADB) push /media/ssd/dev/imgui/libs/qt/qt/qtbase/plugins/platforms/libqeglfs.so /system/vendor/sony/plugins/platforms/libqeglfs.so
-	$(ADB) shell chmod 0755 /system/vendor/sony/plugins/platforms/libqeglfs.so
-	$(ADB) shell chown root:shell /system/vendor/sony/plugins/platforms/libqeglfs.so
+	$(MAKE) -C server push
 #	cp /media/ssd/dev/imgui/libs/qt/qt/qtbase/plugins/platforms/libqeglfs.so /media/ssd/walkman/NW-A50/toolchain/sysroot/system/vendor/sony/plugins/platforms/libqeglfs.so
 #	cp /media/ssd/dev/imgui/libs/qt/qt/qtbase/lib/libQt5Core.so.5.3.2 /media/ssd/walkman/NW-A50/toolchain/sysroot/system/vendor/sony/lib/libQt5Core.so.5
 #	$(ADB) push libs/qt/build/plugins/platforms/libqeglfs.so /system/vendor/sony/plugins/platforms/libqeglfs.so

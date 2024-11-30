@@ -36,9 +36,7 @@ void Provider::FromMSC(QObject *msc) {
     DLOG("Mounted: %d\n", usbMounted);
 }
 
-void Provider::MSCSlot() {
-    FromMSC(sender());
-}
+void Provider::MSCSlot() { FromMSC(sender()); }
 
 // curTime, time, artist, album, title
 void Provider::FromMusicPlayer(QObject *o) {
@@ -47,34 +45,29 @@ void Provider::FromMusicPlayer(QObject *o) {
     album = map["album_name"].toString();
     artist = map["artist_name"].toString();
     title = map["play_title"].toString();
-    hires = (int) o->property("is_high_resolution").toBool();
-    DLOG("%s %s (%s), hires %d\n", artist.toUtf8().constData(), title.toUtf8().constData(), album.toUtf8().constData(),
-         hires);
+    hires = (int)o->property("is_high_resolution").toBool();
+    DLOG("%s %s (%s), hires %d\n", artist.toUtf8().constData(), title.toUtf8().constData(), album.toUtf8().constData(), hires);
 
-    time = (int) o->property("total_playback_time").toDouble(nullptr);
-    curTime = (int) o->property("currently_playing_time").toDouble(nullptr);
+    time = (int)o->property("total_playback_time").toDouble(nullptr);
+    curTime = (int)o->property("currently_playing_time").toDouble(nullptr);
     DLOG("%d / %d\n", curTime, time);
     GetPlaylist();
 }
 
-void Provider::MusicPlayerSlot() {
-    FromMusicPlayer(sender());
-}
+void Provider::MusicPlayerSlot() { FromMusicPlayer(sender()); }
 
 void Provider::UpdateElapsed() {
     bool ok;
-    curTime = (int) sender()->property("currently_playing_time").toDouble(&ok);
+    curTime = (int)sender()->property("currently_playing_time").toDouble(&ok);
 }
 
 void Provider::FromDAC(QObject *o) {
     bool ok;
     volume = o->property("volume").toInt(&ok);
-//    DLOG("volume %d\n", volume);
+    //    DLOG("volume %d\n", volume);
 }
 
-void Provider::VolumeSlot() {
-    FromDAC(sender());
-}
+void Provider::VolumeSlot() { FromDAC(sender()); }
 
 // playState, repeat, shuffle
 void Provider::FromMusicWindow(QObject *o) {
@@ -86,7 +79,7 @@ void Provider::FromMusicWindow(QObject *o) {
 
     auto map = m.toMap();
     auto keys = {"playState", "repeatModeState", "shuffleState"};
-    for (auto k: keys) {
+    for (auto k : keys) {
         if (map.count(k) == 0) {
             DLOG("missing key %s\n", k);
             return;
@@ -101,9 +94,7 @@ void Provider::FromMusicWindow(QObject *o) {
     DLOG("is playing %d, shuffle %d, repeat %d\n", isPlaying, shuffle, repeat);
 }
 
-void Provider::MusicWindowSlot() {
-    FromMusicWindow(sender());
-}
+void Provider::MusicWindowSlot() { FromMusicWindow(sender()); }
 
 // TODO: popupParent is already present in Connector
 void Provider::FromDetailsPopup() {
@@ -132,7 +123,7 @@ void Provider::FromDetailsPopup() {
     }
 
     QQuickItem *popupView = nullptr;
-    for (auto c: popupParent->childItems()) {
+    for (auto c : popupParent->childItems()) {
         auto prop = c->property("popupID");
         if (!prop.isValid()) {
             continue;
@@ -185,13 +176,11 @@ void Provider::FromDetailsPopup() {
     }
 }
 
-void Provider::UpdateDetails() {
-    FromDetailsPopup();
-}
+void Provider::UpdateDetails() { FromDetailsPopup(); }
 
 void Provider::parseDetailsPopupEntry(QQuickItem *o, int index) {
     if (o->childItems().size() < 2) {
-//        DLOG("unexpected element count %d\n", o->childItems().size());
+        //        DLOG("unexpected element count %d\n", o->childItems().size());
         return;
     }
 
@@ -204,30 +193,30 @@ void Provider::parseDetailsPopupEntry(QQuickItem *o, int index) {
     auto value = v.toString();
 
     QString sampleUnit = "";
-//    DLOG("entry %d\n", index);
+    //    DLOG("entry %d\n", index);
     switch (index) {
-        case CODEC:
-            codec = value.split(" ").at(0);
-//            DLOG("codec %s\n", codec.toUtf8().constData());
-            break;
-        case BIT_DEPTH:
-            bitDepth = value.split(" ").at(0).toInt();
-//            DLOG("bitdepth %d\n", bitDepth);
-            break;
-        case BIT_RATE:
-            bitRate = value.split(" ").at(0).toInt();
-//            DLOG("bitrate %d\n", bitRate);
-            break;
-        case SAMPLE_RATE:
-            sampleUnit = value.split(" ").at(1);
-            sampleRate = value.split(" ").at(0).toFloat();
-            if (sampleUnit == "MHz") {
-                sampleRate = sampleRate * 1000;
-            }
-//            DLOG("sample rate %d\n", sampleRate);
-            break;
-        default:
-            break;
+    case CODEC:
+        codec = value.split(" ").at(0);
+        //            DLOG("codec %s\n", codec.toUtf8().constData());
+        break;
+    case BIT_DEPTH:
+        bitDepth = value.split(" ").at(0).toInt();
+        //            DLOG("bitdepth %d\n", bitDepth);
+        break;
+    case BIT_RATE:
+        bitRate = value.split(" ").at(0).toInt();
+        //            DLOG("bitrate %d\n", bitRate);
+        break;
+    case SAMPLE_RATE:
+        sampleUnit = value.split(" ").at(1);
+        sampleRate = value.split(" ").at(0).toFloat();
+        if (sampleUnit == "MHz") {
+            sampleRate = sampleRate * 1000;
+        }
+        //            DLOG("sample rate %d\n", sampleRate);
+        break;
+    default:
+        break;
     }
 }
 
@@ -319,9 +308,14 @@ int parseTrack(QQuickItem *trackItem, Track *track) {
     }
 
     track->Duration = DurationToInt(Duration.toString());
-    DLOG("track: %d. %s ::: %s ::: %d secs, active: %d\n", track->Track,
-         qPrintable(track->Artist), qPrintable(track->Title),
-         track->Duration, track->Active);
+    DLOG(
+        "track: %d. %s ::: %s ::: %d secs, active: %d\n",
+        track->Track,
+        qPrintable(track->Artist),
+        qPrintable(track->Title),
+        track->Duration,
+        track->Active
+    );
 
     return 0;
 }
@@ -337,11 +331,11 @@ void Provider::updatePlaylist(QObject *trackSequenceView) {
     }
     auto index = indexV.toInt(nullptr);
 
-//    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(nullptr));
+    //    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(nullptr));
     trackSequenceView->setProperty("view_index", index + 1);
-//    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(nullptr));
+    //    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(nullptr));
     trackSequenceView->setProperty("view_index", index);
-//    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(nullptr));
+    //    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(nullptr));
 }
 
 void Provider::GetPlaylist() {
@@ -372,8 +366,8 @@ void Provider::GetPlaylist() {
     }
 
     QQuickItem *TrackSequenceView = nullptr;
-    for (auto l: gridArea->childItems()) {
-        for (auto kid: l->childItems()) {
+    for (auto l : gridArea->childItems()) {
+        for (auto kid : l->childItems()) {
             if (QString(kid->metaObject()->className()).startsWith("TrackSequenceView_QMLTYPE_")) {
                 if (QString(kid->objectName()) == "TrackSequence") {
                     TrackSequenceView = kid;
@@ -391,7 +385,7 @@ void Provider::GetPlaylist() {
     updatePlaylist(TrackSequenceView);
 
     QQuickItem *listView = nullptr;
-    for (auto v: TrackSequenceView->childItems()) {
+    for (auto v : TrackSequenceView->childItems()) {
         if (QString(v->metaObject()->className()).startsWith("EdgeDetectListView_QMLTYPE_")) {
             listView = v;
             break;
@@ -421,7 +415,7 @@ void Provider::GetPlaylist() {
 
     playlistActiveFound = false;
     int i = 0;
-    for (auto trackItem: tracks) {
+    for (auto trackItem : tracks) {
         if (i >= PLAYLIST_LENGTH) {
             DLOG("over playlist length\n");
             break;

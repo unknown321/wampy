@@ -1,20 +1,19 @@
 #include "Controller.moc"
 #include "moc_Controller.cpp"
 
-#include "helpers.h"
-#include "command.pb.h"
 #include "../qt/qtbase/src/corelib/kernel/qobject_p.h"
+#include "command.pb.h"
+#include "helpers.h"
 #include <QVector>
 
 class QObjectConnectionListVector : public QVector<QObjectPrivate::ConnectionList> {
-public:
-    bool orphaned; //the QObject owner of this vector has been destroyed while the vector was inUse
-    bool dirty; //some Connection have been disconnected (their receiver is 0) but not removed from the list yet
-    int inUse; //number of functions that are currently accessing this object or its connections
+  public:
+    bool orphaned; // the QObject owner of this vector has been destroyed while the vector was inUse
+    bool dirty;    // some Connection have been disconnected (their receiver is 0) but not removed from the list yet
+    int inUse;     // number of functions that are currently accessing this object or its connections
     QObjectPrivate::ConnectionList allsignals;
 
-    QObjectConnectionListVector()
-            : QVector<QObjectPrivate::ConnectionList>(), orphaned(false), dirty(false), inUse(0) {}
+    QObjectConnectionListVector() : QVector<QObjectPrivate::ConnectionList>(), orphaned(false), dirty(false), inUse(0) {}
 
     QObjectPrivate::ConnectionList &operator[](int at) {
         if (at < 0)
@@ -25,9 +24,7 @@ public:
 
 Controller::Controller() {}
 
-QVariant Controller::jsExpression(const char *text) {
-    return jsExpr(text, context, window);
-}
+QVariant Controller::jsExpression(const char *text) { return jsExpr(text, context, window); }
 
 void Controller::jsFromFile() {
     QFile file("/tmp/js");
@@ -108,9 +105,8 @@ int Controller::Initialize() {
     return 0;
 }
 
-
 bool Controller::detailsAfterTransition() {
-    if ((bool) transitionToDetailsPopup) {
+    if ((bool)transitionToDetailsPopup) {
         DLOG("connection exists\n");
         return true;
     }
@@ -124,11 +120,10 @@ bool Controller::detailsAfterTransition() {
         return false;
     }
 
-    transitionToDetailsPopup = QObject::connect(ScreenTransitionController, SIGNAL(finishedTransition()), this,
-                                                SLOT(invokeDetailsPopup()),
-                                                Qt::DirectConnection);
+    transitionToDetailsPopup =
+        QObject::connect(ScreenTransitionController, SIGNAL(finishedTransition()), this, SLOT(invokeDetailsPopup()), Qt::DirectConnection);
 
-    return (bool) transitionToDetailsPopup;
+    return (bool)transitionToDetailsPopup;
 }
 
 bool Controller::isOnPlayerScreen() {
@@ -146,7 +141,7 @@ bool Controller::isOnPlayerScreen() {
 // - invokes song detailed info popup
 // Window might be hidden by popupReady slot in case when details popup is not ready.
 void Controller::Hide(Command::Command *c) {
-    for (auto conn: popupReadyConnections) {
+    for (auto conn : popupReadyConnections) {
         disconnect(conn);
     }
 
@@ -198,15 +193,14 @@ void Controller::Show(Command::Command *c) {
     disconnect(transitionToDetailsPopup);
     disconnect(detailInfoPopupPositionReset);
 
-    for (auto conn: popupReadyConnections) {
+    for (auto conn : popupReadyConnections) {
         disconnect(conn);
     }
     popupReadyConnections.clear();
 
     auto dpop = getDetailPopup();
     if (dpop) {
-        if (!QMetaObject::invokeMethod(qobject_cast<QObject *>(dpop->childItems().at(0)), "closeDetailedInfoPopup",
-                                       Qt::DirectConnection)) {
+        if (!QMetaObject::invokeMethod(qobject_cast<QObject *>(dpop->childItems().at(0)), "closeDetailedInfoPopup", Qt::DirectConnection)) {
             DLOG("failed to invoke\n");
         }
     }
@@ -245,8 +239,7 @@ void Controller::GetStatus(Command::Command *c) {
         connectDetailInfoProvider();
     } else {
         if (!detailsFirstPull) {
-            detailsFirstPull = QMetaObject::invokeMethod(ContentDetailedInfo, "listPositionReset",
-                                                         Qt::QueuedConnection);
+            detailsFirstPull = QMetaObject::invokeMethod(ContentDetailedInfo, "listPositionReset", Qt::QueuedConnection);
         }
     }
 
@@ -273,7 +266,7 @@ void Controller::GetStatus(Command::Command *c) {
     s->set_playstate(provider.isPlaying);
 
     auto pl = s->mutable_playlist();
-    for (const auto &track: provider.playlist) {
+    for (const auto &track : provider.playlist) {
         auto t = pl->add_track();
         t->set_active(track.Active);
         t->set_artist(track.Artist.toUtf8().constData());
@@ -322,8 +315,7 @@ void Controller::SetVolume(Command::Command *c) {
 
 void Controller::Seek(Command::Command *c) {
     DLOG("seek to %d\n", c->seek().value());
-    if (!QMetaObject::invokeMethod(MusicPlayerModel, "OnScrubBarReleased", Qt::QueuedConnection,
-                                   Q_ARG(int, c->seek().value()))) {
+    if (!QMetaObject::invokeMethod(MusicPlayerModel, "OnScrubBarReleased", Qt::QueuedConnection, Q_ARG(int, c->seek().value()))) {
         DLOG("seek fail\n");
         c->set_code(Command::FAIL);
         return;
@@ -418,8 +410,7 @@ void Controller::SeekToZero() {
 void Controller::Stop(Command::Command *c) {
     if (provider.isPlaying) {
         Pause(c);
-        seekAfterPause = QObject::connect(MusicPlayerModel, SIGNAL(playingChanged()), this, SLOT(SeekToZero()),
-                                          Qt::DirectConnection);
+        seekAfterPause = QObject::connect(MusicPlayerModel, SIGNAL(playingChanged()), this, SLOT(SeekToZero()), Qt::DirectConnection);
         if (!seekAfterPause) {
             DLOG("connection failed\n");
             return;
@@ -458,7 +449,6 @@ void Controller::Repeat(Command::Command *c) {
     }
 
     c->set_code(Command::OK);
-
 }
 
 void Controller::Shuffle(Command::Command *c) {
@@ -482,8 +472,8 @@ void Controller::Shuffle(Command::Command *c) {
 void Controller::TestCommand(Command::Command *c) {
     DLOG("test command\n");
     provider.GetPlaylist();
-//        setup();
-//        jsFromFile();
+    //        setup();
+    //        jsFromFile();
 }
 
 // from gridArea: DAC, DACViewModel, MusicPlayer, MusicPlayerModel, MSC
@@ -493,8 +483,8 @@ void Controller::findViewModels(QQuickItem *swipeItem) {
     int s = gridArea->childItems().size();
     for (int i = 0; i < s; i++) {
         auto loader = gridArea->childItems()[i];
-        for (auto kid: loader->childItems()) {
-//            DLOG("%d %s\n", i, kid->metaObject()->className());
+        for (auto kid : loader->childItems()) {
+            //            DLOG("%d %s\n", i, kid->metaObject()->className());
             if (QString(kid->metaObject()->className()).startsWith("DAC_QMLTYPE_")) {
                 DAC = kid;
 
@@ -549,7 +539,7 @@ void Controller::findViewModels(QQuickItem *swipeItem) {
 
     for (int i = 0; i < swipeItem->childItems().size(); i++) {
         auto loader = swipeItem->childItems().at(i);
-        for (auto kid: loader->childItems()) {
+        for (auto kid : loader->childItems()) {
             if (QString(kid->metaObject()->className()).startsWith("PlayerWindow_QMLTYPE_")) {
                 MusicWindow = kid;
                 break;
@@ -563,7 +553,7 @@ void Controller::initBasicPlayerControls() {
     if (MusicWindow != nullptr) {
         QQuickItem *bpcQ = nullptr;
         auto mq = qobject_cast<QQuickItem *>(MusicWindow);
-        for (auto v: mq->childItems()) {
+        for (auto v : mq->childItems()) {
             if (QString(v->metaObject()->className()).startsWith("BasicPlayerControls_QMLTYPE_")) {
                 bpcQ = v;
                 break;
@@ -574,7 +564,7 @@ void Controller::initBasicPlayerControls() {
             auto w = qobject_cast<QObject *>(bpcQ);
             auto connectionLists = QObjectPrivate::get(w)->connectionLists;
             if (connectionLists != nullptr) {
-                for (auto vv: *connectionLists) {
+                for (auto vv : *connectionLists) {
                     auto f = vv.first;
                     if (f != nullptr) {
                         if (f->receiver == nullptr) {
@@ -595,7 +585,7 @@ void Controller::initNavBar() {
     if (BasicPlayerControls != nullptr) {
         auto MusicWindowViewModel = BasicPlayerControls->parent();
         if (MusicWindowViewModel != nullptr) {
-            for (auto c: MusicWindowViewModel->children()) {
+            for (auto c : MusicWindowViewModel->children()) {
                 if (QString(c->metaObject()->className()) == "dmpapp::NavigationBarForSettings") {
                     NavBar = qobject_cast<QObject *>(c);
                     break;
@@ -612,7 +602,7 @@ void Controller::initScreenTransitionController() {
 
     auto connectionLists = QObjectPrivate::get(NavBar)->connectionLists;
     if (connectionLists != nullptr) {
-        for (auto vv: *connectionLists) {
+        for (auto vv : *connectionLists) {
             auto f = vv.first;
             if (f != nullptr) {
                 if (f->receiver == nullptr) {
@@ -630,49 +620,39 @@ void Controller::initScreenTransitionController() {
 
 void Controller::setupConnects() {
     if (MSC != nullptr && !provider.MSCHandle) {
-        provider.MSCHandle = QObject::connect(MSC, SIGNAL(unmountExportedChanged()),
-                                              &provider, SLOT(MSCSlot()),
-                                              Qt::QueuedConnection);
+        provider.MSCHandle = QObject::connect(MSC, SIGNAL(unmountExportedChanged()), &provider, SLOT(MSCSlot()), Qt::QueuedConnection);
         provider.FromMSC(MSC);
-        DLOG("MSC connect: %d\n", (bool) provider.MSCHandle);
+        DLOG("MSC connect: %d\n", (bool)provider.MSCHandle);
     } else {
         ready &= false;
     }
 
-    if (MusicPlayer != nullptr &&
-        (!provider.MusicPlayerHandle || !provider.MusicPlayerElapsedHandle)) {
-        provider.MusicPlayerHandle = QObject::connect(MusicPlayer, SIGNAL(meta_dataChanged()),
-                                                      &provider,
-                                                      SLOT(MusicPlayerSlot()), Qt::QueuedConnection);
+    if (MusicPlayer != nullptr && (!provider.MusicPlayerHandle || !provider.MusicPlayerElapsedHandle)) {
+        provider.MusicPlayerHandle =
+            QObject::connect(MusicPlayer, SIGNAL(meta_dataChanged()), &provider, SLOT(MusicPlayerSlot()), Qt::QueuedConnection);
         provider.FromMusicPlayer(MusicPlayer);
-        DLOG("MusicPlayer connect: %d\n", (bool) provider.MusicPlayerHandle);
+        DLOG("MusicPlayer connect: %d\n", (bool)provider.MusicPlayerHandle);
 
-        provider.MusicPlayerElapsedHandle = QObject::connect(MusicPlayer,
-                                                             SIGNAL(currently_playing_timeChanged()),
-                                                             &provider,
-                                                             SLOT(UpdateElapsed()), Qt::QueuedConnection);
-        DLOG("MusicPlayerElapsed connect: %d\n", (bool) provider.MusicPlayerElapsedHandle);
+        provider.MusicPlayerElapsedHandle =
+            QObject::connect(MusicPlayer, SIGNAL(currently_playing_timeChanged()), &provider, SLOT(UpdateElapsed()), Qt::QueuedConnection);
+        DLOG("MusicPlayerElapsed connect: %d\n", (bool)provider.MusicPlayerElapsedHandle);
     } else {
         ready &= false;
     }
 
     if (DAC != nullptr && !provider.DACHandle) {
-        provider.DACHandle = QObject::connect(DAC, SIGNAL(volumeChanged()),
-                                              &provider, SLOT(VolumeSlot()),
-                                              Qt::QueuedConnection);
+        provider.DACHandle = QObject::connect(DAC, SIGNAL(volumeChanged()), &provider, SLOT(VolumeSlot()), Qt::QueuedConnection);
         provider.FromDAC(DAC);
-        DLOG("DAC connect: %d\n", (bool) provider.DACHandle);
+        DLOG("DAC connect: %d\n", (bool)provider.DACHandle);
     } else {
         ready &= false;
     }
 
     if (MusicWindow != nullptr && !provider.MusicWindowHandle) {
-        provider.MusicWindowHandle = QObject::connect(MusicWindow,
-                                                      SIGNAL(basicPlayerControlsChanged()),
-                                                      &provider, SLOT(MusicWindowSlot()),
-                                                      Qt::QueuedConnection);
+        provider.MusicWindowHandle =
+            QObject::connect(MusicWindow, SIGNAL(basicPlayerControlsChanged()), &provider, SLOT(MusicWindowSlot()), Qt::QueuedConnection);
         provider.FromMusicWindow(MusicWindow);
-        DLOG("MusicWindow connect: %d\n", (bool) provider.MusicWindowHandle);
+        DLOG("MusicWindow connect: %d\n", (bool)provider.MusicWindowHandle);
     } else {
         ready &= false;
     }
@@ -681,7 +661,7 @@ void Controller::setupConnects() {
         ready &= false;
     }
 
-    if (!(bool) detailInfoPopupPositionReset) {
+    if (!(bool)detailInfoPopupPositionReset) {
         connectDetailInfoProvider();
     }
 }
@@ -755,10 +735,10 @@ void Controller::connectDetailInfoProvider() {
             DLOG("sender %s\n", senders->sender->metaObject()->className());
             if (QString(senders->sender->metaObject()->className()) == "dmpapp::ContentDetailedInfo") {
                 ContentDetailedInfo = senders->sender;
-                detailInfoPopupPositionReset = QObject::connect(ContentDetailedInfo, SIGNAL(listPositionReset()),
-                                                                &provider,
-                                                                SLOT(UpdateDetails()), Qt::DirectConnection);
-                DLOG("detailInfoPopup connected: %d\n", (bool) detailInfoPopupPositionReset);
+                detailInfoPopupPositionReset = QObject::connect(
+                    ContentDetailedInfo, SIGNAL(listPositionReset()), &provider, SLOT(UpdateDetails()), Qt::DirectConnection
+                );
+                DLOG("detailInfoPopup connected: %d\n", (bool)detailInfoPopupPositionReset);
                 break;
             }
         }
@@ -775,7 +755,7 @@ QQuickItem *Controller::getDetailPopup() {
     }
 
     DLOG("popups %d\n", popupParent->childItems().count());
-    for (auto c: popupParent->childItems()) {
+    for (auto c : popupParent->childItems()) {
         auto popStatus = c->property("status");
         if (!popStatus.isValid()) {
             continue;
@@ -787,14 +767,13 @@ QQuickItem *Controller::getDetailPopup() {
                 continue;
             }
 
-//                DLOG("popup name: %s\n", pidV.toString().toUtf8().constData());
+            //                DLOG("popup name: %s\n", pidV.toString().toUtf8().constData());
             if (pidV.toString() == "NowPlayingContentDetailedInfoPopup") {
                 return c;
             }
         } else {
             DLOG("popup not ready: %s\n", popStatus.toString().toUtf8().constData());
-            auto conn = QObject::connect(c, SIGNAL(statusChanged()), this, SLOT(popupReady()),
-                                         Qt::DirectConnection);
+            auto conn = QObject::connect(c, SIGNAL(statusChanged()), this, SLOT(popupReady()), Qt::DirectConnection);
             if (conn) {
                 popupReadyConnections.append(conn);
             }
@@ -817,7 +796,7 @@ void Controller::popupReady() {
 
         disconnect(transitionToDetailsPopup);
         disconnect(popupParentChildrenChanged);
-        for (auto conn: popupReadyConnections) {
+        for (auto conn : popupReadyConnections) {
             disconnect(conn);
         }
 
@@ -851,8 +830,8 @@ void Controller::invokeDetailsPopup() {
     }
 
     if (!popupParentChildrenChanged) {
-        popupParentChildrenChanged = QObject::connect(PopupParent, SIGNAL(childrenChanged()), this, SLOT(popupAdded()),
-                                                      Qt::DirectConnection);
+        popupParentChildrenChanged =
+            QObject::connect(PopupParent, SIGNAL(childrenChanged()), this, SLOT(popupAdded()), Qt::DirectConnection);
     }
 
     if (!popupParentChildrenChanged) {
@@ -890,7 +869,7 @@ void Controller::popupAdded() {
         disconnect(transitionToDetailsPopup);
         disconnect(popupParentChildrenChanged);
 
-        for (auto conn: popupReadyConnections) {
+        for (auto conn : popupReadyConnections) {
             disconnect(conn);
         }
 
@@ -957,7 +936,7 @@ void Controller::FeatureBigCover(Command::Command *c) {
     if (c->featurebigcover().enabled()) {
         UpdateTitleWithArtist();
     } else {
-        if ((bool) updateTitleWithArtistBigCover) {
+        if ((bool)updateTitleWithArtistBigCover) {
             disconnect(updateTitleWithArtistBigCover);
         }
     }
@@ -998,12 +977,11 @@ void Controller::UpdateTitleWithArtist() {
 
     meta->setProperty("playTitle", artist + " - " + titleV.toString());
 
-    if ((bool) updateTitleWithArtistBigCover == false) {
+    if ((bool)updateTitleWithArtistBigCover == false) {
         // this might fail on single track repeat
-        updateTitleWithArtistBigCover = QObject::connect(MusicPlayer, SIGNAL(meta_dataChanged()), this,
-                                                         SLOT(UpdateTitleWithArtist()),
-                                                         Qt::DirectConnection);
-        if ((bool) updateTitleWithArtistBigCover == false) {
+        updateTitleWithArtistBigCover =
+            QObject::connect(MusicPlayer, SIGNAL(meta_dataChanged()), this, SLOT(UpdateTitleWithArtist()), Qt::DirectConnection);
+        if ((bool)updateTitleWithArtistBigCover == false) {
             DLOG("connection failed\n");
         }
     }
@@ -1082,9 +1060,9 @@ void Controller::FeatureShowClock(Command::Command *c) {
     }
 
     timer->setInterval(1000 * CLOCK_UPDATE_INTERVAL_SECONDS);
-    if ((bool) timeInHeader == false) {
+    if ((bool)timeInHeader == false) {
         timeInHeader = QObject::connect(timer, SIGNAL(timeout()), this, SLOT(UpdateTime()), Qt::DirectConnection);
-        if ((bool) timeInHeader == false) {
+        if ((bool)timeInHeader == false) {
             DLOG("failed to connect\n");
             return;
         }
@@ -1124,4 +1102,4 @@ void Controller::UpdateTime(bool with_time) {
     volumeValueInHeader = nullptr;
 }
 
-//void SearchContentData(ContentsDBEntryId entry_id) -> trackID + 0x10000000
+// void SearchContentData(ContentsDBEntryId entry_id) -> trackID + 0x10000000

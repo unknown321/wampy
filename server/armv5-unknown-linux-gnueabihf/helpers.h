@@ -2,8 +2,8 @@
 #define WAMPYSERVER_HELPERS_H
 
 #include "wampy.h"
-#include <QWindow>
 #include <QGuiApplication>
+#include <QWindow>
 
 #define DLOG(fmt, ...) fprintf(stderr, "[wampyServer] %s %s:%d " fmt, __FILE__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
