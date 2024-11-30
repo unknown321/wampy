@@ -1,9 +1,9 @@
-#include <fstream>
-#include <algorithm>
-#include <map>
-#include <sstream>
 #include "tape.h"
 #include "../skin.h"
+#include <algorithm>
+#include <fstream>
+#include <map>
+#include <sstream>
 
 namespace Tape {
     int Tape::Load(const std::string &directoryPath) {
@@ -20,10 +20,7 @@ namespace Tape {
         std::ifstream f;
         f.open(files[0].fullPath);
         std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-        Elements.Main.WithMagick("JPEG")
-                ->FromData((char *) contents.c_str(), contents.size())
-                ->WithRatio(1.0f)
-                ->Load();
+        Elements.Main.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
         f.close();
 
         this->InitializeButtons();
@@ -51,43 +48,43 @@ namespace Tape {
     }
 
     void Tape::ParseConfig(const std::string &text) {
-        for (const auto &line: split(text, "\n")) {
+        for (const auto &line : split(text, "\n")) {
             auto parts = split(line, ": ");
             switch (hash(parts[0].c_str())) {
-                case hash("reel"): {
-                    this->reel = parts[1];
-                    break;
-                }
-                case hash("reelx"): {
-                    this->reelCoords.x = std::stof(parts[1]);
-                    break;
-                }
-                case hash("reely"): {
-                    this->reelCoords.y = std::stof(parts[1]);
-                    break;
-                }
-                case hash("artistx"): {
-                    this->artistCoords.x = std::stof(parts[1]);
-                    break;
-                }
-                case hash("artisty"): {
-                    this->artistCoords.y = std::stof(parts[1]);
-                    break;
-                }
-                case hash("titlex"): {
-                    this->titleCoords.x = std::stof(parts[1]);
-                    break;
-                }
-                case hash("titley"): {
-                    this->titleCoords.y = std::stof(parts[1]);
-                    break;
-                }
-                case hash("titlewidth"): {
-                    this->titleWidth = std::stof(parts[1]);
-                    break;
-                }
-                default:
-                    break;
+            case hash("reel"): {
+                this->reel = parts[1];
+                break;
+            }
+            case hash("reelx"): {
+                this->reelCoords.x = std::stof(parts[1]);
+                break;
+            }
+            case hash("reely"): {
+                this->reelCoords.y = std::stof(parts[1]);
+                break;
+            }
+            case hash("artistx"): {
+                this->artistCoords.x = std::stof(parts[1]);
+                break;
+            }
+            case hash("artisty"): {
+                this->artistCoords.y = std::stof(parts[1]);
+                break;
+            }
+            case hash("titlex"): {
+                this->titleCoords.x = std::stof(parts[1]);
+                break;
+            }
+            case hash("titley"): {
+                this->titleCoords.y = std::stof(parts[1]);
+                break;
+            }
+            case hash("titlewidth"): {
+                this->titleWidth = std::stof(parts[1]);
+                break;
+            }
+            default:
+                break;
             }
         }
     }
@@ -102,9 +99,9 @@ namespace Tape {
         bt.pressed = bt.active;
         bts[0] = bt;
         Elements.ToggleSettings.WithID("toggleSettings")
-                ->WithPosition(800 - bt.size.x, 0.0f)
-                ->WithTextures(bts)
-                ->WithCallback(Skin::Skin::ToggleDrawSettings, skin, nullptr);
+            ->WithPosition(800 - bt.size.x, 0.0f)
+            ->WithTextures(bts)
+            ->WithCallback(Skin::Skin::ToggleDrawSettings, skin, nullptr);
 
         return 0;
     }
@@ -138,4 +135,4 @@ namespace Tape {
         Elements.ToggleSettings.Unload();
         valid = false;
     }
-}
+} // namespace Tape

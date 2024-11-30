@@ -1,12 +1,11 @@
 #ifndef WSTRING_H
 #define WSTRING_H
 
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
-
-static std::wstring stringShift(const std::wstring &s, std::vector<std::vector<int> > &shift, int len);
+static std::wstring stringShift(const std::wstring &s, std::vector<std::vector<int>> &shift, int len);
 
 static std::wstring to_wide(const char *mbstr);
 

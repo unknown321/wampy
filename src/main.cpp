@@ -1,16 +1,16 @@
-#include <cstdio>
-#include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+#include "imgui.h"
+#include <cstdio>
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h> // Include glfw3.h after our OpenGL definitions
+#include <glad/glad.h>
 
 #include <chrono>
 #include <csignal>
 
-#include "glm/glm/trigonometric.hpp"
 #include "glm/glm/ext/matrix_transform.hpp"
+#include "glm/glm/trigonometric.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui_internal.h"
 
@@ -18,9 +18,9 @@
 #include "util/util.h"
 
 #include "config.h"
-#include <vector>
-#include <unistd.h>
 #include <thread>
+#include <unistd.h>
+#include <vector>
 
 #include "shader.h"
 
@@ -40,12 +40,10 @@
 
 #define TARGET_FPS 24
 
-static void glfw_error_callback(int error, const char *description) {
-    DLOG("Glfw Error %d: %s\n", error, description);
-}
+static void glfw_error_callback(int error, const char *description) { DLOG("Glfw Error %d: %s\n", error, description); }
 
 void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
-    auto sp = (GLuint) (long) cmd->UserCallbackData;
+    auto sp = (GLuint)(long)cmd->UserCallbackData;
     glUseProgram(sp);
 
     glUniform1i(glGetUniformLocation(sp, "Texture"), 0);
@@ -53,8 +51,8 @@ void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
     glm::mat4 Projection = glm::ortho(-WIDTH, 0.0f, HEIGHT, 0.0f);
     glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-//    glm::mat4 ViewRotateX = glm::rotate( ViewTranslate, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f) );
-//    glm::mat4 ViewRotateY = glm::rotate( ViewRotateX, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f) );
+    //    glm::mat4 ViewRotateX = glm::rotate( ViewTranslate, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f) );
+    //    glm::mat4 ViewRotateY = glm::rotate( ViewRotateX, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f) );
     glm::mat4 ViewRotateZ = glm::rotate(ViewTranslate, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     glm::mat4 View = ViewRotateZ;
 
@@ -65,13 +63,12 @@ void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
     GLint uniTrans = glGetUniformLocation(sp, "ProjMtx");
     glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(tMVP));
 
-//    auto color = (GLuint) glGetUniformLocation(sp, "Color");
-//    glUniform4f((GLint) color, 1.0f, 1.0f, 0.0f, 1.0f);
-//
-//    auto uv = (GLuint) glGetUniformLocation(sp, "UV");
-//    glUniform2f((GLint) uv, 0.01f, 0.5f);
+    //    auto color = (GLuint) glGetUniformLocation(sp, "Color");
+    //    glUniform4f((GLint) color, 1.0f, 1.0f, 0.0f, 1.0f);
+    //
+    //    auto uv = (GLuint) glGetUniformLocation(sp, "UV");
+    //    glUniform2f((GLint) uv, 0.01f, 0.5f);
 }
-
 
 GLFWwindow *CreateWindow() {
     glfwSetErrorCallback(glfw_error_callback);
@@ -104,7 +101,7 @@ GLFWwindow *CreateWindow() {
     glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 #else
-    GLFWmonitor* monitor = nullptr;
+    GLFWmonitor *monitor = nullptr;
 #endif
 
     GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, title, monitor, nullptr);
@@ -116,7 +113,7 @@ GLFWwindow *CreateWindow() {
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
 
-    int version = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    int version = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (version == 0) {
         DLOG("glad failed\n");
         return nullptr;
@@ -124,7 +121,6 @@ GLFWwindow *CreateWindow() {
 
     return window;
 }
-
 
 #define ACTION_RELEASE 0
 #define ACTION_PRESS 1
@@ -161,14 +157,14 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 }
 
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
-//    DLOG("%f %f\n", xpos, ypos);
+    //    DLOG("%f %f\n", xpos, ypos);
     if (render) {
         ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
     }
 }
 
 static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
-//    DLOG("%d %d\n", action, mods);
+    //    DLOG("%d %d\n", action, mods);
     if (render) {
         ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     }
@@ -183,7 +179,7 @@ void my_handler(int s) {
 }
 
 void setupProfiling() {
-    struct sigaction sigUSR1Handler{};
+    struct sigaction sigUSR1Handler {};
 
     sigUSR1Handler.sa_handler = my_handler;
     sigemptyset(&sigUSR1Handler.sa_mask);
@@ -229,7 +225,7 @@ int main(int, char **) {
         glDebugMessageCallback(GlMessageCallback, 0);
     }
 
-    const GLubyte *vendor = glGetString(GL_VENDOR); // Returns the vendor
+    const GLubyte *vendor = glGetString(GL_VENDOR);     // Returns the vendor
     const GLubyte *renderer = glGetString(GL_RENDERER); // Returns a hint to the model
     DLOG("running on %s; %s\n", renderer, vendor);
 
@@ -240,12 +236,8 @@ int main(int, char **) {
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
-                                    ImGuiWindowFlags_AlwaysAutoResize |
-                                    ImGuiWindowFlags_NoSavedSettings |
-                                    ImGuiWindowFlags_NoFocusOnAppearing |
-                                    ImGuiWindowFlags_NoMove |
-                                    ImGuiWindowFlags_NoScrollWithMouse |
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+                                    ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
                                     ImGuiWindowFlags_NoNav;
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
@@ -282,7 +274,6 @@ int main(int, char **) {
     skin.winamp.fontRanges = &config.fontRanges;
     skin.cassette.fontRanges = &config.fontRanges;
 
-
     if (config.features.bigCover) {
         connector.FeatureBigCover(config.features.bigCover);
     }
@@ -296,11 +287,8 @@ int main(int, char **) {
 
     DLOG("start\n");
 
-
 #ifndef DESKTOP
-    auto events = []() {
-        glfwPollEvents();
-    };
+    auto events = []() { glfwPollEvents(); };
     std::thread f(events);
     f.detach();
 #endif
@@ -324,21 +312,21 @@ int main(int, char **) {
 
         ImGui::SetNextWindowPos(pos);
 
-//        ImGui::ShowDemoWindow();
+        //        ImGui::ShowDemoWindow();
 
         ImGui::SetNextWindowSize(size);
 
         ImGui::Begin("1", nullptr, window_flags);
 
 #ifndef DESKTOP
-        ImGui::GetBackgroundDrawList()->AddCallback(drawCallback, (void *) shaderProgram);
+        ImGui::GetBackgroundDrawList()->AddCallback(drawCallback, (void *)shaderProgram);
         auto w = ImGui::GetCurrentWindow();
         w->OuterRectClipped = ImRect(ImVec2(0, 0), ImVec2(HEIGHT, WIDTH));
         ImGui::PushClipRect(ImVec2(0, 0), ImVec2(HEIGHT, HEIGHT), false);
 #endif
         skin.Draw();
 
-//        DrawWindowRects();
+        //        DrawWindowRects();
 
         ImGui::End();
 
@@ -356,8 +344,9 @@ int main(int, char **) {
 
         skin.Load();
 
-//        https://github.com/glfw/glfw/issues/1308
-        while (glfwGetTime() < lastTime + (1.0 / TARGET_FPS)) {}
+        //        https://github.com/glfw/glfw/issues/1308
+        while (glfwGetTime() < lastTime + (1.0 / TARGET_FPS)) {
+        }
         lastTime += 1.0 / TARGET_FPS;
     }
 

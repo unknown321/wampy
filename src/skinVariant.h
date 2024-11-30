@@ -2,9 +2,9 @@
 #define WAMPY_SKINVARIANT_H
 
 #include "connector/connector.h"
+#include "fontranges.h"
 #include "imgui.h"
 #include "util/util.h"
-#include "fontranges.h"
 
 struct Fonts {
     ImFont *regular;
@@ -19,7 +19,7 @@ typedef std::vector<directoryEntry> SkinList;
 bool SkinExists(const std::string &name, SkinList *l, std::string *filepath);
 
 class SkinVariant {
-public:
+  public:
     SkinVariant() = default;
 
     Connector *connector{};
@@ -37,4 +37,4 @@ public:
     virtual int Load(std::string filename, ImFont *FontRegular) = 0;
 };
 
-#endif //WAMPY_SKINVARIANT_H
+#endif // WAMPY_SKINVARIANT_H

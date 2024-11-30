@@ -1,22 +1,22 @@
 #ifndef HAGOROMO_CPP
 #define HAGOROMO_CPP
 
+#include "command.pb.h"
+#include "command_names.h"
 #include <cstdio>
 #include <cstdlib>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <sys/un.h>
-#include <sys/poll.h>
-#include <sys/inotify.h>
-#include <thread>
 #include <map>
-#include "command_names.h"
-#include "command.pb.h"
+#include <sys/inotify.h>
+#include <sys/poll.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <thread>
+#include <unistd.h>
 
-//#include "alsa/asoundlib.h"
-#include <fcntl.h>
+// #include "alsa/asoundlib.h"
 #include "hagoromo.h"
 #include "wampy.h"
+#include <fcntl.h>
 
 #include <algorithm>
 
@@ -24,7 +24,7 @@ namespace Player {
 
     void HagoromoConnector::sendData(char *data, size_t len, std::string *res) {
         int server_socket;
-        struct sockaddr_un server_addr{};
+        struct sockaddr_un server_addr {};
         int connection_result;
 
         server_socket = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -32,7 +32,7 @@ namespace Player {
         server_addr.sun_family = AF_UNIX;
         strcpy(server_addr.sun_path, WAMPY_SOCKET);
 
-        connection_result = connect(server_socket, (struct sockaddr *) &server_addr, sizeof(server_addr));
+        connection_result = connect(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
         if (connection_result == -1) {
             perror("failed to connect\n");
@@ -45,7 +45,7 @@ namespace Player {
             return;
         }
 
-//        DLOG("sent %d bytes\n", sent);
+        //        DLOG("sent %d bytes\n", sent);
 
         while (true) {
             char buf[1024];
@@ -59,16 +59,16 @@ namespace Player {
             if (count == 0) {
                 break;
             }
-//            DLOG("read %d bytes\n", count);
+            //            DLOG("read %d bytes\n", count);
             for (int i = 0; i < count; i++) {
                 *res += buf[i];
             }
         }
 
-//        for (auto c: *res) {
-//            printf("0x%02x ", c);
-//        }
-//        printf("\n");
+        //        for (auto c: *res) {
+        //            printf("0x%02x ", c);
+        //        }
+        //        printf("\n");
 
         close(server_socket);
     }
@@ -88,11 +88,11 @@ namespace Player {
         }
 
         switch (c->type()) {
-            case Command::CMD_GET_STATUS:
-                break;
-            default:
-                DLOG("received response %s\n", commandNames[c->type()].c_str());
-                break;
+        case Command::CMD_GET_STATUS:
+            break;
+        default:
+            DLOG("received response %s\n", commandNames[c->type()].c_str());
+            break;
         }
 
         return true;
@@ -299,14 +299,14 @@ namespace Player {
         auto tracks = c.mutable_status()->mutable_playlist()->mutable_track();
         std::sort(tracks->begin(), tracks->end(), TrackComparer());
 
-        for (auto &i: playlist) {
+        for (auto &i : playlist) {
             i.Reset();
         }
 
         int i = 0;
         bool activeFound;
-        for (const auto &track: *tracks) {
-//            DLOG("track %d %s %d\n", track.track(), track.title().c_str(), track.active());
+        for (const auto &track : *tracks) {
+            //            DLOG("track %d %s %d\n", track.track(), track.title().c_str(), track.active());
 
             if (track.active()) {
                 activeFound = true;
@@ -346,16 +346,16 @@ namespace Player {
         }
 
         status.Duration = playlist.at(0).Duration;
-//        status.Elapsed = c.status().elapsed() / 1000;
-//        DLOG("elapsed %d %d\n", status.Elapsed, c.status().elapsed());
+        //        status.Elapsed = c.status().elapsed() / 1000;
+        //        DLOG("elapsed %d %d\n", status.Elapsed, c.status().elapsed());
         if (updateElapsedCounter < 1) {
             status.Elapsed = c.status().elapsed() / 1000;
         } else {
             updateElapsedCounter--;
         }
-//
-//
-//        parseCodecString(c.status().codec());
+        //
+        //
+        //        parseCodecString(c.status().codec());
         status.Codec = c.status().codec();
         status.Bitrate = c.status().bitrate();
 
@@ -365,7 +365,7 @@ namespace Player {
             status.BitrateString = std::to_string(status.Bitrate);
         }
 
-        status.SampleRate = (int) c.status().samplerate();
+        status.SampleRate = (int)c.status().samplerate();
         if (status.SampleRate > 100) {
             status.SampleRateString = "HR";
         } else {
@@ -377,55 +377,55 @@ namespace Player {
         status.formatted = false;
     }
 
-/* ALSA volume != hgrmvolume
- despite sharing same value there is a noticeable difference between alsa volume level and application level
-    __attribute__((unused)) void HagoromoConnector::setVolumeALSA(int i) {
-        const char *master = "master volume";
-        static char card[64] = "default";
-        int err;
-        snd_mixer_t *handle;
-        if ((err = snd_mixer_open(&handle, 0)) < 0) {
-            printf("Mixer %s open error: %s", card, snd_strerror(err));
-            return;
-        }
+    /* ALSA volume != hgrmvolume
+     despite sharing same value there is a noticeable difference between alsa volume level and application level
+        __attribute__((unused)) void HagoromoConnector::setVolumeALSA(int i) {
+            const char *master = "master volume";
+            static char card[64] = "default";
+            int err;
+            snd_mixer_t *handle;
+            if ((err = snd_mixer_open(&handle, 0)) < 0) {
+                printf("Mixer %s open error: %s", card, snd_strerror(err));
+                return;
+            }
 
-        if ((err = snd_mixer_attach(handle, card)) < 0) {
-            printf("Mixer attach %s error: %s", card, snd_strerror(err));
+            if ((err = snd_mixer_attach(handle, card)) < 0) {
+                printf("Mixer attach %s error: %s", card, snd_strerror(err));
+                snd_mixer_close(handle);
+                return;
+            }
+
+            if ((err = snd_mixer_selem_register(handle, nullptr, nullptr)) < 0) {
+                printf("Mixer register error: %s", snd_strerror(err));
+                snd_mixer_close(handle);
+                return;
+            }
+
+            err = snd_mixer_load(handle);
+            if (err < 0) {
+                printf("Mixer %s load error: %s", card, snd_strerror(err));
+                snd_mixer_close(handle);
+                return;
+            }
+
+            snd_mixer_selem_id_t *sid;
+            snd_mixer_selem_id_alloca(&sid);
+            snd_mixer_selem_id_set_index(sid, 0);
+            snd_mixer_selem_id_set_name(sid, master);
+            auto elem = snd_mixer_find_selem(handle, sid);
+            if (elem == nullptr) {
+                fprintf(stderr, "failed to find element\n");
+                return;
+            }
+
+            snd_mixer_selem_set_playback_volume(elem, SND_MIXER_SCHN_MONO, i);
+            Volume = i;
             snd_mixer_close(handle);
-            return;
+
         }
+    */
 
-        if ((err = snd_mixer_selem_register(handle, nullptr, nullptr)) < 0) {
-            printf("Mixer register error: %s", snd_strerror(err));
-            snd_mixer_close(handle);
-            return;
-        }
-
-        err = snd_mixer_load(handle);
-        if (err < 0) {
-            printf("Mixer %s load error: %s", card, snd_strerror(err));
-            snd_mixer_close(handle);
-            return;
-        }
-
-        snd_mixer_selem_id_t *sid;
-        snd_mixer_selem_id_alloca(&sid);
-        snd_mixer_selem_id_set_index(sid, 0);
-        snd_mixer_selem_id_set_name(sid, master);
-        auto elem = snd_mixer_find_selem(handle, sid);
-        if (elem == nullptr) {
-            fprintf(stderr, "failed to find element\n");
-            return;
-        }
-
-        snd_mixer_selem_set_playback_volume(elem, SND_MIXER_SCHN_MONO, i);
-        Volume = i;
-        snd_mixer_close(handle);
-
-    }
-*/
-
-// volume must be set only on slider release to prevent gui hiccups
+    // volume must be set only on slider release to prevent gui hiccups
     void HagoromoConnector::SetVolume(int i, bool relative) {
         int vol;
         if (relative) {
@@ -547,7 +547,7 @@ namespace Player {
                         /* Loop over all events in the buffer. */
 
                         for (char *ptr = buf; ptr < buf + len; ptr += sizeof(struct inotify_event) + event->len) {
-                            event = (const struct inotify_event *) ptr;
+                            event = (const struct inotify_event *)ptr;
                             if (event->mask & IN_CLOSE_WRITE) {
                                 int ff = open(brightnessPath, O_RDONLY);
                                 if (ff < 0) {
@@ -583,66 +583,64 @@ namespace Player {
 
     void HagoromoConnector::Start() {
         Connector::Start();
-        auto pwr = [this]() {
-            powerLoop(render, &power);
-        };
+        auto pwr = [this]() { powerLoop(render, &power); };
         std::thread powert(pwr);
         powert.detach();
     }
 
-/* alsa doesn't receive events (see `amixer sevents`)
- alsa handle doesn't update either
- volume is provided by hagoromo!
-    __attribute__((unused)) void HagoromoConnector::volumeLoop() {
-        long pvol = 0;
-        const char *master = "master volume";
-        static char card[64] = "default";
-        int err;
-        snd_mixer_t *handle;
+    /* alsa doesn't receive events (see `amixer sevents`)
+     alsa handle doesn't update either
+     volume is provided by hagoromo!
+        __attribute__((unused)) void HagoromoConnector::volumeLoop() {
+            long pvol = 0;
+            const char *master = "master volume";
+            static char card[64] = "default";
+            int err;
+            snd_mixer_t *handle;
 
-        for (;;) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            if ((err = snd_mixer_open(&handle, 0)) < 0) {
-                printf("Mixer %s open error: %s", card, snd_strerror(err));
-                break;
-            }
+            for (;;) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                if ((err = snd_mixer_open(&handle, 0)) < 0) {
+                    printf("Mixer %s open error: %s", card, snd_strerror(err));
+                    break;
+                }
 
-            if ((err = snd_mixer_attach(handle, card)) < 0) {
-                printf("Mixer attach %s error: %s", card, snd_strerror(err));
+                if ((err = snd_mixer_attach(handle, card)) < 0) {
+                    printf("Mixer attach %s error: %s", card, snd_strerror(err));
+                    snd_mixer_close(handle);
+                    break;
+                }
+
+                if ((err = snd_mixer_selem_register(handle, nullptr, nullptr)) < 0) {
+                    printf("Mixer register error: %s", snd_strerror(err));
+                    snd_mixer_close(handle);
+                    break;
+                }
+
+                err = snd_mixer_load(handle);
+                if (err < 0) {
+                    printf("Mixer %s load error: %s", card, snd_strerror(err));
+                    snd_mixer_close(handle);
+                    continue;
+                }
+
+                snd_mixer_selem_id_t *sid;
+                snd_mixer_selem_id_alloca(&sid);
+                snd_mixer_selem_id_set_index(sid, 0);
+                snd_mixer_selem_id_set_name(sid, master);
+                auto elem = snd_mixer_find_selem(handle, sid);
+                if (elem == nullptr) {
+                    fprintf(stderr, "failed to find element\n");
+                    continue;
+                }
+
+                snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_MONO, &pvol);
+                Volume = (int) pvol;
                 snd_mixer_close(handle);
-                break;
             }
-
-            if ((err = snd_mixer_selem_register(handle, nullptr, nullptr)) < 0) {
-                printf("Mixer register error: %s", snd_strerror(err));
-                snd_mixer_close(handle);
-                break;
-            }
-
-            err = snd_mixer_load(handle);
-            if (err < 0) {
-                printf("Mixer %s load error: %s", card, snd_strerror(err));
-                snd_mixer_close(handle);
-                continue;
-            }
-
-            snd_mixer_selem_id_t *sid;
-            snd_mixer_selem_id_alloca(&sid);
-            snd_mixer_selem_id_set_index(sid, 0);
-            snd_mixer_selem_id_set_name(sid, master);
-            auto elem = snd_mixer_find_selem(handle, sid);
-            if (elem == nullptr) {
-                fprintf(stderr, "failed to find element\n");
-                continue;
-            }
-
-            snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_MONO, &pvol);
-            Volume = (int) pvol;
-            snd_mixer_close(handle);
+            fprintf(stderr, "volume loop failed\n");
         }
-        fprintf(stderr, "volume loop failed\n");
-    }
-*/
+    */
 
-}
+} // namespace Player
 #endif // HAGOROMO_CPP

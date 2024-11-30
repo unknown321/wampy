@@ -3,11 +3,11 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <sys/un.h>
 #include <sys/poll.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <thread>
+#include <unistd.h>
 
 #include "../util/util.h"
 
@@ -31,7 +31,7 @@ int RESP_BUF_SIZE = 8192;
 namespace Player {
     void MPDConnector::Connect() {
         int server_socket = socket(AF_UNIX, SOCK_STREAM, 0);
-        struct sockaddr_un server_addr{};
+        struct sockaddr_un server_addr {};
 
         if (strcmp(address, "") == 0) {
             address = defaultAddress;
@@ -43,7 +43,7 @@ namespace Player {
 
         for (;;) {
             DLOG("connecting to mpd using %s\n", server_addr.sun_path);
-            connection_result = connect(server_socket, (struct sockaddr *) &server_addr, sizeof(server_addr));
+            connection_result = connect(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr));
             if (connection_result == 0) {
                 fd = server_socket;
                 break;
@@ -73,17 +73,17 @@ namespace Player {
             song->Title = "";
         if (!sf->Album)
             song->Album = "";
-//            if (!sf->Elapsed)
-//                song->Elapsed = 0;
-//            if (!sf->Duration)
-//                song->Duration = 0;
-//            if (!sf->Audio) {
-//                song->Channels = 1;
-//                song->SampleRate = 22000;
-//                song->Bits = 16;
-//            }
-//            if (!sf->Bitrate)
-//                song->Bitrate = 0;
+        //            if (!sf->Elapsed)
+        //                song->Elapsed = 0;
+        //            if (!sf->Duration)
+        //                song->Duration = 0;
+        //            if (!sf->Audio) {
+        //                song->Channels = 1;
+        //                song->SampleRate = 22000;
+        //                song->Bits = 16;
+        //            }
+        //            if (!sf->Bitrate)
+        //                song->Bitrate = 0;
 
         if (!sf->Date)
             song->Date = "1985";
@@ -94,173 +94,172 @@ namespace Player {
 
     void MPDConnector::parseCurrentSong(Song *song, const std::vector<std::string> &words, statusFields *sf) {
         switch (hash(words[0].c_str())) {
-            case hash("Artist"):
-                song->Artist = join(words, 1);
-                sf->Artist = true;
-                break;
-            case hash("Album"):
-                song->Album = join(words, 1);
-                sf->Album = true;
-                break;
-            case hash("Title"):
-                song->Title = join(words, 1);
-                sf->Title = true;
-                break;
-            case hash("Date"):
-                song->Date = join(words, 1);
-                sf->Date = true;
-                break;
-            case hash("Track"):
-                song->Track = join(words, 1);
-                sf->Track = true;
-                break;
-            case hash("file"):
-                song->File = join(words, 1);
-                sf->File = true;
-                break;
-            case hash("Id"):
-                try {
-                    song->songID = std::stoi(join(words, 1));
-                } catch (...) {
-                    song->songID = 0;
-                }
-                break;
+        case hash("Artist"):
+            song->Artist = join(words, 1);
+            sf->Artist = true;
+            break;
+        case hash("Album"):
+            song->Album = join(words, 1);
+            sf->Album = true;
+            break;
+        case hash("Title"):
+            song->Title = join(words, 1);
+            sf->Title = true;
+            break;
+        case hash("Date"):
+            song->Date = join(words, 1);
+            sf->Date = true;
+            break;
+        case hash("Track"):
+            song->Track = join(words, 1);
+            sf->Track = true;
+            break;
+        case hash("file"):
+            song->File = join(words, 1);
+            sf->File = true;
+            break;
+        case hash("Id"):
+            try {
+                song->songID = std::stoi(join(words, 1));
+            } catch (...) {
+                song->songID = 0;
+            }
+            break;
         }
     }
 
     void MPDConnector::parseStatus(Status *status, const std::vector<std::string> &words) {
         switch (hash(words[0].c_str())) {
-            case hash("bitrate"): {
-                auto brWord = join(words, 1);
-                status->sf.Bitrate = true;
+        case hash("bitrate"): {
+            auto brWord = join(words, 1);
+            status->sf.Bitrate = true;
 
-                try {
-                    status->Bitrate = std::stoi(brWord);
-                } catch (...) {
-                    status->Bitrate = 0;
-                }
-
-                status->BitrateString = brWord;
-                if (brWord.length() > 3) {
-                    status->BitrateString = brWord.substr(brWord.length() - 3, 3);
-                }
-
-                break;
+            try {
+                status->Bitrate = std::stoi(brWord);
+            } catch (...) {
+                status->Bitrate = 0;
             }
-            case hash("duration"):
-                status->sf.Duration = true;
-                try {
-                    status->Duration = std::stoi(join(words, 1));
-                } catch (...) {
-                    status->Duration = 0;
-                }
 
-                break;
-            case hash("elapsed"):
-                status->sf.Elapsed = true;
-                try {
-                    status->Elapsed = std::stoi(join(words, 1));
-                } catch (...) {
-                    status->Elapsed = 0;
-                }
-                break;
-            case hash("state"):
-                status->State = join(words, 1);
-                break;
-            case hash("volume"):
-                status->sf.Volume = true;
+            status->BitrateString = brWord;
+            if (brWord.length() > 3) {
+                status->BitrateString = brWord.substr(brWord.length() - 3, 3);
+            }
+
+            break;
+        }
+        case hash("duration"):
+            status->sf.Duration = true;
+            try {
+                status->Duration = std::stoi(join(words, 1));
+            } catch (...) {
+                status->Duration = 0;
+            }
+
+            break;
+        case hash("elapsed"):
+            status->sf.Elapsed = true;
+            try {
+                status->Elapsed = std::stoi(join(words, 1));
+            } catch (...) {
+                status->Elapsed = 0;
+            }
+            break;
+        case hash("state"):
+            status->State = join(words, 1);
+            break;
+        case hash("volume"):
+            status->sf.Volume = true;
 #ifdef DESKTOP
-                try {
-                        status->Volume = std::stoi(join(words, 1));
-                    } catch (...) {
-                        status->Volume = 0;
-                    }
+            try {
+                status->Volume = std::stoi(join(words, 1));
+            } catch (...) {
+                status->Volume = 0;
+            }
 #endif
-                break;
-            case hash("audio"): {
-                status->sf.Audio = true;
-                auto parts = split(words[1], ":");
-                try {
-                    status->SampleRate = std::stoi(parts[0]);
-                } catch (...) {
-                    status->SampleRate = 0;
-                }
+            break;
+        case hash("audio"): {
+            status->sf.Audio = true;
+            auto parts = split(words[1], ":");
+            try {
+                status->SampleRate = std::stoi(parts[0]);
+            } catch (...) {
+                status->SampleRate = 0;
+            }
 
-                status->SampleRateString = std::to_string((int) status->SampleRate / 1000);
-                if ((parts[0].length() > 2) && (status->SampleRateString.length() > 2)) {
-                    status->SampleRateString = status->SampleRateString.substr(
-                            status->SampleRateString.length() - 2, 2);
-                }
+            status->SampleRateString = std::to_string((int)status->SampleRate / 1000);
+            if ((parts[0].length() > 2) && (status->SampleRateString.length() > 2)) {
+                status->SampleRateString = status->SampleRateString.substr(status->SampleRateString.length() - 2, 2);
+            }
 
-                try {
-                    status->Bits = std::stoi(parts[1]);
-                } catch (...) {
-                    status->Bits = 0;
-                }
+            try {
+                status->Bits = std::stoi(parts[1]);
+            } catch (...) {
+                status->Bits = 0;
+            }
 
-                try {
-                    status->Channels = std::stoi(parts[2]);
-                } catch (...) {
-                    status->Channels = 1;
-                }
-                break;
+            try {
+                status->Channels = std::stoi(parts[2]);
+            } catch (...) {
+                status->Channels = 1;
             }
-            case hash("repeat"): {
-                try {
-                    status->Repeat = std::stoi(join(words, 1));
-                } catch (...) {
-                    status->Repeat = 0;
-                }
-                break;
+            break;
+        }
+        case hash("repeat"): {
+            try {
+                status->Repeat = std::stoi(join(words, 1));
+            } catch (...) {
+                status->Repeat = 0;
             }
-            case hash("random"): {
-                try {
-                    status->Shuffle = std::stoi(join(words, 1));
-                } catch (...) {
-                    status->Shuffle = 0;
-                }
-                break;
+            break;
+        }
+        case hash("random"): {
+            try {
+                status->Shuffle = std::stoi(join(words, 1));
+            } catch (...) {
+                status->Shuffle = 0;
             }
-            case hash("song"): {
-                try {
-                    status->songID = std::stoi(join(words, 1));
-                } catch (...) {
-                    status->songID = 0;
-                }
-                break;
+            break;
+        }
+        case hash("song"): {
+            try {
+                status->songID = std::stoi(join(words, 1));
+            } catch (...) {
+                status->songID = 0;
             }
-            default:
-                break;
+            break;
+        }
+        default:
+            break;
         }
     }
 
     bool MPDConnector::parsePlaylistWord(const std::vector<std::string> &words, Song *song) {
         switch (hash(words[0].c_str())) {
-            case hash("Artist"):
-                song->Artist = join(words, 1);
-                break;
-            case hash("Album"):
-                song->Album = join(words, 1);
-                break;
-            case hash("Title"):
-                song->Title = join(words, 1);
-                break;
-            case hash("Track"):
-                song->Track = join(words, 1);
-                break;
-            case hash("file"):
-                song->File = join(words, 1);
-                break;
-            case hash("duration"):
-                try {
-                    song->Duration = std::stoi(join(words, 1));
-                } catch (...) {
-                    song->Duration = 0;
-                }
-                break;
-            case hash("Id"): {
-                return true;
+        case hash("Artist"):
+            song->Artist = join(words, 1);
+            break;
+        case hash("Album"):
+            song->Album = join(words, 1);
+            break;
+        case hash("Title"):
+            song->Title = join(words, 1);
+            break;
+        case hash("Track"):
+            song->Track = join(words, 1);
+            break;
+        case hash("file"):
+            song->File = join(words, 1);
+            break;
+        case hash("duration"):
+            try {
+                song->Duration = std::stoi(join(words, 1));
+            } catch (...) {
+                song->Duration = 0;
             }
+            break;
+        case hash("Id"): {
+            return true;
+        }
         }
 
         return false;
@@ -277,7 +276,7 @@ namespace Player {
         if (s.substr(0, 9) != "OK\nvolume") {
             return;
         }
-//            statusFields sf = statusFields{};
+        //            statusFields sf = statusFields{};
 
         auto lines = split(s, lineDelimeter);
         // remove OK from `noidle` command
@@ -285,7 +284,7 @@ namespace Player {
             lines.erase(lines.begin());
         }
 
-        for (const auto &line: lines) {
+        for (const auto &line : lines) {
             auto words = split(line, fieldDelimeter);
             if (words.empty()) {
                 continue;
@@ -314,9 +313,9 @@ namespace Player {
             return;
         }
 
-//        status.busy = true;
+        //        status.busy = true;
 
-        for (auto &ss: *playlist) {
+        for (auto &ss : *playlist) {
             ss.Reset();
         }
 
@@ -324,7 +323,7 @@ namespace Player {
         int playlistIndex = 0;
         bool EOS;
 
-        for (const auto &line: lines) {
+        for (const auto &line : lines) {
             auto words = split(line, fieldDelimeter);
             if (words.empty()) {
                 continue;
@@ -338,18 +337,18 @@ namespace Player {
                 }
             }
         }
-//        status.busy = false;
+        //        status.busy = false;
 
         memset(buf, 0, BUF_SIZE);
     }
 
-    __attribute__((unused)) void MPDConnector::volumeLoop() {};
+    __attribute__((unused)) void MPDConnector::volumeLoop(){};
 
-    void MPDConnector::powerLoop(bool *render, bool *power) {};
+    void MPDConnector::powerLoop(bool *render, bool *power){};
 
-    void MPDConnector::TestCommand() {};
+    void MPDConnector::TestCommand(){};
 
-    void MPDConnector::ToggleHgrm(HgrmToggleAction action, bool *render) {};
+    void MPDConnector::ToggleHgrm(HgrmToggleAction action, bool *render){};
 
     void MPDConnector::ReadLoop() {
         char buf[RESP_BUF_SIZE];
@@ -380,7 +379,7 @@ namespace Player {
 
             if (numbytes > 0) {
                 parseResponse(buf, RESP_BUF_SIZE, &status);
-//                    resetEmptyFields(&playlist.at(0), &status.sf);
+                //                    resetEmptyFields(&playlist.at(0), &status.sf);
             } else {
                 continue;
             }
@@ -431,9 +430,7 @@ namespace Player {
         Send(commandIdle);
     }
 
-    void MPDConnector::SetBalance(int i) {
-        DLOG("not implemented\n");
-    }
+    void MPDConnector::SetBalance(int i) { DLOG("not implemented\n"); }
 
     void MPDConnector::SetShuffle(int i) {
         char c[10];
@@ -512,6 +509,6 @@ namespace Player {
         Send("play\nnext\n");
         Send(commandIdle);
     }
-}
+} // namespace Player
 
 #endif // MPD_CPP

@@ -1,11 +1,11 @@
 #ifndef WAMPY_CONFIG_H
 #define WAMPY_CONFIG_H
 
-#include <string>
 #include "cassette/cassette.h"
+#include "fontranges.h"
 #include "mini/ini.h"
 #include "winamp/winamp.h"
-#include "fontranges.h"
+#include <string>
 
 enum ESkinVariant {
     EMPTY,
@@ -28,7 +28,7 @@ namespace AppConfig {
     };
 
     class AppConfig {
-    public:
+      public:
         AppConfig() = default;
 
         const char *filePath = "";
@@ -54,6 +54,6 @@ namespace AppConfig {
 
         void ToIni();
     };
-}
+} // namespace AppConfig
 
 #endif

@@ -1,8 +1,10 @@
 #ifndef WAMPY_MAGICK_H
 #define WAMPY_MAGICK_H
 
+// clang-format off
 #include <Magick++/lib/Magick++.h>
 #include "MagickWand/pixel-iterator.h"
+// clang-format on
 
 namespace MyMagick {
 
@@ -13,6 +15,6 @@ namespace MyMagick {
     void Crop(Magick::Image *image, Magick::RectangleInfo g);
 
     void FillRectangle(Magick::Image *image, Magick::RectangleInfo g, const Magick::Color &color);
-}
+} // namespace MyMagick
 
 #endif

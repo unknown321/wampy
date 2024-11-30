@@ -1,9 +1,7 @@
 #include "magick.h"
 #include "../util/util.h"
 
-void MyMagick::InitMagick() {
-    Magick::InitializeMagick("");
-}
+void MyMagick::InitMagick() { Magick::InitializeMagick(""); }
 
 void MyMagick::Upscale(Magick::Image *image, Magick::Geometry &g, bool fill) {
     if (image == nullptr) {
@@ -43,9 +41,8 @@ void MyMagick::Crop(Magick::Image *image, Magick::RectangleInfo g) {
         g.height = image->rows() - g.y;
     }
 
-    if ((g.width + g.x) > image->columns() ||
-        (g.height + g.y) > image->rows()) {
-        DLOG("unexpected crop %dx%d, %d %d, %dx%d\n", g.width, g.height, g.x, g.y, image->columns(), image->rows());
+    if ((g.width + g.x) > image->columns() || (g.height + g.y) > image->rows()) {
+        DLOG("unexpected crop %zux%zu, %zd %zd, %zux%zu\n", g.width, g.height, g.x, g.y, image->columns(), image->rows());
         image->backgroundColor({0.0f, 0.0f, 0.0f, 1.0f});
         image->erase();
         return;

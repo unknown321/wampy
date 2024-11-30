@@ -1,12 +1,12 @@
-#include <thread>
 #include "winamp.h"
-#include "../unzip/unzip.cpp"
-#include "imgui_impl_opengl3.h"
-#include "../wstring.h"
 #include "../skin.h"
+#include "../unzip/unzip.cpp"
+#include "../wstring.h"
+#include "imgui_impl_opengl3.h"
+#include <thread>
 
 static const ImWchar rangesPunctuation[] = {
-        0x2000, 0x206F, // General Punctuation
+    0x2000, 0x206F, // General Punctuation
 };
 
 namespace Winamp {
@@ -17,7 +17,7 @@ namespace Winamp {
     static const int MarqueeMaxLengthBitmap = 32;
     static const float MaxTitleWidth = 1024.0f;
 
-// TODO get real value from winamp source
+    // TODO get real value from winamp source
     static const int blinkInterval = 1200;
 
     static const float PlaylistYRegular = 337.0;
@@ -30,16 +30,27 @@ namespace Winamp {
 
 #ifdef DESKTOP
     //    static const std::string FontPath = "../SSTJpPro-Regular.otf";
-        static const std::string FontPath = "../NotoSansKR-Regular.otf";
+    static const std::string FontPath = "../NotoSansKR-Regular.otf";
 #else
     static const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
 #endif
 
     static const std::list<const char *> filenames = {
-            "main.bmp", "titlebar.bmp", "cbuttons.bmp", "shufrep.bmp", "posbar.bmp", "monoster.bmp", "playpaus.bmp",
-            "numbers.bmp", "nums_ex.bmp", "text.bmp", "volume.bmp", "viscolor.txt", "balance.bmp", "pledit.bmp",
-            "pledit.txt"
-    };
+        "main.bmp",
+        "titlebar.bmp",
+        "cbuttons.bmp",
+        "shufrep.bmp",
+        "posbar.bmp",
+        "monoster.bmp",
+        "playpaus.bmp",
+        "numbers.bmp",
+        "nums_ex.bmp",
+        "text.bmp",
+        "volume.bmp",
+        "viscolor.txt",
+        "balance.bmp",
+        "pledit.bmp",
+        "pledit.txt"};
 
     int Winamp::AddFonts(ImFont *fontRegular) {
         auto numFontData = textures["numbers.bmp"];
@@ -74,8 +85,8 @@ namespace Winamp {
 
         DLOG("balance.bmp is missing, using volume.bmp as replacement\n");
 
-        textures["balance.bmp"].data = (char *) malloc(textures["volume.bmp"].len);
-        memcpy((void *) textures["balance.bmp"].data, (void *) textures["volume.bmp"].data, textures["volume.bmp"].len);
+        textures["balance.bmp"].data = (char *)malloc(textures["volume.bmp"].len);
+        memcpy((void *)textures["balance.bmp"].data, (void *)textures["volume.bmp"].data, textures["volume.bmp"].len);
         textures["balance.bmp"].len = textures["volume.bmp"].len;
 
         return 0;
@@ -92,7 +103,7 @@ namespace Winamp {
         loadStatusStr = "";
         DLOG("Unzip %s\n", filename.c_str());
 
-        for (auto &f: filenames) {
+        for (auto &f : filenames) {
             textures[f];
         }
 
@@ -137,7 +148,7 @@ namespace Winamp {
         }
 
         // are all files present?
-        for (auto const &k: *textures) {
+        for (auto const &k : *textures) {
             if (k.first == "nums_ex.bmp" || k.first == "numbers.bmp" || k.first == "balance.bmp") {
                 continue;
             }
@@ -165,7 +176,7 @@ namespace Winamp {
     }
 
     void Winamp::freeUnzippedTextures() {
-        for (auto &c: textures) {
+        for (auto &c : textures) {
             if (c.second.data == nullptr) {
                 continue;
             }
@@ -183,38 +194,38 @@ namespace Winamp {
         colors.PlaylistCurrentText = ColorBlack;
         colors.PlaylistNormalText = ColorBlack;
 
-        for (const auto &line: split(text, "\n")) {
+        for (const auto &line : split(text, "\n")) {
             auto parts = split(line, "=");
             switch (hash(parts[0].c_str())) {
-                case hash("NormalBG"): {
-                    colors.PlaylistNormalBG = parseColor(parts[1]);
-//                    colors.PlaylistNormalBGIV = colorToImVec4(colors.PlaylistNormalBG);
-                    break;
-                }
-                case hash("SelectedBD"): {
-                    colors.PlaylistSelectedBG = parseColor(parts[1]);
-//                    colors.PlaylistSelectedBGIV = colorToImVec4(colors.PlaylistSelectedBG);
-                    break;
-                }
-                case hash("Normal"): {
-                    colors.PlaylistNormalText = parseColor(parts[1]);
-                    colors.PlaylistNormalTextU32 = colorToImCol32(colors.PlaylistNormalText);
-                    break;
-                }
-                case hash("Current"): {
-                    colors.PlaylistCurrentText = parseColor(parts[1]);
-                    colors.PlaylistCurrentTextU32 = colorToImCol32(colors.PlaylistCurrentText);
-                    break;
-                }
+            case hash("NormalBG"): {
+                colors.PlaylistNormalBG = parseColor(parts[1]);
+                //                    colors.PlaylistNormalBGIV = colorToImVec4(colors.PlaylistNormalBG);
+                break;
+            }
+            case hash("SelectedBD"): {
+                colors.PlaylistSelectedBG = parseColor(parts[1]);
+                //                    colors.PlaylistSelectedBGIV = colorToImVec4(colors.PlaylistSelectedBG);
+                break;
+            }
+            case hash("Normal"): {
+                colors.PlaylistNormalText = parseColor(parts[1]);
+                colors.PlaylistNormalTextU32 = colorToImCol32(colors.PlaylistNormalText);
+                break;
+            }
+            case hash("Current"): {
+                colors.PlaylistCurrentText = parseColor(parts[1]);
+                colors.PlaylistCurrentTextU32 = colorToImCol32(colors.PlaylistCurrentText);
+                break;
+            }
             }
         }
     }
 
     void Winamp::SeekPressed(void *winampSkin, void *i) {
-        auto w = (Winamp *) winampSkin;
+        auto w = (Winamp *)winampSkin;
         w->MarqueeRunning = false;
 
-        auto val = *(int *) i;
+        auto val = *(int *)i;
 
         int totalMin = w->connector->status.Duration / 60;
         int totalSec = w->connector->status.Duration % 60;
@@ -228,9 +239,9 @@ namespace Winamp {
     }
 
     void Winamp::SeekReleased(void *winampSkin, void *i) {
-        auto w = (Winamp *) winampSkin;
+        auto w = (Winamp *)winampSkin;
 
-        auto val = *(int *) i;
+        auto val = *(int *)i;
         w->connector->SetPosition(val);
         w->MarqueeRunning = true;
         w->connector->status.Elapsed = w->connector->status.Duration * val / 100;
@@ -248,10 +259,10 @@ namespace Winamp {
     }
 
     void Winamp::VolumePressedMPD(void *winampSkin, void *i) {
-        auto w = (Winamp *) winampSkin;
+        auto w = (Winamp *)winampSkin;
         w->MarqueeRunning = false;
 
-        auto val = *(int *) i;
+        auto val = *(int *)i;
 
         w->connector->SetVolume(val, false);
 
@@ -271,15 +282,15 @@ namespace Winamp {
     }
 
     void Winamp::VolumeReleasedMPD(void *winampSkin, void *i) {
-        auto w = (Winamp *) winampSkin;
+        auto w = (Winamp *)winampSkin;
         w->MarqueeRunning = true;
     }
 
     void Winamp::VolumePressedHagoromo(void *winampSkin, void *i) {
-        auto w = (Winamp *) winampSkin;
+        auto w = (Winamp *)winampSkin;
         w->MarqueeRunning = false;
 
-        auto val = *(int *) i;
+        auto val = *(int *)i;
         w->connector->updateVolume = false;
 
         char buff[100];
@@ -290,10 +301,10 @@ namespace Winamp {
     }
 
     void Winamp::VolumeReleasedHagoromo(void *winampSkin, void *i) {
-        auto w = (Winamp *) winampSkin;
+        auto w = (Winamp *)winampSkin;
         w->MarqueeRunning = true;
 
-        auto val = *(int *) i;
+        auto val = *(int *)i;
         w->connector->status.Volume = val;
         w->connector->SetVolume(val, false);
         w->connector->updateVolume = true;
@@ -301,21 +312,21 @@ namespace Winamp {
 
     void Winamp::BalancePressed(void *winampSkin, void *i) {
         notImplemented(winampSkin, i);
-/*
-             if (i == 0) {
-                format = "Balance: Center";
-            } else if (i < 0) {
-                format = "Balance: %d%% left";
-            } else {
-                format = "Balance: %d%% right";
-            }
-    snprintf(buff, sizeof(buff), format, abs(i));
-    std::string buffAsStdStr = buff;
-*/
+        /*
+                     if (i == 0) {
+                        format = "Balance: Center";
+                    } else if (i < 0) {
+                        format = "Balance: %d%% left";
+                    } else {
+                        format = "Balance: %d%% right";
+                    }
+            snprintf(buff, sizeof(buff), format, abs(i));
+            std::string buffAsStdStr = buff;
+        */
     }
 
     void Winamp::BalanceReleased(void *winampSkin, void *i) {
-        auto w = (Winamp *) winampSkin;
+        auto w = (Winamp *)winampSkin;
         w->MarqueeRunning = true;
     }
 
@@ -332,21 +343,21 @@ namespace Winamp {
         Elements.OptionsIndicators.Draw();
 
         switch (hash(connector->status.State.c_str())) {
-            case hash("play"):
-                Elements.PlayIndicator.Draw();
-                Elements.BufferingIndicator.Draw();
-                break;
-            case hash("pause"):
-                if (stopped) {
-                    Elements.StopIndicator.Draw();
-                } else {
-                    Elements.PauseIndicator.Draw();
-                }
-                break;
-            case hash("stop"):
-            default:
+        case hash("play"):
+            Elements.PlayIndicator.Draw();
+            Elements.BufferingIndicator.Draw();
+            break;
+        case hash("pause"):
+            if (stopped) {
                 Elements.StopIndicator.Draw();
-                break;
+            } else {
+                Elements.PauseIndicator.Draw();
+            }
+            break;
+        case hash("stop"):
+        default:
+            Elements.StopIndicator.Draw();
+            break;
         }
 
         if (connector->status.Channels > 1) {
@@ -427,9 +438,8 @@ namespace Winamp {
         Elements.PlaylistTitleBarLeftCorner.DrawAt(Elements.PlaylistTitleBarLeftCorner.position.x, PlaylistY);
         Elements.PlaylistTitleBarFiller.DrawAt(Elements.PlaylistTitleBarFiller.position.x, PlaylistY);
         Elements.PlaylistTitleBarTitle.DrawAt(Elements.PlaylistTitleBarTitle.position.x, PlaylistY);
-        Elements.PlaylistTitleBarFiller.DrawAt((float) 73 + 183 + 290 - 2, PlaylistY);
-        Elements.PlaylistTitleBarRightCornerButton.DrawAt(Elements.PlaylistTitleBarRightCornerButton.position.x,
-                                                          PlaylistY);
+        Elements.PlaylistTitleBarFiller.DrawAt((float)73 + 183 + 290 - 2, PlaylistY);
+        Elements.PlaylistTitleBarRightCornerButton.DrawAt(Elements.PlaylistTitleBarRightCornerButton.position.x, PlaylistY);
         Elements.PlaylistLeftBorder.DrawAt(Elements.PlaylistLeftBorder.position.x, PlaylistY + PlaylistTitleHeight);
         Elements.PlaylistRightBorder.DrawAt(Elements.PlaylistRightBorder.position.x, PlaylistY + PlaylistTitleHeight);
         Elements.PlaylistScrollButton.DrawAt(Elements.PlaylistScrollButton.position.x, PlaylistY + PlaylistTitleHeight);
@@ -456,8 +466,7 @@ namespace Winamp {
             // FIXME recalculates on every update in mpd
             if ((!s->PlaylistStringsCalculated)) {
                 auto format = "%s. %s - %s";
-                auto size = std::snprintf(nullptr, 0, format, s->Track.c_str(), s->Artist.c_str(),
-                                          s->Title.c_str());
+                auto size = std::snprintf(nullptr, 0, format, s->Track.c_str(), s->Artist.c_str(), s->Title.c_str());
                 std::string output(size + 1, '\0');
                 std::sprintf(&output[0], format, s->Track.c_str(), s->Artist.c_str(), s->Title.c_str());
                 s->PlaylistTitle = CalculateTextWidth(output);
@@ -480,10 +489,10 @@ namespace Winamp {
                 ImGui::PushStyleColor(ImGuiCol_Text, colors.PlaylistNormalTextU32);
             }
 
-            ImGui::SetCursorPos(ImVec2(38, PlaylistY + 60 + ((float) i * 30)));
+            ImGui::SetCursorPos(ImVec2(38, PlaylistY + 60 + ((float)i * 30)));
             ImGui::Text("%s", s->PlaylistTitle.c_str());
 
-            ImGui::SetCursorPos(ImVec2(800 - s->PlaylistDurationTextSize - 60, PlaylistY + 60 + ((float) i * 30)));
+            ImGui::SetCursorPos(ImVec2(800 - s->PlaylistDurationTextSize - 60, PlaylistY + 60 + ((float)i * 30)));
             ImGui::Text("%s", s->PlaylistDuration.c_str());
             ImGui::PopStyleColor();
         }
@@ -493,54 +502,42 @@ namespace Winamp {
 
     int Winamp::initializeElements() {
         Elements.Main.FromPair(textures["main.bmp"])
-                ->WithCrop(Magick::RectangleInfo{275, 116, 0, 0})
-                ->WithFilledRectangle({770, 96, 323, 78}, colors.trackTitleBackground)
-                ->Load();
-        Elements.Title.FromPair(textures["titlebar.bmp"])
-                ->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})
-                ->Load();
+            ->WithCrop(Magick::RectangleInfo{275, 116, 0, 0})
+            ->WithFilledRectangle({770, 96, 323, 78}, colors.trackTitleBackground)
+            ->Load();
+        Elements.Title.FromPair(textures["titlebar.bmp"])->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})->Load();
         Elements.OptionsIndicators.FromPair(textures["titlebar.bmp"])
-                ->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})
-                ->WithPosition(ImVec2(29.0f, 64.0f))
-                ->Load();
+            ->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})
+            ->WithPosition(ImVec2(29.0f, 64.0f))
+            ->Load();
         Elements.MonoOffIndicator.FromPair(textures["monoster.bmp"])
-                ->WithCrop({0, 12, 29, 12})
-                ->WithPosition(ImVec2(617.0f, 119.0f))
-                ->WithScale({85, 35}, false)
-                ->Load();
+            ->WithCrop({0, 12, 29, 12})
+            ->WithPosition(ImVec2(617.0f, 119.0f))
+            ->WithScale({85, 35}, false)
+            ->Load();
         Elements.MonoOnIndicator.FromPair(textures["monoster.bmp"])
-                ->WithCrop({0, 12, 29, 0}) // width should be 29, but some skins have less width
-                ->WithPosition(ImVec2(617.0f, 119.0f))
-                ->WithScale({85, 35}, false)
-                ->Load();
+            ->WithCrop({0, 12, 29, 0}) // width should be 29, but some skins have less width
+            ->WithPosition(ImVec2(617.0f, 119.0f))
+            ->WithScale({85, 35}, false)
+            ->Load();
         Elements.StereoOnIndicator.FromPair(textures["monoster.bmp"])
-                ->WithCrop({29, 12, 0, 0})
-                ->WithPosition(ImVec2(695.0f, 119.0f))
-                ->WithScale({85, 35}, false)
-                ->Load();
+            ->WithCrop({29, 12, 0, 0})
+            ->WithPosition(ImVec2(695.0f, 119.0f))
+            ->WithScale({85, 35}, false)
+            ->Load();
         Elements.StereoOffIndicator.FromPair(textures["monoster.bmp"])
-                ->WithCrop({29, 12, 0, 12})
-                ->WithPosition(ImVec2(695.0f, 119.0f))
-                ->WithScale({85, 35}, false)
-                ->Load();
-        Elements.StopIndicator.FromPair(textures["playpaus.bmp"])
-                ->WithCrop({9, 9, 18, 0})
-                ->WithPosition(ImVec2(79.0f, 81.0f))
-                ->Load();
-        Elements.PlayIndicator.FromPair(textures["playpaus.bmp"])
-                ->WithCrop({9, 9, 0, 0})
-                ->WithPosition(ImVec2(79.0f, 81.0f))
-                ->Load();
-        Elements.PauseIndicator.FromPair(textures["playpaus.bmp"])
-                ->WithCrop({9, 9, 9, 0})
-                ->WithPosition(ImVec2(79.0f, 81.0f))
-                ->Load();
+            ->WithCrop({29, 12, 0, 12})
+            ->WithPosition(ImVec2(695.0f, 119.0f))
+            ->WithScale({85, 35}, false)
+            ->Load();
+        Elements.StopIndicator.FromPair(textures["playpaus.bmp"])->WithCrop({9, 9, 18, 0})->WithPosition(ImVec2(79.0f, 81.0f))->Load();
+        Elements.PlayIndicator.FromPair(textures["playpaus.bmp"])->WithCrop({9, 9, 0, 0})->WithPosition(ImVec2(79.0f, 81.0f))->Load();
+        Elements.PauseIndicator.FromPair(textures["playpaus.bmp"])->WithCrop({9, 9, 9, 0})->WithPosition(ImVec2(79.0f, 81.0f))->Load();
         Elements.BufferingIndicator.FromPair(textures["playpaus.bmp"])
-                ->WithCrop({3, 9, 36, 0})
-                ->WithPosition(ImVec2(70.0f, 81.0f))
-                ->WithScale({8, 24}, false)
-                ->Load();
-
+            ->WithCrop({3, 9, 36, 0})
+            ->WithPosition(ImVec2(70.0f, 81.0f))
+            ->WithScale({8, 24}, false)
+            ->Load();
 
         this->initializeButtons();
         this->initializePlaylist();
@@ -551,39 +548,39 @@ namespace Winamp {
 
     int Winamp::initializePlaylist() {
         Elements.PlaylistTitleBarLeftCorner.FromPair(textures["pledit.bmp"])
-                ->WithCrop({25, 20, 0, 0})
-                ->WithScale({73, 58}, false)
-                ->WithPosition(ImVec2(0.0f, PlaylistY))
-                ->Load();
+            ->WithCrop({25, 20, 0, 0})
+            ->WithScale({73, 58}, false)
+            ->WithPosition(ImVec2(0.0f, PlaylistY))
+            ->Load();
         Elements.PlaylistTitleBarFiller.FromPair(textures["pledit.bmp"])
-                ->WithCrop({25, 20, 127, 0})
-                ->WithScale({184, 58}, true)
-                ->WithPosition(ImVec2(72.0f, PlaylistY))
-                ->Load();
+            ->WithCrop({25, 20, 127, 0})
+            ->WithScale({184, 58}, true)
+            ->WithPosition(ImVec2(72.0f, PlaylistY))
+            ->Load();
         Elements.PlaylistTitleBarTitle.FromPair(textures["pledit.bmp"])
-                ->WithCrop({100, 20, 26, 0})
-                ->WithScale({290, 58}, false)
-                ->WithPosition(ImVec2(254.0f, PlaylistY))
-                ->Load();
+            ->WithCrop({100, 20, 26, 0})
+            ->WithScale({290, 58}, false)
+            ->WithPosition(ImVec2(254.0f, PlaylistY))
+            ->Load();
         Elements.PlaylistLeftBorder.FromPair(textures["pledit.bmp"])
-                ->WithCrop({25, 29, 0, 42})
-                ->WithScale({73, 480 - 58}, false)
-                ->WithPosition(ImVec2(0.0f, PlaylistY + 58))
-                ->Load();
+            ->WithCrop({25, 29, 0, 42})
+            ->WithScale({73, 480 - 58}, false)
+            ->WithPosition(ImVec2(0.0f, PlaylistY + 58))
+            ->Load();
         Elements.PlaylistRightBorder.FromPair(textures["pledit.bmp"])
-                ->WithCrop({25, 29, 26, 42})
-                ->WithScale({72, 480 - 58}, false)
-                ->WithPosition(ImVec2(800.0f - 72.0f, PlaylistY + 58))
-                ->Load();
+            ->WithCrop({25, 29, 26, 42})
+            ->WithScale({72, 480 - 58}, false)
+            ->WithPosition(ImVec2(800.0f - 72.0f, PlaylistY + 58))
+            ->Load();
         Elements.PlaylistScrollButton.FromPair(textures["pledit.bmp"])
-                ->WithCrop({8, 18, 52, 53})
-                ->WithPosition(ImVec2(800 - 44, PlaylistY + 58))
-                ->Load();
+            ->WithCrop({8, 18, 52, 53})
+            ->WithPosition(ImVec2(800 - 44, PlaylistY + 58))
+            ->Load();
 
         Elements.PlaylistBG.FromColor({800 - 35 - 58, 480, 0, 0}, Magick::Color(colors.PlaylistNormalBG));
         Elements.PlaylistBG.WithPosition(ImVec2(35.0f, PlaylistY + 58.0f));
 
-//=========
+        //=========
         ImGui::ButtonTextures bts;
         FlatTexture flatTexture;
         ImGui::ButtonTexture bt;
@@ -594,9 +591,9 @@ namespace Winamp {
         bts[0] = bt;
         bts[1] = bt;
         Elements.PlaylistTitleBarRightCornerButton.WithPosition(800 - bt.size.x, PlaylistY)
-                ->WithTextures(bts)
-                ->WithID("playlistTitle")
-                ->WithCallback(Winamp::togglePlaylistFullscreen, this, nullptr);
+            ->WithTextures(bts)
+            ->WithID("playlistTitle")
+            ->WithCallback(Winamp::togglePlaylistFullscreen, this, nullptr);
 
         return 0;
     }
@@ -625,75 +622,48 @@ namespace Winamp {
         bts[1] = bt;
 
         Elements.ShuffleButton.WithPosition(477.0f, 259.0f)
-                ->WithTextures(bts)
-                ->WithID("shuffle")
-                ->WithCallback(Connector::ToggleShuffle, connector, (void *) &connector->status.Shuffle);
+            ->WithTextures(bts)
+            ->WithID("shuffle")
+            ->WithCallback(Connector::ToggleShuffle, connector, (void *)&connector->status.Shuffle);
 
-//=========
+        //=========
         bts.clear();
         flatTexture.Reset();
-        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])
-                ->WithCrop({23, 12, 0, 61})
-                ->WithScale({67, 35}, false)
-                ->Load();
+        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 0, 61})->WithScale({67, 35}, false)->Load();
         bt.size = flatTexture.GetSize();
         flatTexture.Reset();
-        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])
-                ->WithCrop({23, 12, 46, 61})
-                ->WithScale({67, 35}, false)
-                ->Load();
+        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 46, 61})->WithScale({67, 35}, false)->Load();
         bts[0] = bt;
 
         flatTexture.Reset();
-        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])
-                ->WithCrop({23, 12, 0, 73})
-                ->WithScale({67, 35}, false)
-                ->Load();
+        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 0, 73})->WithScale({67, 35}, false)->Load();
         bt.size = flatTexture.GetSize();
         flatTexture.Reset();
-        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])
-                ->WithCrop({23, 12, 46, 73})
-                ->WithScale({67, 35}, false)
-                ->Load();
+        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 46, 73})->WithScale({67, 35}, false)->Load();
         bts[1] = bt;
-        Elements.EQButton.WithPosition(637.0f, 168.0f)
-                ->WithTextures(bts)
-                ->WithCallback(notImplemented, this, nullptr)
-                ->WithID("eq");
+        Elements.EQButton.WithPosition(637.0f, 168.0f)->WithTextures(bts)->WithCallback(notImplemented, this, nullptr)->WithID("eq");
 
-//=========
+        //=========
         bts.clear();
         flatTexture.Reset();
-        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])
-                ->WithCrop({23, 12, 23, 61})
-                ->WithScale({67, 35}, false)
-                ->Load();
+        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 23, 61})->WithScale({67, 35}, false)->Load();
         bt.size = flatTexture.GetSize();
         flatTexture.Reset();
-        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])
-                ->WithCrop({23, 12, 23 * 3, 61})
-                ->WithScale({67, 35}, false)
-                ->Load();
+        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 23 * 3, 61})->WithScale({67, 35}, false)->Load();
         bts[0] = bt;
 
         flatTexture.Reset();
-        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])
-                ->WithCrop({23, 12, 23, 73})
-                ->WithScale({67, 35}, false)
-                ->Load();
+        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 23, 73})->WithScale({67, 35}, false)->Load();
         bt.size = flatTexture.GetSize();
         flatTexture.Reset();
-        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])
-                ->WithCrop({23, 12, 23 * 3, 73})
-                ->WithScale({67, 35}, false)
-                ->Load();
+        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 23 * 3, 73})->WithScale({67, 35}, false)->Load();
         bts[1] = bt;
         Elements.PlaylistButton.WithPosition(704.0f, 168.0f)
-                ->WithTextures(bts)
-                ->WithCallback(Winamp::togglePlaylistFullscreen, this, nullptr)
-                ->WithID("playlist");
+            ->WithTextures(bts)
+            ->WithCallback(Winamp::togglePlaylistFullscreen, this, nullptr)
+            ->WithID("playlist");
 
-//=========
+        //=========
         bts.clear();
         flatTexture.Reset();
         bt.active = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({28, 15, 0, 0})->Load();
@@ -703,22 +673,18 @@ namespace Winamp {
         bts[0] = bt;
 
         flatTexture.Reset();
-        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({28, 15, 0, 30})
-                ->WithScale({81 + 1, 43}, false)
-                ->Load();
+        bt.active = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({28, 15, 0, 30})->WithScale({81 + 1, 43}, false)->Load();
         bt.size = flatTexture.GetSize();
         flatTexture.Reset();
-        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({28, 15, 0, 45})
-                ->WithScale({81 + 1, 43}, false)
-                ->Load();
+        bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({28, 15, 0, 45})->WithScale({81 + 1, 43}, false)->Load();
         bts[1] = bt;
         bts[2] = bt; // hagoromo only
         Elements.RepeatButton.WithPosition(610.0f, 259.0f)
-                ->WithTextures(bts)
-                ->WithID("repeat")
-                ->WithCallback(Connector::SetRepeat, connector, (void *) &connector->status.Repeat);
+            ->WithTextures(bts)
+            ->WithID("repeat")
+            ->WithCallback(Connector::SetRepeat, connector, (void *)&connector->status.Repeat);
 
-//=========
+        //=========
         bts.clear();
         flatTexture.Reset();
         bt.active = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 0, 0})->Load();
@@ -726,14 +692,11 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 0, 18})->Load();
         bts[0] = bt;
-        Elements.PrevButton.WithPosition(47.0f, 256.0f)
-                ->WithTextures(bts)
-                ->WithID("prev")
-                ->WithCallback(Winamp::Prev, this, nullptr);
+        Elements.PrevButton.WithPosition(47.0f, 256.0f)->WithTextures(bts)->WithID("prev")->WithCallback(Winamp::Prev, this, nullptr);
 
-        auto buttonWidth = 47 + (int) Elements.PrevButton.textures[0].size.x;
+        auto buttonWidth = 47 + (int)Elements.PrevButton.textures[0].size.x;
 
-//=========
+        //=========
         bts.clear();
         flatTexture.Reset();
         bt.active = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 23, 0})->Load();
@@ -741,14 +704,14 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 23, 18})->Load();
         bts[0] = bt;
-        Elements.PlayButton.WithPosition((float) buttonWidth, 256.0f)
-                ->WithTextures(bts)
-                ->WithID("play")
-                ->WithCallback(Winamp::Play, this, nullptr);
+        Elements.PlayButton.WithPosition((float)buttonWidth, 256.0f)
+            ->WithTextures(bts)
+            ->WithID("play")
+            ->WithCallback(Winamp::Play, this, nullptr);
 
-        buttonWidth += (int) Elements.PlayButton.textures[0].size.x;
+        buttonWidth += (int)Elements.PlayButton.textures[0].size.x;
 
-//=========
+        //=========
         bts.clear();
         flatTexture.Reset();
         bt.active = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 23 * 2, 0})->Load();
@@ -756,13 +719,13 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 23 * 2, 18})->Load();
         bts[0] = bt;
-        Elements.PauseButton.WithPosition((float) (buttonWidth), 256.0f)
-                ->WithTextures(bts)
-                ->WithID("pause")
-                ->WithCallback(Winamp::Pause, this, nullptr);
-        buttonWidth += (int) Elements.PauseButton.textures[0].size.x;
+        Elements.PauseButton.WithPosition((float)(buttonWidth), 256.0f)
+            ->WithTextures(bts)
+            ->WithID("pause")
+            ->WithCallback(Winamp::Pause, this, nullptr);
+        buttonWidth += (int)Elements.PauseButton.textures[0].size.x;
 
-//=========
+        //=========
         bts.clear();
         flatTexture.Reset();
         bt.active = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 23 * 3, 0})->Load();
@@ -770,34 +733,36 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 23 * 3, 18})->Load();
         bts[0] = bt;
-        Elements.StopButton.WithPosition((float) (buttonWidth), 256.0f)
-                ->WithTextures(bts)
-                ->WithID("stop")
-                ->WithCallback(Winamp::Stop, this, nullptr);
-        buttonWidth += (int) Elements.StopButton.textures[0].size.x;
+        Elements.StopButton.WithPosition((float)(buttonWidth), 256.0f)
+            ->WithTextures(bts)
+            ->WithID("stop")
+            ->WithCallback(Winamp::Stop, this, nullptr);
+        buttonWidth += (int)Elements.StopButton.textures[0].size.x;
 
-//=========
-// next button is smaller than others
-// scaling isn't discrete, grow button to regular size plus 1 pixel to fully cover buttons area
+        //=========
+        // next button is smaller than others
+        // scaling isn't discrete, grow button to regular size plus 1 pixel to fully cover buttons area
         bts.clear();
         flatTexture.Reset();
-        bt.active = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({22, 18, 23 * 4, 0})
-                ->WithScale({(size_t) Elements.StopButton.textures[0].size.x + 1,
-                             (size_t) Elements.StopButton.textures[0].size.y}, false)
+        bt.active =
+            flatTexture.FromPair(textures["cbuttons.bmp"])
+                ->WithCrop({22, 18, 23 * 4, 0})
+                ->WithScale({(size_t)Elements.StopButton.textures[0].size.x + 1, (size_t)Elements.StopButton.textures[0].size.y}, false)
                 ->Load();
         bt.size = flatTexture.GetSize();
         flatTexture.Reset();
-        bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({22, 18, 23 * 4, 18})
-                ->WithScale({(size_t) Elements.StopButton.textures[0].size.x + 1,
-                             (size_t) Elements.StopButton.textures[0].size.y}, false)
+        bt.pressed =
+            flatTexture.FromPair(textures["cbuttons.bmp"])
+                ->WithCrop({22, 18, 23 * 4, 18})
+                ->WithScale({(size_t)Elements.StopButton.textures[0].size.x + 1, (size_t)Elements.StopButton.textures[0].size.y}, false)
                 ->Load();
         bts[0] = bt;
-        Elements.NextButton.WithPosition((float) (buttonWidth), 256.0f)
-                ->WithTextures(bts)
-                ->WithID("next")
-                ->WithCallback(Winamp::Next, this, nullptr);
+        Elements.NextButton.WithPosition((float)(buttonWidth), 256.0f)
+            ->WithTextures(bts)
+            ->WithID("next")
+            ->WithCallback(Winamp::Next, this, nullptr);
 
-//=========
+        //=========
         bts.clear();
         flatTexture.Reset();
         bt.active = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({22, 16, 114, 0})->Load();
@@ -806,11 +771,11 @@ namespace Winamp {
         bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({22, 16, 114, 16})->Load();
         bts[0] = bt;
         Elements.EjectButton.WithPosition(396.0f, 259.0f)
-                ->WithTextures(bts)
-                ->WithCallback(Skin::Skin::ToggleDrawSettings, skin, nullptr)
-                ->WithID("eject");
+            ->WithTextures(bts)
+            ->WithCallback(Skin::Skin::ToggleDrawSettings, skin, nullptr)
+            ->WithID("eject");
 
-//=========
+        //=========
         bts.clear();
         flatTexture.Reset();
         bt.active = flatTexture.FromColor({183, 37}, {255.0f, 0.0f, 0.0f, 0.0f});
@@ -818,9 +783,9 @@ namespace Winamp {
         bt.pressed = bt.active;
         bts[0] = bt;
         Elements.TrackTimeToggle.WithID("trackTimeToggle")
-                ->WithPosition(105.0f, 76.0f)
-                ->WithTextures(bts)
-                ->WithCallback(toggleTrackTime, this, nullptr);
+            ->WithPosition(105.0f, 76.0f)
+            ->WithTextures(bts)
+            ->WithCallback(toggleTrackTime, this, nullptr);
 
         return 0;
     }
@@ -832,91 +797,69 @@ namespace Winamp {
         ImGui::SliderBarTexture barT;
         ImGui::ButtonTexture butT;
 
-        barT.textureId = ft.FromPair(textures["posbar.bmp"])
-                ->WithCrop({248, 10, 0, 0})
-                ->Load();
+        barT.textureId = ft.FromPair(textures["posbar.bmp"])->WithCrop({248, 10, 0, 0})->Load();
         barT.size = ft.GetSize();
         barTs[0] = barT;
 
         ft.Reset();
-        butT.active = ft.FromPair(textures["posbar.bmp"])
-                ->WithCrop({29, 10, 248, 0})
-                ->Load();
+        butT.active = ft.FromPair(textures["posbar.bmp"])->WithCrop({29, 10, 248, 0})->Load();
         butT.size = ft.GetSize();
         ft.Reset();
 
-        butT.pressed = ft.FromPair(textures["posbar.bmp"])
-                ->WithCrop({29, 10, 248 + 29 + 1, 0})
-                ->Load();
+        butT.pressed = ft.FromPair(textures["posbar.bmp"])->WithCrop({29, 10, 248 + 29 + 1, 0})->Load();
 
         butTs[0] = butT;
 
         Elements.PositionSlider.WithID("position")
-                ->WithLimits(0, 100)
-                ->WithBarTextures(barTs)
-                ->WithButtonTextures(butTs)
-                ->WithPosition(47.0f, 209.0f)
-                ->WithCallbackPressed(Winamp::SeekPressed, this)
-                ->WithCallbackReleased(Winamp::SeekReleased, this);
+            ->WithLimits(0, 100)
+            ->WithBarTextures(barTs)
+            ->WithButtonTextures(butTs)
+            ->WithPosition(47.0f, 209.0f)
+            ->WithCallbackPressed(Winamp::SeekPressed, this)
+            ->WithCallbackReleased(Winamp::SeekReleased, this);
 
         //=========
         butTs.clear();
         barTs.clear();
         ft.Reset();
 
-        butT.active = ft.FromPair(textures["volume.bmp"])
-                ->WithCrop({14, 11, 15, 422})
-                ->WithScale({40, 31}, false)
-                ->Load();
+        butT.active = ft.FromPair(textures["volume.bmp"])->WithCrop({14, 11, 15, 422})->WithScale({40, 31}, false)->Load();
 
         ft.Reset();
-        butT.pressed = ft.FromPair(textures["volume.bmp"])
-                ->WithCrop({14, 11, 0, 422})
-                ->WithScale({40, 31}, false)
-                ->Load();
+        butT.pressed = ft.FromPair(textures["volume.bmp"])->WithCrop({14, 11, 0, 422})->WithScale({40, 31}, false)->Load();
         butT.size = ft.GetSize();
         butTs[0] = butT;
 
         for (int i = 0; i < VolumeBarCount; i++) {
             ft.Reset();
-            barT.textureId = ft.FromPair(textures["volume.bmp"])
-                    ->WithCrop({68, 13, 0, i * 15})
-                    ->Load();
+            barT.textureId = ft.FromPair(textures["volume.bmp"])->WithCrop({68, 13, 0, i * 15})->Load();
             barT.size = ft.GetSize();
             barTs[i] = barT;
         }
 
         Elements.VolumeSlider.WithID("volume")
-                ->WithLimits(0, 100)
-                ->WithBarTextures(barTs)
-                ->WithButtonTextures(butTs)
-                ->WithPosition(311.0f, 166.0f)
-                ->WithCallbackPressed(Winamp::VolumePressed, this)
-                ->WithCallbackReleased(Winamp::VolumeReleased, this);
+            ->WithLimits(0, 100)
+            ->WithBarTextures(barTs)
+            ->WithButtonTextures(butTs)
+            ->WithPosition(311.0f, 166.0f)
+            ->WithCallbackPressed(Winamp::VolumePressed, this)
+            ->WithCallbackReleased(Winamp::VolumeReleased, this);
 
         //=========
         barTs.clear();
         butTs.clear();
 
         ft.Reset();
-        butT.active = ft.FromPair(textures["balance.bmp"])
-                ->WithCrop({14, 11, 15, 422})
-                ->WithScale({40, 31}, false)
-                ->Load();
+        butT.active = ft.FromPair(textures["balance.bmp"])->WithCrop({14, 11, 15, 422})->WithScale({40, 31}, false)->Load();
         ft.Reset();
-        butT.pressed = ft.FromPair(textures["balance.bmp"])
-                ->WithCrop({14, 11, 0, 422})
-                ->WithScale({40, 31}, false)
-                ->Load();
+        butT.pressed = ft.FromPair(textures["balance.bmp"])->WithCrop({14, 11, 0, 422})->WithScale({40, 31}, false)->Load();
         butT.size = ft.GetSize();
         butTs[0] = butT;
         ft.Reset();
 
         for (int i = 0; i < BalanceBarCount; i++) {
             ft.Reset();
-            barT.textureId = ft.FromPair(textures["balance.bmp"])
-                    ->WithCrop({38, 13, 9, i * 14 + i})
-                    ->Load();
+            barT.textureId = ft.FromPair(textures["balance.bmp"])->WithCrop({38, 13, 9, i * 14 + i})->Load();
             barT.size = ft.GetSize();
             barTs[i] = barT;
             if (i != 0) {
@@ -925,17 +868,17 @@ namespace Winamp {
         }
 
         Elements.BalanceSlider.WithID("balance")
-                ->WithLimits(-100, 100)
-                ->WithBarTextures(barTs)
-                ->WithButtonTextures(butTs)
-                ->WithPosition(515.0f, 166.0f)
-                ->WithCallbackReleased(Winamp::BalancePressed, this)
-                ->WithCallbackReleased(Winamp::BalanceReleased, this);
+            ->WithLimits(-100, 100)
+            ->WithBarTextures(barTs)
+            ->WithButtonTextures(butTs)
+            ->WithPosition(515.0f, 166.0f)
+            ->WithCallbackReleased(Winamp::BalancePressed, this)
+            ->WithCallbackReleased(Winamp::BalanceReleased, this);
         return 0;
     }
 
     void Winamp::notImplemented(void *winampSkin, void *) {
-        auto w = (Winamp *) winampSkin;
+        auto w = (Winamp *)winampSkin;
         w->MarqueeRunning = false;
 
         w->connector->playlist.at(0).TitleMarquee = "Not implemented";
@@ -987,7 +930,7 @@ namespace Winamp {
     }
 
     void Winamp::toggleTrackTime(void *arg, void *i) {
-        auto *w = (Winamp *) arg;
+        auto *w = (Winamp *)arg;
         if (w->negativeTime) {
             w->negativeTime = false;
         } else {
@@ -996,7 +939,7 @@ namespace Winamp {
     }
 
     void Winamp::togglePlaylistFullscreen(void *arg, void *) {
-        auto *w = (Winamp *) arg;
+        auto *w = (Winamp *)arg;
         if (w->playlistFullscreen) {
             w->playlistFullscreen = false;
         } else {
@@ -1012,9 +955,8 @@ namespace Winamp {
 
         const char *end = nullptr;
         auto ctx = ImGui::GetCurrentContext();
-        ImVec2 size = FontRegular->CalcTextSizeA(ttfFontSize, MaxTitleWidth, -1.0f,
-                                                 connector->playlist.at(0).TitleFormatted.c_str(), end,
-                                                 nullptr);
+        ImVec2 size =
+            FontRegular->CalcTextSizeA(ttfFontSize, MaxTitleWidth, -1.0f, connector->playlist.at(0).TitleFormatted.c_str(), end, nullptr);
         if (size.x <= TitleWidth) {
             connector->playlist.at(0).TitleMarquee = connector->playlist.at(0).TitleFormatted;
             return;
@@ -1095,9 +1037,7 @@ namespace Winamp {
         if (marqueeThread)
             pthread_cancel(marqueeThread);
 
-        auto exec = [this]() {
-            Marquee();
-        };
+        auto exec = [this]() { Marquee(); };
         std::thread t(exec);
 
         marqueeThread = t.native_handle();
@@ -1106,31 +1046,31 @@ namespace Winamp {
     }
 
     void Winamp::Stop(void *winamp, void *) {
-        auto w = (Winamp *) winamp;
+        auto w = (Winamp *)winamp;
         w->stopped = true;
         Connector::Stop(w->connector, nullptr);
     }
 
     void Winamp::Play(void *winamp, void *) {
-        auto w = (Winamp *) winamp;
+        auto w = (Winamp *)winamp;
         w->stopped = false;
         Connector::Play(w->connector, nullptr);
     }
 
     void Winamp::Pause(void *winamp, void *) {
-        auto w = (Winamp *) winamp;
+        auto w = (Winamp *)winamp;
         w->stopped = false;
         Connector::Pause(w->connector, nullptr);
     }
 
     void Winamp::Prev(void *winamp, void *) {
-        auto w = (Winamp *) winamp;
+        auto w = (Winamp *)winamp;
         w->stopped = false;
         Connector::Prev(w->connector, nullptr);
     }
 
     void Winamp::Next(void *winamp, void *) {
-        auto w = (Winamp *) winamp;
+        auto w = (Winamp *)winamp;
         w->stopped = false;
         Connector::Next(w->connector, nullptr);
     }
@@ -1185,9 +1125,7 @@ namespace Winamp {
         MarqueeRunning = false;
     }
 
-    void Winamp::WithConfig(Config *c) {
-        config = c;
-    }
+    void Winamp::WithConfig(Config *c) { config = c; }
 
     void Config::Default() {
         useBitmapFont = true;
@@ -1208,8 +1146,7 @@ namespace Winamp {
         }
 
         if (status->Duration > 0) {
-            status->PositionPercent = (int) std::ceil(
-                    float(status->Elapsed) / float(status->Duration) * 100);
+            status->PositionPercent = (int)std::ceil(float(status->Elapsed) / float(status->Duration) * 100);
         }
 
         int minutes, seconds;
@@ -1231,16 +1168,13 @@ namespace Winamp {
         char secs[3]{};
         int fullSeconds = playlist->at(0).Duration % 60;
         std::snprintf(secs, 3, "%02d", fullSeconds);
-        playlist->at(0).TitleFormatted =
-                playlist->at(0).Track + ". " + playlist->at(0).Artist + " - " +
-                playlist->at(0).Title + " (" +
-                std::to_string(playlist->at(0).Duration / 60) + ":" + std::string(secs) + ")";
+        playlist->at(0).TitleFormatted = playlist->at(0).Track + ". " + playlist->at(0).Artist + " - " + playlist->at(0).Title + " (" +
+                                         std::to_string(playlist->at(0).Duration / 60) + ":" + std::string(secs) + ")";
 
         status->formatted = true;
     }
 
-    Fonts Winamp::addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, bool isEx,
-                          TextureMapEntry fontRegular) const {
+    Fonts Winamp::addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, bool isEx, TextureMapEntry fontRegular) const {
         auto io = ImGui::GetIO();
         io.Fonts->Clear();
 
@@ -1270,8 +1204,7 @@ namespace Winamp {
 
         range.BuildRanges(&gr);
 
-        ImFont *a = io.Fonts->AddFontFromFileTTF(ttfFontPath.c_str(), ttfFontSize, nullptr,
-                                                 gr.Data);
+        ImFont *a = io.Fonts->AddFontFromFileTTF(ttfFontPath.c_str(), ttfFontSize, nullptr, gr.Data);
         ImFont *font = io.Fonts->AddFontDefault();
 
         char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\"@   0123456789..:()-'!_+\\/[]^&%,=$#\x0\x0\x0?*";
@@ -1279,17 +1212,17 @@ namespace Winamp {
 
         int rect_ids[sizeof(alphabet) + sizeof(lowercase)];
         int i = 0;
-        for (char c: alphabet) {
+        for (char c : alphabet) {
             rect_ids[i] = io.Fonts->AddCustomRectFontGlyph(font, c, 14, 17, 14);
             i++;
         }
 
-        for (char c: lowercase) {
+        for (char c : lowercase) {
             rect_ids[i] = io.Fonts->AddCustomRectFontGlyph(font, c, 14, 17, 14);
             i++;
         }
 
-//    std::pair<char *, size_t> data;
+        //    std::pair<char *, size_t> data;
         char alphabetNum[] = "0123456789 -";
         size_t len = sizeof(alphabetNum) - 1;
 
@@ -1297,19 +1230,20 @@ namespace Winamp {
             len = len - 2;
         }
 
-//    if (textureMap["nums_ex.bmp"].first) {
-//        data = textureMap["nums_ex.bmp"];
-//    } else {
-//        data = textureMap["numbers.bmp"];
-//        len = len - 2;
-//    }
+        //    if (textureMap["nums_ex.bmp"].first) {
+        //        data = textureMap["nums_ex.bmp"];
+        //    } else {
+        //        data = textureMap["numbers.bmp"];
+        //        len = len - 2;
+        //    }
 
         ImFontConfig font_cfg = ImFontConfig();
 
         font_cfg.MergeMode = false;
         const ImWchar glyph_ranges[] = {
-                0x002D, 0x0039, // alphabetEx
-                0,
+            0x002D,
+            0x0039, // alphabetEx
+            0,
         };
 
         font_cfg.GlyphRanges = glyph_ranges;
@@ -1317,7 +1251,7 @@ namespace Winamp {
 
         int iNum = 0;
         int rect_ids_num[len];
-        for (char c: alphabetNum) {
+        for (char c : alphabetNum) {
             rect_ids_num[iNum] = io.Fonts->AddCustomRectFontGlyph(fontNumber, c, 26, 37, 26);
             iNum++;
         }
@@ -1328,16 +1262,16 @@ namespace Winamp {
         ImFontConfig font_cfg_gen = ImFontConfig();
 
         font_cfg_gen.MergeMode = false;
-//    const ImWchar glyph_ranges_gen[] = {
-//            0x002D, 0x0039, // alphabetEx
-//            0,
-//    };
+        //    const ImWchar glyph_ranges_gen[] = {
+        //            0x002D, 0x0039, // alphabetEx
+        //            0,
+        //    };
 
         font_cfg.GlyphRanges = glyph_ranges;
         ImFont *fontGen = io.Fonts->AddFontDefault(&font_cfg_gen);
 
         iNum = 0;
-        for (char c: alphabetGen) {
+        for (char c : alphabetGen) {
             rect_ids_gen[iNum] = io.Fonts->AddCustomRectFontGlyph(fontGen, c, 14, 17, 14);
             iNum++;
         }
@@ -1394,11 +1328,10 @@ namespace Winamp {
 
             if (const ImFontAtlasCustomRect *rect = io.Fonts->GetCustomRectByIndex(rect_id)) {
                 for (int y = 0; y < rect->Height; y++) {
-                    ImU32 *p = (ImU32 *) tex_pixels + (rect->Y + y) * tex_width + (rect->X);
+                    ImU32 *p = (ImU32 *)tex_pixels + (rect->Y + y) * tex_width + (rect->X);
                     for (int x = 0; x < rect->Width; x++) {
                         auto pc = glyph.pixelColor(x, y);
-                        *p++ = IM_COL32((int) pc.quantumRed(), (int) pc.quantumGreen(), (int) pc.quantumBlue(),
-                                        (int) pc.quantumAlpha());
+                        *p++ = IM_COL32((int)pc.quantumRed(), (int)pc.quantumGreen(), (int)pc.quantumBlue(), (int)pc.quantumAlpha());
                     }
                 }
             }
@@ -1423,11 +1356,10 @@ namespace Winamp {
 
             if (const ImFontAtlasCustomRect *rect = io.Fonts->GetCustomRectByIndex(rect_id)) {
                 for (int y = 0; y < rect->Height; y++) {
-                    ImU32 *p = (ImU32 *) tex_pixels + (rect->Y + y) * tex_width + (rect->X);
+                    ImU32 *p = (ImU32 *)tex_pixels + (rect->Y + y) * tex_width + (rect->X);
                     for (int x = 0; x < rect->Width; x++) {
                         auto pc = glyph.pixelColor(x, y);
-                        *p++ = IM_COL32((int) pc.quantumRed(), (int) pc.quantumGreen(), (int) pc.quantumBlue(),
-                                        (int) pc.quantumAlpha());
+                        *p++ = IM_COL32((int)pc.quantumRed(), (int)pc.quantumGreen(), (int)pc.quantumBlue(), (int)pc.quantumAlpha());
                     }
                 }
             }
@@ -1435,7 +1367,7 @@ namespace Winamp {
             rowIndexNum++;
         }
 
-        font->SetGlyphVisible((ImWchar) ' ', true);
+        font->SetGlyphVisible((ImWchar)' ', true);
         return Fonts{a, fontNumber, font};
     }
-}
+} // namespace Winamp

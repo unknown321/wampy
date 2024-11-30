@@ -1,34 +1,32 @@
 #include "shader.h"
 #include "util/util.h"
 
-const GLchar *vertexSource =
-        "#version 100\n"
-        "uniform mat4 ProjMtx;\n"
-        "attribute vec3 Position;\n"
-        "attribute vec2 UV;\n"
-        "attribute vec4 Color;\n"
+const GLchar *vertexSource = "#version 100\n"
+                             "uniform mat4 ProjMtx;\n"
+                             "attribute vec3 Position;\n"
+                             "attribute vec2 UV;\n"
+                             "attribute vec4 Color;\n"
 
-        "varying vec2 Frag_UV;\n"
-        "varying vec4 Frag_Color;\n"
-        "void main()\n"
-        "{\n"
-        "    Frag_UV = UV;\n"
-        "    Frag_Color = Color;\n"
-        "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-        "}\n";
+                             "varying vec2 Frag_UV;\n"
+                             "varying vec4 Frag_Color;\n"
+                             "void main()\n"
+                             "{\n"
+                             "    Frag_UV = UV;\n"
+                             "    Frag_Color = Color;\n"
+                             "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
+                             "}\n";
 
-const GLchar *fragmentSource =
-        "#ifdef GL_ES\n"
-        "    precision mediump float;\n"
-        "#endif\n"
-        "uniform sampler2D Texture;\n"
-        "varying vec2 Frag_UV;\n"
-        "varying vec4 Frag_Color;\n"
-        "void main()\n"
-        "{\n"
-        "    gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV.st);\n"
-        //        "    gl_FragColor = vec4(0.3,0.5,0.4,0.4);\n"
-        "}\n";
+const GLchar *fragmentSource = "#ifdef GL_ES\n"
+                               "    precision mediump float;\n"
+                               "#endif\n"
+                               "uniform sampler2D Texture;\n"
+                               "varying vec2 Frag_UV;\n"
+                               "varying vec4 Frag_Color;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV.st);\n"
+                               //        "    gl_FragColor = vec4(0.3,0.5,0.4,0.4);\n"
+                               "}\n";
 
 GLuint ShaderProgram() {
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -77,24 +75,23 @@ GLuint ShaderProgram() {
     glEnableVertexAttribArray(pos);
 
     GLint uv = glGetAttribLocation(shaderProgram, "UV");
-    glVertexAttribPointer(uv, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
+    glVertexAttribPointer(uv, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (void *)(2 * sizeof(GLfloat)));
     glEnableVertexAttribArray(uv);
 
     GLint color = glGetAttribLocation(shaderProgram, "Color");
-    glVertexAttribPointer(color, 4, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (void *) (4 * sizeof(GLfloat)));
+    glVertexAttribPointer(color, 4, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (void *)(4 * sizeof(GLfloat)));
     glEnableVertexAttribArray(color);
 
     return shaderProgram;
 }
 
-void GLAPIENTRY GlMessageCallback(GLenum source,
-                                  GLenum type,
-                                  GLuint id,
-                                  GLenum severity,
-                                  GLsizei length,
-                                  const GLchar *message,
-                                  const void *userParam) {
-    DLOG("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-         (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-         type, severity, message);
+void GLAPIENTRY
+GlMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
+    DLOG(
+        "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+        type,
+        severity,
+        message
+    );
 }

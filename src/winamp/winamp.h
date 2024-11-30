@@ -3,19 +3,18 @@
 
 #include "../skinVariant.h"
 
-#include <string>
-#include <map>
-#include "imgui.h"
 #include "../skinElement.h"
+#include "imgui.h"
+#include <map>
+#include <string>
 
 namespace Stopwatch {
-    template<typename Clock = std::chrono::high_resolution_clock>
-    class Stopwatch {
+    template <typename Clock = std::chrono::high_resolution_clock> class Stopwatch {
         typename Clock::time_point start_point;
         bool running = false;
-    public:
-        template<typename Rep = typename Clock::duration::rep, typename Units = typename Clock::duration>
-        Rep elapsed_time() const {
+
+      public:
+        template <typename Rep = typename Clock::duration::rep, typename Units = typename Clock::duration> Rep elapsed_time() const {
             auto counted_time = std::chrono::duration_cast<Units>(Clock::now() - start_point).count();
             return static_cast<Rep>(counted_time);
         }
@@ -25,19 +24,15 @@ namespace Stopwatch {
             running = true;
         }
 
-        bool Running() {
-            return running;
-        }
+        bool Running() { return running; }
 
-        void Stop() {
-            running = false;
-        }
+        void Stop() { running = false; }
     };
 
     using precise_stopwatch = Stopwatch<>;
     using system_stopwatch = Stopwatch<std::chrono::system_clock>;
     using monotonic_stopwatch = Stopwatch<std::chrono::steady_clock>;
-}
+} // namespace Stopwatch
 
 namespace Winamp {
 
@@ -107,7 +102,7 @@ namespace Winamp {
     };
 
     class Winamp : public SkinVariant {
-    public:
+      public:
         Winamp() = default;
 
         Config *config{};
@@ -152,7 +147,7 @@ namespace Winamp {
 
         void Unload();
 
-    private:
+      private:
         SkinColors colors{};
         TextureMap textures{};
         std::string newFilename{};
@@ -172,13 +167,11 @@ namespace Winamp {
         bool stopped{};
         Stopwatch::Stopwatch<> stopwatch;
 
-
         int volumeIsBalance();
 
         void probeTrackTitleBackgroundColor();
 
-        Fonts addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, bool isEx,
-                      TextureMapEntry fontRegular) const;
+        Fonts addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, bool isEx, TextureMapEntry fontRegular) const;
 
         static int unzip(const std::string &filename, TextureMap *textures, std::string *status);
 
@@ -216,6 +209,6 @@ namespace Winamp {
 
         void Format();
     };
-}
+} // namespace Winamp
 
-#endif //WAMPY_WINAMP_H
+#endif // WAMPY_WINAMP_H

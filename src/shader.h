@@ -5,13 +5,7 @@
 
 GLuint ShaderProgram();
 
-void GLAPIENTRY GlMessageCallback(GLenum source,
-                                  GLenum type,
-                                  GLuint id,
-                                  GLenum severity,
-                                  GLsizei length,
-                                  const GLchar *message,
-                                  const void *userParam);
+void GLAPIENTRY
+GlMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
 
-
-#endif //WAMPY_SHADER_H
+#endif // WAMPY_SHADER_H

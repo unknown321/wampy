@@ -1,8 +1,8 @@
 #ifndef SONG_H
 #define SONG_H
 
-#include <string>
 #include <atomic>
+#include <string>
 
 struct DurationDisplay {
     int Minute1 = 0;

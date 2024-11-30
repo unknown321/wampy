@@ -1,10 +1,10 @@
 #ifndef WAMPY_TAPE_H
 #define WAMPY_TAPE_H
 
-#include <string>
-#include "imgui.h"
-#include "../skinElement.h"
 #include "../connector/connector.h"
+#include "../skinElement.h"
+#include "imgui.h"
+#include <string>
 
 namespace Tape {
     enum Errors {
@@ -30,9 +30,9 @@ namespace Tape {
     struct TapeElements {
         FlatTexture Main;
         Button ToggleSettings;
-//        ImVec2 PosArtist;
-//        ImVec2 PosText;
-//        ImVec2 PosReel;
+        //        ImVec2 PosArtist;
+        //        ImVec2 PosText;
+        //        ImVec2 PosReel;
     };
 
     struct Tape {
@@ -61,5 +61,5 @@ namespace Tape {
         void Unload();
     };
 
-}
-#endif //WAMPY_TAPE_H
+} // namespace Tape
+#endif // WAMPY_TAPE_H

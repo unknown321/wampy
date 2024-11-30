@@ -1,15 +1,13 @@
-#include <sys/stat.h>
 #include "util.h"
 #include "../wstring.h"
-#include "imgui_internal.h"
+#include "GLFW/glfw3.h"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
-#include "GLFW/glfw3.h"
 #include "imgui_impl_glfw.h"
+#include "imgui_internal.h"
+#include <sys/stat.h>
 
-
-void
-listdir(const char *dirname, std::vector<directoryEntry> *list, const std::string &extension) {
+void listdir(const char *dirname, std::vector<directoryEntry> *list, const std::string &extension) {
     DIR *d;
     struct dirent *dir;
     d = opendir(dirname);
@@ -35,7 +33,6 @@ listdir(const char *dirname, std::vector<directoryEntry> *list, const std::strin
     }
 }
 
-
 void listdirs(const char *dirname, std::vector<directoryEntry> *list) {
     DIR *d;
     struct dirent *dir;
@@ -60,15 +57,15 @@ void listdirs(const char *dirname, std::vector<directoryEntry> *list) {
 }
 
 void UnloadTexture(ImTextureID textureID) {
-//    DLOG("unload %p\n", textureID);
+    //    DLOG("unload %p\n", textureID);
     if (textureID != nullptr) {
-        auto g = (GLuint) *(unsigned int *) &textureID;
+        auto g = (GLuint) * (unsigned int *)&textureID;
         glDeleteTextures(1, &g);
     }
 }
 
 void UnloadTexture(GLuint textureID) {
-//    DLOG("unload %d\n", textureID);
+    //    DLOG("unload %d\n", textureID);
     if (textureID != 0) {
         glDeleteTextures(1, &textureID);
     }
@@ -84,21 +81,19 @@ bool LoadTextureFromMagic(unsigned char *data, GLuint *out_texture, int dstWidth
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                    GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+                    GL_CLAMP_TO_EDGE);                                   // This is required on WebGL for non power-of-two textures
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
 
     // Upload pixels into texture
 #if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-                 dstWidth, dstHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dstWidth, dstHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     *out_texture = image_texture;
 
     return true;
 }
-
 
 ImU32 colorToImCol32(const std::string &color) {
     unsigned int i[4]{};
@@ -146,7 +141,6 @@ std::vector<std::string> split(const std::string &s, const std::string &delimite
     return res;
 }
 
-
 std::string join(const std::vector<std::string> &v, int start) {
     std::string res;
     for (int i = start; i < v.size(); i++) {
@@ -158,7 +152,7 @@ std::string join(const std::vector<std::string> &v, int start) {
 
 void printFPS() {
     auto io = ImGui::GetIO();
-//    ImGui::SetCursorPos(ImVec2(0, 460));
+    //    ImGui::SetCursorPos(ImVec2(0, 460));
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 }
 
@@ -192,29 +186,36 @@ enum {
     WRT_ContentRegionRect,
     WRT_Count
 }; // Windows Rect Type
-const char *wrt_rects_names[WRT_Count] = {"OuterRect", "OuterRectClipped", "InnerRect", "InnerClipRect", "WorkRect",
-                                          "Content", "ContentIdeal", "ContentRegionRect"};
+const char *wrt_rects_names[WRT_Count] = {
+    "OuterRect", "OuterRectClipped", "InnerRect", "InnerClipRect", "WorkRect", "Content", "ContentIdeal", "ContentRegionRect"};
 
 ImRect GetWindowRect(ImGuiWindow *window, int rect_type) {
-    if (rect_type == WRT_OuterRect) { return window->Rect(); }
-    else if (rect_type == WRT_OuterRectClipped) { return window->OuterRectClipped; }
-    else if (rect_type == WRT_InnerRect) { return window->InnerRect; }
-    else if (rect_type == WRT_InnerClipRect) { return window->InnerClipRect; }
-    else if (rect_type == WRT_WorkRect) { return window->WorkRect; }
-    else if (rect_type == WRT_Content) {
+    if (rect_type == WRT_OuterRect) {
+        return window->Rect();
+    } else if (rect_type == WRT_OuterRectClipped) {
+        return window->OuterRectClipped;
+    } else if (rect_type == WRT_InnerRect) {
+        return window->InnerRect;
+    } else if (rect_type == WRT_InnerClipRect) {
+        return window->InnerClipRect;
+    } else if (rect_type == WRT_WorkRect) {
+        return window->WorkRect;
+    } else if (rect_type == WRT_Content) {
         ImVec2 min = window->InnerRect.Min - window->Scroll + window->WindowPadding;
         return ImRect(min, min + window->ContentSize);
     } else if (rect_type == WRT_ContentIdeal) {
         ImVec2 min = window->InnerRect.Min - window->Scroll + window->WindowPadding;
         return ImRect(min, min + window->ContentSizeIdeal);
-    } else if (rect_type == WRT_ContentRegionRect) { return window->ContentRegionRect; }
+    } else if (rect_type == WRT_ContentRegionRect) {
+        return window->ContentRegionRect;
+    }
     IM_ASSERT(0);
     return ImRect();
 }
 
 void DrawWindowRects() {
     auto g = ImGui::GetCurrentContext();
-    for (ImGuiWindow *window: g->Windows) {
+    for (ImGuiWindow *window : g->Windows) {
         if (!window->WasActive)
             continue;
         ImDrawList *draw_list = ImGui::GetForegroundDrawList(window);
@@ -224,8 +225,7 @@ void DrawWindowRects() {
             char buf[32];
             ImFormatString(buf, IM_ARRAYSIZE(buf), "%d", window->BeginOrderWithinContext);
             float font_size = 12;
-            draw_list->AddRectFilled(window->Pos, window->Pos + ImVec2(font_size, font_size),
-                                     IM_COL32(200, 100, 100, 255));
+            draw_list->AddRectFilled(window->Pos, window->Pos + ImVec2(font_size, font_size), IM_COL32(200, 100, 100, 255));
             draw_list->AddText(window->Pos, IM_COL32(255, 255, 255, 255), buf);
         }
     }
@@ -242,6 +242,6 @@ bool IsMounted() {
 #ifdef DESKTOP
     return false;
 #endif
-    struct stat sb{};
+    struct stat sb {};
     return (stat("/contents/MUSIC/", &sb) != 0);
 }

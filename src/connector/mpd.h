@@ -57,10 +57,10 @@ namespace Player {
 
         __attribute__((unused)) void volumeLoop() override;
 
-        void FeatureBigCover(bool enable) override {};
+        void FeatureBigCover(bool enable) override{};
 
-        void FeatureShowTime(bool enable) override {};
+        void FeatureShowTime(bool enable) override{};
     };
-}
+} // namespace Player
 
-#endif //WAMPY_MPD_H
+#endif // WAMPY_MPD_H

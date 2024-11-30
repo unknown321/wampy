@@ -1,25 +1,24 @@
 #ifndef IMGUITEST_UTIL_H
 #define IMGUITEST_UTIL_H
 
-#include <string>
+#include "GLFW/glfw3.h"
+#include "glm/ext/matrix_float4x4.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "glm/ext/matrix_float4x4.hpp"
-#include "GLFW/glfw3.h"
-#include <glad/glad.h>
-#include <vector>
 #include <dirent.h>
+#include <glad/glad.h>
 #include <map>
+#include <string>
+#include <vector>
 
 #define DLOG(fmt, ...) fprintf(stderr, "[wampy] %s %s:%d " fmt, __FILE__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-//#define DLOG(fmt, ...) printf("[wampy] " fmt, ##__VA_ARGS__)
+// #define DLOG(fmt, ...) printf("[wampy] " fmt, ##__VA_ARGS__)
 
 struct directoryEntry {
     std::string fullPath{};
     std::string name{};
     bool valid = true;
 };
-
 
 struct TextureMapEntry {
     char *data;
@@ -38,9 +37,7 @@ void UnloadTexture(GLuint textureID);
 
 bool LoadTextureFromMagic(unsigned char *data, GLuint *out_texture, int dstWidth, int dstHeight);
 
-constexpr unsigned int hash(const char *s, int off = 0) {
-    return !s[off] ? 5381 : (hash(s, off + 1) * 33) ^ s[off];
-}
+constexpr unsigned int hash(const char *s, int off = 0) { return !s[off] ? 5381 : (hash(s, off + 1) * 33) ^ s[off]; }
 
 ImU32 colorToImCol32(const std::string &color);
 
@@ -64,4 +61,4 @@ void DrawWindowRects();
 
 bool IsMounted();
 
-#endif //IMGUITEST_UTIL_H
+#endif // IMGUITEST_UTIL_H

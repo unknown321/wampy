@@ -1,10 +1,10 @@
 #ifndef WAMPY_CASSETTE_H
 #define WAMPY_CASSETTE_H
 
-#include "../skinVariant.h"
 #include "../skinElement.h"
-#include <thread>
+#include "../skinVariant.h"
 #include "tape.h"
+#include <thread>
 
 namespace Cassette {
     struct ConfigEntry {
@@ -16,16 +16,12 @@ namespace Cassette {
     typedef std::map<Tape::TapeType, ConfigEntry> configInternal;
 
     class Config {
-    public:
+      public:
         Config() = default;
 
-        ConfigEntry *Get(const Tape::TapeType t) {
-            return &data.at(t);
-        };
+        ConfigEntry *Get(const Tape::TapeType t) { return &data.at(t); };
 
-        void Set(const Tape::TapeType t, ConfigEntry v) {
-            data[t] = std::move(v);
-        };
+        void Set(const Tape::TapeType t, ConfigEntry v) { data[t] = std::move(v); };
 
         void Default();
 
@@ -52,7 +48,7 @@ namespace Cassette {
     };
 
     class Cassette : public SkinVariant {
-    public:
+      public:
         Cassette() = default;
 
         SkinList *reelList{};
@@ -80,7 +76,7 @@ namespace Cassette {
 
         void SelectTape(bool force = false);
 
-    private:
+      private:
         std::map<std::string, Tape::Tape> Tapes;
         std::map<std::string, Tape::Reel> Reels;
         int reelID = 0;
@@ -101,5 +97,5 @@ namespace Cassette {
 
         [[noreturn]] void ReelLoop();
     };
-}
-#endif //WAMPY_CASSETTE_H
+} // namespace Cassette
+#endif // WAMPY_CASSETTE_H

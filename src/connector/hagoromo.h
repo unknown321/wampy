@@ -1,15 +1,15 @@
 #ifndef WAMPY_HAGOROMO_H
 #define WAMPY_HAGOROMO_H
 
-#include "connector.h"
 #include "command.pb.h"
+#include "connector.h"
 
 namespace Player {
     struct HagoromoConnector : Connector {
 
         const char *touchscreenPath = "/sys/devices/platform/mt-i2c.1/i2c-1/1-0048/sleep";
         const char *brightnessPath = "/sys/class/leds/lcd-backlight/brightness";
-//        const char *thermalPath = "/sys/class/thermal/thermal_zone0/temp";
+        //        const char *thermalPath = "/sys/class/thermal/thermal_zone0/temp";
 
         static void sendData(char *data, size_t len, std::string *res);
 
@@ -31,7 +31,7 @@ namespace Player {
 
         void PollStatus() override;
 
-        __attribute__((unused)) void setVolumeALSA(int i) {};
+        __attribute__((unused)) void setVolumeALSA(int i){};
 
         void SetVolume(int i, bool relative) override;
 
@@ -55,7 +55,7 @@ namespace Player {
 
         void powerLoop(bool *render, bool *power) override;
 
-        __attribute__((unused)) void volumeLoop() override {};
+        __attribute__((unused)) void volumeLoop() override{};
 
         void FeatureBigCover(bool enable) override;
 
@@ -63,6 +63,6 @@ namespace Player {
 
         void Start() override;
     };
-}
+} // namespace Player
 
-#endif //WAMPY_HAGOROMO_H
+#endif // WAMPY_HAGOROMO_H

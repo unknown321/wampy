@@ -1,11 +1,11 @@
 #ifndef SKIN_H
 #define SKIN_H
 
-#include <thread>
-#include "skinVariant.h"
-#include "winamp/winamp.h"
 #include "cassette/cassette.h"
 #include "config.h"
+#include "skinVariant.h"
+#include "winamp/winamp.h"
+#include <thread>
 
 enum SettingsTab {
     SkinOpts = 0,
@@ -19,7 +19,7 @@ struct Skin {
     SkinList *skinList{};
     SkinList *reelList{};
     SkinList *tapeList{};
-    int selectedSkinIdx{}; // winamp skin idx
+    int selectedSkinIdx{};       // winamp skin idx
     std::string loadStatusStr{}; // skin loading status in settings
     Connector *connector{};
     bool loading{};
@@ -39,8 +39,8 @@ struct Skin {
     Cassette::Cassette cassette{};
 
     AppConfig::AppConfig *config{};
-//    int *hold_value{};
-//    bool loading{};
+    //    int *hold_value{};
+    //    bool loading{};
     int loadStatus{};
     bool onlyFont{};
 
@@ -51,21 +51,21 @@ struct Skin {
         loading = true;
         std::string filepath{};
         switch (activeSkinVariant) {
-            case CASSETTE:
-                cassette.AddFonts(FontRegular);
-                break;
-            case WINAMP:
-                winamp.Unload();
+        case CASSETTE:
+            cassette.AddFonts(FontRegular);
+            break;
+        case WINAMP:
+            winamp.Unload();
 
-                if (!SkinExists(config->winamp.filename, skinList, &filepath)) {
-                    DLOG("no skin %s found in skinlist\n", config->winamp.filename.c_str());
-                    exit(1);
-                }
+            if (!SkinExists(config->winamp.filename, skinList, &filepath)) {
+                DLOG("no skin %s found in skinlist\n", config->winamp.filename.c_str());
+                exit(1);
+            }
 
-                winamp.Load(filepath, FontRegular);
-                break;
-            default:
-                break;
+            winamp.Load(filepath, FontRegular);
+            break;
+        default:
+            break;
         }
 
         config->Save();
@@ -114,23 +114,23 @@ struct Skin {
         }
 
         switch (config->activeSkin) {
-            case WINAMP:
-                winamp.render = render;
-                winamp.skin = (void *) this;
-                winamp.WithConfig(&config->winamp);
-                winamp.Load(filepath, FontRegular);
-                break;
-            case CASSETTE:
-                cassette.reelList = reelList;
-                cassette.tapeList = tapeList;
-                cassette.render = render;
-                cassette.skin = (void *) this;
-                cassette.WithConfig(&config->cassette);
-                cassette.Load("", FontRegular);
-                break;
-            default:
-//                winamp.Draw();
-                break;
+        case WINAMP:
+            winamp.render = render;
+            winamp.skin = (void *)this;
+            winamp.WithConfig(&config->winamp);
+            winamp.Load(filepath, FontRegular);
+            break;
+        case CASSETTE:
+            cassette.reelList = reelList;
+            cassette.tapeList = tapeList;
+            cassette.render = render;
+            cassette.skin = (void *)this;
+            cassette.WithConfig(&config->cassette);
+            cassette.Load("", FontRegular);
+            break;
+        default:
+            //                winamp.Draw();
+            break;
         }
 
         activeSkinVariant = config->activeSkin;
@@ -143,38 +143,44 @@ struct Skin {
         // User code should never have to go through such hoops!
         // You can generally iterate between ImGuiKey_NamedKey_BEGIN and ImGuiKey_NamedKey_END.
 #ifdef IMGUI_DISABLE_OBSOLETE_KEYIO
-        struct funcs { static bool IsLegacyNativeDupe(ImGuiKey) { return false; } };
-            ImGuiKey start_key = ImGuiKey_NamedKey_BEGIN;
+        struct funcs {
+            static bool IsLegacyNativeDupe(ImGuiKey) { return false; }
+        };
+        ImGuiKey start_key = ImGuiKey_NamedKey_BEGIN;
 #else
         struct funcs {
-            static bool IsLegacyNativeDupe(ImGuiKey key) {
-                return key >= 0 && key < 512 && ImGui::GetIO().KeyMap[key] != -1;
-            }
+            static bool IsLegacyNativeDupe(ImGuiKey key) { return key >= 0 && key < 512 && ImGui::GetIO().KeyMap[key] != -1; }
         }; // Hide Native<>ImGuiKey duplicates when both exists in the array
-        auto start_key = (ImGuiKey) 0;
+        auto start_key = (ImGuiKey)0;
 #endif
         ImGui::SetCursorPos({0, 400});
         ImGuiIO &io = ImGui::GetIO();
         ImGui::Text("Mouse pos: (%g, %g)", io.MousePos.x, io.MousePos.y);
         ImGui::SameLine();
         ImGui::Text("Keys down:");
-        for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey) (key + 1)) {
-            if (funcs::IsLegacyNativeDupe(key) || !ImGui::IsKeyDown(key))continue;
+        for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1)) {
+            if (funcs::IsLegacyNativeDupe(key) || !ImGui::IsKeyDown(key))
+                continue;
             ImGui::SameLine();
             ImGui::Text((key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key);
         }
-        ImGui::Text("Keys mods: %s%s%s%s", io.KeyCtrl ? "CTRL " : "", io.KeyShift ? "SHIFT " : "",
-                    io.KeyAlt ? "ALT " : "", io.KeySuper ? "SUPER " : "");
+        ImGui::Text(
+            "Keys mods: %s%s%s%s",
+            io.KeyCtrl ? "CTRL " : "",
+            io.KeyShift ? "SHIFT " : "",
+            io.KeyAlt ? "ALT " : "",
+            io.KeySuper ? "SUPER " : ""
+        );
         ImGui::Text("Chars queue:");
         for (int i = 0; i < io.InputQueueCharacters.Size; i++) {
             ImWchar c = io.InputQueueCharacters[i];
             ImGui::SameLine();
-            ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char) c : '?', c);
+            ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c);
         } // FIXME: We should convert 'c' to UTF-8 here but the functions are not public.
     }
 
     static void ToggleDrawSettings(void *skin, void *) {
-        auto s = (Skin *) skin;
+        auto s = (Skin *)skin;
         assert(s);
         if (s->displaySettings == 0) {
             s->displaySettings = 1;
@@ -200,7 +206,7 @@ struct Skin {
 
         loadStatusStr = "Skin loaded";
 
-        for (const auto &v: *skinList) {
+        for (const auto &v : *skinList) {
             if (WinampCurrentSkinName == v.fullPath) {
                 config->winamp.filename = v.name;
                 config->Save();
@@ -221,7 +227,7 @@ struct Skin {
         const auto timeinfo = localtime(&rawtime);
         strftime(buffer, sizeof(buffer), "%H:%M", timeinfo);
 
-//        ImGui::SetCursorPosY(480.0f - ImGui::GetTextLineHeight() - 10.0f);
+        //        ImGui::SetCursorPosY(480.0f - ImGui::GetTextLineHeight() - 10.0f);
         ImGui::SameLine(380.0f);
         ImGui::Text("%s", buffer);
 
@@ -334,7 +340,6 @@ struct Skin {
             config->Save();
             connector->FeatureShowTime(config->features.showTime);
         }
-
     }
 
     void DrawSkin() {
@@ -355,9 +360,9 @@ struct Skin {
 
                 ImGui::NewLine();
             }
-//            if (ImGui::Button("Unload")) {
-//                winamp.Unload();
-//            }
+            //            if (ImGui::Button("Unload")) {
+            //                winamp.Unload();
+            //            }
 
             if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
                 config->Save();
@@ -369,13 +374,11 @@ struct Skin {
 
             ImGui::NewLine();
 
-
-            if (ImGui::BeginCombo("##", skinList->at(selectedSkinIdx).name.c_str(),
-                                  ImGuiComboFlags_HeightSmall)) {
+            if (ImGui::BeginCombo("##", skinList->at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightSmall)) {
 #ifndef DESKTOP
                 auto clip_min = ImVec2(0, 0);
-//                auto clip_max = ImVec2(ImGui::GetCursorPosX() + ImGui::GetTextLineHeightWithSpacing() * 6.3f,
-//                                       ImGui::GetCursorPosY() + ImGui::GetTextLineHeightWithSpacing() * 5.0f);
+                //                auto clip_max = ImVec2(ImGui::GetCursorPosX() + ImGui::GetTextLineHeightWithSpacing() * 6.3f,
+                //                                       ImGui::GetCursorPosY() + ImGui::GetTextLineHeightWithSpacing() * 5.0f);
                 auto clip_max = ImVec2(800, 800);
                 ImGui::PushClipRect(clip_min, clip_max, false);
 #endif
@@ -412,9 +415,8 @@ struct Skin {
                 ImGui::NewLine();
             }
 
-            static ImGuiTableFlags flags =
-                    ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
-                    ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
+            static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
+                                           ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
 
             ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 7);
             if (ImGui::BeginTable("configTable", 3, flags, outer_size)) {
@@ -424,15 +426,14 @@ struct Skin {
                 ImGui::TableSetupColumn("Reel", ImGuiTableColumnFlags_None);
                 ImGui::TableHeadersRow();
 
-                for (auto &tt: config->cassette.data) {
+                for (auto &tt : config->cassette.data) {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
                     ImGui::Text("%s", tt.second.name.c_str());
 
                     ImGui::TableNextColumn();
-                    if (ImGui::BeginCombo(("##" + tt.second.name + "tape").c_str(), tt.second.tape.c_str(),
-                                          ImGuiComboFlags_None)) {
-                        for (auto &n: *tapeList) {
+                    if (ImGui::BeginCombo(("##" + tt.second.name + "tape").c_str(), tt.second.tape.c_str(), ImGuiComboFlags_None)) {
+                        for (auto &n : *tapeList) {
                             if (!n.valid) {
                                 continue;
                             }
@@ -453,9 +454,8 @@ struct Skin {
                     }
 
                     ImGui::TableNextColumn();
-                    if (ImGui::BeginCombo(("##" + tt.second.name + "reel").c_str(), tt.second.reel.c_str(),
-                                          ImGuiComboFlags_None)) {
-                        for (auto &n: *reelList) {
+                    if (ImGui::BeginCombo(("##" + tt.second.name + "reel").c_str(), tt.second.reel.c_str(), ImGuiComboFlags_None)) {
+                        for (auto &n : *reelList) {
                             if (!n.valid) {
                                 continue;
                             }
@@ -498,17 +498,17 @@ struct Skin {
         ImGui::PushFont(FontRegular);
         Header();
         switch (displayTab) {
-            case SettingsTab::SkinOpts:
-                DrawSkin();
-                break;
-            case SettingsTab::Misc:
-                Misc();
-                break;
-            case SettingsTab::TabFonts:
-                Fonts();
-                break;
-            default:
-                break;
+        case SettingsTab::SkinOpts:
+            DrawSkin();
+            break;
+        case SettingsTab::Misc:
+            Misc();
+            break;
+        case SettingsTab::TabFonts:
+            Fonts();
+            break;
+        default:
+            break;
         }
 
         ImGui::PopFont();
@@ -517,20 +517,20 @@ struct Skin {
     void Draw() {
         if (displaySettings == 0) {
             switch (activeSkinVariant) {
-                case WINAMP:
-                    winamp.Draw();
-                    break;
-                case CASSETTE:
-                    cassette.Draw();
-                    break;
-                default:
-                    winamp.Draw();
-                    break;
+            case WINAMP:
+                winamp.Draw();
+                break;
+            case CASSETTE:
+                cassette.Draw();
+                break;
+            default:
+                winamp.Draw();
+                break;
             }
         } else {
             DrawSettings();
         }
-//        DisplayKeys();
+        //        DisplayKeys();
     }
 
     void KeyHandler() const {
@@ -584,7 +584,7 @@ struct Skin {
         }
 
         if (ImGui::IsKeyReleased(ImGuiKey_VolumeUp)) {
-//                player->connector->SetVolume(1, true);
+            //                player->connector->SetVolume(1, true);
             connector->TestCommand();
             return;
         }

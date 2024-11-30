@@ -4,8 +4,8 @@
 #include "imgui.h"
 #include <unistd.h>
 
-#include <utility>
 #include "glad/glad.h"
+#include <utility>
 
 #include "imgui_widgets.h"
 #include "magick/magick.h"
@@ -24,14 +24,13 @@ typedef struct {
     float x, y;
 } FPoint;
 
-static ImVec2 uv0 = ImVec2(0.0f, 0.0f);                            // UV coordinates for lower-left
-static ImVec2 uv1 = ImVec2(1.0f, 1.0f);    // UV coordinates for (32,32) in our texture
-static ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             // Black background
-static ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);           // No tint
+static ImVec2 uv0 = ImVec2(0.0f, 0.0f);                  // UV coordinates for lower-left
+static ImVec2 uv1 = ImVec2(1.0f, 1.0f);                  // UV coordinates for (32,32) in our texture
+static ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);   // Black background
+static ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // No tint
 
 const float upscaleRatioWalkman = 800.0f / 275.0f;
 const float upscaleRatioCassette = 1.0f;
-
 
 struct FlatTexture {
     explicit FlatTexture(FlatTexture *pTexture) {}
@@ -70,9 +69,7 @@ struct FlatTexture {
         return this;
     }
 
-    Magick::Color GetColor(ssize_t x, ssize_t y) const {
-        return image->pixelColor(x, y);
-    }
+    Magick::Color GetColor(ssize_t x, ssize_t y) const { return image->pixelColor(x, y); }
 
     FlatTexture *FromData(char *data, size_t length) {
         this->image = new Magick::Image();
@@ -101,7 +98,7 @@ struct FlatTexture {
 //        DLOG("tid %d\n", this->textureID);
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
-        return (ImTextureID) this->textureID;
+        return (ImTextureID)this->textureID;
 #pragma GCC diagnostic pop
     }
 
@@ -115,11 +112,11 @@ struct FlatTexture {
 
     void Upscale() {
         if (upscaled.width < 1) {
-            upscaled.width = (unsigned int) ((float) image->size().width() * ratio);
+            upscaled.width = (unsigned int)((float)image->size().width() * ratio);
         }
 
         if (upscaled.height < 1) {
-            upscaled.height = (unsigned int) ((float) image->size().height() * ratio);
+            upscaled.height = (unsigned int)((float)image->size().height() * ratio);
         }
 
         auto geo = Magick::Geometry{upscaled.width, upscaled.height, 0, 0};
@@ -155,9 +152,7 @@ struct FlatTexture {
         return this;
     }
 
-    void Unload() const {
-        UnloadTexture(textureID);
-    }
+    void Unload() const { UnloadTexture(textureID); }
 
     // breaks in thread
     void LoadTexture() {
@@ -166,9 +161,10 @@ struct FlatTexture {
         }
         Magick::Blob blob;
         this->image->write(&blob);
-        bool ret = LoadTextureFromMagic((unsigned char *) blob.data(), &textureID,
-                                        (int) this->image->size().width(), (int) this->image->size().height());
-//        DLOG("tid %d\n", textureID);
+        bool ret = LoadTextureFromMagic(
+            (unsigned char *)blob.data(), &textureID, (int)this->image->size().width(), (int)this->image->size().height()
+        );
+        //        DLOG("tid %d\n", textureID);
         IM_ASSERT(ret);
     }
 
@@ -184,37 +180,31 @@ struct FlatTexture {
         this->load();
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
-        return (ImTextureID) this->textureID;
+        return (ImTextureID)this->textureID;
 #pragma GCC diagnostic pop
     }
 
     // returns size after upscaling
-    ImVec2 GetSize() const {
-        return {(float) upscaled.width, (float) upscaled.height};
-    }
+    ImVec2 GetSize() const { return {(float)upscaled.width, (float)upscaled.height}; }
 
     void Draw() const {
         ImGui::SetCursorPos(position);
-        ImGui::Image(
-                (void *) (intptr_t) textureID,
-                ImVec2(float(upscaled.width), float(upscaled.height)));
+        ImGui::Image((void *)(intptr_t)textureID, ImVec2(float(upscaled.width), float(upscaled.height)));
     }
 
     void DrawAt(float x, float y) const {
         ImGui::SetCursorPos(ImVec2(x, y));
         auto size = ImVec2(float(upscaled.width), float(upscaled.height));
-        ImGui::Image((void *) (intptr_t) textureID, size);
+        ImGui::Image((void *)(intptr_t)textureID, size);
     }
 
     void DrawAt(ImVec2 pos) const {
         ImGui::SetCursorPos(pos);
         auto size = ImVec2(float(upscaled.width), float(upscaled.height));
-        ImGui::Image((void *) (intptr_t) textureID, size);
+        ImGui::Image((void *)(intptr_t)textureID, size);
     }
 
-    void Release() const {
-        delete this->image;
-    }
+    void Release() const { delete this->image; }
 
     FlatTexture *Reset() {
         this->crop = Magick::RectangleInfo{};
@@ -225,7 +215,6 @@ struct FlatTexture {
         return this;
     }
 };
-
 
 struct Button {
     char iid[40]{};
@@ -261,7 +250,7 @@ struct Button {
     }
 
     void Unload() {
-        for (auto &v: this->textures) {
+        for (auto &v : this->textures) {
             UnloadTexture(v.second.active);
             UnloadTexture(v.second.pressed);
         }
@@ -281,10 +270,7 @@ struct Button {
 
         auto v = this->textures.at(key);
         ImGui::SetCursorPos(position);
-        if (ImGui::MyImageButtonEx(iid,
-                                   v.active,
-                                   v.pressed,
-                                   v.size, uv0, uv1, bg_col, tint_col, 0)) {
+        if (ImGui::MyImageButtonEx(iid, v.active, v.pressed, v.size, uv0, uv1, bg_col, tint_col, 0)) {
 
             DLOG("clicked button %s\n", iid);
 
@@ -307,10 +293,7 @@ struct Button {
 
         auto v = this->textures.at(key);
         ImGui::SetCursorPos(ImVec2(x, y));
-        if (ImGui::MyImageButtonEx(iid,
-                                   v.active,
-                                   v.pressed,
-                                   v.size, uv0, uv1, bg_col, tint_col, 0)) {
+        if (ImGui::MyImageButtonEx(iid, v.active, v.pressed, v.size, uv0, uv1, bg_col, tint_col, 0)) {
 
             DLOG("clicked button %s\n", iid);
 
@@ -383,13 +366,13 @@ struct Slider {
     }
 
     void Unload() {
-        for (auto &v: textures) {
+        for (auto &v : textures) {
             UnloadTexture(v.second.textureId);
         }
 
         textures.clear();
 
-        for (auto &v: button) {
+        for (auto &v : button) {
             UnloadTexture(v.second.active);
             UnloadTexture(v.second.pressed);
         }
@@ -401,13 +384,7 @@ struct Slider {
         ImGui::SetCursorPos({position.x, position.y});
         int mouseDown = 0;
         auto format = ""; // %d
-        if (ImGui::MySliderScalar(iid, ImGuiDataType_S8,
-                                  data, &min, &max,
-                                  format, 0,
-                                  textures,
-                                  button,
-                                  uv0, uv1,
-                                  tint_col, &mouseDown)) {
+        if (ImGui::MySliderScalar(iid, ImGuiDataType_S8, data, &min, &max, format, 0, textures, button, uv0, uv1, tint_col, &mouseDown)) {
 
             if (callbackPressed != nullptr) {
                 callbackPressed(callbackPressedArg1, data);
@@ -421,7 +398,7 @@ struct Slider {
         if ((mouseDown == 0) && wasMousePressed) {
             wasMousePressed = false;
             // ehh
-            auto val = *(int *) data;
+            auto val = *(int *)data;
             if (val != prevValue) {
                 if (callbackReleased != nullptr) {
                     callbackReleased(callbackReleasedArg1, data);
@@ -433,5 +410,4 @@ struct Slider {
     }
 };
 
-
-#endif //WAMPY_SKINELEMENT_H
+#endif // WAMPY_SKINELEMENT_H

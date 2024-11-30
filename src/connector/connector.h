@@ -1,18 +1,16 @@
 #ifndef WAMPY_CONNECTOR_H
 #define WAMPY_CONNECTOR_H
 
+#include "../util/util.h"
+#include "song.h"
 #include <cmath>
 #include <mutex>
 #include <vector>
-#include "song.h"
-#include "../util/util.h"
 
 #ifdef DESKTOP
 #include <thread>
 #else
-
 #include <future>
-
 #endif
 
 enum HgrmToggleAction {
@@ -59,7 +57,6 @@ struct Status {
     bool formatted{};
 };
 
-
 struct Connector {
     const char *address{};
     std::vector<Song> playlist{};
@@ -93,14 +90,14 @@ struct Connector {
     virtual void SetVolume(int, bool relative) = 0;
 
     static void SetVolume(void *arg, int i, bool relative) {
-        auto *p = (Connector *) arg;
+        auto *p = (Connector *)arg;
         p->SetVolume(i, relative);
     }
 
     virtual void SetPosition(int) = 0;
 
     static void SetPosition(void *arg, int i) {
-        auto *p = (Connector *) arg;
+        auto *p = (Connector *)arg;
         p->SetPosition(i);
     }
 
@@ -109,8 +106,8 @@ struct Connector {
     virtual void SetShuffle(int) = 0;
 
     static void ToggleShuffle(void *arg, void *i) {
-        auto *p = (Connector *) arg;
-        auto val = *(int *) i;
+        auto *p = (Connector *)arg;
+        auto val = *(int *)i;
         if (val == 0) {
             val = 1;
         } else {
@@ -123,42 +120,42 @@ struct Connector {
     virtual void SetRepeat(int) = 0;
 
     static void SetRepeat(void *arg, void *i) {
-        auto *p = (Connector *) arg;
-        p->SetRepeat(*(int *) i);
+        auto *p = (Connector *)arg;
+        p->SetRepeat(*(int *)i);
     }
 
     virtual void PrevTrack() = 0;
 
     static void Prev(void *arg, void *i) {
-        auto *p = (Connector *) arg;
+        auto *p = (Connector *)arg;
         p->PrevTrack();
     }
 
     virtual void Play() = 0;
 
     static void Play(void *arg, void *i) {
-        auto *p = (Connector *) arg;
+        auto *p = (Connector *)arg;
         p->Play();
     }
 
     virtual void Pause() = 0;
 
     static void Pause(void *arg, void *i) {
-        auto *p = (Connector *) arg;
+        auto *p = (Connector *)arg;
         p->Pause();
     }
 
     virtual void Stop() = 0;
 
     static void Stop(void *arg, void *i) {
-        auto *p = (Connector *) arg;
+        auto *p = (Connector *)arg;
         p->Stop();
     }
 
     virtual void NextTrack() = 0;
 
     static void Next(void *arg, void *i) {
-        auto *p = (Connector *) arg;
+        auto *p = (Connector *)arg;
         p->NextTrack();
     }
 
@@ -176,14 +173,11 @@ struct Connector {
 
     virtual void Start() {
         Connect();
-        auto exec_run = [this]() {
-            ReadLoop();
-        };
+        auto exec_run = [this]() { ReadLoop(); };
 
         std::thread t(exec_run);
         t.detach();
     }
-
 };
 
 #endif

@@ -1,7 +1,6 @@
-#include <sys/stat.h>
 #include "config.h"
 #include "util/util.h"
-
+#include <sys/stat.h>
 
 namespace AppConfig {
 
@@ -11,48 +10,42 @@ namespace AppConfig {
         SAVE_FAIL,
     };
 
-    std::map<ESkinVariant, std::string> ESkinToName{{WINAMP,   "winamp"},
-                                                    {CASSETTE, "cassette"}};
-    std::map<std::string, ESkinVariant> NameToESkin{{"winamp",   WINAMP},
-                                                    {"cassette", CASSETTE}};
+    std::map<ESkinVariant, std::string> ESkinToName{{WINAMP, "winamp"}, {CASSETTE, "cassette"}};
+    std::map<std::string, ESkinVariant> NameToESkin{{"winamp", WINAMP}, {"cassette", CASSETTE}};
 
-//const char *defaultPath = "/contents/wampy/config.ini";
+    // const char *defaultPath = "/contents/wampy/config.ini";
     const char *defaultPath = "/tmp/test.ini";
 
     const char *configPaths[] = {
-            "./config.ini",
-            "../config.ini",
-            "/contents_ext/wampy/config.ini",
-            "/contents/wampy/config.ini",
-            defaultPath,
+        "./config.ini",
+        "../config.ini",
+        "/contents_ext/wampy/config.ini",
+        "/contents/wampy/config.ini",
+        defaultPath,
     };
 
     void AppConfig::ToIni() {
-        ini["cassette:mp3_128"].set({{"tape", cassette.Get(Tape::MP3_128)->tape},
-                                     {"reel", cassette.Get(Tape::MP3_128)->reel}});
+        ini["cassette:mp3_128"].set({{"tape", cassette.Get(Tape::MP3_128)->tape}, {"reel", cassette.Get(Tape::MP3_128)->reel}});
 
-        ini["cassette:mp3_160"].set({{"tape", cassette.Get(Tape::MP3_160)->tape},
-                                     {"reel", cassette.Get(Tape::MP3_160)->reel}});
+        ini["cassette:mp3_160"].set({{"tape", cassette.Get(Tape::MP3_160)->tape}, {"reel", cassette.Get(Tape::MP3_160)->reel}});
 
-        ini["cassette:mp3_256"].set({{"tape", cassette.Get(Tape::MP3_256)->tape},
-                                     {"reel", cassette.Get(Tape::MP3_256)->reel}});
-        ini["cassette:mp3_320"].set({{"tape", cassette.Get(Tape::MP3_320)->tape},
-                                     {"reel", cassette.Get(Tape::MP3_320)->reel}});
+        ini["cassette:mp3_256"].set({{"tape", cassette.Get(Tape::MP3_256)->tape}, {"reel", cassette.Get(Tape::MP3_256)->reel}});
+        ini["cassette:mp3_320"].set({{"tape", cassette.Get(Tape::MP3_320)->tape}, {"reel", cassette.Get(Tape::MP3_320)->reel}});
 
-        ini["cassette:flac"].set({{"tape", cassette.Get(Tape::FLAC_ALAC_APE_MQA)->tape},
-                                  {"reel", cassette.Get(Tape::FLAC_ALAC_APE_MQA)->reel}});
+        ini["cassette:flac"].set(
+            {{"tape", cassette.Get(Tape::FLAC_ALAC_APE_MQA)->tape}, {"reel", cassette.Get(Tape::FLAC_ALAC_APE_MQA)->reel}}
+        );
 
-        ini["cassette:aiff"].set({{"tape", cassette.Get(Tape::AIFF)->tape},
-                                  {"reel", cassette.Get(Tape::AIFF)->reel}});
+        ini["cassette:aiff"].set({{"tape", cassette.Get(Tape::AIFF)->tape}, {"reel", cassette.Get(Tape::AIFF)->reel}});
 
-        ini["cassette:pcm"].set({{"tape", cassette.Get(Tape::PCM)->tape},
-                                 {"reel", cassette.Get(Tape::PCM)->reel}});
+        ini["cassette:pcm"].set({{"tape", cassette.Get(Tape::PCM)->tape}, {"reel", cassette.Get(Tape::PCM)->reel}});
 
-        ini["cassette:hires"].set({{"tape", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->tape},
-                                   {"reel", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->reel}});
+        ini["cassette:hires"].set(
+            {{"tape", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->tape},
+             {"reel", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->reel}}
+        );
 
-        ini["cassette:dsd"].set({{"tape", cassette.Get(Tape::DSD)->tape},
-                                 {"reel", cassette.Get(Tape::DSD)->reel}});
+        ini["cassette:dsd"].set({{"tape", cassette.Get(Tape::DSD)->tape}, {"reel", cassette.Get(Tape::DSD)->reel}});
 
         ini["winamp"]["filename"] = winamp.filename;
         ini["winamp"]["bitmapFont"] = std::to_string(winamp.useBitmapFont);
@@ -103,21 +96,16 @@ namespace AppConfig {
         auto f = mINI::INIFile(filePath);
         f.read(ini);
 
-
-        cassette.SetOrDefault(Tape::MP3_128,
-                              {ini["cassette:mp3_128"]["tape"], ini["cassette:mp3_128"]["reel"], "MP3 128kbps"});
-        cassette.SetOrDefault(Tape::MP3_160,
-                              {ini["cassette:mp3_160"]["tape"], ini["cassette:mp3_160"]["reel"], "MP3 160kbps"});
-        cassette.SetOrDefault(Tape::MP3_256,
-                              {ini["cassette:mp3_256"]["tape"], ini["cassette:mp3_256"]["reel"], "MP3 256kbps"});
-        cassette.SetOrDefault(Tape::MP3_320,
-                              {ini["cassette:mp3_320"]["tape"], ini["cassette:mp3_320"]["reel"], "MP3 320kbps"});
-        cassette.SetOrDefault(Tape::FLAC_ALAC_APE_MQA,
-                              {ini["cassette:flac"]["tape"], ini["cassette:flac"]["reel"], "FLAC"});
+        cassette.SetOrDefault(Tape::MP3_128, {ini["cassette:mp3_128"]["tape"], ini["cassette:mp3_128"]["reel"], "MP3 128kbps"});
+        cassette.SetOrDefault(Tape::MP3_160, {ini["cassette:mp3_160"]["tape"], ini["cassette:mp3_160"]["reel"], "MP3 160kbps"});
+        cassette.SetOrDefault(Tape::MP3_256, {ini["cassette:mp3_256"]["tape"], ini["cassette:mp3_256"]["reel"], "MP3 256kbps"});
+        cassette.SetOrDefault(Tape::MP3_320, {ini["cassette:mp3_320"]["tape"], ini["cassette:mp3_320"]["reel"], "MP3 320kbps"});
+        cassette.SetOrDefault(Tape::FLAC_ALAC_APE_MQA, {ini["cassette:flac"]["tape"], ini["cassette:flac"]["reel"], "FLAC"});
         cassette.SetOrDefault(Tape::AIFF, {ini["cassette:aiff"]["tape"], ini["cassette:aiff"]["reel"], "AIFF"});
         cassette.SetOrDefault(Tape::PCM, {ini["cassette:pcm"]["tape"], ini["cassette:pcm"]["reel"], "PCM"});
-        cassette.SetOrDefault(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES,
-                              {ini["cassette:hires"]["tape"], ini["cassette:hires"]["reel"], "Hi-Res"});
+        cassette.SetOrDefault(
+            Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES, {ini["cassette:hires"]["tape"], ini["cassette:hires"]["reel"], "Hi-Res"}
+        );
         cassette.SetOrDefault(Tape::DSD, {ini["cassette:dsd"]["tape"], ini["cassette:dsd"]["reel"], "DSD"});
 
         winamp.filename = ini["winamp"]["filename"];
@@ -127,12 +115,12 @@ namespace AppConfig {
         }
 
         // NOLINTBEGIN
-        winamp.useBitmapFont = (bool) std::atoi(ini["winamp"]["bitmapFont"].c_str());
+        winamp.useBitmapFont = (bool)std::atoi(ini["winamp"]["bitmapFont"].c_str());
         if (ini["winamp"]["bitmapFont"].empty()) {
             winamp.useBitmapFont = winampDefault.useBitmapFont;
         }
 
-        winamp.useBitmapFontInPlaylist = (bool) std::atoi(ini["winamp"]["bitmapFontInPlaylist"].c_str());
+        winamp.useBitmapFontInPlaylist = (bool)std::atoi(ini["winamp"]["bitmapFontInPlaylist"].c_str());
         // NOLINTEND
 
         auto activeSkinString = ini["wampy"]["activeSkin"];
@@ -143,24 +131,24 @@ namespace AppConfig {
         }
 
         // NOLINTBEGIN
-        misc.swapTrackButtons = (bool) std::atoi(ini["misc"]["swapTrackButtons"].c_str());
-        features.bigCover = (bool) std::atoi(ini["features"]["bigCover"].c_str());
-        features.showTime = (bool) std::atoi(ini["features"]["showTime"].c_str());
+        misc.swapTrackButtons = (bool)std::atoi(ini["misc"]["swapTrackButtons"].c_str());
+        features.bigCover = (bool)std::atoi(ini["features"]["bigCover"].c_str());
+        features.showTime = (bool)std::atoi(ini["features"]["showTime"].c_str());
 
-        debug.enabled = (bool) std::atoi(ini["debug"]["enabled"].c_str());
+        debug.enabled = (bool)std::atoi(ini["debug"]["enabled"].c_str());
 
 #ifdef DESKTOP
-        fontRanges.ChineseFull = (bool) std::atoi(ini["fonts"]["chineseFull"].c_str());
+        fontRanges.ChineseFull = (bool)std::atoi(ini["fonts"]["chineseFull"].c_str());
 #else
         // device cannot handle full chinese range
         fontRanges.ChineseFull = false;
 #endif
-        fontRanges.Cyrillic = (bool) std::atoi(ini["fonts"]["cyrillic"].c_str());
-        fontRanges.Greek = (bool) std::atoi(ini["fonts"]["greek"].c_str());
-        fontRanges.Japanese = (bool) std::atoi(ini["fonts"]["japanese"].c_str());
-        fontRanges.Korean = (bool) std::atoi(ini["fonts"]["korean"].c_str());
-        fontRanges.Thai = (bool) std::atoi(ini["fonts"]["thai"].c_str());
-        fontRanges.Vietnamese = (bool) std::atoi(ini["fonts"]["vietnamese"].c_str());
+        fontRanges.Cyrillic = (bool)std::atoi(ini["fonts"]["cyrillic"].c_str());
+        fontRanges.Greek = (bool)std::atoi(ini["fonts"]["greek"].c_str());
+        fontRanges.Japanese = (bool)std::atoi(ini["fonts"]["japanese"].c_str());
+        fontRanges.Korean = (bool)std::atoi(ini["fonts"]["korean"].c_str());
+        fontRanges.Thai = (bool)std::atoi(ini["fonts"]["thai"].c_str());
+        fontRanges.Vietnamese = (bool)std::atoi(ini["fonts"]["vietnamese"].c_str());
         // NOLINTEND
 
         MPDSocketPath = ini["mpd"]["socketPath"];
@@ -178,7 +166,7 @@ namespace AppConfig {
         return 0;
     }
 
-// no config file found, create one using filePath
+    // no config file found, create one using filePath
     int AppConfig::Create() {
         Default();
         auto f = mINI::INIFile(filePath);
@@ -194,9 +182,9 @@ namespace AppConfig {
             return FS_MOUNTED;
         }
 
-        struct stat sb{};
+        struct stat sb {};
 
-        for (const auto &f: configPaths) {
+        for (const auto &f : configPaths) {
             if (stat(f, &sb) == 0) {
                 filePath = f;
                 return 0;
@@ -205,4 +193,4 @@ namespace AppConfig {
 
         return FILE_NOT_FOUND;
     }
-}
+} // namespace AppConfig

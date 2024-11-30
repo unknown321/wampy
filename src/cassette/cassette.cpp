@@ -1,17 +1,17 @@
-#include <fstream>
-#include <thread>
 #include "cassette.h"
 #include "imgui_impl_opengl3.h"
+#include <fstream>
+#include <thread>
 
 static const ImWchar rangesPunctuation[] = {
-        0x2000, 0x206F, // General Punctuation
+    0x2000, 0x206F, // General Punctuation
 };
 
 namespace Cassette {
 
 #ifdef DESKTOP
     //    static const std::string FontPath = "../SSTJpPro-Regular.otf";
-        static const std::string FontPath = "../NotoSansKR-Regular.otf";
+    static const std::string FontPath = "../NotoSansKR-Regular.otf";
 #else
     static const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
 #endif
@@ -19,13 +19,20 @@ namespace Cassette {
     static const int ttfFontSize = 34;
     static const int reelDelayMs = 55;
 
-    std::list<Tape::TapeType> tapeTypes = {Tape::MP3_128, Tape::MP3_160, Tape::MP3_256, Tape::MP3_320,
-                                           Tape::FLAC_ALAC_APE_MQA, Tape::AIFF, Tape::PCM,
-                                           Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES, Tape::DSD};
+    std::list<Tape::TapeType> tapeTypes = {
+        Tape::MP3_128,
+        Tape::MP3_160,
+        Tape::MP3_256,
+        Tape::MP3_320,
+        Tape::FLAC_ALAC_APE_MQA,
+        Tape::AIFF,
+        Tape::PCM,
+        Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES,
+        Tape::DSD};
 
     void Config::Default() {
         auto d = GetDefault();
-        for (const auto &kv: d) {
+        for (const auto &kv : d) {
             data[kv.first] = kv.second;
         }
     }
@@ -74,8 +81,7 @@ namespace Cassette {
         }
 
         range.BuildRanges(&gr);
-        fontRegular = io.Fonts->AddFontFromFileTTF(FontPath.c_str(), ttfFontSize, nullptr,
-                                                   gr.Data);
+        fontRegular = io.Fonts->AddFontFromFileTTF(FontPath.c_str(), ttfFontSize, nullptr, gr.Data);
 
         ImGui_ImplOpenGL3_DestroyFontsTexture();
         ImGui_ImplOpenGL3_CreateFontsTexture();
@@ -85,9 +91,7 @@ namespace Cassette {
         return 0;
     }
 
-    auto comp = [](const directoryEntry &a, const directoryEntry &b) {
-        return a.name < b.name;
-    };
+    auto comp = [](const directoryEntry &a, const directoryEntry &b) { return a.name < b.name; };
 
     int Cassette::LoadReel(const std::string &path) {
         auto reelFiles = std::vector<directoryEntry>{};
@@ -96,7 +100,7 @@ namespace Cassette {
             return Tape::ERR_OK;
         }
 
-        for (auto &entry: *reelList) {
+        for (auto &entry : *reelList) {
             if (entry.name != path) {
                 continue;
             }
@@ -119,22 +123,18 @@ namespace Cassette {
 
         std::ifstream f;
         DLOG("loading reel %s\n", path.c_str());
-        for (const auto &kv: reelFiles) {
+        for (const auto &kv : reelFiles) {
             f.open(kv.fullPath);
-            std::string contents((std::istreambuf_iterator<char>(f)),
-                                 std::istreambuf_iterator<char>());
+            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             auto ft = FlatTexture();
 
-            ft.WithMagick("JPEG")
-                    ->FromData((char *) contents.c_str(), contents.size())
-                    ->WithRatio(1.0f)
-                    ->Load();
+            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
             Reels[path].emplace_back(ft);
             f.close();
         }
 
-        DLOG("reel images: %d\n", Reels[path].size());
+        DLOG("reel images: %zu\n", Reels[path].size());
 
         return Tape::ERR_OK;
     }
@@ -143,7 +143,7 @@ namespace Cassette {
         DLOG("loading tape %s\n", path.c_str());
         assert(!path.empty());
 
-        for (const auto &e: *tapeList) {
+        for (const auto &e : *tapeList) {
             if (e.name != path) {
                 continue;
             }
@@ -173,15 +173,15 @@ namespace Cassette {
     }
 
     void Cassette::Unload() {
-        for (auto &v: Tapes) {
+        for (auto &v : Tapes) {
             v.second.Unload();
         }
 
         Tapes.clear();
 
-        for (auto &v: Reels) {
+        for (auto &v : Reels) {
             DLOG("unload reel %s\n", v.first.c_str());
-            for (auto &tex: v.second) {
+            for (auto &tex : v.second) {
                 tex.Unload();
             }
         }
@@ -194,9 +194,9 @@ namespace Cassette {
     }
 
     void Cassette::UnloadUnused() {
-        for (auto &t: Tapes) {
+        for (auto &t : Tapes) {
             bool used = false;
-            for (const auto &v: config->data) {
+            for (const auto &v : config->data) {
                 if (v.second.tape == t.first) {
                     used = true;
                     break;
@@ -211,9 +211,9 @@ namespace Cassette {
             }
         }
 
-        for (auto &r: Reels) {
+        for (auto &r : Reels) {
             bool used = false;
-            for (const auto &v: config->data) {
+            for (const auto &v : config->data) {
                 if (v.second.reel == r.first) {
                     used = true;
                     break;
@@ -224,7 +224,7 @@ namespace Cassette {
                 continue;
             } else {
                 DLOG("reel %s is unused, unloading\n", r.first.c_str());
-                for (auto &tex: r.second) {
+                for (auto &tex : r.second) {
                     tex.Unload();
                 }
                 r.second.clear();
@@ -232,14 +232,12 @@ namespace Cassette {
         }
     }
 
-    void Cassette::WithConfig(Config *c) {
-        this->config = c;
-    }
+    void Cassette::WithConfig(Config *c) { this->config = c; }
 
     // replaces invalid config entries with first valid tape/reel occurrences
     void Cassette::validateConfig() {
         Tape::Tape firstValidTape{};
-        for (const auto &v: Tapes) {
+        for (const auto &v : Tapes) {
             if (v.second.valid) {
                 firstValidTape = v.second;
                 break;
@@ -248,7 +246,7 @@ namespace Cassette {
 
         Tape::Reel firstValidReel{};
         std::string firstValidReelName;
-        for (const auto &v: Reels) {
+        for (const auto &v : Reels) {
             if (!v.second.empty()) {
                 firstValidReel = v.second;
                 firstValidReelName = v.first;
@@ -256,7 +254,7 @@ namespace Cassette {
             }
         }
 
-        for (auto const t: tapeTypes) {
+        for (auto const t : tapeTypes) {
             auto tape = config->Get(t)->tape;
             auto tapeName = tape;
             if (Tapes[tape].valid == false) {
@@ -282,13 +280,12 @@ namespace Cassette {
             }
 
             config->Set(t, {tapeName, reelName, config->Get(t)->name});
-//            DLOG("set %u %s %s %s\n", t, tapeName.c_str(), reelName.c_str(), config->Get(t)->name.c_str());
+            //            DLOG("set %u %s %s %s\n", t, tapeName.c_str(), reelName.c_str(), config->Get(t)->name.c_str());
         }
     }
 
-
     void Cassette::LoadImages() {
-        for (auto const t: tapeTypes) {
+        for (auto const t : tapeTypes) {
             LoadReel(config->Get(t)->reel);
             LoadTape(config->Get(t)->tape);
         }
@@ -324,10 +321,10 @@ namespace Cassette {
         song = connector->playlist.at(0);
 
         if (!song.PlaylistStringsCalculated) {
-            for (auto &c: song.Artist) {
+            for (auto &c : song.Artist) {
                 c = std::toupper(c);
             }
-            for (auto &c: song.Title) {
+            for (auto &c : song.Title) {
                 c = std::toupper(c);
             }
 
@@ -342,56 +339,57 @@ namespace Cassette {
 #else
         codec = connector->status.Codec;
 #endif
-        for (auto &c: codec) {
+        for (auto &c : codec) {
             c = std::tolower(c);
         }
 
         auto bitrate = connector->status.Bitrate;
+
         switch (hash(codec.c_str())) {
-            case hash("wma"):
-            case hash("aac"):
-            case hash("mp3"):
-                tapeType = Tape::MP3_320;
-                if (bitrate < 129) {
-                    tapeType = Tape::MP3_128;
-                    break;
-                }
+        case hash("wma"):
+        case hash("aac"):
+        case hash("mp3"):
+            tapeType = Tape::MP3_320;
+            if (bitrate < 129) {
+                tapeType = Tape::MP3_128;
+                break;
+            }
 
-                if (bitrate < 161) {
-                    tapeType = Tape::MP3_160;
-                    break;
-                }
+            if (bitrate < 161) {
+                tapeType = Tape::MP3_160;
+                break;
+            }
 
-                if (bitrate < 257) {
-                    tapeType = Tape::MP3_256;
-                    break;
-                }
+            if (bitrate < 257) {
+                tapeType = Tape::MP3_256;
+                break;
+            }
 
-                break;
-            case hash("alac"):
-            case hash("mqa"):
-            case hash("flac"):
-            case hash("ape"):
-                tapeType = Tape::FLAC_ALAC_APE_MQA;
-                if (connector->status.SampleRate > 44100 && connector->status.Bits > 16) {
-                    tapeType = Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES;
-                }
-                break;
-            case hash("pcm"):
-                tapeType = Tape::PCM;
-                if (connector->status.SampleRate > 44100 && connector->status.Bits > 16) {
-                    tapeType = Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES;
-                }
-                break;
-            case hash("dsd"):
-                tapeType = Tape::DSD;
-                break;
-            case hash("aiff"):
+            break;
+        case hash("alac"):
+        case hash("mqa"):
+        case hash("flac"):
+        case hash("ape"):
+            tapeType = Tape::FLAC_ALAC_APE_MQA;
+            if (connector->status.SampleRate > 44100 && connector->status.Bits > 16) {
                 tapeType = Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES;
-                break;
-            default:
-                tapeType = Tape::MP3_320;
-                break;
+            }
+            break;
+        case hash("pcm"):
+            tapeType = Tape::PCM;
+            if (connector->status.SampleRate > 44100 && connector->status.Bits > 16) {
+                tapeType = Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES;
+            }
+            break;
+        case hash("dsd"):
+            tapeType = Tape::DSD;
+            break;
+        case hash("aiff"):
+            tapeType = Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES;
+            break;
+        default:
+            tapeType = Tape::MP3_320;
+            break;
         }
 
         Track = connector->playlist.at(0).File;
@@ -405,10 +403,7 @@ namespace Cassette {
         ActiveTape->name = config->Get(tapeType)->tape;
 
         if (debug) {
-            DLOG("%d %s %d %d %d\n", bitrate, codec.c_str(), tapeType,
-                 connector->status.SampleRate,
-                 connector->status.Bits
-            );
+            DLOG("%d %s %d %d %d\n", bitrate, codec.c_str(), tapeType, connector->status.SampleRate, connector->status.Bits);
         }
     }
 
@@ -435,9 +430,7 @@ namespace Cassette {
     }
 
     void Cassette::ReelThread() {
-        auto exec = [this]() {
-            this->ReelLoop();
-        };
+        auto exec = [this]() { this->ReelLoop(); };
         std::thread t(exec);
         reelThread = t.native_handle();
         t.detach();
@@ -458,7 +451,6 @@ namespace Cassette {
         }
     }
 
-
     void Cassette::drawCodecInfo() const {
         ImGui::SetCursorPos({600, 40});
         std::string codec;
@@ -469,4 +461,4 @@ namespace Cassette {
 #endif
         ImGui::Text("%s, %d", codec.c_str(), connector->status.Bitrate);
     }
-}
+} // namespace Cassette
