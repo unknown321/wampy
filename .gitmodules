@@ -28,3 +28,9 @@
 	path = libs/glfw
 	url = https://github.com/glfw/glfw.git
 	ignore = dirty
+[submodule "libs/cassetteunpacker"]
+	path = libs/cassetteunpacker
+	url = ssh://git@192.168.10.105:3002/unknown/cassetteunpacker.git
+[submodule "cassetteunpacker"]
+	path = cassetteunpacker
+	url = ssh://git@192.168.10.105:3002/unknown/cassetteunpacker.git

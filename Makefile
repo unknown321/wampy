@@ -4,6 +4,8 @@ ADB=adb $(DEVICE_SERIAL) wait-for-device
 IMAGE=wampy-builder
 NAME=wampy
 
+TAPE_SOURCE_UPG=NW-A100_0003_V4_04_00_NW_WM_FW.UPG
+
 docker:
 	cat Dockerfile | docker image build -t $(IMAGE) -
 
@@ -62,7 +64,14 @@ profile-arm:
 	gprof2dot -s -w -e 1 -n 1 < gmon.prof | dot -Tsvg -o output.svg
 	/usr/local/bin/firefox output.svg
 
+cassetteunpacker/$(TAPE_SOURCE_UPG):
+	test -f $@
+
+cassetteunpacker/res: cassetteunpacker/$(TAPE_SOURCE_UPG)
+	$(MAKE) -C cassetteunpacker docker run
+
 valgrind:
 	cd build && valgrind --leak-check=full --read-var-info=yes --read-inline-info=yes --gen-suppressions=yes --suppressions=../suppressions.valgrind -s  ./$(NAME)
+
 
 .PHONY: build push profile prepare imagemagick

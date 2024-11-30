@@ -200,8 +200,8 @@ int main(int, char **) {
     auto connector = Player::MPDConnector();
     connector.address = config.MPDSocketPath.c_str();
     listdir("../skins/", &skinList, ".wsz");
-    listdirs("/media/ssd/dev/nw/cassetteunpacker/res/reel/", &reelList);
-    listdirs("/media/ssd/dev/nw/cassetteunpacker/res/tape/", &tapeList);
+    listdirs("../cassetteunpacker/res/reel/", &reelList);
+    listdirs("../cassetteunpacker/res/tape/", &tapeList);
 #else
     auto connector = Player::HagoromoConnector();
     listdir("/system/vendor/unknown321/usr/share/skins/winamp/", &skinList, ".wsz");

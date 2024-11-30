@@ -3,6 +3,8 @@
 - Linux
 - `nw-crosstool` docker image from nw-installer
 - `libMali_linux.so`
+- [e2tools](https://github.com/e2tools/e2tools) (cassetteunpacker requirement,
+  see [README.md](cassetteunpacker/README.md))
 
 ### libMali_linux.so
 
