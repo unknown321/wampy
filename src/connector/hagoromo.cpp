@@ -13,7 +13,8 @@
 #include "command_names.h"
 #include "command.pb.h"
 
-#include "alsa/asoundlib.h"
+//#include "alsa/asoundlib.h"
+#include <fcntl.h>
 #include "hagoromo.h"
 #include "wampy.h"
 
