@@ -12,13 +12,11 @@
 #include "glm/glm/ext/matrix_transform.hpp"
 #include "glm/glm/trigonometric.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "imgui_internal.h"
 
 #include "skin.h"
 #include "util/util.h"
 
 #include "config.h"
-#include <thread>
 #include <unistd.h>
 #include <vector>
 
