@@ -238,21 +238,25 @@ struct Skin {
         float offset = 15.0f;
         ImGui::SameLine(800.0f - closeSize - miscSize - skinSize - fontsSize - offset * 4);
         if (ImGui::Button("Skin")) {
+            loadStatusStr = "";
             displayTab = SettingsTab::SkinOpts;
         }
 
         ImGui::SameLine(800.0f - closeSize - miscSize - fontsSize - offset * 3);
         if (ImGui::Button("Fonts")) {
+            loadStatusStr = "";
             displayTab = SettingsTab::TabFonts;
         }
 
         ImGui::SameLine(800.0f - closeSize - miscSize - offset * 2);
         if (ImGui::Button("Misc")) {
+            loadStatusStr = "";
             displayTab = SettingsTab::Misc;
         }
 
         ImGui::SameLine(800.0f - closeSize - offset);
         if (ImGui::Button("Close")) {
+            loadStatusStr = "";
             displaySettings = 0;
         }
     }
@@ -348,7 +352,9 @@ struct Skin {
 
         ImGui::RadioButton("Winamp", &activeSettingsTab, WINAMP);
         ImGui::SameLine();
-        ImGui::RadioButton("Casette", &activeSettingsTab, CASSETTE);
+        if (ImGui::RadioButton("Cassette", &activeSettingsTab, CASSETTE)) {
+            loadStatusStr = "";
+        }
 
         ImGui::NewLine();
         if (activeSettingsTab == WINAMP) {
