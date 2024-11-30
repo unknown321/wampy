@@ -1,9 +1,5 @@
-#ifndef MPD_CPP
-#define MPD_CPP
-
 #include <cstdio>
 #include <cstdlib>
-#include <sys/poll.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <thread>
@@ -34,7 +30,7 @@ namespace Player {
         struct sockaddr_un server_addr {};
 
         if (strcmp(address, "") == 0) {
-            address = defaultAddress;
+            address = MPDDefaultAddress;
         }
 
         server_addr.sun_family = AF_UNIX;
@@ -510,5 +506,3 @@ namespace Player {
         Send(commandIdle);
     }
 } // namespace Player
-
-#endif // MPD_CPP

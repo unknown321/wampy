@@ -1,7 +1,10 @@
 # general
 
-- [ ] prettify server build
 - [ ] flicker?
+- [ ] fixes not applied on boot
+- [ ] namespace player
+- [ ] README
+- [x] prettify server build
 - [x] languages to config
 - [x] russian letters
 - [x] playlist broken colors?

@@ -31,6 +31,7 @@
 #else
 
 #include "connector/hagoromo.h"
+#include "wampy.h"
 
 #define WIDTH 480.0f
 #define HEIGHT 800.0f
@@ -196,14 +197,17 @@ int main(int, char **) {
     config.Load();
     setupProfiling();
 
+    std::string socket{};
 #ifdef DESKTOP
     auto connector = Player::MPDConnector();
     connector.address = config.MPDSocketPath.c_str();
+    socket = config.MPDSocketPath;
     listdir("../skins/", &skinList, ".wsz");
     listdirs("../cassetteunpacker/res/reel/", &reelList);
     listdirs("../cassetteunpacker/res/tape/", &tapeList);
 #else
     auto connector = Player::HagoromoConnector();
+    socket = WAMPY_SOCKET;
     listdir("/system/vendor/unknown321/usr/share/skins/winamp/", &skinList, ".wsz");
     listdir("/contents/skins/winamp/", &skinList, ".wsz");
 
@@ -272,6 +276,23 @@ int main(int, char **) {
     skin.winamp.fontRanges = &config.fontRanges;
     skin.cassette.fontRanges = &config.fontRanges;
 
+    skin.Load();
+
+    if (socket.empty()) {
+        DLOG("no socket path provided\n");
+        exit(1);
+    }
+
+    while (true) {
+        struct stat st {};
+        if (stat(socket.c_str(), &st) == 0) {
+            break;
+        } else {
+            nanosleep(&tw, nullptr);
+            DLOG("waiting for socket %s\n", socket.c_str());
+        }
+    }
+
     if (config.features.bigCover) {
         connector.FeatureBigCover(config.features.bigCover);
     }
@@ -281,7 +302,6 @@ int main(int, char **) {
     }
 
     connector.Start();
-    skin.Load();
 
     DLOG("start\n");
 

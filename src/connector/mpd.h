@@ -3,10 +3,11 @@
 
 #include "connector.h"
 
+#define MPDDefaultAddress "/home/unknown/.local/mpd/socket";
+
 namespace Player {
     struct MPDConnector : Connector {
         int fd = 0;
-        const char *defaultAddress = "/home/unknown/.local/mpd/socket";
         bool serverReady = true;
 
         void Connect() override;

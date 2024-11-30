@@ -1,5 +1,7 @@
 #include "config.h"
+#include "connector/mpd.h"
 #include "util/util.h"
+#include <libgen.h>
 #include <sys/stat.h>
 
 namespace AppConfig {
@@ -13,8 +15,12 @@ namespace AppConfig {
     std::map<ESkinVariant, std::string> ESkinToName{{WINAMP, "winamp"}, {CASSETTE, "cassette"}};
     std::map<std::string, ESkinVariant> NameToESkin{{"winamp", WINAMP}, {"cassette", CASSETTE}};
 
-    // const char *defaultPath = "/contents/wampy/config.ini";
-    const char *defaultPath = "/tmp/test.ini";
+#ifdef DESKTOP
+    const char *defaultPath = "./config.ini";
+#else
+    const char *defaultPath = "/contents/wampy/config.ini";
+#endif
+    //    const char *defaultPath = "/tmp/test.ini";
 
     const char *configPaths[] = {
         "./config.ini",
@@ -79,6 +85,7 @@ namespace AppConfig {
         fontRanges = FontRanges{};
 
         activeSkin = WINAMP;
+        MPDSocketPath = MPDDefaultAddress;
 
         ToIni();
     }
@@ -169,6 +176,10 @@ namespace AppConfig {
     // no config file found, create one using filePath
     int AppConfig::Create() {
         Default();
+        char *c = (char *)malloc(strlen(filePath) + 1);
+        strcpy(c, filePath);
+        mkpath(dirname(c), 0755);
+
         auto f = mINI::INIFile(filePath);
         if (!f.write(ini, true)) {
             return SAVE_FAIL;

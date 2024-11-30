@@ -154,10 +154,10 @@ else ()
             INSTALL_RPATH "./;../lib/;/system/lib;/system/vendor/unknown321/lib;/lib;/system/vendor/sony/lib")
 
     find_library(MALI Mali_linux PATHS libs)
-#    find_library(ASOUND asound PATHS libs)
-    find_library(PROTOBUF protobuf REQUIRED PATHS libs/protobuf/build-armv5/lib/)
+    #    find_library(ASOUND asound PATHS libs)
+    find_library(PROTOBUF protobuf REQUIRED PATHS libs/protobuf/build-armv5/lib/ REQUIRED)
     target_link_libraries(${PROJECT_NAME} "${MALI}" "${PROTOBUF}")
-#    target_link_libraries(${PROJECT_NAME} "${ASOUND}")
+    #    target_link_libraries(${PROJECT_NAME} "${ASOUND}")
     install(TARGETS ${PROJECT_NAME})
 
     # dynamic linking
@@ -168,4 +168,7 @@ else ()
     # https://gitlab.kitware.com/cmake/cmake/-/issues/23249
     get_filename_component(JPEG_NAME ${JPEG} REALPATH)
     install(FILES ${JPEG_NAME} DESTINATION lib)
+
+    get_filename_component(PROTOBUF_NAME ${PROTOBUF} REALPATH)
+    install(FILES ${PROTOBUF_NAME} DESTINATION lib)
 endif ()
