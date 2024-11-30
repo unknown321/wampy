@@ -149,4 +149,4 @@ push:
 
 .DEFAULT_GOAL := build
 
-.PHONY := build
+.PHONY: build
