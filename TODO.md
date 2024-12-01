@@ -45,5 +45,4 @@
 - [ ] clickable lyrics
 - [ ] simple clock skin?
 - [ ] eq button custom action
-- [ ] time in volume indicator
 - [ ] single connection?
