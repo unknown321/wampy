@@ -447,7 +447,7 @@ namespace Player {
         auto c = Command::Command();
         c.set_type(Command::CMD_SET_VOLUME);
         c.mutable_setvolume()->set_valuepercent(vol);
-        DLOG("%d from i=%d  -> %d\n", vol, i, c.setvolume().valuepercent());
+        DLOG("%d from i=%d  -> %d\n", status.Volume, i, c.setvolume().valuepercent());
         sendCMD(&c);
     }
 

@@ -295,16 +295,30 @@ void Controller::SetVolume(Command::Command *c) {
         }
     }
 
-    int val = c->setvolume().valuepercent() * 120 / 100;
+    int newVal = c->setvolume().valuepercent() * 120 / 100;
 
-    if (val < 0 || val > 120) {
-        DLOG("invalid value %d\n", val);
+    if (newVal < 0 || newVal > 120) {
+        DLOG("invalid value %d\n", newVal);
         return;
     }
 
-    DLOG("%d\n", val);
+    int oldVal = provider.volume;
+    int oldPercent = provider.volume * 100 / 120;
 
-    if (!QMetaObject::invokeMethod(DACViewModel, "OnVolumeDialChanged", Q_ARG(int, val))) {
+    DLOG("set to %d (%d%%), was %d (%d%%)\n", newVal, c->setvolume().valuepercent(), oldVal, oldPercent);
+
+    // this is a sad case of rounding int and refusing to work with raw volume values
+    if (newVal == oldVal) {
+        int one = 120 / 100;
+        if (oldPercent > c->setvolume().valuepercent()) {
+            // decrease
+            newVal -= one;
+        } else {
+            newVal += one;
+        }
+    }
+
+    if (!QMetaObject::invokeMethod(DACViewModel, "OnVolumeDialChanged", Q_ARG(int, newVal))) {
         DLOG("failed to change volume\n");
         c->set_code(Command::FAIL);
         return;

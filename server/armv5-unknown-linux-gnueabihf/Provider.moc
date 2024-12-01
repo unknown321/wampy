@@ -32,7 +32,7 @@ class Provider : public QObject {
     int sampleRate{}; // kHz
     Track playlist[PLAYLIST_LENGTH]{};
 
-    int volume = 0;
+    int volume = 0; // raw value up to 120
     int curTime = 0;
     int time = 0;
     QString artist{};
