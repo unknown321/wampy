@@ -590,8 +590,8 @@ struct Skin {
         }
 
         if (ImGui::IsKeyReleased(ImGuiKey_VolumeUp)) {
-            //                player->connector->SetVolume(1, true);
-            connector->TestCommand();
+            connector->SetVolume(1, true);
+            //            connector->TestCommand();
             return;
         }
     }

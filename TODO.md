@@ -1,7 +1,7 @@
 # general
 
 - [ ] flicker?
-- [ ] fixes not applied on boot
+- [ ] time/cover features are not applied on boot
 - [ ] namespace player
 - [ ] README
 - [x] prettify server build
