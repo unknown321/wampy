@@ -196,10 +196,12 @@ struct Skin {
 
         WinampSkinOldName = WinampCurrentSkinName;
         WinampCurrentSkinName = WinampSkinNewName;
+        winamp.Unload();
         loadStatus = winamp.Load(WinampCurrentSkinName, FontRegular);
         if (loadStatus != 0) {
             WinampCurrentSkinName = WinampSkinOldName;
             WinampSkinNewName = WinampSkinOldName;
+            winamp.Load(WinampSkinOldName, FontRegular);
             loadStatusStr = winamp.loadStatusStr;
             return loadStatus;
         }

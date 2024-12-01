@@ -51,7 +51,7 @@
 
 # weird issues and quirks
 
-- [ ] flicker?
+- [ ] flicker until fps is 24
 - [ ] time/cover features are not applied on boot
 - [ ] track sometimes disappears briefly (hagoromo only)
 - [ ] volume is increased in uneven intervals

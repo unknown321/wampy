@@ -253,7 +253,13 @@ struct Button {
             UnloadTexture(v.second.active);
             UnloadTexture(v.second.pressed);
         }
+
         this->textures.clear();
+        memset(this->iid, 0, 40);
+        this->callbackFun = nullptr;
+        this->position = ImVec2();
+        this->callbackParam2 = nullptr;
+        this->callbackParam1 = nullptr;
     }
 
     void Draw(int key = 0) {
@@ -268,6 +274,7 @@ struct Button {
         }
 
         auto v = this->textures.at(key);
+
         ImGui::SetCursorPos(position);
         if (ImGui::MyImageButtonEx(iid, v.active, v.pressed, v.size, uv0, uv1, bg_col, tint_col, 0)) {
 

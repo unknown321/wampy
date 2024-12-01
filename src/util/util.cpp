@@ -57,7 +57,7 @@ void listdirs(const char *dirname, std::vector<directoryEntry> *list) {
 }
 
 void UnloadTexture(ImTextureID textureID) {
-    //    DLOG("unload %p\n", textureID);
+    //    DLOG("unload %d\n", (int *)textureID);
     if (textureID != nullptr) {
         auto g = (GLuint) * (unsigned int *)&textureID;
         glDeleteTextures(1, &g);

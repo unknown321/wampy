@@ -602,6 +602,7 @@ namespace Winamp {
         FlatTexture flatTexture;
         ImGui::ButtonTexture bt;
         ImGui::ButtonTextures bts;
+        bts.clear();
 
         bt.active = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({46, 15, 28, 0})->Load();
         bt.size = flatTexture.GetSize();
@@ -796,6 +797,9 @@ namespace Winamp {
         FlatTexture ft;
         ImGui::SliderBarTexture barT;
         ImGui::ButtonTexture butT;
+
+        barTs.clear();
+        butTs.clear();
 
         barT.textureId = ft.FromPair(textures["posbar.bmp"])->WithCrop({248, 10, 0, 0})->Load();
         barT.size = ft.GetSize();
