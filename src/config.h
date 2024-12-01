@@ -41,6 +41,7 @@ namespace AppConfig {
         Features features{};
         Debug debug{};
         FontRanges fontRanges;
+        int badBoots{};
 
         int FindConfig();
 

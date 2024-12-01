@@ -1,11 +1,11 @@
 # general
 
-- [ ] flicker?
-- [ ] time/cover features are not applied on boot
+- [ ] text color in cassette config
 - [ ] namespace player
 - [ ] README
-- [ ] track sometimes disappears briefly (hagoromo only)
-- [ ] volume is increased in uneven intervals
+- [ ] cassette tape combo is hidden by screen edge on hagoromo
+- [ ] font atlases are too big
+- [x] reboot loop protection
 - [x] prettify server build
 - [x] languages to config
 - [x] russian letters
@@ -47,3 +47,12 @@
 - [ ] simple clock skin?
 - [ ] eq button custom action
 - [ ] single connection?
+
+# weird issues and quirks
+
+- [ ] flicker?
+- [ ] time/cover features are not applied on boot
+- [ ] track sometimes disappears briefly (hagoromo only)
+- [ ] volume is increased in uneven intervals
+- [ ] winamp playlist is never full
+- [ ] unexpected bmp formats (windows98.wsz)

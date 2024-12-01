@@ -31,6 +31,7 @@ namespace AppConfig {
     };
 
     void AppConfig::ToIni() {
+        ini["wampy"]["badBoots"] = std::to_string(badBoots);
         ini["cassette:mp3_128"].set({{"tape", cassette.Get(Tape::MP3_128)->tape}, {"reel", cassette.Get(Tape::MP3_128)->reel}});
 
         ini["cassette:mp3_160"].set({{"tape", cassette.Get(Tape::MP3_160)->tape}, {"reel", cassette.Get(Tape::MP3_160)->reel}});
@@ -104,6 +105,8 @@ namespace AppConfig {
         DLOG("using config %s\n", filePath);
         auto f = mINI::INIFile(filePath);
         f.read(ini);
+
+        badBoots = std::atoi(ini["wampy"]["badBoots"].c_str());
 
         cassette.SetOrDefault(Tape::MP3_128, {ini["cassette:mp3_128"]["tape"], ini["cassette:mp3_128"]["reel"], "MP3 128kbps"});
         cassette.SetOrDefault(Tape::MP3_160, {ini["cassette:mp3_160"]["tape"], ini["cassette:mp3_160"]["reel"], "MP3 160kbps"});

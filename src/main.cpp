@@ -195,6 +195,14 @@ SkinList tapeList{};
 int main(int, char **) {
     auto config = AppConfig::AppConfig();
     config.Load();
+    if (config.badBoots >= 3) {
+        DLOG("3 reboots in a row, exiting\n");
+        exit(1);
+    }
+
+    config.badBoots += 1;
+    config.Save();
+
     setupProfiling();
 
     std::string socket{};
@@ -297,6 +305,9 @@ int main(int, char **) {
     std::srand(std::time(nullptr)); // cassette rand initialization
 
     DLOG("start\n");
+
+    config.badBoots = 0;
+    config.Save();
 
 #ifndef DESKTOP
     auto events = []() { glfwPollEvents(); };
