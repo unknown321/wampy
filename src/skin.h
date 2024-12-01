@@ -442,7 +442,7 @@ struct Skin {
                     ImGui::Text("%s", tt.second.name.c_str());
 
                     ImGui::TableNextColumn();
-                    if (ImGui::BeginCombo(("##" + tt.second.name + "tape").c_str(), tt.second.tape.c_str(), ImGuiComboFlags_None)) {
+                    if (ImGui::BeginCombo(("##" + tt.second.name + "tape").c_str(), tt.second.tape.c_str(), ImGuiComboFlags_HeightSmall)) {
                         for (auto &n : *tapeList) {
                             if (!n.valid) {
                                 continue;
@@ -464,7 +464,7 @@ struct Skin {
                     }
 
                     ImGui::TableNextColumn();
-                    if (ImGui::BeginCombo(("##" + tt.second.name + "reel").c_str(), tt.second.reel.c_str(), ImGuiComboFlags_None)) {
+                    if (ImGui::BeginCombo(("##" + tt.second.name + "reel").c_str(), tt.second.reel.c_str(), ImGuiComboFlags_HeightSmall)) {
                         for (auto &n : *reelList) {
                             if (!n.valid) {
                                 continue;
