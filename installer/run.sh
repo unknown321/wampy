@@ -56,7 +56,7 @@ install() {
   mkdir -p ${VENDOR}/usr/share/skins/winamp/
   cp "base-2.91.wsz" ${VENDOR}/usr/share/skins/winamp/
 
-  log "installing cassetes"
+  log "installing cassettes"
   mkdir -p ${VENDOR}/usr/share/skins/cassette/
   tar -C ${VENDOR}/usr/share/skins/cassette/ -xf cassette.tar
 }
