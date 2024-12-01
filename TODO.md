@@ -5,6 +5,7 @@
 - [ ] namespace player
 - [ ] README
 - [ ] track sometimes disappears briefly (hagoromo only)
+- [ ] volume is increased in uneven intervals
 - [x] prettify server build
 - [x] languages to config
 - [x] russian letters
