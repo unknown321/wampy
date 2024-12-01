@@ -832,7 +832,7 @@ namespace Winamp {
 
         for (int i = 0; i < VolumeBarCount; i++) {
             ft.Reset();
-            barT.textureId = ft.FromPair(textures["volume.bmp"])->WithCrop({68, 13, 0, i * 15})->Load();
+            barT.textureId = ft.FromPair(textures["volume.bmp"])->WithCrop({68, 13, 0, i * 15})->WithScale({198, 37}, true)->Load();
             barT.size = ft.GetSize();
             barTs[i] = barT;
         }
