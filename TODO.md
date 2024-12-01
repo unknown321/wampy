@@ -4,6 +4,7 @@
 - [ ] time/cover features are not applied on boot
 - [ ] namespace player
 - [ ] README
+- [ ] track sometimes disappears briefly (hagoromo only)
 - [x] prettify server build
 - [x] languages to config
 - [x] russian letters

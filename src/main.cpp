@@ -294,6 +294,7 @@ int main(int, char **) {
     }
 
     connector.Start();
+    std::srand(std::time(nullptr)); // cassette rand initialization
 
     DLOG("start\n");
 

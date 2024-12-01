@@ -19,6 +19,9 @@ namespace Cassette {
       public:
         Config() = default;
 
+        configInternal data{};
+        bool randomize{};
+
         ConfigEntry *Get(const Tape::TapeType t) { return &data.at(t); };
 
         void Set(const Tape::TapeType t, ConfigEntry v) { data[t] = std::move(v); };
@@ -43,8 +46,6 @@ namespace Cassette {
 
             Set(t, e);
         }
-
-        configInternal data;
     };
 
     class Cassette : public SkinVariant {
@@ -96,6 +97,8 @@ namespace Cassette {
         void ReelThread();
 
         [[noreturn]] void ReelLoop();
+
+        void randomizeTape();
     };
 } // namespace Cassette
 #endif // WAMPY_CASSETTE_H

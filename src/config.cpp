@@ -53,6 +53,8 @@ namespace AppConfig {
 
         ini["cassette:dsd"].set({{"tape", cassette.Get(Tape::DSD)->tape}, {"reel", cassette.Get(Tape::DSD)->reel}});
 
+        ini["cassette"]["randomize"] = std::to_string(cassette.randomize);
+
         ini["winamp"]["filename"] = winamp.filename;
         ini["winamp"]["bitmapFont"] = std::to_string(winamp.useBitmapFont);
         ini["winamp"]["bitmapFontInPlaylist"] = std::to_string(winamp.useBitmapFontInPlaylist);
@@ -128,6 +130,7 @@ namespace AppConfig {
         }
 
         winamp.useBitmapFontInPlaylist = (bool)std::atoi(ini["winamp"]["bitmapFontInPlaylist"].c_str());
+        cassette.randomize = (bool)std::atoi(ini["cassette"]["randomize"].c_str());
         // NOLINTEND
 
         auto activeSkinString = ini["wampy"]["activeSkin"];

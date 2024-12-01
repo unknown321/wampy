@@ -421,6 +421,10 @@ struct Skin {
                 ImGui::NewLine();
             }
 
+            if (ImGui::Checkbox("Randomize?", &config->cassette.randomize)) {
+                config->Save();
+            }
+
             static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
                                            ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
 

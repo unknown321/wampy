@@ -19,7 +19,7 @@ namespace Cassette {
     static const int ttfFontSize = 34;
     static const int reelDelayMs = 55;
 
-    std::list<Tape::TapeType> tapeTypes = {
+    std::vector<Tape::TapeType> tapeTypes = {
         Tape::MP3_128,
         Tape::MP3_160,
         Tape::MP3_256,
@@ -308,6 +308,18 @@ namespace Cassette {
         return 0;
     }
 
+    void Cassette::randomizeTape() {
+        auto index = std::rand() % tapeTypes.size();
+        tapeType = tapeTypes[index];
+
+        ActiveTape = &Tapes[config->Get(tapeType)->tape];
+        assert(ActiveTape);
+        ActiveReel = &Reels[config->Get(tapeType)->reel];
+        assert(ActiveReel);
+
+        ActiveTape->name = config->Get(tapeType)->tape;
+    }
+
     void Cassette::SelectTape(bool force) {
         if (connector->playlist.empty()) {
             DLOG("no songs in playlist\n");
@@ -317,6 +329,8 @@ namespace Cassette {
         if (Track == connector->playlist.at(0).File && force == false) {
             return;
         }
+
+        Track = connector->playlist.at(0).File;
 
         song = connector->playlist.at(0);
 
@@ -331,6 +345,11 @@ namespace Cassette {
             song.Artist = CalculateTextWidth(song.Artist, Tapes[config->Get(tapeType)->tape].titleWidth);
             song.Title = CalculateTextWidth(song.Title, Tapes[config->Get(tapeType)->tape].titleWidth);
             song.PlaylistStringsCalculated = true;
+        }
+
+        if (config->randomize) {
+            randomizeTape();
+            return;
         }
 
         std::string codec;
@@ -391,8 +410,6 @@ namespace Cassette {
             tapeType = Tape::MP3_320;
             break;
         }
-
-        Track = connector->playlist.at(0).File;
 
         DLOG("tape: %s, reel %s\n", config->Get(tapeType)->tape.c_str(), config->Get(tapeType)->reel.c_str());
         ActiveTape = &Tapes[config->Get(tapeType)->tape];
