@@ -360,12 +360,12 @@ namespace Winamp {
             break;
         }
 
-        if (connector->status.Channels > 1) {
-            Elements.MonoOffIndicator.Draw();
-            Elements.StereoOnIndicator.Draw();
-        } else {
+        if (connector->status.Channels == 1) {
             Elements.MonoOnIndicator.Draw();
             Elements.StereoOffIndicator.Draw();
+        } else {
+            Elements.MonoOffIndicator.Draw();
+            Elements.StereoOnIndicator.Draw();
         }
 
         Elements.ShuffleButton.Draw(connector->status.Shuffle);
@@ -512,13 +512,13 @@ namespace Winamp {
             ->Load();
         Elements.MonoOffIndicator.FromPair(textures["monoster.bmp"])
             ->WithCrop({0, 12, 29, 12})
-            ->WithPosition(ImVec2(617.0f, 119.0f))
-            ->WithScale({85, 35}, false)
+            ->WithPosition(ImVec2(615.0f, 119.0f))
+            ->WithScale({86, 35}, true)
             ->Load();
         Elements.MonoOnIndicator.FromPair(textures["monoster.bmp"])
             ->WithCrop({0, 12, 29, 0}) // width should be 29, but some skins have less width
-            ->WithPosition(ImVec2(617.0f, 119.0f))
-            ->WithScale({85, 35}, false)
+            ->WithPosition(ImVec2(615.0f, 119.0f))
+            ->WithScale({86, 35}, true)
             ->Load();
         Elements.StereoOnIndicator.FromPair(textures["monoster.bmp"])
             ->WithCrop({29, 12, 0, 0})
