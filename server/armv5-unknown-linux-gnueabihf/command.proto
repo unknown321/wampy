@@ -88,6 +88,7 @@ message Status {
   required bool HiRes = 4;
   required bool Shuffle = 5;
   required int32 Repeat = 6;
+  // volume percentage
   required int32 Volume = 7;
   optional int32 BitRate = 8;
   optional float SampleRate = 9;
