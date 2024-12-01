@@ -4,6 +4,7 @@
 - [ ] README
 - [ ] cassette tape combo is hidden by screen edge on hagoromo
 - [ ] font atlases are too big
+- [ ] "restart wampy" button in settings
 - [x] unexpected bmp formats (windows98.wsz)
 - [x] text color in cassette config
 - [x] reboot loop protection
