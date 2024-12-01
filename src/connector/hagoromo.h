@@ -5,10 +5,18 @@
 #include "connector.h"
 
 namespace Player {
+    struct featureConfig {
+        bool cover{};
+        bool coverOK{};
+        bool time{};
+        bool timeOK{};
+    };
+
     struct HagoromoConnector : Connector {
 
         const char *touchscreenPath = "/sys/devices/platform/mt-i2c.1/i2c-1/1-0048/sleep";
         const char *brightnessPath = "/sys/class/leds/lcd-backlight/brightness";
+        featureConfig config{};
         //        const char *thermalPath = "/sys/class/thermal/thermal_zone0/temp";
 
         static void sendData(char *data, size_t len, std::string *res);
@@ -62,6 +70,8 @@ namespace Player {
         void FeatureShowTime(bool enable) override;
 
         void Start() override;
+
+        void featuresLoop();
     };
 } // namespace Player
 

@@ -888,6 +888,7 @@ void Controller::FeatureBigCover(Command::Command *c) {
     }
 
     c->set_code(Command::FAIL);
+
     if (MusicPlayer == nullptr) {
         DLOG("no music player\n");
         return;

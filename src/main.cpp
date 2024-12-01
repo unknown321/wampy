@@ -293,14 +293,6 @@ int main(int, char **) {
         }
     }
 
-    if (config.features.bigCover) {
-        connector.FeatureBigCover(config.features.bigCover);
-    }
-
-    if (config.features.showTime) {
-        connector.FeatureShowTime(config.features.showTime);
-    }
-
     connector.Start();
 
     DLOG("start\n");
