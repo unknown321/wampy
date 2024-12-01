@@ -74,7 +74,6 @@ struct FlatTexture {
     FlatTexture *FromData(char *data, size_t length) {
         this->image = new Magick::Image();
         Magick::Blob tmp(data, length);
-        this->image->depth(8);
         this->image->magick(this->magick);
         try {
             this->image->read(tmp);

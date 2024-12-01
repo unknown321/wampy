@@ -4,6 +4,7 @@
 - [ ] README
 - [ ] cassette tape combo is hidden by screen edge on hagoromo
 - [ ] font atlases are too big
+- [x] unexpected bmp formats (windows98.wsz)
 - [x] text color in cassette config
 - [x] reboot loop protection
 - [x] prettify server build
@@ -42,9 +43,9 @@
 
 - [x] huge cover art
 - [x] show time
-- [ ] regions.txt
-- [ ] clickable lyrics
-- [ ] simple clock skin?
+- [ ] regions.txt (winamp)
+- [ ] clickable lyrics icon (hagoromo)
+- [ ] simple clock skin
 - [ ] eq button custom action
 - [ ] single connection?
 
@@ -55,4 +56,3 @@
 - [ ] track sometimes disappears briefly (hagoromo only)
 - [ ] volume is increased in uneven intervals
 - [ ] winamp playlist is never full
-- [ ] unexpected bmp formats (windows98.wsz)
