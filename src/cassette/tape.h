@@ -46,13 +46,14 @@ namespace Tape {
         std::string reel = "other";
         std::string name{};
         float titleWidth = 600.0f;
+        ImU32 textColor{};
         bool valid{};
 
         int Load(const std::string &directoryPath);
 
         void Draw();
 
-        void DrawSongInfo();
+        void DrawSongInfo() const;
 
         int InitializeButtons();
 

@@ -83,9 +83,17 @@ namespace Tape {
                 this->titleWidth = std::stof(parts[1]);
                 break;
             }
+            case hash("textcolor"): {
+                this->textColor = colorToImCol32(parts[1]);
+                break;
+            }
             default:
                 break;
             }
+        }
+
+        if (this->textColor == 0) {
+            this->textColor = IM_COL32_BLACK;
         }
     }
 
@@ -113,8 +121,8 @@ namespace Tape {
         DrawSongInfo();
     }
 
-    void Tape::DrawSongInfo() {
-        ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32_BLACK);
+    void Tape::DrawSongInfo() const {
+        ImGui::PushStyleColor(ImGuiCol_Text, textColor);
         if (titleCoords.x > 0) {
             ImGui::SetCursorPos(titleCoords);
             ImGui::Text("%s", song->Title.c_str());

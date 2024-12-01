@@ -1,10 +1,10 @@
 # general
 
-- [ ] text color in cassette config
 - [ ] namespace player
 - [ ] README
 - [ ] cassette tape combo is hidden by screen edge on hagoromo
 - [ ] font atlases are too big
+- [x] text color in cassette config
 - [x] reboot loop protection
 - [x] prettify server build
 - [x] languages to config
