@@ -32,10 +32,12 @@ namespace AppConfig {
 
     void AppConfig::ToIni() {
         ini["wampy"]["badBoots"] = std::to_string(badBoots);
+        ini["wampy"]["activeSkin"] = ESkinToName[activeSkin];
+        ini["wampy"]["limitFPS"] = std::to_string(limitFPS);
+        ini["wampy"]["debug"] = std::to_string(debug);
+
         ini["cassette:mp3_128"].set({{"tape", cassette.Get(Tape::MP3_128)->tape}, {"reel", cassette.Get(Tape::MP3_128)->reel}});
-
         ini["cassette:mp3_160"].set({{"tape", cassette.Get(Tape::MP3_160)->tape}, {"reel", cassette.Get(Tape::MP3_160)->reel}});
-
         ini["cassette:mp3_256"].set({{"tape", cassette.Get(Tape::MP3_256)->tape}, {"reel", cassette.Get(Tape::MP3_256)->reel}});
         ini["cassette:mp3_320"].set({{"tape", cassette.Get(Tape::MP3_320)->tape}, {"reel", cassette.Get(Tape::MP3_320)->reel}});
 
@@ -44,9 +46,7 @@ namespace AppConfig {
         );
 
         ini["cassette:aiff"].set({{"tape", cassette.Get(Tape::AIFF)->tape}, {"reel", cassette.Get(Tape::AIFF)->reel}});
-
         ini["cassette:pcm"].set({{"tape", cassette.Get(Tape::PCM)->tape}, {"reel", cassette.Get(Tape::PCM)->reel}});
-
         ini["cassette:hires"].set(
             {{"tape", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->tape},
              {"reel", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->reel}}
@@ -61,13 +61,10 @@ namespace AppConfig {
         ini["winamp"]["bitmapFontInPlaylist"] = std::to_string(winamp.useBitmapFontInPlaylist);
         ini["winamp"]["preferTimeRemaining"] = std::to_string(winamp.preferTimeRemaining);
 
-        ini["wampy"]["activeSkin"] = ESkinToName[activeSkin];
-
         ini["misc"]["swapTrackButtons"] = std::to_string(misc.swapTrackButtons);
 
         ini["features"]["bigCover"] = std::to_string(features.bigCover);
         ini["features"]["showTime"] = std::to_string(features.showTime);
-        ini["debug"]["enabled"] = std::to_string(debug.enabled);
         ini["mpd"]["socketPath"] = MPDSocketPath;
 
 #ifdef DESKTOP
@@ -107,7 +104,15 @@ namespace AppConfig {
         auto f = mINI::INIFile(filePath);
         f.read(ini);
 
+        // NOLINTBEGIN
         badBoots = std::atoi(ini["wampy"]["badBoots"].c_str());
+        if (ini["wampy"]["limitFPS"].empty()) {
+            limitFPS = true;
+        } else {
+            limitFPS = (bool)std::atoi(ini["wampy"]["limitFPS"].c_str());
+        }
+        debug = (bool)std::atoi(ini["debug"]["enabled"].c_str());
+        // NOLINTEND
 
         cassette.SetOrDefault(Tape::MP3_128, {ini["cassette:mp3_128"]["tape"], ini["cassette:mp3_128"]["reel"], "MP3 128kbps"});
         cassette.SetOrDefault(Tape::MP3_160, {ini["cassette:mp3_160"]["tape"], ini["cassette:mp3_160"]["reel"], "MP3 160kbps"});
@@ -149,8 +154,6 @@ namespace AppConfig {
         misc.swapTrackButtons = (bool)std::atoi(ini["misc"]["swapTrackButtons"].c_str());
         features.bigCover = (bool)std::atoi(ini["features"]["bigCover"].c_str());
         features.showTime = (bool)std::atoi(ini["features"]["showTime"].c_str());
-
-        debug.enabled = (bool)std::atoi(ini["debug"]["enabled"].c_str());
 
 #ifdef DESKTOP
         fontRanges.ChineseFull = (bool)std::atoi(ini["fonts"]["chineseFull"].c_str());

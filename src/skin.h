@@ -320,9 +320,13 @@ struct Skin {
         printFPS();
 
         ImGui::NewLine();
-        if (ImGui::Checkbox("Debug", &config->debug.enabled)) {
-            winamp.debug = config->debug.enabled;
-            cassette.debug = config->debug.enabled;
+        if (ImGui::Checkbox("Debug", &config->debug)) {
+            winamp.debug = config->debug;
+            cassette.debug = config->debug;
+            config->Save();
+        }
+
+        if (ImGui::Checkbox("Limit fps", &config->limitFPS)) {
             config->Save();
         }
 

@@ -232,7 +232,7 @@ int main(int, char **) {
     GLFWwindow *window = CreateWindow();
     assert(window != nullptr);
 
-    if (config.debug.enabled) {
+    if (config.debug) {
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(GlMessageCallback, 0);
     }
@@ -368,10 +368,12 @@ int main(int, char **) {
 
         skin.Load();
 
-        //        https://github.com/glfw/glfw/issues/1308
-        while (glfwGetTime() < lastTime + (1.0 / TARGET_FPS)) {
+        if (config.limitFPS) {
+            //        https://github.com/glfw/glfw/issues/1308
+            while (glfwGetTime() < lastTime + (1.0 / TARGET_FPS)) {
+            }
+            lastTime += 1.0 / TARGET_FPS;
         }
-        lastTime += 1.0 / TARGET_FPS;
     }
 
     ImGui_ImplOpenGL3_Shutdown();

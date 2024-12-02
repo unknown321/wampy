@@ -14,10 +14,6 @@ enum ESkinVariant {
 };
 
 namespace AppConfig {
-    struct Debug {
-        bool enabled = false;
-    };
-
     struct Misc {
         bool swapTrackButtons = false;
     };
@@ -39,9 +35,10 @@ namespace AppConfig {
         Cassette::Config cassette{};
         Misc misc{};
         Features features{};
-        Debug debug{};
+        bool debug{};
         FontRanges fontRanges;
         int badBoots{};
+        bool limitFPS = true;
 
         int FindConfig();
 
