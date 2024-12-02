@@ -383,8 +383,6 @@ namespace Hagoromo {
         }
 
         status.Bits = c.status().bitdepth();
-
-        status.formatted = false;
     }
 
     /* ALSA volume != hgrmvolume

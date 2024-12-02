@@ -914,7 +914,7 @@ namespace Winamp {
             } else {
                 ImGui::SetCursorPos(ImVec2(113, 92));
             }
-            ImGui::Text("-");
+            ImGui::Text("%s", remainingTimeSign.c_str());
         }
 
         ImGui::SetCursorPos(ImVec2(140, 76));
@@ -1176,15 +1176,20 @@ namespace Winamp {
 
         if (status->Duration > 0) {
             status->PositionPercent = (int)std::ceil(float(status->Elapsed) / float(status->Duration) * 100);
+        } else {
+            status->formatted = true;
+            return;
         }
 
         int minutes, seconds;
         if (timeRemaining) {
             minutes = (status->Duration - status->Elapsed) / 60;
             seconds = (status->Duration - status->Elapsed) % 60;
+            remainingTimeSign = "-";
         } else {
             minutes = status->Elapsed / 60;
             seconds = status->Elapsed % 60;
+            remainingTimeSign = "";
         }
 
         auto playlist = &connector->playlist;

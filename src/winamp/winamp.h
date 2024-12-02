@@ -157,6 +157,7 @@ namespace Winamp {
 
         std::string savedTitle{};
         std::string newFull{};
+        std::string remainingTimeSign{};
 
         ImFont *FontBitmap{};
         ImFont *FontNumbers{};
