@@ -50,7 +50,7 @@ namespace Winamp {
     struct elements {
         FlatTexture Main;
         FlatTexture Title;
-        FlatTexture OptionsIndicators;
+        FlatTexture ClutterBar;
         FlatTexture MonoOffIndicator;
         FlatTexture MonoOnIndicator;
         FlatTexture StereoOnIndicator;

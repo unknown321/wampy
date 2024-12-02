@@ -345,7 +345,7 @@ namespace Winamp {
 
         Elements.Main.Draw();
         Elements.Title.Draw();
-        Elements.OptionsIndicators.Draw();
+        Elements.ClutterBar.Draw();
 
         switch (hash(connector->status.State.c_str())) {
         case hash("play"):
@@ -404,7 +404,11 @@ namespace Winamp {
             ImGui::SetCursorPos(ImVec2(323, 74));
         }
 
-        ImGui::Text("%s", connector->playlist.at(0).TitleMarquee.c_str());
+        if (connector->playlist.at(0).TitleMarquee.empty()) {
+            ImGui::Text("Wampy");
+        } else {
+            ImGui::Text("%s", connector->playlist.at(0).TitleMarquee.c_str());
+        }
 
         if (!config->useBitmapFont) {
             ImGui::PopStyleColor(1);
@@ -511,7 +515,7 @@ namespace Winamp {
             ->WithFilledRectangle({770, 96, 323, 78}, colors.trackTitleBackground)
             ->Load();
         Elements.Title.FromPair(textures["titlebar.bmp"])->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})->Load();
-        Elements.OptionsIndicators.FromPair(textures["titlebar.bmp"])
+        Elements.ClutterBar.FromPair(textures["titlebar.bmp"])
             ->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})
             ->WithPosition(ImVec2(29.0f, 64.0f))
             ->Load();
@@ -1101,7 +1105,7 @@ namespace Winamp {
         Main.Unload();
         Title.Unload();
 
-        OptionsIndicators.Unload();
+        ClutterBar.Unload();
         MonoOffIndicator.Unload();
         MonoOnIndicator.Unload();
         StereoOnIndicator.Unload();
