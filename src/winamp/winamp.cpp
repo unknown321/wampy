@@ -910,7 +910,7 @@ namespace Winamp {
         // minus sign
         if (timeRemaining) {
             if (isEx) {
-                ImGui::SetCursorPos(ImVec2(105, 76));
+                ImGui::SetCursorPos(ImVec2(111, 76));
             } else {
                 ImGui::SetCursorPos(ImVec2(113, 92));
             }
