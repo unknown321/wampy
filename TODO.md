@@ -61,13 +61,13 @@
 
 # weird issues and quirks
 
-- [ ] flicker until fps is 24
-- [ ] time/cover features are not applied on boot
 - [ ] volume is increased in uneven intervals
 - [ ] winamp playlist is never full
 
 # hard to solve
 
+- [ ] winamp playlist flicker sometimes
+- [ ] time/cover features are not applied on boot
 - [ ] cassette tape combo is hidden by screen edge on hagoromo
 - [ ] font atlases are too big
 - [ ] blink/marquee timers are not precise
