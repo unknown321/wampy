@@ -4,3 +4,5 @@ userdata.tar
 lib*
 *.tar
 *.wsz
+*.bmp
+LICENSE*

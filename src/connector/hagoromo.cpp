@@ -192,7 +192,7 @@ namespace Hagoromo {
         }
 
         Command::WindowVisible expected;
-        DLOG("visible %d,  action %s\n", visible, action == 1 ? "Hide" : "Show");
+        DLOG("visible %d, action %s\n", visible, action == 1 ? "Hide" : "Show");
         if (!visible && (action == Show)) {
             DLOG("hgrm status: %d, showing hgrm\n", c.windowstatus().visible());
             c.set_type(Command::CMD_SHOW_WINDOW);

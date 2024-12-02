@@ -96,7 +96,7 @@ namespace Cassette {
     int Cassette::LoadReel(const std::string &path) {
         auto reelFiles = std::vector<directoryEntry>{};
         if (!Reels[path].empty()) {
-            DLOG("reel %s already loaded, %d textures\n", path.c_str(), Reels[path].size());
+            DLOG("reel %s already loaded, %zu textures\n", path.c_str(), Reels[path].size());
             return Tape::ERR_OK;
         }
 

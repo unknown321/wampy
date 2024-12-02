@@ -16,3 +16,4 @@ libs/libMali_linux.so
 *.otf
 skins/**
 src/Version.h
+LICENSE_3rdparty

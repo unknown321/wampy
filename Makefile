@@ -7,6 +7,7 @@ VENDOR=/system/vendor/unknown321
 TAPE_SOURCE_UPG=NW-A100_0003_V4_04_00_NW_WM_FW.UPG
 INSTALL=install/arm
 UPX=nw-installer/tools/upx/upx/upx
+ECHO=/usr/bin/echo
 
 docker:
 	cat Dockerfile | docker image build -t $(IMAGE) -
@@ -65,6 +66,9 @@ nw-installer/installer/userdata.tar:
 	tar -C cassetteunpacker/res -cf installer/cassette.tar \
 		tape \
 		reel
+	cp LICENSE installer/
+	cp LICENSE_3rdparty installer/
+	cp qr.bmp installer/
 	tar -C installer -cf nw-installer/installer/userdata.tar \
 		init.wampy.rc \
 		run.sh \
@@ -76,6 +80,9 @@ nw-installer/installer/userdata.tar:
 		libqeglfs.so \
 		base-2.91.wsz \
 		cassette.tar \
+		LICENSE \
+		LICENSE_3rdparty \
+		qr.bmp \
 		wampy || rm -f nw-installer/installer/userdata.tar
 
 
@@ -102,5 +109,33 @@ profile-arm:
 valgrind:
 	cd build && valgrind --leak-check=full --read-var-info=yes --read-inline-info=yes --gen-suppressions=yes --suppressions=../suppressions.valgrind -s  ./$(PRODUCT)
 
+LICENSE_3rdparty:
+	@$(ECHO) -e "protobuf:\n" > LICENSE_3rdparty
+	@cat libs/protobuf/LICENSE >> LICENSE_3rdparty
+	@$(ECHO) -e "\n***\nzlib:\n" >> LICENSE_3rdparty
+	@cat libs/zlib/LICENSE >> LICENSE_3rdparty
+	@$(ECHO) -e "\n***\nmINI:\n" >> LICENSE_3rdparty
+	@cat libs/mINI/LICENSE >> LICENSE_3rdparty
+	@$(ECHO) -e "\n***\nImageMagick:\n" >> LICENSE_3rdparty
+	@cat libs/ImageMagick/LICENSE >> LICENSE_3rdparty
+	@$(ECHO) -e "\n***\nMagick++:\n" >> LICENSE_3rdparty
+	@cat libs/ImageMagick/Magick++/LICENSE >> LICENSE_3rdparty
 
-.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean
+	@$(ECHO) -e "\n***\nglfw:\n" >> LICENSE_3rdparty
+	@cat libs/glfw/LICENSE.md >> LICENSE_3rdparty
+	@$(ECHO) -e "\n***\nlibjpeg-turbo:\n" >> LICENSE_3rdparty
+	@cat libs/libjpeg-turbo/LICENSE.md >> LICENSE_3rdparty
+
+	@$(ECHO) -e "\n***\nglm:\n" >> LICENSE_3rdparty
+	@cat libs/glm/copying.txt >> LICENSE_3rdparty
+
+	@$(ECHO) -e "\n***\nDear ImGui:\n" >> LICENSE_3rdparty
+	@cat libs/imgui/LICENSE.txt >> LICENSE_3rdparty
+
+# https://github.com/fukuchi/libqrencode
+qr:
+	@qrencode -o qr.png -m 1 -s 7 https://github.com/unknown321/$(PRODUCT)
+	@convert qr.png -type palette qr.bmp
+	@rm qr.png
+
+.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty qr

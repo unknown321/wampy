@@ -197,6 +197,10 @@ SkinList tapeList{};
 
 int main(int, char **) {
     DLOG("starting, commit %s\n", SOFTWARE_VERSION);
+    DLOG("\n    wampy  Copyright (C) 2024  unknown321\n"
+         "    This program comes with ABSOLUTELY NO WARRANTY; for details see Settings->Misc->License.\n"
+         "    This is free software, and you are welcome to redistribute it\n"
+         "    under certain conditions; see Settings->Misc->License for details.\n");
     auto config = AppConfig::AppConfig();
     config.Load();
     if (config.badBoots >= 3) {
@@ -220,13 +224,13 @@ int main(int, char **) {
 #else
     auto connector = Hagoromo::HagoromoConnector();
     socket = WAMPY_SOCKET;
-    listdir("/system/vendor/unknown321/usr/share/skins/winamp/", &skinList, ".wsz");
+    listdir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/", &skinList, ".wsz");
     listdir("/contents/wampy/skins/winamp/", &skinList, ".wsz");
 
-    listdirs("/system/vendor/unknown321/usr/share/skins/cassette/reel/", &reelList);
+    listdirs("/system/vendor/unknown321/usr/share/wampy/skins/cassette/reel/", &reelList);
     listdirs("/contents/wampy/skins/cassette/reel/", &reelList);
 
-    listdirs("/system/vendor/unknown321/usr/share/skins/cassette/tape/", &tapeList);
+    listdirs("/system/vendor/unknown321/usr/share/wampy/skins/cassette/tape/", &tapeList);
     listdirs("/contents/wampy/skins/cassette/tape/", &tapeList);
 #endif
     connector.render = &render;
@@ -287,6 +291,8 @@ int main(int, char **) {
 
     skin.winamp.fontRanges = &config.fontRanges;
     skin.cassette.fontRanges = &config.fontRanges;
+    skin.ReadLicense();
+    skin.ReadQR();
 
     skin.Load();
 

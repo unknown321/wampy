@@ -1,11 +1,12 @@
 # general
 
-- [ ] about in settings
-    - [x] commit info
-    - [ ] license
 - [ ] README
-- [ ] license in installer/repo
+- [ ] license in installer
 - [ ] loaded winamp skin in settings dropdown
+- [x] about in settings
+    - [x] commit info
+    - [x] license
+- [x] license in repo
 - [x] fps limiter to config
 - [x] remaining time to config
 - [x] minus sign if nums_ex not present
@@ -53,7 +54,7 @@
 - [ ] regions.txt (winamp)
 - [ ] clickable lyrics icon (hagoromo)
 - [ ] simple clock skin
-- [ ] eq button custom action
+- [ ] eq button custom action - too small?
 - [ ] "restart wampy" button in settings - use case?
 - [ ] single connection?
 

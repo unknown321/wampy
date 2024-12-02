@@ -12,6 +12,9 @@ enum SettingsTab {
     SkinOpts = 0,
     Misc = 1,
     TabFonts = 2,
+    TabLicense3rd = 3,
+    TabLicense = 4,
+    TabWebsite = 5,
 };
 
 struct Skin {
@@ -48,6 +51,21 @@ struct Skin {
     std::string needRestartFontsText = "Changes will be applied on device restart";
     bool needRestartFonts{};
 
+    std::string license{};
+    std::string license3rd{};
+
+#ifdef DESKTOP
+    std::string licensePath = "../LICENSE";
+    std::string license3rdPath = "../LICENSE_3rdparty";
+    std::string qrPath = "../qr.bmp";
+#else
+    std::string licensePath = "/system/vendor/unknown321/usr/share/wampy/doc/LICENSE";
+    std::string license3rdPath = "/system/vendor/unknown321/usr/share/wampy/doc/LICENSE_3rdparty";
+    std::string qrPath = "/system/vendor/unknown321/usr/share/wampy/qr.bmp";
+#endif
+    GLuint qrTexture;
+    float qrSide;
+
     void ReloadFont() {
         loading = true;
         std::string filepath{};
@@ -73,6 +91,17 @@ struct Skin {
 
         onlyFont = false;
         loading = false;
+    }
+
+    void ReadQR() {
+        Magick::Image i;
+        i.read(qrPath);
+        i.magick("RGBA");
+        i.depth(8);
+        Magick::Blob blob;
+        i.write(&blob);
+        qrSide = (float)i.size().width();
+        LoadTextureFromMagic((unsigned char *)blob.data(), &qrTexture, (int)i.size().width(), (int)i.size().height());
     }
 
     void Load() {
@@ -348,10 +377,79 @@ struct Skin {
         }
 
 #endif
+
+        auto website = ImGui::CalcTextSize("Website");
         auto verSize = ImGui::CalcTextSize(SOFTWARE_VERSION);
+        auto licenseSize = ImGui::CalcTextSize("License");
+        auto license3Size = ImGui::CalcTextSize("License 3rdparty");
+        auto offset = 15.0f;
+        ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 3 - ImGui::GetStyle().FramePadding.y * 2 - offset * 2);
+        ImGui::SetCursorPosX(800 - website.x - ImGui::GetStyle().FramePadding.x - offset);
+        if (ImGui::Button("Website")) {
+            displayTab = SettingsTab::TabWebsite;
+            loadStatusStr = "";
+        }
+
+        ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 2 - ImGui::GetStyle().FramePadding.y * 2 - offset);
+        ImGui::SetCursorPosX(800 - licenseSize.x - ImGui::GetStyle().FramePadding.x - offset);
+        if (ImGui::Button("License")) {
+            displayTab = SettingsTab::TabLicense;
+            loadStatusStr = "";
+        }
+
+        ImGui::SetCursorPosY(480 - verSize.y - license3Size.y - ImGui::GetStyle().FramePadding.y * 2);
+        ImGui::SetCursorPosX(800 - license3Size.x - ImGui::GetStyle().FramePadding.x - offset);
+        if (ImGui::Button("License 3rdparty")) {
+            displayTab = SettingsTab::TabLicense3rd;
+            loadStatusStr = "";
+        }
+
         ImGui::SetCursorPosX(800 - verSize.x - ImGui::GetStyle().FramePadding.x);
         ImGui::SetCursorPosY(480 - verSize.y - ImGui::GetStyle().FramePadding.y);
         ImGui::Text("%s", SOFTWARE_VERSION);
+    }
+
+    void Website() const {
+        ImGui::Text("https://github.com/unknown321/wampy");
+        ImGui::NewLine();
+        ImGui::Image((void *)(intptr_t)qrTexture, ImVec2(qrSide, qrSide));
+    }
+
+    void ReadLicense() {
+        std::ifstream f;
+        f.open(licensePath);
+        std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+        license = contents;
+        f.close();
+
+        f.open(license3rdPath);
+        std::string contents2((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+        license3rd = contents2;
+        f.close();
+    }
+
+    void License() const {
+        ImGui::SetCursorPosY(60);
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        ImGui::BeginChild("licenseText", ImVec2(740, 400));
+        ImGui::PushTextWrapPos(740 + 18 - 40 - 6);
+        ImGui::Text("%s", license.c_str());
+        ImGui::PopTextWrapPos();
+        ImGui::EndChild();
+        ImGui::PopStyleVar(2);
+    }
+
+    void License3rd() const {
+        ImGui::SetCursorPosY(60);
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        ImGui::BeginChild("license3Text", ImVec2(740, 400));
+        ImGui::PushTextWrapPos(740 + 18 - 40 - 6);
+        ImGui::Text("%s", license3rd.c_str());
+        ImGui::PopTextWrapPos();
+        ImGui::EndChild();
+        ImGui::PopStyleVar(2);
     }
 
     void DrawSkin() {
@@ -364,34 +462,29 @@ struct Skin {
             loadStatusStr = "";
         }
 
-        ImGui::NewLine();
-        if (activeSettingsTab == WINAMP) {
-            if (activeSkinVariant != WINAMP) {
-                if (ImGui::Button("Set as active")) {
+        if (activeSkinVariant != activeSettingsTab) {
+            ImGui::SameLine();
+            if (ImGui::Button("Set as active")) {
+                switch (activeSettingsTab) {
+                case WINAMP:
                     config->activeSkin = WINAMP;
-                    config->Save();
+                    break;
+                case CASSETTE:
+                    config->activeSkin = CASSETTE;
+                    break;
+                default:
+                    break;
                 }
 
-                ImGui::NewLine();
-            }
-            //            if (ImGui::Button("Unload")) {
-            //                winamp.Unload();
-            //            }
-
-            if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
                 config->Save();
             }
+        }
 
-            if (ImGui::Checkbox("Use bitmap font in playlist", &config->winamp.useBitmapFontInPlaylist)) {
-                config->Save();
-            }
+        ImGui::NewLine();
 
-            if (ImGui::Checkbox("Prefer time remaining", &config->winamp.preferTimeRemaining)) {
-                config->Save();
-            }
-
-            ImGui::NewLine();
-
+        if (activeSettingsTab == WINAMP) {
+            ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
             if (ImGui::BeginCombo("##", skinList->at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightSmall)) {
 #ifndef DESKTOP
                 auto clip_min = ImVec2(0, 0);
@@ -409,30 +502,36 @@ struct Skin {
                 }
                 ImGui::EndCombo();
             }
+            ImGui::PopStyleVar(2);
 
-            ImGui::NewLine();
+            ImGui::SameLine();
             if (activeSkinVariant == WINAMP) {
                 if (ImGui::Button("Load skin")) {
                     WinampSkinNewName = skinList->at(selectedSkinIdx).fullPath;
                     loadStatus = 0;
-                    ImGui::NewLine();
-                    ImGui::Text("loading %s", skinList->at(selectedSkinIdx).name.c_str());
+                    loadStatusStr = "loading " + skinList->at(selectedSkinIdx).name;
                 }
+            }
 
-                ImGui::NewLine();
+            if (!loadStatusStr.empty()) {
+                ImGui::SameLine();
                 ImGui::Text("%s", loadStatusStr.c_str());
             }
-        } else if (activeSettingsTab == CASSETTE) {
 
-            if (activeSkinVariant != CASSETTE) {
-                if (ImGui::Button("Set as active")) {
-                    config->activeSkin = CASSETTE;
-                    config->Save();
-                }
+            ImGui::NewLine();
 
-                ImGui::NewLine();
+            if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
+                config->Save();
             }
 
+            if (ImGui::Checkbox("Use bitmap font in playlist", &config->winamp.useBitmapFontInPlaylist)) {
+                config->Save();
+            }
+
+            if (ImGui::Checkbox("Prefer time remaining", &config->winamp.preferTimeRemaining)) {
+                config->Save();
+            }
+        } else if (activeSettingsTab == CASSETTE) {
             if (ImGui::Checkbox("Randomize?", &config->cassette.randomize)) {
                 config->Save();
             }
@@ -441,6 +540,9 @@ struct Skin {
                                            ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
 
             ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 7);
+
+            ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
             if (ImGui::BeginTable("configTable", 3, flags, outer_size)) {
                 ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
                 ImGui::TableSetupColumn("Codec", ImGuiTableColumnFlags_None);
@@ -499,6 +601,7 @@ struct Skin {
                 }
                 ImGui::EndTable();
             }
+            ImGui::PopStyleVar(2);
 
             if (ImGui::Button("Reset")) {
                 cassette.config->Default();
@@ -528,6 +631,15 @@ struct Skin {
             break;
         case SettingsTab::TabFonts:
             Fonts();
+            break;
+        case SettingsTab::TabLicense:
+            License();
+            break;
+        case SettingsTab::TabLicense3rd:
+            License3rd();
+            break;
+        case SettingsTab::TabWebsite:
+            Website();
             break;
         default:
             break;

@@ -53,12 +53,20 @@ install() {
   chmod 0755 /system/vendor/sony/plugins/platforms/libqeglfs.so
 
   log "installing winamp skin"
-  mkdir -p ${VENDOR}/usr/share/skins/winamp/
-  cp "base-2.91.wsz" ${VENDOR}/usr/share/skins/winamp/
+  mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/winamp/
+  cp "base-2.91.wsz" ${VENDOR}/usr/share/${BINARY}/skins/winamp/
 
   log "installing cassettes"
-  mkdir -p ${VENDOR}/usr/share/skins/cassette/
-  tar -C ${VENDOR}/usr/share/skins/cassette/ -xf cassette.tar
+  mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/cassette/
+  tar -C ${VENDOR}/usr/share/${BINARY}/skins/cassette/ -xf cassette.tar
+
+  log "installing licenses"
+  mkdir -p ${VENDOR}/usr/share/${BINARY}/doc/
+  cp LICENSE ${VENDOR}/usr/share/${BINARY}/doc/
+  cp LICENSE_3rdparty ${VENDOR}/usr/share/${BINARY}/doc/
+
+  log "installing qr code"
+  cp qr.bmp ${VENDOR}/usr/share/${BINARY}/
 }
 
 mount -t ext4 -o rw /emmc@android /system
