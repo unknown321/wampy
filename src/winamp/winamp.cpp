@@ -14,7 +14,7 @@ namespace Winamp {
 
     std::string const ColorBlack = "#000000";
     static const float ttfFontSize = 33.0f;
-    static const float TitleWidth = 457.0f - 5.0f;
+    static const float TitleWidth = 595.0f;
     static const int MarqueeMaxLengthBitmap = 32;
     static const float MaxTitleWidth = 1024.0f;
 
