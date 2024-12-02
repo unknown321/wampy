@@ -5,7 +5,7 @@
 
 #define MPDDefaultAddress "/home/unknown/.local/mpd/socket";
 
-namespace Player {
+namespace MPD {
     struct MPDConnector : Connector {
         int fd = 0;
         bool serverReady = true;
@@ -62,6 +62,6 @@ namespace Player {
 
         void FeatureShowTime(bool enable) override{};
     };
-} // namespace Player
+} // namespace MPD
 
 #endif // WAMPY_MPD_H

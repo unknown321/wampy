@@ -20,7 +20,7 @@
 
 #include <algorithm>
 
-namespace Player {
+namespace Hagoromo {
 
     void HagoromoConnector::sendData(char *data, size_t len, std::string *res) {
         int server_socket;
@@ -670,5 +670,5 @@ namespace Player {
         }
     */
 
-} // namespace Player
+} // namespace Hagoromo
 #endif // HAGOROMO_CPP

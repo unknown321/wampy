@@ -1,10 +1,9 @@
 # general
 
-- [ ] namespace player
 - [ ] README
 - [ ] cassette tape combo is hidden by screen edge on hagoromo
 - [ ] font atlases are too big
-- [ ] "restart wampy" button in settings
+- [x] namespace player
 - [x] ignore volume/track buttons if render is off
 - [x] unexpected bmp formats (windows98.wsz)
 - [x] text color in cassette config
@@ -49,6 +48,7 @@
 - [ ] clickable lyrics icon (hagoromo)
 - [ ] simple clock skin
 - [ ] eq button custom action
+- [ ] "restart wampy" button in settings - use case?
 - [ ] single connection?
 
 # weird issues and quirks

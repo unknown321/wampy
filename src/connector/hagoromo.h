@@ -4,7 +4,7 @@
 #include "command.pb.h"
 #include "connector.h"
 
-namespace Player {
+namespace Hagoromo {
     struct featureConfig {
         bool cover{};
         bool coverOK{};
@@ -73,6 +73,6 @@ namespace Player {
 
         void featuresLoop();
     };
-} // namespace Player
+} // namespace Hagoromo
 
 #endif // WAMPY_HAGOROMO_H

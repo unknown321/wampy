@@ -24,7 +24,7 @@ std::string fieldDelimeter = ": ";
 
 int RESP_BUF_SIZE = 8192;
 
-namespace Player {
+namespace MPD {
     void MPDConnector::Connect() {
         int server_socket = socket(AF_UNIX, SOCK_STREAM, 0);
         struct sockaddr_un server_addr {};
@@ -505,4 +505,4 @@ namespace Player {
         Send("play\nnext\n");
         Send(commandIdle);
     }
-} // namespace Player
+} // namespace MPD

@@ -209,14 +209,14 @@ int main(int, char **) {
 
     std::string socket{};
 #ifdef DESKTOP
-    auto connector = Player::MPDConnector();
+    auto connector = MPD::MPDConnector();
     connector.address = config.MPDSocketPath.c_str();
     socket = config.MPDSocketPath;
     listdir("../skins/", &skinList, ".wsz");
     listdirs("../cassetteunpacker/res/reel/", &reelList);
     listdirs("../cassetteunpacker/res/tape/", &tapeList);
 #else
-    auto connector = Player::HagoromoConnector();
+    auto connector = Hagoromo::HagoromoConnector();
     socket = WAMPY_SOCKET;
     listdir("/system/vendor/unknown321/usr/share/skins/winamp/", &skinList, ".wsz");
     listdir("/contents/wampy/skins/winamp/", &skinList, ".wsz");
