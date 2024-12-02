@@ -415,13 +415,15 @@ namespace Winamp {
 
         ImGui::PopFont();
 
-        ImGui::PushFont(FontBitmap);
-        ImGui::SetCursorPos(ImVec2(323, 125));
-        ImGui::Text("%s", connector->status.BitrateString.c_str());
+        if (!stopped) {
+            ImGui::PushFont(FontBitmap);
+            ImGui::SetCursorPos(ImVec2(323, 125));
+            ImGui::Text("%s", connector->status.BitrateString.c_str());
 
-        ImGui::SetCursorPos(ImVec2(455, 125));
-        ImGui::Text("%s", connector->status.SampleRateString.c_str());
-        ImGui::PopFont();
+            ImGui::SetCursorPos(ImVec2(455, 125));
+            ImGui::Text("%s", connector->status.SampleRateString.c_str());
+            ImGui::PopFont();
+        }
 
         if (stopped || connector->stateString == "stop") {
             // do nothing
