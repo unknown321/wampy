@@ -290,7 +290,7 @@ namespace Hagoromo {
     }
 
     struct TrackComparer {
-        bool operator()(Command::Track a, Command::Track b) const { return a.track() < b.track(); };
+        bool operator()(const Command::Track &a, const Command::Track &b) const { return a.track() < b.track(); };
     };
 
     void HagoromoConnector::PollStatus() {
