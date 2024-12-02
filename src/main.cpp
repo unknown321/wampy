@@ -152,7 +152,9 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         }
     }
 
-    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+    if (render) {
+        ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+    }
 }
 
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
