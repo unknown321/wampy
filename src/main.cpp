@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <vector>
 
+#include "Version.h"
 #include "shader.h"
 
 #ifdef DESKTOP
@@ -195,6 +196,7 @@ SkinList reelList{};
 SkinList tapeList{};
 
 int main(int, char **) {
+    DLOG("starting, commit %s\n", SOFTWARE_VERSION);
     auto config = AppConfig::AppConfig();
     config.Load();
     if (config.badBoots >= 3) {

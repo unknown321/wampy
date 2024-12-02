@@ -1,9 +1,11 @@
 # general
 
+- [ ] about in settings
+    - [x] commit info
+    - [ ] license
 - [ ] README
-- [ ] cassette tape combo is hidden by screen edge on hagoromo
-- [ ] font atlases are too big
-- [ ] blink/marquee timers are not precise
+- [ ] license in installer/repo
+- [ ] loaded winamp skin in settings dropdown
 - [x] fps limiter to config
 - [x] remaining time to config
 - [x] minus sign if nums_ex not present
@@ -46,8 +48,8 @@
 
 # want
 
-- [x] huge cover art
-- [x] show time
+- [x] huge cover art (hagoromo)
+- [x] show time (hagoromo)
 - [ ] regions.txt (winamp)
 - [ ] clickable lyrics icon (hagoromo)
 - [ ] simple clock skin
@@ -62,3 +64,9 @@
 - [ ] track sometimes disappears briefly (hagoromo only)
 - [ ] volume is increased in uneven intervals
 - [ ] winamp playlist is never full
+
+# hard to solve
+
+- [ ] cassette tape combo is hidden by screen edge on hagoromo
+- [ ] font atlases are too big
+- [ ] blink/marquee timers are not precise

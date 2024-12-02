@@ -1,6 +1,7 @@
-#ifndef SKIN_H
-#define SKIN_H
+#ifndef WAMPY_SKIN_H
+#define WAMPY_SKIN_H
 
+#include "Version.h"
 #include "cassette/cassette.h"
 #include "config.h"
 #include "skinVariant.h"
@@ -330,26 +331,27 @@ struct Skin {
             config->Save();
         }
 
-#ifdef DESKTOP
-        return;
-#endif
+#ifndef DESKTOP
 
-        ImGui::NewLine();
         if (ImGui::Checkbox("Swap prev/next buttons", &config->misc.swapTrackButtons)) {
             config->Save();
         }
 
-        ImGui::NewLine();
         if (ImGui::Checkbox("Huge cover art", &config->features.bigCover)) {
             config->Save();
             connector->FeatureBigCover(config->features.bigCover);
         }
 
-        ImGui::NewLine();
         if (ImGui::Checkbox("Show time", &config->features.showTime)) {
             config->Save();
             connector->FeatureShowTime(config->features.showTime);
         }
+
+#endif
+        auto verSize = ImGui::CalcTextSize(SOFTWARE_VERSION);
+        ImGui::SetCursorPosX(800 - verSize.x - ImGui::GetStyle().FramePadding.x);
+        ImGui::SetCursorPosY(480 - verSize.y - ImGui::GetStyle().FramePadding.y);
+        ImGui::Text("%s", SOFTWARE_VERSION);
     }
 
     void DrawSkin() {
@@ -570,7 +572,7 @@ struct Skin {
         if (*power_pressed) {
             *power_pressed = false;
 
-            if (*render == true) {
+            if (*render) {
                 *render = false;
             }
         }
@@ -611,4 +613,4 @@ struct Skin {
     }
 };
 
-#endif
+#endif // WAMPY_SKIN_H

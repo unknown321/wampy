@@ -1,0 +1,2 @@
+#pragma once
+#define SOFTWARE_VERSION "@WAMPY_VERSION@"

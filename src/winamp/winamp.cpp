@@ -1,4 +1,5 @@
 #include "winamp.h"
+#include "../Version.h"
 #include "../skin.h"
 #include "../unzip/unzip.cpp"
 #include "../wstring.h"
@@ -403,7 +404,7 @@ namespace Winamp {
         }
 
         if (connector->playlist.at(0).TitleMarquee.empty()) {
-            ImGui::Text("Wampy");
+            ImGui::Text("Wampy %s", SOFTWARE_VERSION);
         } else {
             ImGui::Text("%s", connector->playlist.at(0).TitleMarquee.c_str());
         }

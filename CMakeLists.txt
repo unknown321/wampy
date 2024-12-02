@@ -143,6 +143,15 @@ find_package(ImageMagick COMPONENTS MagickCore MagickWand Magick++ REQUIRED)
 include_directories(${ImageMagick_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${ImageMagick_LIBRARIES})
 
+
+add_custom_target(version
+        ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/src/Version.h.in
+        -D DST=${CMAKE_SOURCE_DIR}/src/Version.h
+        -P ${CMAKE_SOURCE_DIR}/GenerateVersion.cmake
+        )
+
+add_dependencies(${PROJECT_NAME} version)
+
 if (DESKTOP EQUAL 1)
     find_library(GLES GLESv2 PATHS /usr/lib)
     target_link_libraries(${PROJECT_NAME} "${GLES}")
