@@ -78,7 +78,11 @@ nw-installer/installer/userdata.tar:
 		cassette.tar \
 		wampy || rm -f nw-installer/installer/userdata.tar
 
-release: build-arm cassetteunpacker/res nw-installer/installer/userdata.tar
+
+release-clean:
+	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) clean
+
+release: release-clean build-arm cassetteunpacker/res nw-installer/installer/userdata.tar
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT)
 
 profile:
@@ -99,4 +103,4 @@ valgrind:
 	cd build && valgrind --leak-check=full --read-var-info=yes --read-inline-info=yes --gen-suppressions=yes --suppressions=../suppressions.valgrind -s  ./$(PRODUCT)
 
 
-.PHONY: build build-arm docker push profile profile-arm valgrind deps
+.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean
