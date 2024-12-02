@@ -3,6 +3,7 @@
 - [ ] README
 - [ ] cassette tape combo is hidden by screen edge on hagoromo
 - [ ] font atlases are too big
+- [ ] blink/marquee timers are not precise
 - [x] remaining time to config
 - [x] minus sign if nums_ex not present
 - [x] namespace player

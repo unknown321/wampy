@@ -17,16 +17,14 @@ namespace Winamp {
     static const int MarqueeMaxLengthBitmap = 32;
     static const float MaxTitleWidth = 1024.0f;
 
-    // TODO get real value from winamp source
-    static const int blinkInterval = 1200;
+    static const int blinkInterval = 1200 * 1000; // microseconds, got it via screen recording, winamp 2.95
+    static const int marqueeInterval = 200 * 1000;
 
     static const float PlaylistYRegular = 337.0;
     static float PlaylistY = 337.0;
     static const int PlaylistTitleHeight = 58;
     static const int VolumeBarCount = 28;
     static const int BalanceBarCount = 28;
-
-    static const int marqueeIntervalMS = 220;
 
 #ifdef DESKTOP
     //    static const std::string FontPath = "../SSTJpPro-Regular.otf";
@@ -941,12 +939,12 @@ namespace Winamp {
                 return;
             }
 
-            uint elapsed = stopwatch.elapsed_time<unsigned int, std::chrono::milliseconds>();
+            uint elapsed = stopwatch.elapsed_time<unsigned int, std::chrono::microseconds>();
             if (elapsed > blinkInterval && elapsed < blinkInterval * 2) {
                 return;
             }
 
-            if (stopwatch.elapsed_time<unsigned int, std::chrono::milliseconds>() > blinkInterval * 2) {
+            if (stopwatch.elapsed_time<unsigned int, std::chrono::microseconds>() > blinkInterval * 2) {
                 stopwatch.Stop();
                 return;
             }
@@ -1033,7 +1031,7 @@ namespace Winamp {
 
     void Winamp::Marquee() {
         for (;;) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(marqueeIntervalMS));
+            std::this_thread::sleep_for(std::chrono::microseconds(marqueeInterval));
             if (!MarqueeRunning) {
                 continue;
             }
