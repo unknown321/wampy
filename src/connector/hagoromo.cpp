@@ -602,6 +602,8 @@ namespace Hagoromo {
             if (!config.timeOK) {
                 FeatureShowTime(config.time);
             }
+
+            break;
         }
     }
 
