@@ -1,8 +1,9 @@
 # general
 
 - [ ] README
-- [ ] license in installer
 - [ ] loaded winamp skin in settings dropdown
+- [ ] track sometimes disappears briefly (hagoromo only)
+- [x] license in installer
 - [x] about in settings
     - [x] commit info
     - [x] license
@@ -62,7 +63,6 @@
 
 - [ ] flicker until fps is 24
 - [ ] time/cover features are not applied on boot
-- [ ] track sometimes disappears briefly (hagoromo only)
 - [ ] volume is increased in uneven intervals
 - [ ] winamp playlist is never full
 

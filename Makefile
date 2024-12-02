@@ -53,7 +53,7 @@ cassetteunpacker/$(TAPE_SOURCE_UPG):
 cassetteunpacker/res: cassetteunpacker/$(TAPE_SOURCE_UPG)
 	$(MAKE) -C cassetteunpacker docker run
 
-nw-installer/installer/userdata.tar:
+nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 	$(MAKE) -C nw-installer prepare
 	cp $(INSTALL)/bin/$(PRODUCT) installer/
 	bash -c "cp $(INSTALL)/lib/libMagick{++,Core,Wand}-7.Q8HDRI.so installer/"
@@ -84,6 +84,7 @@ nw-installer/installer/userdata.tar:
 		LICENSE_3rdparty \
 		qr.bmp \
 		wampy || rm -f nw-installer/installer/userdata.tar
+	cat LICENSE LICENSE_3rdparty > nw-installer/installer/windows/LICENSE.txt.user
 
 
 release-clean:
@@ -110,32 +111,32 @@ valgrind:
 	cd build && valgrind --leak-check=full --read-var-info=yes --read-inline-info=yes --gen-suppressions=yes --suppressions=../suppressions.valgrind -s  ./$(PRODUCT)
 
 LICENSE_3rdparty:
-	@$(ECHO) -e "protobuf:\n" > LICENSE_3rdparty
-	@cat libs/protobuf/LICENSE >> LICENSE_3rdparty
-	@$(ECHO) -e "\n***\nzlib:\n" >> LICENSE_3rdparty
-	@cat libs/zlib/LICENSE >> LICENSE_3rdparty
-	@$(ECHO) -e "\n***\nmINI:\n" >> LICENSE_3rdparty
-	@cat libs/mINI/LICENSE >> LICENSE_3rdparty
-	@$(ECHO) -e "\n***\nImageMagick:\n" >> LICENSE_3rdparty
-	@cat libs/ImageMagick/LICENSE >> LICENSE_3rdparty
-	@$(ECHO) -e "\n***\nMagick++:\n" >> LICENSE_3rdparty
-	@cat libs/ImageMagick/Magick++/LICENSE >> LICENSE_3rdparty
+	@$(ECHO) -e "\n***\nprotobuf:\n" > $@
+	@cat libs/protobuf/LICENSE >> $@
+	@$(ECHO) -e "\n***\nzlib:\n" >> $@
+	@cat libs/zlib/LICENSE >> $@
+	@$(ECHO) -e "\n***\nmINI:\n" >> $@
+	@cat libs/mINI/LICENSE >> $@
+	@$(ECHO) -e "\n***\nImageMagick:\n" >> $@
+	@cat libs/ImageMagick/LICENSE >> $@
+	@$(ECHO) -e "\n***\nMagick++:\n" >> $@
+	@cat libs/ImageMagick/Magick++/LICENSE >> $@
 
-	@$(ECHO) -e "\n***\nglfw:\n" >> LICENSE_3rdparty
-	@cat libs/glfw/LICENSE.md >> LICENSE_3rdparty
-	@$(ECHO) -e "\n***\nlibjpeg-turbo:\n" >> LICENSE_3rdparty
-	@cat libs/libjpeg-turbo/LICENSE.md >> LICENSE_3rdparty
+	@$(ECHO) -e "\n***\nglfw:\n" >> $@
+	@cat libs/glfw/LICENSE.md >> $@
+	@$(ECHO) -e "\n***\nlibjpeg-turbo:\n" >> $@
+	@cat libs/libjpeg-turbo/LICENSE.md >> $@
 
-	@$(ECHO) -e "\n***\nglm:\n" >> LICENSE_3rdparty
-	@cat libs/glm/copying.txt >> LICENSE_3rdparty
+	@$(ECHO) -e "\n***\nglm:\n" >> $@
+	@cat libs/glm/copying.txt >> $@
 
-	@$(ECHO) -e "\n***\nDear ImGui:\n" >> LICENSE_3rdparty
-	@cat libs/imgui/LICENSE.txt >> LICENSE_3rdparty
+	@$(ECHO) -e "\n***\nDear ImGui:\n" >> $@
+	@cat libs/imgui/LICENSE.txt >> $@
 
 # https://github.com/fukuchi/libqrencode
-qr:
+qr.bmp:
 	@qrencode -o qr.png -m 1 -s 7 https://github.com/unknown321/$(PRODUCT)
 	@convert qr.png -type palette qr.bmp
 	@rm qr.png
 
-.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty qr
+.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty
