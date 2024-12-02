@@ -3,6 +3,7 @@
 - [ ] README
 - [ ] cassette tape combo is hidden by screen edge on hagoromo
 - [ ] font atlases are too big
+- [x] minus sign if nums_ex not present
 - [x] namespace player
 - [x] ignore volume/track buttons if render is off
 - [x] unexpected bmp formats (windows98.wsz)

@@ -163,6 +163,7 @@ namespace Winamp {
 
         bool playlistFullscreen{};
         bool negativeTime = false;
+        bool isEx = false;
         elements Elements{};
         bool stopped{};
         Stopwatch::Stopwatch<> stopwatch;
@@ -171,7 +172,7 @@ namespace Winamp {
 
         void probeTrackTitleBackgroundColor();
 
-        Fonts addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, bool isEx, TextureMapEntry fontRegular) const;
+        Fonts addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, TextureMapEntry fontRegular) const;
 
         static int unzip(const std::string &filename, TextureMap *textures, std::string *status);
 

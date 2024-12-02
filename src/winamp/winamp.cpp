@@ -54,13 +54,12 @@ namespace Winamp {
 
     int Winamp::AddFonts(ImFont *fontRegular) {
         auto numFontData = textures["numbers.bmp"];
-        bool isEx = false;
         if (textures["nums_ex.bmp"].len != 0) {
             numFontData = textures["nums_ex.bmp"];
             isEx = true;
         }
 
-        auto res = addFont(FontPath, numFontData, isEx, textures["text.bmp"]);
+        auto res = addFont(FontPath, numFontData, textures["text.bmp"]);
         FontBitmap = res.bitmap;
         FontNumbers = res.number;
         FontRegular = res.regular;
@@ -100,6 +99,7 @@ namespace Winamp {
 
     int Winamp::Load(std::string filename, ImFont *fontRegular) {
         loading = true;
+        isEx = false;
         loadStatusStr = "";
         DLOG("Unzip %s\n", filename.c_str());
 
@@ -893,7 +893,11 @@ namespace Winamp {
 
         // minus sign
         if (negativeTime) {
-            ImGui::SetCursorPos(ImVec2(105, 76));
+            if (isEx) {
+                ImGui::SetCursorPos(ImVec2(105, 76));
+            } else {
+                ImGui::SetCursorPos(ImVec2(111, 76));
+            }
             ImGui::Text("-");
         }
 
@@ -1178,7 +1182,7 @@ namespace Winamp {
         status->formatted = true;
     }
 
-    Fonts Winamp::addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, bool isEx, TextureMapEntry fontRegular) const {
+    Fonts Winamp::addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, TextureMapEntry fontRegular) const {
         auto io = ImGui::GetIO();
         io.Fonts->Clear();
 
@@ -1230,17 +1234,6 @@ namespace Winamp {
         char alphabetNum[] = "0123456789 -";
         size_t len = sizeof(alphabetNum) - 1;
 
-        if (!isEx) {
-            len = len - 2;
-        }
-
-        //    if (textureMap["nums_ex.bmp"].first) {
-        //        data = textureMap["nums_ex.bmp"];
-        //    } else {
-        //        data = textureMap["numbers.bmp"];
-        //        len = len - 2;
-        //    }
-
         ImFontConfig font_cfg = ImFontConfig();
 
         font_cfg.MergeMode = false;
@@ -1255,8 +1248,13 @@ namespace Winamp {
 
         int iNum = 0;
         int rect_ids_num[len];
-        for (char c : alphabetNum) {
-            rect_ids_num[iNum] = io.Fonts->AddCustomRectFontGlyph(fontNumber, c, 26, 37, 26);
+        int width = 26;
+        for (i = 0; i < IM_ARRAYSIZE(alphabetNum); i++) {
+            char c = alphabetNum[i];
+            if (!isEx && i == (IM_ARRAYSIZE(alphabetNum) - 2)) { // last character, new minus
+                width = 14;
+            }
+            rect_ids_num[iNum] = io.Fonts->AddCustomRectFontGlyph(fontNumber, c, width, 37, 26);
             iNum++;
         }
 
@@ -1344,17 +1342,34 @@ namespace Winamp {
 
         // insert number font glyphs
         int rowIndexNum = 0;
+        if (!isEx) {
+            auto withMinus = Magick::Image();
+            auto newWidth = sourceNum.size().width() + 5;
+            auto oldWidth = sourceNum.size().width();
+            withMinus.size({newWidth, sourceNum.size().height()});
+            withMinus.copyPixels(sourceNum, sourceNum.size(), {0, 0});
+            withMinus.copyPixels(sourceNum, {5, 13, 90, 0}, {(ssize_t)oldWidth, 0});
+            withMinus.copyPixels(sourceNum, {5, 1, 20, 6}, {(ssize_t)oldWidth, 6});
+            sourceNum = withMinus;
+        }
+
         for (int rect_n = 0; rect_n < IM_ARRAYSIZE(rect_ids_num); rect_n++) {
             int rect_id = rect_ids_num[rect_n];
 
             Magick::Image glyph = sourceNum;
             glyph.depth(8);
             glyph.magick("RGBA");
-            Magick::Geometry geo{9, 13, rowIndexNum * 9, 0};
+            size_t w = 9;
+            int nw = 26;
+            if (rect_n == IM_ARRAYSIZE(rect_ids_num) - 1) {
+                w = 5;
+                nw = 14;
+            }
+            Magick::Geometry geo{w, 13, rowIndexNum * 9, 0};
             glyph.filterType(MagickCore::PointFilter);
             glyph.crop(geo);
 
-            Magick::Geometry rg(26, 37);
+            Magick::Geometry rg(nw, 37);
             rg.fillArea(true);
             glyph.resize(rg);
 
