@@ -910,7 +910,7 @@ namespace Winamp {
             if (isEx) {
                 ImGui::SetCursorPos(ImVec2(105, 76));
             } else {
-                ImGui::SetCursorPos(ImVec2(111, 76));
+                ImGui::SetCursorPos(ImVec2(113, 92));
             }
             ImGui::Text("-");
         }
@@ -1268,12 +1268,14 @@ namespace Winamp {
         int iNum = 0;
         int rect_ids_num[len];
         int width = 26;
+        int height = 37;
         for (i = 0; i < IM_ARRAYSIZE(alphabetNum); i++) {
             char c = alphabetNum[i];
             if (!isEx && i == (IM_ARRAYSIZE(alphabetNum) - 2)) { // last character, new minus
                 width = 14;
+                height = 2;
             }
-            rect_ids_num[iNum] = io.Fonts->AddCustomRectFontGlyph(fontNumber, c, width, 37, 26);
+            rect_ids_num[iNum] = io.Fonts->AddCustomRectFontGlyph(fontNumber, c, width, height, 26);
             iNum++;
         }
 
@@ -1378,17 +1380,26 @@ namespace Winamp {
             Magick::Image glyph = sourceNum;
             glyph.depth(8);
             glyph.magick("RGBA");
+
+            // handling minus sign
             size_t w = 9;
             int nw = 26;
-            if (rect_n == IM_ARRAYSIZE(rect_ids_num) - 1) {
+            size_t h = 13;
+            int nh = 37;
+            int yOff = 0;
+            if (rect_n == IM_ARRAYSIZE(rect_ids_num) - 1 && !isEx) {
                 w = 5;
                 nw = 14;
+                h = 1;
+                nh = 2;
+                yOff = 6;
             }
-            Magick::Geometry geo{w, 13, rowIndexNum * 9, 0};
+
+            Magick::Geometry geo{w, h, rowIndexNum * 9, yOff};
             glyph.filterType(MagickCore::PointFilter);
             glyph.crop(geo);
 
-            Magick::Geometry rg(nw, 37);
+            Magick::Geometry rg(nw, nh);
             rg.fillArea(true);
             glyph.resize(rg);
 
