@@ -1128,8 +1128,13 @@ namespace Winamp {
 
     void Winamp::Unload() {
         Elements.Unload();
-        if (marqueeThread)
-            pthread_cancel(marqueeThread);
+        if (marqueeThread) {
+            auto r = pthread_cancel(marqueeThread);
+            if (r != 0) {
+                DLOG("cannot cancel marquee thread\n");
+            }
+        }
+
         MarqueeRunning = false;
     }
 
