@@ -59,6 +59,7 @@ namespace AppConfig {
         ini["winamp"]["filename"] = winamp.filename;
         ini["winamp"]["bitmapFont"] = std::to_string(winamp.useBitmapFont);
         ini["winamp"]["bitmapFontInPlaylist"] = std::to_string(winamp.useBitmapFontInPlaylist);
+        ini["winamp"]["preferTimeRemaining"] = std::to_string(winamp.preferTimeRemaining);
 
         ini["wampy"]["activeSkin"] = ESkinToName[activeSkin];
 
@@ -133,6 +134,7 @@ namespace AppConfig {
         }
 
         winamp.useBitmapFontInPlaylist = (bool)std::atoi(ini["winamp"]["bitmapFontInPlaylist"].c_str());
+        winamp.preferTimeRemaining = (bool)std::atoi(ini["winamp"]["preferTimeRemaining"].c_str());
         cassette.randomize = (bool)std::atoi(ini["cassette"]["randomize"].c_str());
         // NOLINTEND
 

@@ -380,6 +380,10 @@ struct Skin {
                 config->Save();
             }
 
+            if (ImGui::Checkbox("Prefer time remaining", &config->winamp.preferTimeRemaining)) {
+                config->Save();
+            }
+
             ImGui::NewLine();
 
             if (ImGui::BeginCombo("##", skinList->at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightSmall)) {

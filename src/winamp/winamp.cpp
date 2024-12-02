@@ -134,6 +134,11 @@ namespace Winamp {
         loading = false;
         freeUnzippedTextures();
 
+        if (!timeRemainingSet) {
+            timeRemaining = config->preferTimeRemaining;
+            timeRemainingSet = true;
+        }
+
         MarqueeThread();
 
         return 0;
@@ -889,10 +894,19 @@ namespace Winamp {
     }
 
     void Winamp::drawTime() {
+        auto s = connector->playlist.at(0);
+        if (s.Duration < 1) {
+            return;
+        }
+
+        if (s.DurDisplay.Minute1 < 1 && s.DurDisplay.Minute2 < 1 && s.DurDisplay.Second1 < 1 && s.DurDisplay.Second2 < 1) {
+            return;
+        }
+
         ImGui::PushFont(FontNumbers);
 
         // minus sign
-        if (negativeTime) {
+        if (timeRemaining) {
             if (isEx) {
                 ImGui::SetCursorPos(ImVec2(105, 76));
             } else {
@@ -902,16 +916,16 @@ namespace Winamp {
         }
 
         ImGui::SetCursorPos(ImVec2(140, 76));
-        ImGui::Text("%d", connector->playlist.at(0).DurDisplay.Minute1);
+        ImGui::Text("%d", s.DurDisplay.Minute1);
 
         ImGui::SetCursorPos(ImVec2(175, 76));
-        ImGui::Text("%d", connector->playlist.at(0).DurDisplay.Minute2);
+        ImGui::Text("%d", s.DurDisplay.Minute2);
 
         ImGui::SetCursorPos(ImVec2(227, 76));
-        ImGui::Text("%d", connector->playlist.at(0).DurDisplay.Second1);
+        ImGui::Text("%d", s.DurDisplay.Second1);
 
         ImGui::SetCursorPos(ImVec2(262, 76));
-        ImGui::Text("%d", connector->playlist.at(0).DurDisplay.Second2);
+        ImGui::Text("%d", s.DurDisplay.Second2);
         ImGui::PopFont();
     }
 
@@ -939,10 +953,10 @@ namespace Winamp {
 
     void Winamp::toggleTrackTime(void *arg, void *i) {
         auto *w = (Winamp *)arg;
-        if (w->negativeTime) {
-            w->negativeTime = false;
+        if (w->timeRemaining) {
+            w->timeRemaining = false;
         } else {
-            w->negativeTime = true;
+            w->timeRemaining = true;
         }
     }
 
@@ -1163,7 +1177,7 @@ namespace Winamp {
         }
 
         int minutes, seconds;
-        if (negativeTime) {
+        if (timeRemaining) {
             minutes = (status->Duration - status->Elapsed) / 60;
             seconds = (status->Duration - status->Elapsed) % 60;
         } else {

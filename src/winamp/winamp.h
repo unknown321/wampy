@@ -94,6 +94,7 @@ namespace Winamp {
     struct Config {
         bool useBitmapFontInPlaylist{};
         bool useBitmapFont{};
+        bool preferTimeRemaining{};
         std::string filename{};
 
         void Default();
@@ -162,8 +163,9 @@ namespace Winamp {
         ImFont *FontRegular{};
 
         bool playlistFullscreen{};
-        bool negativeTime = false;
-        bool isEx = false;
+        bool isEx{};
+        bool timeRemaining{};
+        bool timeRemainingSet{}; // must be set only once on start, skin change does not reset current value
         elements Elements{};
         bool stopped{};
         Stopwatch::Stopwatch<> stopwatch;
