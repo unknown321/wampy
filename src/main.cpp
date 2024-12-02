@@ -219,13 +219,13 @@ int main(int, char **) {
     auto connector = Player::HagoromoConnector();
     socket = WAMPY_SOCKET;
     listdir("/system/vendor/unknown321/usr/share/skins/winamp/", &skinList, ".wsz");
-    listdir("/contents/skins/winamp/", &skinList, ".wsz");
+    listdir("/contents/wampy/skins/winamp/", &skinList, ".wsz");
 
     listdirs("/system/vendor/unknown321/usr/share/skins/cassette/reel/", &reelList);
-    listdirs("/contents/skins/cassette/reel/", &reelList);
+    listdirs("/contents/wampy/skins/cassette/reel/", &reelList);
 
     listdirs("/system/vendor/unknown321/usr/share/skins/cassette/tape/", &tapeList);
-    listdirs("/contents/skins/cassette/tape/", &tapeList);
+    listdirs("/contents/wampy/skins/cassette/tape/", &tapeList);
 #endif
     connector.render = &render;
 
