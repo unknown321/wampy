@@ -1069,7 +1069,6 @@ namespace Winamp {
         auto exec = [this]() { Marquee(); };
         std::thread t(exec);
 
-        marqueeThread = t.native_handle();
         t.detach();
         MarqueeRunning = true;
     }

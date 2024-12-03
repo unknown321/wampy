@@ -153,7 +153,6 @@ namespace Winamp {
         TextureMap textures{};
         std::string newFilename{};
         bool MarqueeRunning{};
-        std::thread::native_handle_type marqueeThread{};
         bool marqueeThreadStop{};
 
         std::string savedTitle{};
