@@ -154,6 +154,7 @@ namespace Winamp {
         std::string newFilename{};
         bool MarqueeRunning{};
         std::thread::native_handle_type marqueeThread{};
+        bool marqueeThreadStop{};
 
         std::string savedTitle{};
         std::string newFull{};
@@ -207,7 +208,7 @@ namespace Winamp {
 
         void MarqueeBitmap();
 
-        [[noreturn]] void Marquee();
+        void Marquee();
 
         void MarqueeThread();
 

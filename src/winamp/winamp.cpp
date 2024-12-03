@@ -1035,6 +1035,10 @@ namespace Winamp {
     void Winamp::Marquee() {
         for (;;) {
             std::this_thread::sleep_for(std::chrono::microseconds(marqueeInterval));
+            if (marqueeThreadStop) {
+                break;
+            }
+
             if (!MarqueeRunning) {
                 continue;
             }
@@ -1061,9 +1065,7 @@ namespace Winamp {
     }
 
     void Winamp::MarqueeThread() {
-        if (marqueeThread)
-            pthread_cancel(marqueeThread);
-
+        marqueeThreadStop = false;
         auto exec = [this]() { Marquee(); };
         std::thread t(exec);
 
@@ -1147,13 +1149,7 @@ namespace Winamp {
 
     void Winamp::Unload() {
         Elements.Unload();
-        if (marqueeThread) {
-            auto r = pthread_cancel(marqueeThread);
-            if (r != 0) {
-                DLOG("cannot cancel marquee thread\n");
-            }
-        }
-
+        marqueeThreadStop = true;
         MarqueeRunning = false;
     }
 
