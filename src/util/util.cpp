@@ -5,7 +5,10 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "imgui_impl_glfw.h"
 #include "imgui_internal.h"
+#include <algorithm>
 #include <sys/stat.h>
+
+bool dirComp(const directoryEntry &a, const directoryEntry &b) { return b.name >= a.name; }
 
 void listdir(const char *dirname, std::vector<directoryEntry> *list, const std::string &extension) {
     DIR *d;
@@ -31,6 +34,8 @@ void listdir(const char *dirname, std::vector<directoryEntry> *list, const std::
         }
         closedir(d);
     }
+
+    std::sort(list->begin(), list->end(), dirComp);
 }
 
 void listdirs(const char *dirname, std::vector<directoryEntry> *list) {
@@ -54,6 +59,8 @@ void listdirs(const char *dirname, std::vector<directoryEntry> *list) {
         }
         closedir(d);
     }
+
+    std::sort(list->begin(), list->end(), dirComp);
 }
 
 void UnloadTexture(ImTextureID textureID) {

@@ -1,7 +1,7 @@
 # general
 
 - [ ] README
-- [ ] loaded winamp skin in settings dropdown
+- [x] loaded winamp skin in settings dropdown
 - [x] track sometimes disappears briefly (hagoromo only)
 - [x] license in installer
 - [x] about in settings

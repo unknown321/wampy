@@ -291,6 +291,14 @@ int main(int, char **) {
 
     skin.winamp.fontRanges = &config.fontRanges;
     skin.cassette.fontRanges = &config.fontRanges;
+
+    for (int i = 0; i < skinList.size(); i++) {
+        if (skinList.at(i).name == config.winamp.filename) {
+            skin.selectedSkinIdx = i;
+            break;
+        }
+    }
+
     skin.ReadLicense();
     skin.ReadQR();
 
