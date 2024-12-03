@@ -289,6 +289,10 @@ int parseTrack(QQuickItem *trackItem, Track *track) {
         DLOG("invalid title\n");
         return -1;
     }
+
+    if (Title.toString().length() == 0) {
+        return 0;
+    }
     track->Title = Title.toString();
 
     auto IsPlaying = contents->property("is_play_status_visible");
@@ -307,7 +311,12 @@ int parseTrack(QQuickItem *trackItem, Track *track) {
         return -1;
     }
 
-    track->Duration = DurationToInt(Duration.toString());
+    auto dur = DurationToInt(Duration.toString());
+    if (dur == 0) {
+        return 0;
+    }
+
+    track->Duration = dur;
     DLOG(
         "track: %d. %s ::: %s ::: %d secs, active: %d\n",
         track->Track,

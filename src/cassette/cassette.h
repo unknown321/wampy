@@ -99,6 +99,8 @@ namespace Cassette {
         [[noreturn]] void ReelLoop();
 
         void randomizeTape();
+
+        void defaultTape();
     };
 } // namespace Cassette
 #endif // WAMPY_CASSETTE_H

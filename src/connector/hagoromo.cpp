@@ -294,6 +294,7 @@ namespace Hagoromo {
     };
 
     void HagoromoConnector::PollStatus() {
+        status.pollDone = false;
         auto c = Command::Command();
         c.set_type(Command::CMD_GET_STATUS);
         if (!sendCMD(&c)) {
@@ -383,6 +384,8 @@ namespace Hagoromo {
         }
 
         status.Bits = c.status().bitdepth();
+
+        status.pollDone = true;
     }
 
     /* ALSA volume != hgrmvolume

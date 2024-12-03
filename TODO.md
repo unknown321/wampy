@@ -2,7 +2,7 @@
 
 - [ ] README
 - [ ] loaded winamp skin in settings dropdown
-- [ ] track sometimes disappears briefly (hagoromo only)
+- [x] track sometimes disappears briefly (hagoromo only)
 - [x] license in installer
 - [x] about in settings
     - [x] commit info

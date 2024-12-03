@@ -54,7 +54,8 @@ struct Status {
 
     int Balance{};
 
-    bool formatted{};
+    bool formatted{}; // was status formatted by skin?
+    bool pollDone{};
 };
 
 struct Connector {

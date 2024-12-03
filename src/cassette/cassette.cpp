@@ -318,17 +318,33 @@ namespace Cassette {
         assert(ActiveReel);
 
         ActiveTape->name = config->Get(tapeType)->tape;
+        DLOG("tape: %s, reel %s\n", config->Get(tapeType)->tape.c_str(), config->Get(tapeType)->reel.c_str());
     }
 
     void Cassette::SelectTape(bool force) {
         if (connector->playlist.empty()) {
             DLOG("no songs in playlist\n");
+            defaultTape();
             return;
         }
 
         if (Track == connector->playlist.at(0).File && force == false) {
+            if (ActiveTape == nullptr || ActiveReel == nullptr) {
+                defaultTape();
+            }
+
             return;
         }
+
+        if (!connector->status.pollDone) {
+            if (ActiveTape == nullptr || ActiveReel == nullptr) {
+                defaultTape();
+            }
+
+            return;
+        }
+
+        DLOG("track is %s, file is %s\n", Track.c_str(), connector->playlist.at(0).File.c_str());
 
         Track = connector->playlist.at(0).File;
 
@@ -422,6 +438,17 @@ namespace Cassette {
         if (debug) {
             DLOG("%d %s %d %d %d\n", bitrate, codec.c_str(), tapeType, connector->status.SampleRate, connector->status.Bits);
         }
+    }
+
+    void Cassette::defaultTape() {
+        DLOG("\n");
+        tapeType = Tape::MP3_320;
+        ActiveTape = &Tapes[config->Get(tapeType)->tape];
+        assert(ActiveTape);
+        ActiveReel = &Reels[config->Get(tapeType)->reel];
+        assert(ActiveReel);
+
+        ActiveTape->name = config->Get(tapeType)->tape;
     }
 
     void Cassette::Draw() {

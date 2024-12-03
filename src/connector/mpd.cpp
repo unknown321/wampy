@@ -352,6 +352,7 @@ namespace MPD {
 
         while (true) {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            status.pollDone = false;
             Send(commandNoIdle);
             Send(commandStatus);
             Send(commandIdle);
@@ -398,6 +399,7 @@ namespace MPD {
             }
 
             status.formatted = false;
+            status.pollDone = true;
         }
     }
 
