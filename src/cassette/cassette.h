@@ -88,7 +88,7 @@ namespace Cassette {
         Tape::Tape *ActiveTape = nullptr;
         Tape::Reel *ActiveReel = nullptr;
 
-        std::thread::native_handle_type reelThread{};
+        bool reelThreadStop{};
 
         void drawCodecInfo() const;
 
@@ -96,7 +96,7 @@ namespace Cassette {
 
         void ReelThread();
 
-        [[noreturn]] void ReelLoop();
+        void ReelLoop();
 
         void randomizeTape();
 

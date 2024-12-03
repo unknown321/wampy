@@ -189,8 +189,7 @@ namespace Cassette {
         Reels.clear();
         Track = "";
 
-        if (reelThread)
-            pthread_cancel(reelThread);
+        reelThreadStop = true;
     }
 
     void Cassette::UnloadUnused() {
@@ -474,15 +473,19 @@ namespace Cassette {
     }
 
     void Cassette::ReelThread() {
+        reelThreadStop = false;
         auto exec = [this]() { this->ReelLoop(); };
         std::thread t(exec);
-        reelThread = t.native_handle();
         t.detach();
     }
 
-    [[noreturn]] void Cassette::ReelLoop() {
+    void Cassette::ReelLoop() {
         for (;;) {
             std::this_thread::sleep_for(std::chrono::milliseconds(reelDelayMs));
+            if (reelThreadStop) {
+                break;
+            }
+
             if (connector->status.State != "play") {
                 continue;
             }
