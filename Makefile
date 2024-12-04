@@ -146,4 +146,4 @@ qr.bmp:
 	@convert qr.png -type palette qr.bmp
 	@rm qr.png
 
-.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty
+.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server
