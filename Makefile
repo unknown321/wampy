@@ -2,6 +2,7 @@ DOCKER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` nw-crosstool
 #DEVICE_SERIAL=-s 10458B75388765
 ADB=adb $(DEVICE_SERIAL) wait-for-device
 IMAGE=wampy-builder
+DOCKER_BUILDER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` $(IMAGE)
 PRODUCT=wampy
 VENDOR=/system/vendor/unknown321
 TAPE_SOURCE_UPG=NW-A100_0003_V4_04_00_NW_WM_FW.UPG
@@ -54,7 +55,8 @@ cassetteunpacker/$(TAPE_SOURCE_UPG):
 	test -f $@
 
 cassetteunpacker/res: cassetteunpacker/$(TAPE_SOURCE_UPG)
-	$(MAKE) -C cassetteunpacker docker run
+	$(MAKE) -C cassetteunpacker docker
+	$(DOCKER_BUILDER) $(MAKE) -C cassetteunpacker run
 
 nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 	$(MAKE) -C nw-installer prepare
