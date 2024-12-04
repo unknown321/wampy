@@ -9,6 +9,9 @@ INSTALL=install/arm
 UPX=nw-installer/tools/upx/upx/upx
 ECHO=/usr/bin/echo
 
+prepare: docker
+	$(MAKE) -C nw-installer/crosstool
+
 docker:
 	cat Dockerfile | docker image build -t $(IMAGE) -
 
