@@ -1,7 +1,7 @@
 # general
 
-- [ ] README
 - [ ] Error in `/system/vendor/unknown321/bin/wampy': double free or corruption (out): 0xae900fc0
+- [x] README
 - [x] loaded winamp skin in settings dropdown
 - [x] track sometimes disappears briefly (hagoromo only)
 - [x] license in installer
