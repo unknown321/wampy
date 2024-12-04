@@ -1,6 +1,7 @@
 # general
 
 - [ ] README
+- [ ] Error in `/system/vendor/unknown321/bin/wampy': double free or corruption (out): 0xae900fc0
 - [x] loaded winamp skin in settings dropdown
 - [x] track sometimes disappears briefly (hagoromo only)
 - [x] license in installer
@@ -61,8 +62,8 @@
 
 # weird issues and quirks
 
-- [ ] volume is increased in uneven intervals
-- [ ] winamp playlist is never full
+- volume is increased in uneven intervals
+- winamp playlist is never full
 
 # hard to solve
 

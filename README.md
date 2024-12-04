@@ -1,41 +1,65 @@
-## Prerequisites
+wampy
+=====
 
-- Linux
-- `nw-crosstool` docker image from nw-installer
-- `libMali_linux.so`
+Alternative frontend for NW-A50 series Walkman player.
 
-### libMali_linux.so
+<img src="images/winamp.png" width="49%"> <img src="images/cassette.png" width="49%">
 
-You can get `libMali_linux.so` from firmware file or device with adb on.
+## Features:
 
-#### adb:
+- Incomplete Winamp 2 skin support
+- Custom cassette skins
+- On-the-fly skin change
+- Default player enhancements (add clock and increase cover art size), see below
+
+<img src="images/hagoromo-fix.png" width="70%">
+
+## Install
+
+#### Windows
+
+Download exe from [releases](./releases), run and follow instructions.
+
+Device will restart twice.
+
+#### Linux:
+
+##### Without adb (regular install):
+
+- copy corresponding `NW_WM_FW.UPG` to root directory on device (the one with MUSIC directory)
+- use [scsitool](https://www.rockbox.org/wiki/SonyNWDestTool.html)
+    - `scsitool list_devices`
+    - choose your device, I use `/dev/sg4`
+    - `scsitool -d -s nw-a50 /dev/sg4 do_fw_upgrade` (may require root)
+- device reboots, upgrades a little, reboots again and upgrades again (fully)
+
+##### With adb:
+
+If your player has adb on, there is no need for scsitool.
+
+Turn USB Mass storage **OFF**.
+
+Copy `NW_WM_FW.UPG` to root directory on device (the one with MUSIC directory):
 
 ```shell
-adb pull /system/lib/libMali_linux.so .
+adb push NW_WM_FW.UPG /contents/
 ```
 
-#### Firmware upgrade file:
-
-You'll need [upgtool](https://www.rockbox.org/wiki/SonyNWUPGTool#Getting_the_tool), firmware upgrade
-file (`NW_WM_FW.UPG`) and be able to mount ext4 filesystem.
-
-Linux, NW-A50:
+Run on your computer:
 
 ```shell
-$ mkdir fw
-$ upgtool_64-v3 -m nw-a50 -e -o ./fw/ ./NW_WM_FW.UPG -z 6
-$ mkdir tmpmount
-$ sudo mount -t ext4 -o loop ./fw/6.bin tmpmount
-$ cp tmpmount/lib/libMali_linux.so ./libs
-$ sudo umount tmpmount
-$ rm -rf tmpmount fw
+adb shell nvpflag fup 0x70555766
+adb shell reboot
 ```
 
-### Build
+Device reboots, upgrades a little, reboots again and upgrades again (fully).
 
-```shell
-git submodule update --recursive --init
-make prepare docker deps server release
-```
+### Mac:
 
-http://www.tapedeck.org/index.php
+No native installer.
+
+See Linux section. You'll have to build `scsitool` yourself, good luck!
+
+## Build
+
+See [BUILD.md](./BUILD.md)

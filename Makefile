@@ -6,6 +6,7 @@ DOCKER_BUILDER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` $(IMAGE)
 PRODUCT=wampy
 VENDOR=/system/vendor/unknown321
 TAPE_SOURCE_UPG=NW-A100_0003_V4_04_00_NW_WM_FW.UPG
+TAPE_SOURCE_UPG_URL=https://info.update.sony.net/PA001/NW-A100Series_0003/contents/0013/$(TAPE_SOURCE_UPG)
 INSTALL=install/arm
 UPX=nw-installer/tools/upx/upx/upx
 ECHO=/usr/bin/echo
@@ -52,7 +53,7 @@ push:
 
 
 cassetteunpacker/$(TAPE_SOURCE_UPG):
-	test -f $@
+	test -f $@ || curl --output-dir cassetteunpacker -O $(TAPE_SOURCE_UPG_URL)
 
 cassetteunpacker/res: cassetteunpacker/$(TAPE_SOURCE_UPG)
 	$(MAKE) -C cassetteunpacker docker
