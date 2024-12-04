@@ -46,7 +46,7 @@ push:
 	$(ADB) push install/arm/lib/libMagick++-7.Q8HDRI.so $(VENDOR)/lib/
 	$(ADB) push install/arm/lib/libjpeg.so.62.4.0 $(VENDOR)/lib/
 	$(ADB) shell ln -s  $(VENDOR)/lib/libjpeg.so.62.4.0 $(VENDOR)/lib/libjpeg.so.62
-	$(ADB) push skins/base-2.91.wsz $(VENDOR)/usr/share/skins/winamp/base-2.91.wsz
+	$(ADB) push base-2.91.wsz $(VENDOR)/usr/share/skins/winamp/base-2.91.wsz
 	$(MAKE) -C server push
 
 
@@ -65,7 +65,7 @@ nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 	cp server/qt/qtbase/plugins/platforms/libqeglfs.so installer/
 	$(UPX) -qqq --best installer/$(PRODUCT)
 	$(DOCKER) /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-strip installer/lib*
-	cp skins/base-2.91.wsz installer/
+	cp base-2.91.wsz installer/
 	tar -C cassetteunpacker/res -cf installer/cassette.tar \
 		tape \
 		reel
@@ -89,6 +89,8 @@ nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 		wampy || rm -f nw-installer/installer/userdata.tar
 	cat LICENSE LICENSE_3rdparty > nw-installer/installer/windows/LICENSE.txt.user
 
+server:
+	$(MAKE) -C server
 
 release-clean:
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) clean

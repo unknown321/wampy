@@ -37,7 +37,7 @@ $ rm -rf tmpmount fw
 
 ```shell
 git submodule update --recursive --init
-make prepare docker release
+make prepare docker deps server release
 ```
 
 http://www.tapedeck.org/index.php
