@@ -3,7 +3,7 @@ wampy
 
 Alternative frontend for NW-A50 series Walkman player.
 
-<img src="images/winamp.png" width="49%" alt="winamp"> <img src="images/cassette.png" width="49%" alt="cassette">
+<img src="images/winamp.png" alt="winamp"> <img src="images/cassette.png" alt="cassette">
 
 ## Features:
 
