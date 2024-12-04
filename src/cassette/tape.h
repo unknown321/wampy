@@ -46,7 +46,7 @@ namespace Tape {
         std::string reel = "other";
         std::string name{};
         float titleWidth = 600.0f;
-        ImU32 textColor{};
+        ImU32 textColor = IM_COL32_BLACK;
         bool valid{};
 
         int Load(const std::string &directoryPath);

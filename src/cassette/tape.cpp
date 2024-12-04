@@ -1,6 +1,5 @@
 #include "tape.h"
 #include "../skin.h"
-#include <algorithm>
 #include <fstream>
 #include <map>
 #include <sstream>
