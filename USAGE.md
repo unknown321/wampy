@@ -3,30 +3,30 @@
 <!-- TOC -->
 
 * [Table of contents](#table-of-contents)
-    * [Usage](#usage)
-    * [General issues and troubleshooting (read these)](#general-issues-and-troubleshooting-read-these)
-        * [⚠️What to do if device crashes / wampy doesn't start?⚠️](#what-to-do-if-device-crashes--wampy-doesnt-start)
-        * [Wampy is on screen but doesn't respond and cannot be toggled off](#wampy-is-on-screen-but-doesnt-respond-and-cannot-be-toggled-off)
-        * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
-        * [Wampy is empty](#wampy-is-empty)
-        * [Not implemented](#not-implemented)
-        * [Notes on ugly settings](#notes-on-ugly-settings)
-        * [Fonts](#fonts)
-        * [There is a "detailed info" popup after turning screen off and on instead of wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
-        * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
-    * [Using wampy](#using-wampy)
-        * [Winamp](#winamp)
-            * [Buttons](#buttons)
-            * [Settings](#settings)
-            * [Known issues and quirks](#known-issues-and-quirks)
-        * [Cassette](#cassette)
-            * [Settings](#settings-1)
-            * [Issues and quirks](#issues-and-quirks)
-        * [Custom skins](#custom-skins)
-            * [Winamp](#winamp-1)
-            * [Cassette](#cassette-1)
-    * [Misc](#misc)
-        * [Issues](#issues)
+  * [Usage](#usage)
+  * [General issues and troubleshooting (read these)](#general-issues-and-troubleshooting-read-these)
+    * [⚠️What to do if device crashes / wampy doesn't start?⚠️](#what-to-do-if-device-crashes--wampy-doesnt-start)
+    * [Wampy is on screen but doesn't respond and cannot be toggled off](#wampy-is-on-screen-but-doesnt-respond-and-cannot-be-toggled-off)
+    * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
+    * [Wampy is empty](#wampy-is-empty)
+    * [Not implemented](#not-implemented)
+    * [Notes on ugly settings](#notes-on-ugly-settings)
+    * [Fonts](#fonts)
+    * [There is a "detailed info" popup after turning screen off and on instead of wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
+    * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
+  * [Using wampy](#using-wampy)
+    * [Winamp](#winamp)
+      * [Buttons](#buttons)
+      * [Settings](#settings)
+      * [Known issues and quirks](#known-issues-and-quirks)
+    * [Cassette](#cassette)
+      * [Settings](#settings-1)
+      * [Issues and quirks](#issues-and-quirks)
+    * [Custom skins](#custom-skins)
+      * [Winamp](#winamp-1)
+      * [Cassette](#cassette-1)
+  * [Misc](#misc)
+    * [Issues](#issues)
 
 <!-- TOC -->
 
@@ -63,6 +63,8 @@ Otherwise, it might've crashed. Sorry about that.
 Try toggling it on and off again. Perhaps device is connected to PC in Mass Storage mode?
 
 ### Not implemented
+
+- Holding volume button to rapidly change volume (volume is changed in 1% intervals (~2 in default player terms))
 
 Wampy does not work with:
 
@@ -155,6 +157,7 @@ Issues:
 - Tapping position bar doesn't work sometimes
 - Playlist flickers sometimes
 - Track time and title marquee tick in uneven intervals
+- Marquee text is not restored sometimes on volume change
 
 Quirks:
 
@@ -296,7 +299,7 @@ to `<artist> - <title>`.
 
 <img src="./images/hagoromo-fix.png" width="50%" alt="time and cover">
 
-#### Issues
+### Issues
 
 - `Huge cover art` and `Show time` are NOT applied on application start and have to be toggled off and on from wampy
   after every boot. This happens because of complicated server architecture and hopefully will be fixed one day.

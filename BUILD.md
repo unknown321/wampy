@@ -47,4 +47,6 @@ Building:
 make release
 ```
 
+It takes 97 minutes on i3-7100U to build project from scratch (without downloading Qt and firmware).
+
 See [server/README.md](./server/README.md) for server rebuild instructions.
