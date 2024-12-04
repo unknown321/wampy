@@ -20,13 +20,11 @@ namespace AppConfig {
 #else
     const char *defaultPath = "/contents/wampy/config.ini";
 #endif
-    //    const char *defaultPath = "/tmp/test.ini";
 
     const char *configPaths[] = {
         "./config.ini",
         "../config.ini",
         "/contents_ext/wampy/config.ini",
-        "/contents/wampy/config.ini",
         defaultPath,
     };
 
