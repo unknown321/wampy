@@ -147,6 +147,18 @@ void Controller::Hide(Command::Command *c) {
 
     popupReadyConnections.clear();
 
+    if (provider.usbMounted) {
+        DLOG("usb on, just hide\n");
+        if (!QMetaObject::invokeMethod(FrameWork, "hide", Qt::QueuedConnection)) {
+            DLOG("failed to hide framework\n");
+            c->set_code(Command::FAIL);
+        }
+
+        c->set_code(Command::OK);
+
+        return;
+    }
+
     waitingForHide = true;
 
     auto popup = getDetailPopup();
