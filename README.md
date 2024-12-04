@@ -10,11 +10,7 @@ Alternative frontend for NW-A50 series Walkman player.
 - Incomplete Winamp 2 skin support
 - Custom cassette skins
 - On-the-fly skin change
-- Default player enhancements (add clock and increase cover art size), see below
-
-<img src="images/hagoromo-fix.png" width="70%" alt="default player enhancements">
-
-## Bugs
+- Default player enhancements (add clock and increase cover art size)
 
 See [USAGE.md](./USAGE.md).
 
@@ -35,6 +31,6 @@ Device will restart twice.
 
 See [INSTALL.md](./INSTALL.md)
 
-## Build
+## Build from source
 
 See [BUILD.md](./BUILD.md)

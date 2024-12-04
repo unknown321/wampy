@@ -12,6 +12,7 @@
         * [Not implemented](#not-implemented)
         * [Notes on ugly settings](#notes-on-ugly-settings)
         * [Fonts](#fonts)
+        * [There is a "detailed info" popup after turning screen off and on instead of wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
     * [Using wampy](#using-wampy)
         * [Winamp](#winamp)
             * [Buttons](#buttons)
@@ -21,6 +22,8 @@
             * [Settings](#settings-1)
             * [Issues and quirks](#issues-and-quirks)
         * [Custom skins](#custom-skins)
+            * [Winamp](#winamp-1)
+            * [Cassette](#cassette-1)
     * [Misc](#misc)
         * [Issues](#issues)
 
@@ -89,6 +92,14 @@ If crashes occur, see
 to [What to do if device crashes / wampy doesn't start?](#what-to-do-if-device-crashes--wampy-doesnt-start) section.
 
 <img src="images/fonts.png" alt="fonts settings">
+
+### There is a "detailed info" popup after turning screen off and on instead of wampy
+
+This is the place where current track info is coming from. Toggle wampy on and off to close it automatically or just
+close it by hand.
+
+Why does it happen? Default player restores itself on power on and there is no indication of it being ready to be hidden
+again. Hiding default player as soon as possible caused crashes, so... Sorry about that.
 
 ## Using wampy
 
@@ -193,7 +204,11 @@ Quirks:
 
 ### Custom skins
 
+Device directory tree:
+
 ```shell
+LEARNING/
+MUSIC/
 wampy/
 ├── config.ini
 └── skins
@@ -212,10 +227,18 @@ wampy/
         ├── Winamp3_Classified_v5.5.wsz
         ├── Winamp5_Classified_v5.5.wsz
         └── windows98.wsz
-
 ```
 
-Tape format: JPEG, 800x480, any name, `.jpg` extension. Only first found file in directory is used.
+Winamp has 3 custom skins, cassette has one custom reel with 2 frames and two tapes. Tape `ccc` uses default config.
+
+#### Winamp
+
+Get skins with `.wsz` extension, drop into folder, restart device to refresh list.
+
+#### Cassette
+
+Tape format: JPEG, 800x480 to cover whole screen, any name, `.jpg` extension. Only first found file in directory is
+used. You can get some nice tapes from http://tapedeck.org/, non-transparent ones work well with `other` reel.
 
 Reel format: JPEG, any size, any name. All found files in directory are used. Position is defined by tape
 in `config.txt`.
@@ -233,6 +256,10 @@ reely: 160.0
 titlewidth: 600.0     # max title width in pixels, title will be cut after that value
 textcolor: #000000    # text color, RGB
 ```
+
+Remember, `(0,0)` is top left corner.
+
+Set `artistx`/`titlex` to negative value to hide artist/title labels.
 
 Config file is not required; default one (with values above) will be used instead.
 
@@ -258,10 +285,11 @@ and screen is off, this behaviour is NOT turned off. Don't be surprised when you
 off display and then change tracks just like you used to with default player.
 
 `Huge cover art` changes cover art resolution in default player to 480x480. It also changes title field
-to `<artist> - <title>`. See [image](./images/hagoromo-fix.png).
+to `<artist> - <title>`.
 
-`Show time` adds current time to volume indicator (see [image](./images/hagoromo-fix.png)). Time updates every 10
-seconds, 24 hours format.
+`Show time` adds current time to volume indicator. Time updates every 10 seconds, 24 hours format.
+
+<img src="./images/hagoromo-fix.png" width="50%" alt="time and cover">
 
 #### Issues
 

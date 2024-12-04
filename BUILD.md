@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-- Linux with docker
+- Linux with Docker
 - `libMali_linux.so`
 
 #### libMali_linux.so
@@ -48,5 +48,3 @@ make release
 ```
 
 See [server/README.md](./server/README.md) for server rebuild instructions.
-
-http://www.tapedeck.org/index.php
