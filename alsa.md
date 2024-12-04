@@ -1,4 +1,11 @@
-####  Regular playback
+## Alsa notes
+
+To visualize sound you need a sound stream to analyze. Device uses ALSA. Here is the issue: default output device does
+not provide capture interface, only playback one.
+
+Here are some notes on that:
+
+#### Regular playback
 
 Press "play" button:
 
@@ -23,9 +30,7 @@ card 0: sonysoccard [sony-soc-card], device 5: cxd3778gf-icx-lowpower_test DAI_C
   Subdevices: 1/1
 ```
 
-
 #### Splitting into two?
-
 
 ```shell
 # aplay -D hw:0,4  /contents/1.wav --dump-hw-params
@@ -94,7 +99,6 @@ adb push sound/drivers/snd-aloop.ko /system/vendor/unknown321/
 # device
 insmod /system/vendor/unknown321/snd-aloop.ko
 ```
-
 
 /etc/asound.conf (device):
 
@@ -255,7 +259,6 @@ method = raw
 ```
 
 cava spills bytes onto screen = it works... for aplay
-
 
 #### Redirect to loopback?
 
