@@ -13,6 +13,7 @@
         * [Notes on ugly settings](#notes-on-ugly-settings)
         * [Fonts](#fonts)
         * [There is a "detailed info" popup after turning screen off and on instead of wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
+        * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
     * [Using wampy](#using-wampy)
         * [Winamp](#winamp)
             * [Buttons](#buttons)
@@ -100,6 +101,10 @@ close it by hand.
 
 Why does it happen? Default player restores itself on power on and there is no indication of it being ready to be hidden
 again. Hiding default player as soon as possible caused crashes, so... Sorry about that.
+
+### Everything lags after changing skins/tapes too much
+
+Reboot the device. I suppose that happens because of opengl texture unloading (or a memory leak:).
 
 ## Using wampy
 
