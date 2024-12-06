@@ -39,7 +39,7 @@ namespace Hagoromo {
             return;
         }
 
-        ssize_t sent = send(server_socket, data, len, 0);
+        ssize_t sent = send(server_socket, data, len, MSG_NOSIGNAL);
         if (sent < 0) {
             perror("send failed\n");
             return;

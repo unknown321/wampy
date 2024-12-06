@@ -180,8 +180,6 @@ void my_handler(int s) {
     exit(0);
 }
 
-void sigpipe_handler(int s) {}
-
 void setupProfiling() {
     struct sigaction sigUSR1Handler {};
 
@@ -189,13 +187,7 @@ void setupProfiling() {
     sigemptyset(&sigUSR1Handler.sa_mask);
     sigUSR1Handler.sa_flags = 0;
 
-    struct sigaction sigpipeHandler {};
-    sigpipeHandler.sa_handler = sigpipe_handler;
-    sigemptyset(&sigpipeHandler.sa_mask);
-    sigpipeHandler.sa_flags = 0;
-
     sigaction(SIGUSR1, &sigUSR1Handler, nullptr);
-    sigaction(SIGPIPE, &sigpipeHandler, nullptr);
     DLOG("pid: %d\n", getpid());
 }
 
@@ -328,7 +320,9 @@ int main(int, char **) {
     }
 
     connector.Start();
+    // NOLINTBEGIN
     std::srand(std::time(nullptr)); // cassette rand initialization
+    // NOLINTEND
 
     DLOG("start\n");
 
