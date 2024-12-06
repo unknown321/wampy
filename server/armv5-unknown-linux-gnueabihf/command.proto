@@ -39,7 +39,7 @@ message Command {
   required Type Type = 1;
   required ResponseCode Code = 2;
 
-  oneof msg {
+  oneof Msg {
     WindowStatus WindowStatus = 3;
     Status Status = 4;
     SetVolume SetVolume = 5;

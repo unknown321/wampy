@@ -39,7 +39,7 @@ namespace Hagoromo {
             return;
         }
 
-        int sent = send(server_socket, data, len, 0);
+        ssize_t sent = send(server_socket, data, len, 0);
         if (sent < 0) {
             perror("send failed\n");
             return;
@@ -191,7 +191,7 @@ namespace Hagoromo {
             visible = true;
         }
 
-        Command::WindowVisible expected;
+        Command::WindowVisible expected = Command::VISIBILITY_UNKNOWN;
         DLOG("visible %d, action %s\n", visible, action == 1 ? "Hide" : "Show");
         if (!visible && (action == Show)) {
             DLOG("hgrm status: %d, showing hgrm\n", c.windowstatus().visible());
@@ -205,55 +205,58 @@ namespace Hagoromo {
             expected = Command::VISIBILITY_NO;
         }
 
-        if (!sendCMD(&c)) {
-            DLOG("toggle command send failed\n");
-            return;
-        }
+        if (expected != Command::VISIBILITY_UNKNOWN) {
 
-        if (c.code() != Command::OK) {
-            DLOG("toggle command failed\n");
-            *render = true;
-            serverReady = false;
-            enableTouchscreen();
-            // It would be nice to add restart button, but touchscreen device doesn't emit inotify events,
-            // unless there is an application reading from it.
-            // You can run `cat /dev/input/event0` in background, but it's not worth it.
-            // Just prompt user to restart.
-            stateString = "No connection, restart device";
-            status.Duration = 0;
-            return;
-        }
+            if (!sendCMD(&c)) {
+                DLOG("toggle command send failed\n");
+                return;
+            }
 
-        // hide/show command is async, wait for expected status
-        bool ok = false;
-        for (int i = 0; i < 10; i++) {
-            c.set_type(Command::CMD_GET_WINDOW_STATUS);
-            sendCMD(&c);
-            if (c.code() == Command::UNKNOWN) {
-                DLOG("cannot get status\n");
+            if (c.code() != Command::OK) {
+                DLOG("toggle command failed\n");
                 *render = true;
                 serverReady = false;
                 enableTouchscreen();
+                // It would be nice to add restart button, but touchscreen device doesn't emit inotify events,
+                // unless there is an application reading from it.
+                // You can run `cat /dev/input/event0` in background, but it's not worth it.
+                // Just prompt user to restart.
                 stateString = "No connection, restart device";
                 status.Duration = 0;
                 return;
             }
 
-            DLOG("hgrm is %d\n", c.windowstatus().visible());
-            if (c.windowstatus().visible() == expected) {
-                ok = true;
-                break;
+            // hide/show command is async, wait for expected status
+            bool ok = false;
+            for (int i = 0; i < 10; i++) {
+                c.set_type(Command::CMD_GET_WINDOW_STATUS);
+                sendCMD(&c);
+                if (c.code() == Command::UNKNOWN) {
+                    DLOG("cannot get status\n");
+                    *render = true;
+                    serverReady = false;
+                    enableTouchscreen();
+                    stateString = "No connection, restart device";
+                    status.Duration = 0;
+                    return;
+                }
+
+                DLOG("hgrm is %d\n", c.windowstatus().visible());
+                if (c.windowstatus().visible() == expected) {
+                    ok = true;
+                    break;
+                }
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
+            if (!ok) {
+                DLOG("waited for expected window status, but it took too long\n");
+                return;
+            }
 
-        if (!ok) {
-            DLOG("waited for expected window status, but it took too long\n");
-            return;
+            DLOG("hgrm window status: %d\n", c.windowstatus().visible());
         }
-
-        DLOG("hgrm window status: %d\n", c.windowstatus().visible());
 
         visible = false;
         if (c.windowstatus().visible() == Command::VISIBILITY_YES) {
@@ -506,6 +509,9 @@ namespace Hagoromo {
     }
 
     void HagoromoConnector::powerLoop(bool *render, bool *power) {
+#ifdef DESKTOP
+        return;
+#endif
         int fd, poll_num;
         ssize_t len;
         const struct inotify_event *event;

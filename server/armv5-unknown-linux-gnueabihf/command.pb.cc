@@ -27,7 +27,7 @@ PROTOBUF_CONSTEXPR Command::Command(
   , /*decltype(_impl_._cached_size_)*/{}
   , /*decltype(_impl_.type_)*/0
   , /*decltype(_impl_.code_)*/0
-  , /*decltype(_impl_.msg_)*/{}
+  , /*decltype(_impl_.Msg_)*/{}
   , /*decltype(_impl_._oneof_case_)*/{}} {}
 struct CommandDefaultTypeInternal {
   PROTOBUF_CONSTEXPR CommandDefaultTypeInternal()
@@ -183,7 +183,7 @@ const uint32_t TableStruct_command_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::Command::Command, _impl_.msg_),
+  PROTOBUF_FIELD_OFFSET(::Command::Command, _impl_.Msg_),
   0,
   1,
   ~0u,
@@ -318,7 +318,7 @@ const char descriptor_table_protodef_command_2eproto[] PROTOBUF_SECTION_VARIABLE
   "\r.Command.SeekH\000\0223\n\017FeatureBigCover\030\007 \001("
   "\0132\030.Command.FeatureBigCoverH\000\0225\n\020Feature"
   "ShowClock\030\010 \001(\0132\031.Command.FeatureShowClo"
-  "ckH\000B\005\n\003msg\"\"\n\017FeatureBigCover\022\017\n\007enable"
+  "ckH\000B\005\n\003Msg\"\"\n\017FeatureBigCover\022\017\n\007enable"
   "d\030\001 \002(\010\"#\n\020FeatureShowClock\022\017\n\007enabled\030\001"
   " \002(\010\"7\n\014WindowStatus\022\'\n\007Visible\030\001 \002(\0162\026."
   "Command.WindowVisible\"!\n\tSetVolume\022\024\n\014va"
@@ -447,31 +447,31 @@ class Command::_Internal {
 
 const ::Command::WindowStatus&
 Command::_Internal::windowstatus(const Command* msg) {
-  return *msg->_impl_.msg_.windowstatus_;
+  return *msg->_impl_.Msg_.windowstatus_;
 }
 const ::Command::Status&
 Command::_Internal::status(const Command* msg) {
-  return *msg->_impl_.msg_.status_;
+  return *msg->_impl_.Msg_.status_;
 }
 const ::Command::SetVolume&
 Command::_Internal::setvolume(const Command* msg) {
-  return *msg->_impl_.msg_.setvolume_;
+  return *msg->_impl_.Msg_.setvolume_;
 }
 const ::Command::Seek&
 Command::_Internal::seek(const Command* msg) {
-  return *msg->_impl_.msg_.seek_;
+  return *msg->_impl_.Msg_.seek_;
 }
 const ::Command::FeatureBigCover&
 Command::_Internal::featurebigcover(const Command* msg) {
-  return *msg->_impl_.msg_.featurebigcover_;
+  return *msg->_impl_.Msg_.featurebigcover_;
 }
 const ::Command::FeatureShowClock&
 Command::_Internal::featureshowclock(const Command* msg) {
-  return *msg->_impl_.msg_.featureshowclock_;
+  return *msg->_impl_.Msg_.featureshowclock_;
 }
 void Command::set_allocated_windowstatus(::Command::WindowStatus* windowstatus) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_msg();
+  clear_Msg();
   if (windowstatus) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(windowstatus);
@@ -480,13 +480,13 @@ void Command::set_allocated_windowstatus(::Command::WindowStatus* windowstatus) 
           message_arena, windowstatus, submessage_arena);
     }
     set_has_windowstatus();
-    _impl_.msg_.windowstatus_ = windowstatus;
+    _impl_.Msg_.windowstatus_ = windowstatus;
   }
   // @@protoc_insertion_point(field_set_allocated:Command.Command.WindowStatus)
 }
 void Command::set_allocated_status(::Command::Status* status) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_msg();
+  clear_Msg();
   if (status) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
@@ -495,13 +495,13 @@ void Command::set_allocated_status(::Command::Status* status) {
           message_arena, status, submessage_arena);
     }
     set_has_status();
-    _impl_.msg_.status_ = status;
+    _impl_.Msg_.status_ = status;
   }
   // @@protoc_insertion_point(field_set_allocated:Command.Command.Status)
 }
 void Command::set_allocated_setvolume(::Command::SetVolume* setvolume) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_msg();
+  clear_Msg();
   if (setvolume) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(setvolume);
@@ -510,13 +510,13 @@ void Command::set_allocated_setvolume(::Command::SetVolume* setvolume) {
           message_arena, setvolume, submessage_arena);
     }
     set_has_setvolume();
-    _impl_.msg_.setvolume_ = setvolume;
+    _impl_.Msg_.setvolume_ = setvolume;
   }
   // @@protoc_insertion_point(field_set_allocated:Command.Command.SetVolume)
 }
 void Command::set_allocated_seek(::Command::Seek* seek) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_msg();
+  clear_Msg();
   if (seek) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(seek);
@@ -525,13 +525,13 @@ void Command::set_allocated_seek(::Command::Seek* seek) {
           message_arena, seek, submessage_arena);
     }
     set_has_seek();
-    _impl_.msg_.seek_ = seek;
+    _impl_.Msg_.seek_ = seek;
   }
   // @@protoc_insertion_point(field_set_allocated:Command.Command.Seek)
 }
 void Command::set_allocated_featurebigcover(::Command::FeatureBigCover* featurebigcover) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_msg();
+  clear_Msg();
   if (featurebigcover) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(featurebigcover);
@@ -540,13 +540,13 @@ void Command::set_allocated_featurebigcover(::Command::FeatureBigCover* featureb
           message_arena, featurebigcover, submessage_arena);
     }
     set_has_featurebigcover();
-    _impl_.msg_.featurebigcover_ = featurebigcover;
+    _impl_.Msg_.featurebigcover_ = featurebigcover;
   }
   // @@protoc_insertion_point(field_set_allocated:Command.Command.FeatureBigCover)
 }
 void Command::set_allocated_featureshowclock(::Command::FeatureShowClock* featureshowclock) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_msg();
+  clear_Msg();
   if (featureshowclock) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(featureshowclock);
@@ -555,7 +555,7 @@ void Command::set_allocated_featureshowclock(::Command::FeatureShowClock* featur
           message_arena, featureshowclock, submessage_arena);
     }
     set_has_featureshowclock();
-    _impl_.msg_.featureshowclock_ = featureshowclock;
+    _impl_.Msg_.featureshowclock_ = featureshowclock;
   }
   // @@protoc_insertion_point(field_set_allocated:Command.Command.FeatureShowClock)
 }
@@ -573,15 +573,15 @@ Command::Command(const Command& from)
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.type_){}
     , decltype(_impl_.code_){}
-    , decltype(_impl_.msg_){}
+    , decltype(_impl_.Msg_){}
     , /*decltype(_impl_._oneof_case_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&_impl_.type_, &from._impl_.type_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.code_) -
     reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.code_));
-  clear_has_msg();
-  switch (from.msg_case()) {
+  clear_has_Msg();
+  switch (from.Msg_case()) {
     case kWindowStatus: {
       _this->_internal_mutable_windowstatus()->::Command::WindowStatus::MergeFrom(
           from._internal_windowstatus());
@@ -628,10 +628,10 @@ inline void Command::SharedCtor(
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.type_){0}
     , decltype(_impl_.code_){0}
-    , decltype(_impl_.msg_){}
+    , decltype(_impl_.Msg_){}
     , /*decltype(_impl_._oneof_case_)*/{}
   };
-  clear_has_msg();
+  clear_has_Msg();
 }
 
 Command::~Command() {
@@ -645,8 +645,8 @@ Command::~Command() {
 
 inline void Command::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  if (has_msg()) {
-    clear_msg();
+  if (has_Msg()) {
+    clear_Msg();
   }
 }
 
@@ -654,42 +654,42 @@ void Command::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
 
-void Command::clear_msg() {
+void Command::clear_Msg() {
 // @@protoc_insertion_point(one_of_clear_start:Command.Command)
-  switch (msg_case()) {
+  switch (Msg_case()) {
     case kWindowStatus: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.msg_.windowstatus_;
+        delete _impl_.Msg_.windowstatus_;
       }
       break;
     }
     case kStatus: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.msg_.status_;
+        delete _impl_.Msg_.status_;
       }
       break;
     }
     case kSetVolume: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.msg_.setvolume_;
+        delete _impl_.Msg_.setvolume_;
       }
       break;
     }
     case kSeek: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.msg_.seek_;
+        delete _impl_.Msg_.seek_;
       }
       break;
     }
     case kFeatureBigCover: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.msg_.featurebigcover_;
+        delete _impl_.Msg_.featurebigcover_;
       }
       break;
     }
     case kFeatureShowClock: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.msg_.featureshowclock_;
+        delete _impl_.Msg_.featureshowclock_;
       }
       break;
     }
@@ -713,7 +713,7 @@ void Command::Clear() {
         reinterpret_cast<char*>(&_impl_.code_) -
         reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.code_));
   }
-  clear_msg();
+  clear_Msg();
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
@@ -844,7 +844,7 @@ uint8_t* Command::_InternalSerialize(
       2, this->_internal_code(), target);
   }
 
-  switch (msg_case()) {
+  switch (Msg_case()) {
     case kWindowStatus: {
       target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
         InternalWriteMessage(3, _Internal::windowstatus(this),
@@ -929,47 +929,47 @@ size_t Command::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  switch (msg_case()) {
+  switch (Msg_case()) {
     // .Command.WindowStatus WindowStatus = 3;
     case kWindowStatus: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.msg_.windowstatus_);
+          *_impl_.Msg_.windowstatus_);
       break;
     }
     // .Command.Status Status = 4;
     case kStatus: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.msg_.status_);
+          *_impl_.Msg_.status_);
       break;
     }
     // .Command.SetVolume SetVolume = 5;
     case kSetVolume: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.msg_.setvolume_);
+          *_impl_.Msg_.setvolume_);
       break;
     }
     // .Command.Seek Seek = 6;
     case kSeek: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.msg_.seek_);
+          *_impl_.Msg_.seek_);
       break;
     }
     // .Command.FeatureBigCover FeatureBigCover = 7;
     case kFeatureBigCover: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.msg_.featurebigcover_);
+          *_impl_.Msg_.featurebigcover_);
       break;
     }
     // .Command.FeatureShowClock FeatureShowClock = 8;
     case kFeatureShowClock: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.msg_.featureshowclock_);
+          *_impl_.Msg_.featureshowclock_);
       break;
     }
     case MSG_NOT_SET: {
@@ -1004,7 +1004,7 @@ void Command::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOB
     }
     _this->_impl_._has_bits_[0] |= cached_has_bits;
   }
-  switch (from.msg_case()) {
+  switch (from.Msg_case()) {
     case kWindowStatus: {
       _this->_internal_mutable_windowstatus()->::Command::WindowStatus::MergeFrom(
           from._internal_windowstatus());
@@ -1051,40 +1051,40 @@ void Command::CopyFrom(const Command& from) {
 
 bool Command::IsInitialized() const {
   if (_Internal::MissingRequiredFields(_impl_._has_bits_)) return false;
-  switch (msg_case()) {
+  switch (Msg_case()) {
     case kWindowStatus: {
       if (_internal_has_windowstatus()) {
-        if (!_impl_.msg_.windowstatus_->IsInitialized()) return false;
+        if (!_impl_.Msg_.windowstatus_->IsInitialized()) return false;
       }
       break;
     }
     case kStatus: {
       if (_internal_has_status()) {
-        if (!_impl_.msg_.status_->IsInitialized()) return false;
+        if (!_impl_.Msg_.status_->IsInitialized()) return false;
       }
       break;
     }
     case kSetVolume: {
       if (_internal_has_setvolume()) {
-        if (!_impl_.msg_.setvolume_->IsInitialized()) return false;
+        if (!_impl_.Msg_.setvolume_->IsInitialized()) return false;
       }
       break;
     }
     case kSeek: {
       if (_internal_has_seek()) {
-        if (!_impl_.msg_.seek_->IsInitialized()) return false;
+        if (!_impl_.Msg_.seek_->IsInitialized()) return false;
       }
       break;
     }
     case kFeatureBigCover: {
       if (_internal_has_featurebigcover()) {
-        if (!_impl_.msg_.featurebigcover_->IsInitialized()) return false;
+        if (!_impl_.Msg_.featurebigcover_->IsInitialized()) return false;
       }
       break;
     }
     case kFeatureShowClock: {
       if (_internal_has_featureshowclock()) {
-        if (!_impl_.msg_.featureshowclock_->IsInitialized()) return false;
+        if (!_impl_.Msg_.featureshowclock_->IsInitialized()) return false;
       }
       break;
     }
@@ -1105,7 +1105,7 @@ void Command::InternalSwap(Command* other) {
       - PROTOBUF_FIELD_OFFSET(Command, _impl_.type_)>(
           reinterpret_cast<char*>(&_impl_.type_),
           reinterpret_cast<char*>(&other->_impl_.type_));
-  swap(_impl_.msg_, other->_impl_.msg_);
+  swap(_impl_.Msg_, other->_impl_.Msg_);
   swap(_impl_._oneof_case_[0], other->_impl_._oneof_case_[0]);
 }
 

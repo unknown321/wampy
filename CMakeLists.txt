@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 project(wampy)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
 
 set(PROTOBUF_INCLUDE "")
 if (DESKTOP EQUAL 1)
