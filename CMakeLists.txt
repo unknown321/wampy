@@ -4,14 +4,24 @@ project(wampy)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
 
-set(PROTOBUF_INCLUDE "")
 if (DESKTOP EQUAL 1)
-    set(CONNECTOR_SOURCE connector/mpd.cpp)
+    set(arch x86)
+    set(CONNECTOR_SOURCE src/connector/mpd.cpp src/connector/hagoromo.cpp server/armv5-unknown-linux-gnueabihf/command_names.cpp)
 else ()
-    set(CONNECTOR_SOURCE connector/hagoromo.cpp server/armv5-unknown-linux-gnueabihf/command_names.cpp)
-    set(PROTOBUF_INCLUDE libs/protobuf/build-armv5/include/)
-    set(PROTOBUF_SOURCE server/armv5-unknown-linux-gnueabihf/command.pb.cc)
+    set(arch arm)
+    set(CONNECTOR_SOURCE src/connector/hagoromo.cpp server/armv5-unknown-linux-gnueabihf/command_names.cpp)
+
+    # https://stackoverflow.com/questions/23583317/c-11-threads-error-pure-virtual-function-called
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4")
 endif ()
+
+
+set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install/${arch})
+
+set(PROTOBUF_INCLUDE libs/protobuf/build-${arch}/include/)
+set(PROTOBUF_SOURCE server/armv5-unknown-linux-gnueabihf/command.pb.cc)
 
 include_directories(
         libs/imgui
@@ -58,18 +68,6 @@ endif ()
 add_subdirectory(libs/glfw)
 link_libraries(glfw)
 
-if (DESKTOP EQUAL 1)
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install/arm)
-else ()
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install/x86)
-
-    # https://stackoverflow.com/questions/23583317/c-11-threads-error-pure-virtual-function-called
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_2")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_1")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4")
-endif ()
-
-
 set(ZLIB_BUILD_EXAMPLES FALSE)
 add_subdirectory(libs/zlib)
 set_property(TARGET zlib PROPERTY VERSION)
@@ -86,7 +84,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMAGICKCORE_QUANTUM_DEPTH=32")
 # profiling
 # exec; kill -10 <pid>
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --verbose")
 
 add_compile_definitions(IMGUI_USER_CONFIG="../../src/imgui.config.h")
@@ -114,7 +112,7 @@ add_executable(${PROJECT_NAME}
         src/util/util.cpp
         src/wstring.cpp
         src/cassette/tape.cpp
-        src/${CONNECTOR_SOURCE}
+        ${CONNECTOR_SOURCE}
         src/imgui_widgets.cpp
         src/connector/song.cpp
         src/skinVariant.cpp
@@ -125,11 +123,6 @@ add_executable(${PROJECT_NAME}
         #        libs/imgui/imgui_demo.cpp
         src/shader.cpp)
 
-if (DESKTOP EQUAL 1)
-    set(arch x86)
-else ()
-    set(arch arm)
-endif ()
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install/${arch})
 
@@ -143,7 +136,8 @@ set(ENV{PKG_CONFIG_LIBDIR} "${CMAKE_SOURCE_DIR}/libs/ImageMagick/build-${arch}/l
 find_package(ImageMagick COMPONENTS MagickCore MagickWand Magick++ REQUIRED)
 include_directories(${ImageMagick_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${ImageMagick_LIBRARIES})
-
+find_library(PROTOBUF protobuf REQUIRED PATHS libs/protobuf/build-${arch}/lib/ REQUIRED)
+target_link_libraries(${PROJECT_NAME} "${PROTOBUF}")
 
 add_custom_target(version
         ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/src/Version.h.in
@@ -152,6 +146,7 @@ add_custom_target(version
         )
 
 add_dependencies(${PROJECT_NAME} version)
+
 
 if (DESKTOP EQUAL 1)
     find_library(GLES GLESv2 PATHS /usr/lib)
@@ -165,20 +160,20 @@ else ()
 
     find_library(MALI Mali_linux PATHS libs)
     #    find_library(ASOUND asound PATHS libs)
-    find_library(PROTOBUF protobuf REQUIRED PATHS libs/protobuf/build-armv5/lib/ REQUIRED)
-    target_link_libraries(${PROJECT_NAME} "${MALI}" "${PROTOBUF}")
+    target_link_libraries(${PROJECT_NAME} "${MALI}")
     #    target_link_libraries(${PROJECT_NAME} "${ASOUND}")
-    install(TARGETS ${PROJECT_NAME})
-
-    # dynamic linking
-    foreach (Library ${ImageMagick_LIBRARIES})
-        install(FILES ${Library} DESTINATION lib)
-    endforeach ()
-
-    # https://gitlab.kitware.com/cmake/cmake/-/issues/23249
-    get_filename_component(JPEG_NAME ${JPEG} REALPATH)
-    install(FILES ${JPEG_NAME} DESTINATION lib)
-
-    get_filename_component(PROTOBUF_NAME ${PROTOBUF} REALPATH)
-    install(FILES ${PROTOBUF_NAME} DESTINATION lib)
 endif ()
+
+install(TARGETS ${PROJECT_NAME})
+
+# dynamic linking
+foreach (Library ${ImageMagick_LIBRARIES})
+    install(FILES ${Library} DESTINATION lib)
+endforeach ()
+
+# https://gitlab.kitware.com/cmake/cmake/-/issues/23249
+get_filename_component(JPEG_NAME ${JPEG} REALPATH)
+install(FILES ${JPEG_NAME} DESTINATION lib)
+
+get_filename_component(PROTOBUF_NAME ${PROTOBUF} REALPATH)
+install(FILES ${PROTOBUF_NAME} DESTINATION lib)

@@ -5,17 +5,16 @@
 #include "imgui_impl_opengl3.h"
 #include <thread>
 
-static const ImWchar rangesPunctuation[] = {
+const ImWchar rangesPunctuation[] = {
     0x2000, 0x206F, // General Punctuation
 };
 
 namespace Winamp {
-
     std::string const ColorBlack = "#000000";
-    static const float ttfFontSize = 33.0f;
-    static const float TitleWidth = 595.0f;
+    const float fontSizeTTF = 33.0f;
+    const float fontSizeBitmap = 17.0f;
+    static const float MarqueeTitleWidthFont = 585.0f;
     static const int MarqueeMaxLengthBitmap = 32;
-    static const float MaxTitleWidth = 1024.0f;
 
     static const int blinkInterval = 1200 * 1000; // microseconds, got it via screen recording, winamp 2.95
     static const int marqueeInterval = 200 * 1000;
@@ -25,6 +24,11 @@ namespace Winamp {
     static const int PlaylistTitleHeight = 58;
     static const int VolumeBarCount = 28;
     static const int BalanceBarCount = 28;
+
+    const int playlistSongWidth = 600.0f;
+    const char *separator = "  ***   ";
+    const char *remainingTimeSignMinus = "-";
+    const char *remainingTimeSignPlus = "";
 
 #ifdef DESKTOP
     //    static const std::string FontPath = "../SSTJpPro-Regular.otf";
@@ -49,6 +53,38 @@ namespace Winamp {
         "balance.bmp",
         "pledit.bmp",
         "pledit.txt"};
+
+    Winamp::Winamp() {}
+
+    Winamp::Winamp(Winamp const &other) : SkinVariant(other) {
+        // copy constructor implementation
+    }
+
+    Winamp &Winamp::Winamp::operator=(Winamp const &other) {
+        // copy assignment operator
+    }
+
+    void Winamp::Notify() {
+        statusUpdatedM.lock();
+        statusUpdated = true;
+        statusUpdatedM.unlock();
+    }
+
+    void Winamp::processUpdate() {
+        while (true) {
+            if (!statusUpdated) {
+                continue;
+            }
+
+            //            DLOG("status updated\n");
+
+            statusUpdatedM.lock();
+            statusUpdated = false;
+            statusUpdatedM.unlock();
+
+            Format();
+        }
+    }
 
     int Winamp::AddFonts(ImFont *fontRegular) {
         auto numFontData = textures["numbers.bmp"];
@@ -234,11 +270,9 @@ namespace Winamp {
         int totalSec = w->connector->status.Duration % 60;
         int newMin = ((w->connector->status.Duration * val) / 100) / 60;
         int newSec = ((w->connector->status.Duration * val) / 100) % 60;
-        char buff[100];
-        snprintf(buff, sizeof(buff), "Seek To: %02d:%02d/%02d:%02d (%d%%)", newMin, newSec, totalMin, totalSec, val);
-        std::string buffAsStdStr = buff;
 
-        w->connector->playlist.at(0).TitleMarquee = buffAsStdStr;
+        strcpy(w->m.format, "%s");
+        snprintf(w->systemMessage, PLAYLIST_SONG_SIZE, "Seek To: %02d:%02d/%02d:%02d (%d%%)", newMin, newSec, totalMin, totalSec, val);
     }
 
     void Winamp::SeekReleased(void *winampSkin, void *i) {
@@ -246,6 +280,7 @@ namespace Winamp {
 
         auto val = *(int *)i;
         w->connector->SetPosition(val);
+        memset(w->systemMessage, 0, 256);
         w->MarqueeRunning = true;
         w->connector->status.Elapsed = w->connector->status.Duration * val / 100;
 #ifndef DESKTOP
@@ -269,11 +304,17 @@ namespace Winamp {
 
         w->connector->SetVolume(val, false);
 
-        char buff[100];
-        snprintf(buff, sizeof(buff), "Volume: %d%%", val);
-        std::string buffAsStdStr = buff;
+        snprintf(w->systemMessage, 256, "Volume: %d%%", val);
+    }
 
-        w->connector->playlist.at(0).TitleMarquee = buffAsStdStr;
+    void Winamp::VolumePressedHagoromo(void *winampSkin, void *i) {
+        auto w = (Winamp *)winampSkin;
+        w->MarqueeRunning = false;
+
+        auto val = *(int *)i;
+        w->connector->updateVolume = false;
+
+        snprintf(w->systemMessage, 256, "Volume: %d%%", val);
     }
 
     void Winamp::VolumeReleased(void *winampSkin, void *i) {
@@ -286,21 +327,8 @@ namespace Winamp {
 
     void Winamp::VolumeReleasedMPD(void *winampSkin, void *i) {
         auto w = (Winamp *)winampSkin;
+        memset(w->systemMessage, 0, 256);
         w->MarqueeRunning = true;
-    }
-
-    void Winamp::VolumePressedHagoromo(void *winampSkin, void *i) {
-        auto w = (Winamp *)winampSkin;
-        w->MarqueeRunning = false;
-
-        auto val = *(int *)i;
-        w->connector->updateVolume = false;
-
-        char buff[100];
-        snprintf(buff, sizeof(buff), "Volume: %d%%", val);
-        std::string buffAsStdStr = buff;
-
-        w->connector->playlist.at(0).TitleMarquee = buffAsStdStr;
     }
 
     void Winamp::VolumeReleasedHagoromo(void *winampSkin, void *i) {
@@ -311,10 +339,12 @@ namespace Winamp {
         w->connector->status.Volume = val;
         w->connector->SetVolume(val, false);
         w->connector->updateVolume = true;
+
+        memset(w->systemMessage, 0, 256);
     }
 
     void Winamp::BalancePressed(void *winampSkin, void *i) {
-        notImplemented(winampSkin, i);
+        //        notImplemented(winampSkin, i);
         /*
                      if (i == 0) {
                         format = "Balance: Center";
@@ -323,19 +353,16 @@ namespace Winamp {
                     } else {
                         format = "Balance: %d%% right";
                     }
-            snprintf(buff, sizeof(buff), format, abs(i));
-            std::string buffAsStdStr = buff;
+        snprintf(w->currentSongTitleMarquee, PLAYLIST_SONG_SIZE, format, i);
         */
     }
 
     void Winamp::BalanceReleased(void *winampSkin, void *i) {
-        auto w = (Winamp *)winampSkin;
-        w->MarqueeRunning = true;
+        //        auto w = (Winamp *)winampSkin;
+        //        w->MarqueeRunning = true;
     }
 
     void Winamp::Draw() {
-        Format();
-
         if (playlistFullscreen) {
             drawPlaylist();
             return;
@@ -402,10 +429,14 @@ namespace Winamp {
             ImGui::SetCursorPos(ImVec2(323, 74));
         }
 
-        if (connector->playlist.at(0).TitleMarquee.empty()) {
+        if (strcmp(currentSongTitle, "") == 0) {
             ImGui::Text("Wampy");
         } else {
-            ImGui::Text("%s", connector->playlist.at(0).TitleMarquee.c_str());
+            if (systemMessage[0] == '\0') {
+                ImGui::Text(m.format, &currentSongTitleMarquee[m.start]);
+            } else {
+                ImGui::Text("%s", systemMessage);
+            }
         }
 
         if (!config->useBitmapFont) {
@@ -460,37 +491,14 @@ namespace Winamp {
             ImGui::PushFont(FontRegular);
         }
 
-        for (int i = 0; i < connector->playlist.size(); i++) {
+        for (int i = 0; i < PLAYLIST_SIZE; i++) {
             if (!playlistFullscreen) {
                 if (i > 2) {
                     break;
                 }
             }
 
-            auto s = &connector->playlist.at(i);
-            if (s->Duration <= 0) {
-                continue;
-            }
-
-            // FIXME recalculates on every update in mpd
-            if ((!s->PlaylistStringsCalculated)) {
-                auto format = "%s. %s - %s";
-                auto size = std::snprintf(nullptr, 0, format, s->Track.c_str(), s->Artist.c_str(), s->Title.c_str());
-                std::string output(size + 1, '\0');
-                std::sprintf(&output[0], format, s->Track.c_str(), s->Artist.c_str(), s->Title.c_str());
-                s->PlaylistTitle = CalculateTextWidth(output);
-
-                format = "%02d:%02d";
-                size = std::snprintf(nullptr, 0, format, s->Duration / 60, s->Duration % 60);
-                std::string outputDuration(size + 1, '\0');
-                std::sprintf(&outputDuration[0], format, s->Duration / 60, s->Duration % 60);
-                s->PlaylistDuration = outputDuration;
-
-                ImVec2 res = ImGui::CalcTextSize(s->PlaylistDuration.c_str());
-                s->PlaylistDurationTextSize = res.x;
-
-                s->PlaylistStringsCalculated = true;
-            }
+            auto s = playlist[activePlaylistID][i];
 
             if (i == 0) {
                 ImGui::PushStyleColor(ImGuiCol_Text, colors.PlaylistCurrentTextU32);
@@ -499,10 +507,10 @@ namespace Winamp {
             }
 
             ImGui::SetCursorPos(ImVec2(38, PlaylistY + 60 + ((float)i * 30)));
-            ImGui::Text("%s", s->PlaylistTitle.c_str());
+            ImGui::Text("%s", s.text);
 
-            ImGui::SetCursorPos(ImVec2(800 - s->PlaylistDurationTextSize - 60, PlaylistY + 60 + ((float)i * 30)));
-            ImGui::Text("%s", s->PlaylistDuration.c_str());
+            ImGui::SetCursorPos(ImVec2(800 - s.durationSize - 60, PlaylistY + 60 + ((float)i * 30)));
+            ImGui::Text("%s", s.duration);
             ImGui::PopStyleColor();
         }
 
@@ -891,19 +899,17 @@ namespace Winamp {
     }
 
     void Winamp::notImplemented(void *winampSkin, void *) {
-        auto w = (Winamp *)winampSkin;
-        w->MarqueeRunning = false;
-
-        w->connector->playlist.at(0).TitleMarquee = "Not implemented";
+        //        auto w = (Winamp *)winampSkin;
+        //        w->MarqueeRunning = false;
     }
 
     void Winamp::drawTime() {
-        auto s = connector->playlist.at(0);
-        if (s.Duration < 1) {
+        auto s = playlist[activePlaylistID][0];
+        if (connector->status.Duration < 1) {
             return;
         }
 
-        if (s.DurDisplay.Minute1 < 1 && s.DurDisplay.Minute2 < 1 && s.DurDisplay.Second1 < 1 && s.DurDisplay.Second2 < 1) {
+        if (minute1 < 1 && minute2 < 1 && second1 < 1 && second2 < 1) {
             return;
         }
 
@@ -916,20 +922,20 @@ namespace Winamp {
             } else {
                 ImGui::SetCursorPos(ImVec2(113, 92));
             }
-            ImGui::Text("%s", remainingTimeSign.c_str());
+            ImGui::Text("%s", remainingTimeSign);
         }
 
         ImGui::SetCursorPos(ImVec2(140, 76));
-        ImGui::Text("%d", s.DurDisplay.Minute1);
+        ImGui::Text("%d", minute1);
 
         ImGui::SetCursorPos(ImVec2(175, 76));
-        ImGui::Text("%d", s.DurDisplay.Minute2);
+        ImGui::Text("%d", minute2);
 
         ImGui::SetCursorPos(ImVec2(227, 76));
-        ImGui::Text("%d", s.DurDisplay.Second1);
+        ImGui::Text("%d", second1);
 
         ImGui::SetCursorPos(ImVec2(262, 76));
-        ImGui::Text("%d", s.DurDisplay.Second2);
+        ImGui::Text("%d", second2);
         ImGui::PopFont();
     }
 
@@ -973,67 +979,13 @@ namespace Winamp {
         }
     }
 
-    void Winamp::MarqueeInFrame() {
-        if (savedTitle != connector->playlist.at(0).TitleFormatted) {
-            savedTitle = connector->playlist.at(0).TitleFormatted;
-            newFull = savedTitle + "  ***  ";
-        }
-
-        const char *end = nullptr;
-        auto ctx = ImGui::GetCurrentContext();
-        ImVec2 size =
-            FontRegular->CalcTextSizeA(ttfFontSize, MaxTitleWidth, -1.0f, connector->playlist.at(0).TitleFormatted.c_str(), end, nullptr);
-        if (size.x <= TitleWidth) {
-            connector->playlist.at(0).TitleMarquee = connector->playlist.at(0).TitleFormatted;
-            return;
-        }
-
-        char shifted[newFull.length()];
-        utfShift(newFull, shifted);
-        newFull = shifted;
-
-        std::string ff = newFull;
-        int len = 0;
-        char cut[ff.length()];
-        memset(cut, 0, sizeof cut);
-
-        while (size.x > TitleWidth) {
-            len = utfLen(ff);
-            memset(cut, 0, sizeof cut);
-            utfCut(ff, len - 1, cut);
-            ff = std::string(cut);
-            len = len - 1;
-            size = FontRegular->CalcTextSizeA(ttfFontSize, MaxTitleWidth, -1.0f, ff.c_str());
-        }
-
-        connector->playlist.at(0).TitleMarquee = cut;
-    }
-
-    void Winamp::MarqueeBitmap() {
-        int len = utfLen(connector->playlist.at(0).TitleFormatted);
-        if (len <= MarqueeMaxLengthBitmap) {
-            connector->playlist.at(0).TitleMarquee = connector->playlist.at(0).TitleFormatted;
-            return;
-        }
-
-        if (savedTitle != connector->playlist.at(0).TitleFormatted) {
-            savedTitle = connector->playlist.at(0).TitleFormatted;
-            newFull = savedTitle + "  ***  ";
-        }
-
-        char shifted[newFull.length()];
-        utfShift(newFull, shifted);
-        newFull = shifted;
-
-        char cut[newFull.length()];
-        utfCut(newFull, MarqueeMaxLengthBitmap, cut);
-
-        connector->playlist.at(0).TitleMarquee = cut;
-    }
-
-    void Winamp::Marquee() {
+    void Winamp::MarqueeLoop() {
         for (;;) {
             std::this_thread::sleep_for(std::chrono::microseconds(marqueeInterval));
+            if (!titleIsMarquee) {
+                continue;
+            }
+
             if (marqueeThreadStop) {
                 break;
             }
@@ -1051,25 +1003,24 @@ namespace Winamp {
             }
 
             if (!connector->stateString.empty()) {
-                connector->playlist.at(0).TitleMarquee = connector->stateString;
-                connector->playlist.at(0).TitleFormatted = connector->stateString;
+                snprintf(systemMessage, 256, "%s", connector->stateString.c_str());
             }
 
-            if (config->useBitmapFont) {
-                MarqueeBitmap();
-            } else {
-                MarqueeInFrame();
-            }
+            MarqueeCalculate();
         }
     }
 
     void Winamp::MarqueeThread() {
         marqueeThreadStop = false;
-        auto exec = [this]() { Marquee(); };
+        auto exec = [this]() { MarqueeLoop(); };
         std::thread t(exec);
 
         t.detach();
         MarqueeRunning = true;
+
+        auto update = [this]() { processUpdate(); };
+        std::thread v(update);
+        v.detach();
     }
 
     void Winamp::Stop(void *winamp, void *) {
@@ -1149,6 +1100,8 @@ namespace Winamp {
         Elements.Unload();
         marqueeThreadStop = true;
         MarqueeRunning = false;
+        memset(currentSongTitle, 0, PLAYLIST_SONG_SIZE);
+        memset(currentSongTitleMarquee, 0, PLAYLIST_SONG_SIZE);
     }
 
     void Winamp::WithConfig(Config *c) { config = c; }
@@ -1165,16 +1118,11 @@ namespace Winamp {
         return c;
     }
 
-    void Winamp::Format() {
+    void Winamp::formatDuration() {
         auto status = &connector->status;
-        if (status->formatted) {
-            return;
-        }
-
         if (status->Duration > 0) {
             status->PositionPercent = (int)std::ceil(float(status->Elapsed) / float(status->Duration) * 100);
         } else {
-            status->formatted = true;
             return;
         }
 
@@ -1182,27 +1130,127 @@ namespace Winamp {
         if (timeRemaining) {
             minutes = (status->Duration - status->Elapsed) / 60;
             seconds = (status->Duration - status->Elapsed) % 60;
-            remainingTimeSign = "-";
+            remainingTimeSign = remainingTimeSignMinus;
         } else {
             minutes = status->Elapsed / 60;
             seconds = status->Elapsed % 60;
-            remainingTimeSign = "";
+            remainingTimeSign = remainingTimeSignPlus;
         }
 
-        auto playlist = &connector->playlist;
+        minute1 = minutes / 10;
+        minute2 = minutes % 10;
+        second1 = seconds / 10;
+        second2 = seconds % 10;
+    }
 
-        playlist->at(0).DurDisplay.Minute1 = minutes / 10;
-        playlist->at(0).DurDisplay.Minute2 = minutes % 10;
-        playlist->at(0).DurDisplay.Second1 = seconds / 10;
-        playlist->at(0).DurDisplay.Second2 = seconds % 10;
+    void Winamp::formatPlaylist() {
+        int stagingPlaylistID = 0;
+        if (activePlaylistID == 0) {
+            stagingPlaylistID = 1;
+        }
 
-        char secs[3]{};
-        int fullSeconds = playlist->at(0).Duration % 60;
-        std::snprintf(secs, 3, "%02d", fullSeconds);
-        playlist->at(0).TitleFormatted = playlist->at(0).Track + ". " + playlist->at(0).Artist + " - " + playlist->at(0).Title + " (" +
-                                         std::to_string(playlist->at(0).Duration / 60) + ":" + std::string(secs) + ")";
+        // playlist songs, crop to playlist width
+        for (int i = 0; i < PLAYLIST_SIZE; i++) {
+            auto song = connector->playlist.at(i);
+            if (song.Duration < 1) {
+                continue;
+            }
 
-        status->formatted = true;
+            auto d = &playlist[stagingPlaylistID][i];
+            memset(d->text, 0, strlen(d->text));
+            snprintf(d->text, PLAYLIST_SONG_SIZE, "%s. %s - %s", song.Track.c_str(), song.Artist.c_str(), song.Title.c_str());
+
+            ImFont *f = FontRegular;
+            if (config->useBitmapFontInPlaylist) {
+                f = FontBitmap;
+            }
+
+            CropTextToWidth(d->text, f, f->FontSize, playlistSongWidth);
+            snprintf(d->duration, PLAYLIST_DURATION_SIZE, "%02d:%02d", song.Duration / 60, song.Duration % 60);
+            d->durationSize = f->CalcTextSizeA(f->FontSize, FLT_MAX, -1.0, d->duration).x;
+        }
+    }
+
+    void Winamp::prepareForMarquee() {
+        m.start = 0;
+
+        /* it is possible to make nice marquee without duplicating string when using fixed-width (in characters) window
+         like this:
+             if (overflow) print ("%s  ***  %s", string[pos:end], string [start:overflow])
+         not so nice with ttf:
+             if (overflow) {
+                leftoverWidth = maxWidth - calcTextSize(maxWidth, text[pos]);
+                calcTextSize(leftoverWidth, remainder);
+                print("%s *** %s", text[pos], text[0:remainder])
+             }
+         don't want to calc twice
+        */
+
+        // is title long enough for marquee?
+        if (config->useBitmapFont) {
+            if (utfLen(currentSongTitle) > MarqueeMaxLengthBitmap) {
+                snprintf(currentSongTitleMarquee, PLAYLIST_SONG_SIZE, "%s%s%s%s", currentSongTitle, separator, currentSongTitle, separator);
+                titleIsMarquee = true;
+            } else {
+                titleIsMarquee = false;
+                strcpy(m.format, "%s");
+                snprintf(currentSongTitleMarquee, PLAYLIST_SONG_SIZE, "%s", currentSongTitle);
+            }
+        } else {
+            auto ctx = ImGui::GetCurrentContext();
+            ImVec2 size = FontRegular->CalcTextSizeA(fontSizeTTF, FLT_MAX, -1.0f, currentSongTitle, nullptr, nullptr);
+            if (size.x > MarqueeTitleWidthFont) {
+                snprintf(currentSongTitleMarquee, PLAYLIST_SONG_SIZE, "%s%s%s%s", currentSongTitle, separator, currentSongTitle, separator);
+                titleIsMarquee = true;
+            } else {
+                titleIsMarquee = false;
+                strcpy(m.format, "%s");
+                snprintf(currentSongTitleMarquee, PLAYLIST_SONG_SIZE, "%s", currentSongTitle);
+            }
+        }
+    }
+
+    void Winamp::Format() {
+        if (loading) {
+            return;
+        }
+
+        auto n = connector->playlist.at(0);
+        if (n.Duration < 1) {
+            return;
+        }
+
+        formatDuration();
+
+        char currentSongTitleTemp[PLAYLIST_SONG_SIZE]{};
+        snprintf(
+            currentSongTitleTemp,
+            PLAYLIST_SONG_SIZE,
+            "%s. %s - %s (%02d:%02d)",
+            n.Track.c_str(),
+            n.Artist.c_str(),
+            n.Title.c_str(),
+            n.Duration / 60,
+            n.Duration % 60
+        );
+
+        if (strcmp(currentSongTitle, currentSongTitleTemp) == 0) {
+            //            DLOG("not updating current song\n");
+            return;
+        }
+
+        formatPlaylist();
+
+        strcpy(currentSongTitle, currentSongTitleTemp);
+
+        prepareForMarquee();
+
+        // swap staging playlist with active
+        if (activePlaylistID == 1) {
+            activePlaylistID = 0;
+        } else {
+            activePlaylistID = 1;
+        }
     }
 
     Fonts Winamp::addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, TextureMapEntry fontRegular) const {
@@ -1235,7 +1283,7 @@ namespace Winamp {
 
         range.BuildRanges(&gr);
 
-        ImFont *a = io.Fonts->AddFontFromFileTTF(ttfFontPath.c_str(), ttfFontSize, nullptr, gr.Data);
+        ImFont *a = io.Fonts->AddFontFromFileTTF(ttfFontPath.c_str(), fontSizeTTF, nullptr, gr.Data);
         ImFont *font = io.Fonts->AddFontDefault();
 
         char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\"@   0123456789..:()-'!_+\\/[]^&%,=$#\x0\x0\x0?*";
@@ -1244,12 +1292,12 @@ namespace Winamp {
         int rect_ids[sizeof(alphabet) + sizeof(lowercase)];
         int i = 0;
         for (char c : alphabet) {
-            rect_ids[i] = io.Fonts->AddCustomRectFontGlyph(font, c, 14, 17, 14);
+            rect_ids[i] = io.Fonts->AddCustomRectFontGlyph(font, c, 14, (int)fontSizeBitmap, 14);
             i++;
         }
 
         for (char c : lowercase) {
-            rect_ids[i] = io.Fonts->AddCustomRectFontGlyph(font, c, 14, 17, 14);
+            rect_ids[i] = io.Fonts->AddCustomRectFontGlyph(font, c, 14, (int)fontSizeBitmap, 14);
             i++;
         }
 
@@ -1299,7 +1347,7 @@ namespace Winamp {
 
         iNum = 0;
         for (char c : alphabetGen) {
-            rect_ids_gen[iNum] = io.Fonts->AddCustomRectFontGlyph(fontGen, c, 14, 17, 14);
+            rect_ids_gen[iNum] = io.Fonts->AddCustomRectFontGlyph(fontGen, c, 14, (int)fontSizeBitmap, 14);
             iNum++;
         }
 
@@ -1349,7 +1397,7 @@ namespace Winamp {
             glyph.filterType(MagickCore::PointFilter);
             glyph.crop(geo);
 
-            Magick::Geometry rg(15, 17);
+            Magick::Geometry rg(15, (int)fontSizeBitmap);
             rg.fillArea(true);
             glyph.resize(rg);
 
@@ -1422,5 +1470,102 @@ namespace Winamp {
 
         font->SetGlyphVisible((ImWchar)' ', true);
         return Fonts{a, fontNumber, font};
+    }
+
+    // calculates marquee positions using ImGui::CalcTextSize
+    void Winamp::MarqueeCalculate() {
+        if (currentSongTitleMarquee[0] == '\0') {
+            return;
+        }
+
+        int charLen;
+        // shift current index by one utf8 character
+        utfCharLen(&currentSongTitleMarquee[m.start], &charLen);
+
+        m.start += charLen;
+
+        const char *remaining; // points to char in text that won't be rendered
+        ImFont *font;
+        float fontSize;
+        if (config->useBitmapFont) {
+            font = FontBitmap;
+            fontSize = fontSizeBitmap;
+        } else {
+            font = FontRegular;
+            fontSize = fontSizeTTF;
+        }
+
+        font->CalcTextSizeA(fontSize, MarqueeTitleWidthFont, -1.0f, &currentSongTitleMarquee[m.start], nullptr, &remaining);
+        //        DLOG("rem: %zu\n", strlen(remaining));
+        if (strlen(remaining) < 1) {
+            // wrap
+            m.start = m.start - (int)strlen(separator) - (int)strlen(currentSongTitle);
+            font->CalcTextSizeA(fontSize, MarqueeTitleWidthFont, -1.0f, &currentSongTitleMarquee[m.start], nullptr, &remaining);
+        }
+
+        m.end = m.start + (int)(remaining - &currentSongTitleMarquee[m.start]);
+        sprintf(m.format, "%%.%lds", remaining - &currentSongTitleMarquee[m.start]);
+    }
+
+    // calculates text offsets for bitmap font marquee without using ImGui::CalculateTextSize
+    // bitmap marquee is always MarqueeMaxLengthBitmap (32) characters long
+    __attribute__((unused)) void Winamp::MarqueeBitmap() {
+        if (currentSongTitleMarquee[0] == '\0') {
+            return;
+        }
+
+        int startTemp = m.start;
+        int charLen = 0;
+        // shift current index by one utf8 character
+        utfCharLen(&currentSongTitleMarquee[m.start], &charLen);
+
+        startTemp += charLen;
+
+        // check if rest of the string fits into character limit
+
+        if ((startTemp + MarqueeMaxLengthBitmap) > utfLen(currentSongTitleMarquee)) {
+            DLOG("need wrap\n");
+        }
+
+        int endTemp;
+        bool fits;
+        utfFits(currentSongTitleMarquee, startTemp, MarqueeMaxLengthBitmap, &fits, &endTemp);
+        if (fits) {
+            m.start = startTemp;
+            m.end = endTemp;
+            snprintf(m.format, 10, "%%.%ds", m.end - m.start);
+
+            char forLog[100]{};
+            strncpy(forLog, currentSongTitleMarquee + m.start, m.end - m.start);
+            DLOG("start %03d, end %03d, %s\n", m.start, m.end, forLog);
+
+            return;
+        }
+
+        // doesn't fit, wrap around
+        m.start = 0;
+        auto newPos = utfLen(currentSongTitle) - MarqueeMaxLengthBitmap + utfLen(separator) + 1;
+        // recalculate start point in char
+        for (int i = 0; i < newPos; i++) {
+            auto c = currentSongTitleMarquee[m.start];
+            utfCharLen(&c, &charLen);
+            m.start += charLen;
+        }
+
+        // recalculate end in char
+        utfFits(currentSongTitleMarquee, m.start, MarqueeMaxLengthBitmap, &fits, &endTemp);
+        if (fits) {
+            m.end = endTemp;
+            snprintf(m.format, 10, "%%.%ds", m.end - m.start);
+
+            char forLog[100]{};
+            strncpy(forLog, currentSongTitleMarquee + m.start, m.end - m.start);
+            DLOG("start %03d, end %03d, %s\n", m.start, m.end, forLog);
+
+            return;
+        }
+
+        DLOG("this is not happening\n");
+        exit(1);
     }
 } // namespace Winamp

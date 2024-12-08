@@ -12,8 +12,8 @@ namespace Hagoromo {
         bool timeOK{};
     };
 
-    struct HagoromoConnector : Connector {
-
+    class HagoromoConnector : public Connector {
+      public:
         const char *touchscreenPath = "/sys/devices/platform/mt-i2c.1/i2c-1/1-0048/sleep";
         const char *brightnessPath = "/sys/class/leds/lcd-backlight/brightness";
         featureConfig config{};

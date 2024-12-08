@@ -48,7 +48,7 @@ namespace Cassette {
         }
     };
 
-    class Cassette : public SkinVariant {
+    class Cassette : public SkinVariant, public INotifiable {
       public:
         Cassette() = default;
 
@@ -76,6 +76,8 @@ namespace Cassette {
         int AddFonts(ImFont *fontRegular);
 
         void SelectTape(bool force = false);
+
+        void Notify() override;
 
       private:
         std::map<std::string, Tape::Tape> Tapes;

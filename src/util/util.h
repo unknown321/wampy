@@ -49,6 +49,8 @@ std::string join(const std::vector<std::string> &v, int start);
 
 void printFPS();
 
+void CropTextToWidth(char *text, ImFont *font, float fontSize, float maxWidth);
+
 std::string CalculateTextWidth(std::string text, float maxWidth = 600.0f);
 
 static ImRect GetWindowRect(ImGuiWindow *window, int rect_type);

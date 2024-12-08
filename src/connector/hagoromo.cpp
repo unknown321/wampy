@@ -20,6 +20,8 @@
 
 #include <algorithm>
 
+const int pollDelay = 500;
+
 namespace Hagoromo {
 
     void HagoromoConnector::sendData(char *data, size_t len, std::string *res) {
@@ -286,9 +288,8 @@ namespace Hagoromo {
         for (;;) {
             if (*render && serverReady) {
                 PollStatus();
-                status.formatted = false;
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(pollDelay));
         }
     }
 
@@ -297,7 +298,9 @@ namespace Hagoromo {
     };
 
     void HagoromoConnector::PollStatus() {
-        status.pollDone = false;
+        // TODO REMOVE ME
+        status.pollRunning = true;
+
         auto c = Command::Command();
         c.set_type(Command::CMD_GET_STATUS);
         if (!sendCMD(&c)) {
@@ -388,7 +391,11 @@ namespace Hagoromo {
 
         status.Bits = c.status().bitdepth();
 
-        status.pollDone = true;
+        status.pollRunning = false;
+
+        for (const auto &client : clients) {
+            client->Notify();
+        }
     }
 
     /* ALSA volume != hgrmvolume

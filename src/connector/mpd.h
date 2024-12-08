@@ -8,7 +8,6 @@
 namespace MPD {
     struct MPDConnector : Connector {
         int fd = 0;
-        bool serverReady = true;
 
         void Connect() override;
 

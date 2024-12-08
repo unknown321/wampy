@@ -1,5 +1,9 @@
 ARCH=$(shell uname -m)
 
+ifeq ($(ARCH),x86_64)
+	override ARCH=x86
+endif
+
 #git submodule update --init --recursive &&
 protobuf/configure:
 	cd protobuf && \
@@ -11,20 +15,20 @@ protobuf/build-$(ARCH)/bin/protoc:
     make -j6 && \
     make install
 
-protobuf/build-armv5/bin/protoc:
+protobuf/build-arm/bin/protoc:
 	cd protobuf && \
 	make clean && \
 	export CC=/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-gcc && \
 	export CXX=/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-g++ && \
 	./configure \
-		--prefix=`pwd`/build-armv5 \
+		--prefix=`pwd`/build-arm \
 		--host=armv5-unknown-linux-gnueabihf \
 		--with-sysroot=/x-tools/armv5-unknown-linux-gnueabihf/armv5-unknown-linux-gnueabihf/sysroot \
 		--with-protoc=`pwd`/build-$(ARCH)/bin/protoc && \
 	make -j6 && \
 	make install
 
-build: protobuf/configure protobuf/build-$(ARCH)/bin/protoc protobuf/build-armv5/bin/protoc
+build: protobuf/configure protobuf/build-$(ARCH)/bin/protoc protobuf/build-arm/bin/protoc
 
 .DEFAULT_GOAL := build
 

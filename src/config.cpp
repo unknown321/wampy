@@ -33,6 +33,7 @@ namespace AppConfig {
         ini["wampy"]["activeSkin"] = ESkinToName[activeSkin];
         ini["wampy"]["limitFPS"] = std::to_string(limitFPS);
         ini["wampy"]["debug"] = std::to_string(debug);
+        ini["wampy"]["forceConnector"] = forceConnector;
 
         ini["cassette:mp3_128"].set({{"tape", cassette.Get(Tape::MP3_128)->tape}, {"reel", cassette.Get(Tape::MP3_128)->reel}});
         ini["cassette:mp3_160"].set({{"tape", cassette.Get(Tape::MP3_160)->tape}, {"reel", cassette.Get(Tape::MP3_160)->reel}});
@@ -85,6 +86,7 @@ namespace AppConfig {
 
         activeSkin = WINAMP;
         MPDSocketPath = MPDDefaultAddress;
+        forceConnector = "";
 
         ToIni();
     }
@@ -111,6 +113,8 @@ namespace AppConfig {
         }
         debug = (bool)std::atoi(ini["debug"]["enabled"].c_str());
         // NOLINTEND
+
+        forceConnector = ini["wampy"]["forceConnector"];
 
         cassette.SetOrDefault(Tape::MP3_128, {ini["cassette:mp3_128"]["tape"], ini["cassette:mp3_128"]["reel"], "MP3 128kbps"});
         cassette.SetOrDefault(Tape::MP3_160, {ini["cassette:mp3_160"]["tape"], ini["cassette:mp3_160"]["reel"], "MP3 160kbps"});

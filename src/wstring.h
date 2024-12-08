@@ -17,6 +17,14 @@ int utfLen(const std::string &s);
 
 void utfShift(const std::string &s, char *result);
 
+void utfShift(const char *s, size_t length, char *result);
+
 void utfCut(const std::string &s, int maxLength, char *result);
+
+void utfCut(const char *s, size_t length, int maxLength, char *result);
+
+void utfCharLen(const char *c, int *len);
+
+void utfFits(const char *c, int start, int len, bool *result, int *endWhenFits);
 
 #endif

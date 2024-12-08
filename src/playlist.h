@@ -1,0 +1,6 @@
+#ifndef WAMPY_PLAYLIST_H
+#define WAMPY_PLAYLIST_H
+
+#define PLAYLIST_SIZE 15
+
+#endif // WAMPY_PLAYLIST_H

@@ -3,10 +3,14 @@
 
 #include "../skinVariant.h"
 
+#include "../playlist.h"
 #include "../skinElement.h"
 #include "imgui.h"
 #include <map>
 #include <string>
+
+#define PLAYLIST_SONG_SIZE 2048
+#define PLAYLIST_DURATION_SIZE 10
 
 namespace Stopwatch {
     template <typename Clock = std::chrono::high_resolution_clock> class Stopwatch {
@@ -35,6 +39,12 @@ namespace Stopwatch {
 } // namespace Stopwatch
 
 namespace Winamp {
+
+    struct MarqueeInfo {
+        int start;
+        int end;
+        char format[10];
+    };
 
     struct SkinColors {
         std::string PlaylistNormalText;
@@ -102,11 +112,19 @@ namespace Winamp {
         static Config GetDefault();
     };
 
-    class Winamp : public SkinVariant {
-      public:
-        Winamp() = default;
+    struct PlaylistSong {
+        char text[PLAYLIST_SONG_SIZE]{};
+        char duration[PLAYLIST_DURATION_SIZE]{};
+        float durationSize{};
+    };
 
+    class Winamp : public SkinVariant, public INotifiable {
+      public:
         Config *config{};
+
+        Winamp();
+        Winamp(Winamp const &other);
+        Winamp &operator=(Winamp const &other);
 
         void WithConfig(Config *c);
 
@@ -148,28 +166,43 @@ namespace Winamp {
 
         void Unload();
 
+        void Notify() override;
+
       private:
         SkinColors colors{};
         TextureMap textures{};
+        elements Elements{};
         std::string newFilename{};
         bool MarqueeRunning{};
         bool marqueeThreadStop{};
-
-        std::string savedTitle{};
-        std::string newFull{};
-        std::string remainingTimeSign{};
 
         ImFont *FontBitmap{};
         ImFont *FontNumbers{};
         ImFont *FontRegular{};
 
         bool playlistFullscreen{};
-        bool isEx{};
-        bool timeRemaining{};
-        bool timeRemainingSet{}; // must be set only once on start, skin change does not reset current value
-        elements Elements{};
+        bool isEx{};             // uses nums_ex.bmp?
+        bool timeRemaining{};    // current state of time display
+        bool timeRemainingSet{}; // option from config, must be set only once on start, skin change does not reset current value
+        const char *remainingTimeSign{};
         bool stopped{};
+        int activePlaylistID{}; // used to swap currently updated playlist with displayed playlist
         Stopwatch::Stopwatch<> stopwatch;
+
+        PlaylistSong playlist[2][PLAYLIST_SIZE]{};
+        bool titleIsMarquee{};
+        char currentSongTitle[PLAYLIST_SONG_SIZE]{};
+        char currentSongTitleMarquee[PLAYLIST_SONG_SIZE]{}; // holds full text for displayed title
+        char systemMessage[256]{};
+        int minute1{};
+        int minute2{};
+        int second1{};
+        int second2{};
+
+        std::mutex statusUpdatedM;
+        bool statusUpdated{}; // set when connector sends an update notification
+
+        MarqueeInfo m{};
 
         int volumeIsBalance();
 
@@ -203,16 +236,25 @@ namespace Winamp {
 
         static void togglePlaylistFullscreen(void *arg, void *);
 
-        void MarqueeInFrame();
+        void MarqueeCalculate();
 
-        void MarqueeBitmap();
+        __attribute__((unused)) void MarqueeBitmap();
 
-        void Marquee();
+        void MarqueeLoop();
 
         void MarqueeThread();
 
         void Format();
+
+        void processUpdate();
+
+        void formatDuration();
+
+        void formatPlaylist();
+
+        void prepareForMarquee();
     };
+
 } // namespace Winamp
 
 #endif // WAMPY_WINAMP_H

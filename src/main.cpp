@@ -23,17 +23,14 @@
 #include "Version.h"
 #include "shader.h"
 
-#ifdef DESKTOP
-
-#include "connector/mpd.h"
-
-#define WIDTH 800.0f
-#define HEIGHT 480.0f
-#else
-
 #include "connector/hagoromo.h"
 #include "wampy.h"
 
+#ifdef DESKTOP
+#include "connector/mpd.h"
+#define WIDTH 800.0f
+#define HEIGHT 480.0f
+#else
 #define WIDTH 480.0f
 #define HEIGHT 800.0f
 #endif
@@ -208,21 +205,39 @@ int main(int, char **) {
         exit(1);
     }
 
+    if (config.debug) {
+        // restore core dump string
+        // usually it's disabled on my device
+        std::string input = "|/bin/sh /system/vendor/sony/etc/hcoredump.sh /var/log";
+        std::ofstream out("/proc/sys/kernel/core_pattern");
+        out << input;
+        out.close();
+    }
+
     config.badBoots += 1;
     config.Save();
 
     setupProfiling();
 
     std::string socket{};
+    Connector *connector;
 #ifdef DESKTOP
-    auto connector = MPD::MPDConnector();
-    connector.address = config.MPDSocketPath.c_str();
-    socket = config.MPDSocketPath;
+    if (config.forceConnector == "hagoromo") {
+        connector = new Hagoromo::HagoromoConnector();
+        socket = WAMPY_SOCKET;
+        hold_toggled = true;
+        hold_value = 1;
+    } else {
+        connector = new MPD::MPDConnector();
+        connector->address = config.MPDSocketPath.c_str();
+        socket = config.MPDSocketPath;
+    }
+
     listdir("../skins/", &skinList, ".wsz");
     listdirs("../cassetteunpacker/res/reel/", &reelList);
     listdirs("../cassetteunpacker/res/tape/", &tapeList);
 #else
-    auto connector = Hagoromo::HagoromoConnector();
+    connector = new Hagoromo::HagoromoConnector();
     socket = WAMPY_SOCKET;
     listdir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/", &skinList, ".wsz");
     listdir("/contents/wampy/skins/winamp/", &skinList, ".wsz");
@@ -233,7 +248,7 @@ int main(int, char **) {
     listdirs("/system/vendor/unknown321/usr/share/wampy/skins/cassette/tape/", &tapeList);
     listdirs("/contents/wampy/skins/cassette/tape/", &tapeList);
 #endif
-    connector.render = &render;
+    connector->render = &render;
 
     GLFWwindow *window = CreateWindow();
     assert(window != nullptr);
@@ -285,12 +300,15 @@ int main(int, char **) {
     skin.hold_value = &hold_value;
     skin.config = &config;
 
-    skin.connector = &connector;
-    skin.winamp.connector = &connector;
-    skin.cassette.connector = &connector;
+    skin.connector = connector;
+    skin.winamp.connector = connector;
+    skin.cassette.connector = connector;
 
     skin.winamp.fontRanges = &config.fontRanges;
     skin.cassette.fontRanges = &config.fontRanges;
+
+    connector->clients.push_back(&skin.winamp);
+    connector->clients.push_back(&skin.cassette);
 
     for (int i = 0; i < skinList.size(); i++) {
         if (skinList.at(i).name == config.winamp.filename) {
@@ -319,7 +337,7 @@ int main(int, char **) {
         }
     }
 
-    connector.Start();
+    connector->Start();
     // NOLINTBEGIN
     std::srand(std::time(nullptr)); // cassette rand initialization
     // NOLINTEND

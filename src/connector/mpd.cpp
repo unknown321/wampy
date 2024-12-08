@@ -317,7 +317,7 @@ namespace MPD {
 
         auto lines = split(s, lineDelimeter);
         int playlistIndex = 0;
-        bool EOS;
+        bool endOfSong;
 
         for (const auto &line : lines) {
             auto words = split(line, fieldDelimeter);
@@ -325,8 +325,8 @@ namespace MPD {
                 continue;
             }
 
-            EOS = parsePlaylistWord(words, &playlist->at(playlistIndex));
-            if (EOS) {
+            endOfSong = parsePlaylistWord(words, &playlist->at(playlistIndex));
+            if (endOfSong) {
                 playlistIndex++;
                 if (playlistIndex > playlist->size() - 1) {
                     break;
@@ -352,7 +352,6 @@ namespace MPD {
 
         while (true) {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            status.pollDone = false;
             Send(commandNoIdle);
             Send(commandStatus);
             Send(commandIdle);
@@ -384,7 +383,7 @@ namespace MPD {
             memset(buf, 0, RESP_BUF_SIZE);
 
             char commandPlaylist[50];
-            sprintf(commandPlaylist, "playlistinfo %d:%d\n", status.songID, status.songID + playlistSize);
+            sprintf(commandPlaylist, "playlistinfo %d:%d\n", status.songID, status.songID + PLAYLIST_SIZE);
             Send(commandNoIdle);
             Send(commandPlaylist);
             Send(commandIdle);
@@ -398,8 +397,9 @@ namespace MPD {
                 parsePlaylist(buf, RESP_BUF_SIZE, &playlist);
             }
 
-            status.formatted = false;
-            status.pollDone = true;
+            for (const auto &client : clients) {
+                client->Notify();
+            }
         }
     }
 

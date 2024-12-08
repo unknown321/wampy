@@ -17,3 +17,5 @@ libs/libMali_linux.so
 skins/**
 src/Version.h
 LICENSE_3rdparty
+core..*
+hdumpstate*

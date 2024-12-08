@@ -84,10 +84,9 @@ int utfLen(const char *c, size_t length) {
 
 int utfLen(const std::string &s) { return utfLen(s.c_str(), s.length()); }
 
-void utfShift(const std::string &s, char *result) {
-    auto b = s.c_str();
+void utfShift(const char *s, size_t length, char *result) {
     int len = 0;
-    unsigned char lb = b[0];
+    unsigned char lb = s[0];
 
     if ((lb & 0x80) == 0) // lead bit is zero, must be a single ascii
         len = 1;
@@ -100,22 +99,24 @@ void utfShift(const std::string &s, char *result) {
     else
         printf("Unrecognized lead byte (%02x)\n", lb);
 
-    strcpy(result, b + len);
+    strcpy(result, s + len);
     for (int i = 0; i < len; i++) {
-        result[s.length() - len + i] = b[i];
+        result[length - len + i] = s[i];
     }
-    result[s.length()] = 0;
+    result[length] = 0;
 }
 
-void utfCut(const std::string &s, int maxLength, char *result) {
+void utfShift(const std::string &s, char *result) { utfShift(s.c_str(), s.length(), result); }
+
+void utfCut(const char *s, size_t length, int maxLength, char *result) {
     int l = utfLen(s);
     if (l <= maxLength) {
         return;
     }
 
     int len = 0;
-    const char *b = s.c_str();
-    for (int i = 0; i < s.length(); i++) {
+    const char *b = s;
+    for (int i = 0; i < length; i++) {
         unsigned char lb = b[i];
         if (len == maxLength) {
             result[i] = 0;
@@ -147,4 +148,57 @@ void utfCut(const std::string &s, int maxLength, char *result) {
             printf("Unrecognized lead byte (%02x)\n", lb);
         }
     }
+}
+
+void utfCut(const std::string &s, int maxLength, char *result) { utfCut(s.c_str(), s.length(), maxLength, result); }
+
+// TODO: take a look at https://github.com/skeeto/branchless-utf8
+
+void utfCharLen(const char *c, int *len) {
+    unsigned char lb = c[0];
+    *len = 0;
+    if ((lb & 0x80) == 0) // lead bit is zero, must be a single ascii
+        *len = 1;
+    else if ((lb & 0xE0) == 0xC0) // 110x xxxx
+        *len = 2;
+    else if ((lb & 0xF0) == 0xE0) // 1110 xxxx
+        *len = 3;
+    else if ((lb & 0xF8) == 0xF0) // 1111 0xxx
+        *len = 4;
+    else
+        printf("Unrecognized lead byte (%02x)\n", lb);
+}
+
+// does len UTF8-characters fit into string s starting from byte start?
+// start byte must be a valid utf8 character, otherwise doesn't fit
+void utfFits(const char *s, int start, int len, bool *result, int *endWhenFits) {
+    int end = start;
+    int charLen = 0;
+    auto fullLen = (int)strlen(s);
+    for (int i = 0; i < len; i++) {
+        auto c = s[end];
+        // reached end of string = doesn't fit
+        if (c == '\0') {
+            *result = false;
+            *endWhenFits = 0;
+            return;
+        }
+
+        utfCharLen(&c, &charLen);
+        if (charLen == 0) {
+            *result = false;
+            *endWhenFits = 0;
+            return;
+        }
+
+        end += charLen;
+        if (end > fullLen) {
+            *endWhenFits = 0;
+            *result = false;
+            return;
+        }
+    }
+
+    *result = true;
+    *endWhenFits = end;
 }

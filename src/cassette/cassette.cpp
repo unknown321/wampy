@@ -93,6 +93,8 @@ namespace Cassette {
 
     auto comp = [](const directoryEntry &a, const directoryEntry &b) { return a.name < b.name; };
 
+    void Cassette::Notify() {}
+
     int Cassette::LoadReel(const std::string &path) {
         auto reelFiles = std::vector<directoryEntry>{};
         if (!Reels[path].empty()) {
@@ -335,7 +337,7 @@ namespace Cassette {
             return;
         }
 
-        if (!connector->status.pollDone) {
+        if (connector->status.pollRunning) {
             if (ActiveTape == nullptr || ActiveReel == nullptr) {
                 defaultTape();
             }
@@ -357,6 +359,7 @@ namespace Cassette {
                 c = std::toupper(c);
             }
 
+            // TODO replace with pure imgui
             song.Artist = CalculateTextWidth(song.Artist, Tapes[config->Get(tapeType)->tape].titleWidth);
             song.Title = CalculateTextWidth(song.Title, Tapes[config->Get(tapeType)->tape].titleWidth);
             song.PlaylistStringsCalculated = true;

@@ -163,6 +163,17 @@ void printFPS() {
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 }
 
+void CropTextToWidth(char *text, ImFont *font, float fontSize, float maxWidth) {
+    const char *remaining;
+    font->CalcTextSizeA(fontSize, maxWidth, -1.0f, text, nullptr, &remaining);
+    if (strlen(remaining) > 0) {
+        auto r = (char *)remaining;
+        r[0] = '.';
+        r[1] = '.';
+        r[2] = '\0';
+    }
+}
+
 std::string CalculateTextWidth(std::string text, float maxWidth) {
     if (text.empty()) {
         return "";

@@ -1,6 +1,8 @@
 #ifndef WAMPY_CONNECTOR_H
 #define WAMPY_CONNECTOR_H
 
+#include "../INotifiable.h"
+#include "../playlist.h"
 #include "../util/util.h"
 #include "song.h"
 #include <cmath>
@@ -54,8 +56,9 @@ struct Status {
 
     int Balance{};
 
-    bool formatted{}; // was status formatted by skin?
-    bool pollDone{};
+    //    bool formatted{}; // was status formatted by skin?
+    // TODO REMOVE ME
+    bool pollRunning{};
 };
 
 struct Connector {
@@ -71,10 +74,11 @@ struct Connector {
     unsigned int updateElapsedCounter{};
 
     std::string stateString;
-    int playlistSize = 15;
+
+    std::vector<INotifiable *> clients;
 
     Connector() {
-        for (int i = 0; i < playlistSize; i++) {
+        for (int i = 0; i < PLAYLIST_SIZE; i++) {
             playlist.emplace_back();
         }
 
