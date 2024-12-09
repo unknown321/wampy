@@ -156,6 +156,10 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 }
 
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
+    // touchscreen events are not written if file is not in use (read)
+    // if there are no applications reading from it, there will be no events
+    // you can `cat /dev/input/event1` if hagoromo is off
+
     //    DLOG("%f %f\n", xpos, ypos);
     if (render) {
         ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
