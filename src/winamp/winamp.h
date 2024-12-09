@@ -42,7 +42,6 @@ namespace Winamp {
 
     struct MarqueeInfo {
         int start;
-        int end;
         char format[10];
     };
 
