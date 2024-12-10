@@ -293,8 +293,7 @@ section.
 `Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is
 cassette.
 
-`Limit fps` is recommended to be ON. There is no need to render 60 frames per second. Does it really help to save
-battery/improve performance? Don't know.
+`Limit fps`, target fps = 24 . Does it really help to save battery/improve performance? Don't know, off by default.
 
 `Swap prev/next buttons` swaps prev/next buttons when wampy is on to match Winamp track buttons. *Note*: if wampy is on
 and screen is off, this behaviour is NOT turned off. Don't be surprised when you turn on wampy with this option, turn
