@@ -13,7 +13,7 @@ namespace Winamp {
     std::string const ColorBlack = "#000000";
     const float fontSizeBitmap = 17.0f;
     const float MarqueeTitleWidthBitmap = 585.0f;
-    const float MarqueeTitleWidthFont = 450.0f;
+    const float MarqueeTitleWidthFont = 446.0f;
     static const int MarqueeMaxLengthBitmap = 32;
 
     static const int blinkInterval = 1200 * 1000; // microseconds, got it via screen recording, winamp 2.95
