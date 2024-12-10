@@ -189,7 +189,7 @@ struct Skin {
         }; // Hide Native<>ImGuiKey duplicates when both exists in the array
         auto start_key = (ImGuiKey)0;
 #endif
-        ImGui::SetCursorPos({0, 350});
+        ImGui::SetCursorPos({0, 310});
         ImGuiIO &io = ImGui::GetIO();
         ImGui::Text("Mouse pos: (%g, %g)", io.MousePos.x, io.MousePos.y);
         ImGui::SameLine();
@@ -388,7 +388,18 @@ struct Skin {
         auto verSize = ImGui::CalcTextSize(SOFTWARE_VERSION);
         auto licenseSize = ImGui::CalcTextSize("License");
         auto license3Size = ImGui::CalcTextSize("License 3rdparty");
+        auto createLog = ImGui::CalcTextSize("Create log file");
         auto offset = 15.0f;
+
+#ifndef DESKTOP
+        if (config->debug) {
+            ImGui::SetCursorPosY(480 - verSize.y - license3Size.y - ImGui::GetStyle().FramePadding.y * 2);
+            if (ImGui::Button("Create log file")) {
+                createDump();
+            }
+        }
+#endif
+
         ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 3 - ImGui::GetStyle().FramePadding.y * 2 - offset * 2);
         ImGui::SetCursorPosX(800 - website.x - ImGui::GetStyle().FramePadding.x - offset);
         if (ImGui::Button("Website")) {

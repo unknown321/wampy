@@ -69,4 +69,6 @@ int mkpath(const char *path, mode_t mode);
 
 void recoverDumps(const std::string &outdir);
 
+void createDump();
+
 #endif // IMGUITEST_UTIL_H

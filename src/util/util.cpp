@@ -349,3 +349,21 @@ void recoverDumps(const std::string &outdir) {
         std::remove(hdumpstatePath.c_str());
     }
 }
+
+void createDump() {
+#ifdef DESKTOP
+    return;
+#endif
+    time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[80];
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, sizeof(buffer), ".%Y-%m-%d_%H.%M.%S", timeinfo);
+
+    mkpath("/contents/wampy/log/", 0755);
+    char comm[100]{};
+    sprintf(comm, "/system/vendor/sony/bin/hdumpstate -o /contents/wampy/log/log.%s", buffer);
+    system(comm);
+}
