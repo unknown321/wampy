@@ -278,7 +278,6 @@ namespace Winamp {
         int newMin = ((w->connector->status.Duration * val) / 100) / 60;
         int newSec = ((w->connector->status.Duration * val) / 100) % 60;
 
-        strcpy(w->m.format, "%s");
         snprintf(w->systemMessage, PLAYLIST_SONG_SIZE, "Seek To: %02d:%02d/%02d:%02d (%d%%)", newMin, newSec, totalMin, totalSec, val);
     }
 
