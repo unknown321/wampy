@@ -9,7 +9,6 @@
     * [Wampy is on screen but doesn't respond and cannot be toggled off](#wampy-is-on-screen-but-doesnt-respond-and-cannot-be-toggled-off)
     * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
     * [Wampy is empty](#wampy-is-empty)
-    * [Not implemented](#not-implemented)
     * [Notes on ugly settings](#notes-on-ugly-settings)
     * [Fonts](#fonts)
     * [There is a "detailed info" popup after turning screen off and on instead of wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
@@ -27,6 +26,7 @@
       * [Cassette](#cassette-1)
   * [Misc](#misc)
     * [Issues](#issues)
+  * [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
 
@@ -37,6 +37,9 @@ Use "Hold" toggle to enable/disable wampy.
 <img src="images/switch.png" alt="here is the switch">
 
 While wampy is running, default locking functionality is disabled - buttons and touchscreen are working.
+
+Holding volume button to rapidly change volume doesn't work. Volume is changed per click in 1% intervals (~2 in default
+player terms)).
 
 ## General issues and troubleshooting (read these)
 
@@ -49,27 +52,18 @@ situation), restore it from backup that you made beforehand (see [BACKUP.md](./B
 
 ### Wampy is on screen but doesn't respond and cannot be toggled off
 
-Reboot device by holding power button. Sorry about that.
+Reboot device by holding power button.
 
 ### Wampy is not showing when "Hold" is toggled
 
 If that happens right after device boots, wampy might be still loading (see [Cassette quirks](#issues-and-quirks)). Wait
 for a minute.
 
-Otherwise, it might've crashed. Sorry about that.
+Otherwise, it might've crashed.
 
 ### Wampy is empty
 
 Try toggling it on and off again. Perhaps device is connected to PC in Mass Storage mode?
-
-### Not implemented
-
-- Holding volume button to rapidly change volume (volume is changed in 1% intervals (~2 in default player terms))
-
-Wampy does not work with:
-
-- Language study
-- SensMe
 
 ### Notes on ugly settings
 
@@ -109,6 +103,14 @@ again. Hiding default player as soon as possible caused crashes, so... Sorry abo
 Reboot the device. I suppose that happens because of opengl texture unloading (or a memory leak:).
 
 ## Using wampy
+
+Wampy works with default music player.
+
+Wampy does not work with:
+
+- Language study
+- SensMe
+- Radio
 
 ### Winamp
 
@@ -157,7 +159,6 @@ Issues:
 - Tapping position bar doesn't work sometimes
 - Playlist flickers sometimes
 - Track time and title marquee tick in uneven intervals
-- Marquee text is not restored sometimes on volume change
 
 Quirks:
 
@@ -167,6 +168,13 @@ Quirks:
   kind of volume limiter might help?
 - Some elements may look slightly off (if you look hard enough) due to upscaling (800/275 = 2.90909...).
 - There might be small delay between clicking button and getting response (noticeable on shuffle button)
+
+Improvements (compared to Winamp v2.95):
+
+- Bitrate stays the same even if it changes (VBR tracks) (backend provides static bitrate)
+- UTF8 support:
+  - playlist entries always show artist-title info from tags
+  - marquee works with non-ascii characters (see [image](./images/wampy-good-utf.png))
 
 ### Cassette
 
@@ -303,3 +311,11 @@ to `<artist> - <title>`.
 
 - `Huge cover art` and `Show time` are NOT applied on application start and have to be toggled off and on from wampy
   after every boot. This happens because of complicated server architecture and hopefully will be fixed one day.
+
+## Providing debug information
+
+Wampy automatically collects crash dumps and logs on start. These are located in `wampy/log/` directory. Feel free to
+delete them if you need space. Usually these indicate that *something* crashed (might be some system service).
+
+You can generate a log when wampy is running. Enable `Settings->Misc->Debug`, tap "Create log file" at the bottom.
+Log will be placed in `wampy/log/log.user.<date>`.

@@ -1,7 +1,7 @@
 # general
 
-- [ ] Error in `/system/vendor/unknown321/bin/wampy': double free or corruption (out): 0xae900fc0
-- [ ] terminate called after throwing an instance of 'std::length_error' ; what():  basic_string::_ S_create
+- [x] Error in `/system/vendor/unknown321/bin/wampy': double free or corruption (out): 0xae900fc0
+- [x] terminate called after throwing an instance of 'std::length_error' ; what():  basic_string::_ S_create
 - [x] README
 - [x] loaded winamp skin in settings dropdown
 - [x] track sometimes disappears briefly (hagoromo only)
@@ -60,11 +60,6 @@
 - [ ] eq button custom action - too small?
 - [ ] "restart wampy" button in settings - use case?
 - [ ] single connection?
-
-# weird issues and quirks
-
-- volume is increased in uneven intervals
-- winamp playlist is never full
 
 # hard to solve
 
