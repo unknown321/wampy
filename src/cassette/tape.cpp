@@ -124,12 +124,12 @@ namespace Tape {
         ImGui::PushStyleColor(ImGuiCol_Text, textColor);
         if (titleCoords.x > 0) {
             ImGui::SetCursorPos(titleCoords);
-            ImGui::Text("%s", song->Title.c_str());
+            ImGui::Text("%s", title);
         }
 
         if (artistCoords.x > 0) {
             ImGui::SetCursorPos(artistCoords);
-            ImGui::Text("%s", song->Artist.c_str());
+            ImGui::Text("%s", artist);
         }
 
         ImGui::PopStyleColor();

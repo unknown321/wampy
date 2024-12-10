@@ -53,7 +53,7 @@ namespace ImGui {
             (float)(v_min < v_max ? v_max - v_min : v_min - v_max); // We don't need high precision for what we do with it.
 
         // Calculate bounds
-        const float grab_padding = 2.0f; // FIXME: Should be part of style.
+        const float grab_padding = 2.0f;
         const float slider_sz = (bb.Max[axis] - bb.Min[axis]) - grab_padding * 2.0f;
         float grab_sz = style.GrabMinSize;
         //        if (!is_floating_point &&

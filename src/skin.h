@@ -8,6 +8,8 @@
 #include "winamp/winamp.h"
 #include <thread>
 
+#define SETTINGS_FONT_SIZE 25
+
 enum SettingsTab {
     SkinOpts = 0,
     Misc = 1,
@@ -71,7 +73,7 @@ struct Skin {
         std::string filepath{};
         switch (activeSkinVariant) {
         case CASSETTE:
-            cassette.AddFonts(FontRegular);
+            cassette.AddFonts(&FontRegular);
             break;
         case WINAMP:
             winamp.Unload();
@@ -81,7 +83,7 @@ struct Skin {
                 exit(1);
             }
 
-            winamp.Load(filepath, FontRegular);
+            winamp.Load(filepath, &FontRegular);
             break;
         default:
             break;
@@ -131,10 +133,12 @@ struct Skin {
 
         if (config->activeSkin != CASSETTE) {
             cassette.Unload();
+            cassette.active = false;
         }
 
         if (config->activeSkin != WINAMP) {
             winamp.Unload();
+            winamp.active = false;
         }
 
         std::string filepath{};
@@ -148,7 +152,8 @@ struct Skin {
             winamp.render = render;
             winamp.skin = (void *)this;
             winamp.WithConfig(&config->winamp);
-            winamp.Load(filepath, FontRegular);
+            winamp.Load(filepath, &FontRegular);
+            winamp.active = true;
             break;
         case CASSETTE:
             cassette.reelList = reelList;
@@ -156,7 +161,8 @@ struct Skin {
             cassette.render = render;
             cassette.skin = (void *)this;
             cassette.WithConfig(&config->cassette);
-            cassette.Load("", FontRegular);
+            cassette.Load("", &FontRegular);
+            cassette.active = true;
             break;
         default:
             //                winamp.Draw();
@@ -167,7 +173,7 @@ struct Skin {
         activeSettingsTab = activeSkinVariant;
     }
 
-    static __attribute__((unused)) void DisplayKeys() {
+    static void DisplayKeys() {
         // We iterate both legacy native range and named ImGuiKey ranges. This is a little unusual/odd but this allows
         // displaying the data for old/new backends.
         // User code should never have to go through such hoops!
@@ -183,7 +189,7 @@ struct Skin {
         }; // Hide Native<>ImGuiKey duplicates when both exists in the array
         auto start_key = (ImGuiKey)0;
 #endif
-        ImGui::SetCursorPos({0, 400});
+        ImGui::SetCursorPos({0, 350});
         ImGuiIO &io = ImGui::GetIO();
         ImGui::Text("Mouse pos: (%g, %g)", io.MousePos.x, io.MousePos.y);
         ImGui::SameLine();
@@ -206,7 +212,7 @@ struct Skin {
             ImWchar c = io.InputQueueCharacters[i];
             ImGui::SameLine();
             ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c);
-        } // FIXME: We should convert 'c' to UTF-8 here but the functions are not public.
+        }
     }
 
     static void ToggleDrawSettings(void *skin, void *) {
@@ -227,11 +233,11 @@ struct Skin {
         WinampSkinOldName = WinampCurrentSkinName;
         WinampCurrentSkinName = WinampSkinNewName;
         winamp.Unload();
-        loadStatus = winamp.Load(WinampCurrentSkinName, FontRegular);
+        loadStatus = winamp.Load(WinampCurrentSkinName, &FontRegular);
         if (loadStatus != 0) {
             WinampCurrentSkinName = WinampSkinOldName;
             WinampSkinNewName = WinampSkinOldName;
-            winamp.Load(WinampSkinOldName, FontRegular);
+            winamp.Load(WinampSkinOldName, &FontRegular);
             loadStatusStr = winamp.loadStatusStr;
             return loadStatus;
         }
@@ -289,7 +295,7 @@ struct Skin {
         ImGui::SameLine(800.0f - closeSize - offset);
         if (ImGui::Button("Close")) {
             loadStatusStr = "";
-            displaySettings = 0;
+            ToggleDrawSettings(this, nullptr);
         }
     }
 
@@ -522,10 +528,16 @@ struct Skin {
 
             if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
                 config->Save();
+                if (activeSkinVariant == WINAMP) {
+                    winamp.Format();
+                }
             }
 
             if (ImGui::Checkbox("Use bitmap font in playlist", &config->winamp.useBitmapFontInPlaylist)) {
                 config->Save();
+                if (activeSkinVariant == WINAMP) {
+                    winamp.Format(true);
+                }
             }
 
             if (ImGui::Checkbox("Prefer time remaining", &config->winamp.preferTimeRemaining)) {
@@ -570,7 +582,7 @@ struct Skin {
                                 if (activeSkinVariant == CASSETTE) {
                                     cassette.UnloadUnused();
                                     cassette.LoadTape(n.name);
-                                    cassette.SelectTape(true);
+                                    cassette.SelectTape();
                                 }
                             }
                         }
@@ -592,7 +604,7 @@ struct Skin {
                                 if (activeSkinVariant == CASSETTE) {
                                     cassette.UnloadUnused();
                                     cassette.LoadReel(n.name);
-                                    cassette.SelectTape(true);
+                                    cassette.SelectTape();
                                 }
                             }
                         }
@@ -606,9 +618,11 @@ struct Skin {
             if (ImGui::Button("Reset")) {
                 cassette.config->Default();
                 config->Save();
-                cassette.SelectTape(true);
-                cassette.LoadImages();
-                cassette.UnloadUnused();
+                if (activeSkinVariant == CASSETTE) {
+                    cassette.SelectTape();
+                    cassette.LoadImages();
+                    cassette.UnloadUnused();
+                }
             }
         }
     }
@@ -619,6 +633,8 @@ struct Skin {
         if (!*render) {
             return;
         }
+
+        FontRegular->FontSize = SETTINGS_FONT_SIZE;
 
         ImGui::PushFont(FontRegular);
         Header();
@@ -652,19 +668,25 @@ struct Skin {
         if (displaySettings == 0) {
             switch (activeSkinVariant) {
             case WINAMP:
+                FontRegular->FontSize = Winamp::fontSizeTTF;
                 winamp.Draw();
                 break;
             case CASSETTE:
+                FontRegular->FontSize = Cassette::fontSizeTTF;
                 cassette.Draw();
                 break;
             default:
+                FontRegular->FontSize = Winamp::fontSizeTTF;
                 winamp.Draw();
                 break;
             }
         } else {
             DrawSettings();
         }
-        //        DisplayKeys();
+
+        if (config->debug) {
+            DisplayKeys();
+        }
     }
 
     void KeyHandler() const {

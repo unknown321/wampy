@@ -6,6 +6,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_internal.h"
 #include <algorithm>
+#include <fstream>
 #include <sys/stat.h>
 
 bool dirComp(const directoryEntry &a, const directoryEntry &b) { return b.name >= a.name; }
@@ -301,4 +302,50 @@ int mkpath(const char *path, mode_t mode) {
         status = do_mkdir(path, mode);
     free(copypath);
     return (status);
+}
+
+void recoverDumps(const std::string &outdir) {
+    struct stat sb {};
+    std::string corePath = "/var/log/core......gz";
+    std::string hdumpstatePath = "/var/log/hdumpstate......log";
+    std::string out;
+
+    time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[80];
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, sizeof(buffer), ".%Y-%m-%d_%H.%M.%S", timeinfo);
+    auto t = std::string(buffer);
+
+    if (stat(corePath.c_str(), &sb) == 0) {
+        mkpath(outdir.c_str(), 0755);
+        out = outdir + "/core......gz" + t;
+        std::ifstream src(corePath, std::ios::binary);
+        std::ofstream dst(out, std::ios::binary);
+
+        dst << src.rdbuf();
+        dst.close();
+        src.close();
+
+        DLOG("recovered core file to %s\n", out.c_str());
+
+        std::remove(corePath.c_str());
+    }
+
+    if (stat(hdumpstatePath.c_str(), &sb) == 0) {
+        mkpath(outdir.c_str(), 0755);
+        out = outdir + "/hdumpstate......log" + t;
+        std::ifstream src(corePath, std::ios::binary);
+        std::ofstream dst(out, std::ios::binary);
+
+        dst << src.rdbuf();
+        dst.close();
+        src.close();
+
+        DLOG("recovered hdumpstate log to %s\n", out.c_str());
+
+        std::remove(hdumpstatePath.c_str());
+    }
 }

@@ -4,6 +4,7 @@
 class INotifiable {
   public:
     virtual void Notify() = 0;
+    bool active{};
 };
 
 #endif // WAMPY_INOTIFIABLE_H

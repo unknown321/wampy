@@ -224,6 +224,10 @@ namespace MPD {
             }
             break;
         }
+        case hash("file"): {
+            status->Codec = split(join(words, 1), ".").back();
+            break;
+        }
         default:
             break;
         }
@@ -398,7 +402,9 @@ namespace MPD {
             }
 
             for (const auto &client : clients) {
-                client->Notify();
+                if (client->active) {
+                    client->Notify();
+                }
             }
         }
     }

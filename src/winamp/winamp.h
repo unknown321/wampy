@@ -39,10 +39,14 @@ namespace Stopwatch {
 } // namespace Stopwatch
 
 namespace Winamp {
+    const float fontSizeTTF = 33.0f;
 
     struct MarqueeInfo {
         int start;
         char format[10];
+        char text[PLAYLIST_SONG_SIZE];  // text that will be displayed on screen (duplicated song title plus separators if marquee)
+        char title[PLAYLIST_SONG_SIZE]; // song title
+        bool updated{};
     };
 
     struct SkinColors {
@@ -149,9 +153,9 @@ namespace Winamp {
 
         void Draw() override;
 
-        int Load(std::string filename, ImFont *FontRegular) override;
+        int Load(std::string filename, ImFont **FontRegular) override;
 
-        int AddFonts(ImFont *fontRegular);
+        int AddFonts(ImFont **fontRegular);
 
         static void Stop(void *winamp, void *);
 
@@ -167,13 +171,17 @@ namespace Winamp {
 
         void Notify() override;
 
+        void Format(bool force = false);
+
       private:
         SkinColors colors{};
         TextureMap textures{};
         elements Elements{};
         std::string newFilename{};
         bool MarqueeRunning{};
-        bool marqueeThreadStop{};
+        bool childThreadsStop{};
+        bool marqueeThreadRunning{};
+        bool updateThreadRunning{};
 
         ImFont *FontBitmap{};
         ImFont *FontNumbers{};
@@ -190,8 +198,6 @@ namespace Winamp {
 
         PlaylistSong playlist[2][PLAYLIST_SIZE]{};
         bool titleIsMarquee{};
-        char currentSongTitle[PLAYLIST_SONG_SIZE]{};
-        char currentSongTitleMarquee[PLAYLIST_SONG_SIZE]{}; // holds full text for displayed title
         char systemMessage[256]{};
         int minute1{};
         int minute2{};
@@ -201,7 +207,11 @@ namespace Winamp {
         std::mutex statusUpdatedM;
         bool statusUpdated{}; // set when connector sends an update notification
 
+        // marquee thread runs independently of update thread
+        // because of that we need two marquee info instances and a lot of logic
+        // I'm so sorry
         MarqueeInfo m{};
+        MarqueeInfo mStaging{};
 
         int volumeIsBalance();
 
@@ -241,9 +251,7 @@ namespace Winamp {
 
         void MarqueeLoop();
 
-        void MarqueeThread();
-
-        void Format();
+        void StartThreads();
 
         void processUpdate();
 

@@ -34,7 +34,7 @@ class SkinVariant {
 
     virtual void Draw() = 0;
 
-    virtual int Load(std::string filename, ImFont *FontRegular) = 0;
+    virtual int Load(std::string filename, ImFont **FontRegular) = 0;
 };
 
 #endif // WAMPY_SKINVARIANT_H

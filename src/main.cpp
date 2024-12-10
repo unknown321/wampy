@@ -30,7 +30,9 @@
 #include "connector/mpd.h"
 #define WIDTH 800.0f
 #define HEIGHT 480.0f
+std::string dumpDir = "/tmp";
 #else
+std::string dumpDir = "/contents/wampy/log";
 #define WIDTH 480.0f
 #define HEIGHT 800.0f
 #endif
@@ -202,6 +204,8 @@ int main(int, char **) {
          "    This program comes with ABSOLUTELY NO WARRANTY; for details see Settings->Misc->License.\n"
          "    This is free software, and you are welcome to redistribute it\n"
          "    under certain conditions; see Settings->Misc->License for details.\n");
+
+    recoverDumps(dumpDir);
     auto config = AppConfig::AppConfig();
     config.Load();
     if (config.badBoots >= 3) {

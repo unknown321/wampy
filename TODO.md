@@ -7,8 +7,8 @@
 - [x] track sometimes disappears briefly (hagoromo only)
 - [x] license in installer
 - [x] about in settings
-    - [x] commit info
-    - [x] license
+  - [x] commit info
+  - [x] license
 - [x] license in repo
 - [x] fps limiter to config
 - [x] remaining time to config
@@ -68,6 +68,7 @@
 
 # hard to solve
 
+- [ ] long cassette titles/artists is incorrectly formatted when changed and active screen is settings
 - [ ] winamp playlist flicker sometimes
 - [ ] time/cover features are not applied on boot
 - [ ] cassette tape combo is hidden by screen edge on hagoromo

@@ -1,11 +1,7 @@
-#ifndef HAGOROMO_CPP
-#define HAGOROMO_CPP
-
 #include "command.pb.h"
 #include "command_names.h"
 #include <cstdio>
 #include <cstdlib>
-#include <map>
 #include <sys/inotify.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
@@ -51,7 +47,7 @@ namespace Hagoromo {
 
         while (true) {
             char buf[1024];
-            int count = read(server_socket, buf, sizeof buf);
+            auto count = read(server_socket, buf, sizeof buf);
 
             if (count < 0) {
                 perror("read failed\n");
@@ -101,8 +97,10 @@ namespace Hagoromo {
     }
 
     void HagoromoConnector::enableTouchscreen() const {
-        char data[3];
-        strcpy(data, "0\n");
+#ifdef DESKTOP
+        return;
+#endif
+        char data[3] = "0\n";
         int tsFd = open(touchscreenPath, O_RDWR);
         if (write(tsFd, &data, sizeof(data)) < 0) {
             perror("touchscreen enable failed");
@@ -113,8 +111,7 @@ namespace Hagoromo {
     }
 
     void HagoromoConnector::disableTouchscreen() const {
-        char data[3];
-        strcpy(data, "1\n");
+        char data[3] = "1\n";
         int tsfd = open(touchscreenPath, O_RDWR);
         if (write(tsfd, &data, sizeof(data)) < 0) {
             perror("touchscreen disable failed");
@@ -298,9 +295,6 @@ namespace Hagoromo {
     };
 
     void HagoromoConnector::PollStatus() {
-        // TODO REMOVE ME
-        status.pollRunning = true;
-
         auto c = Command::Command();
         c.set_type(Command::CMD_GET_STATUS);
         if (!sendCMD(&c)) {
@@ -346,9 +340,6 @@ namespace Hagoromo {
 
         status.Channels = 2;
 
-        auto activeSong = &playlist.at(0);
-        activeSong->File = activeSong->Title + activeSong->Artist + activeSong->Track + c.status().codec();
-
         if (c.status().playstate() == 1) {
             status.State = "play";
         } else {
@@ -363,16 +354,12 @@ namespace Hagoromo {
         }
 
         status.Duration = playlist.at(0).Duration;
-        //        status.Elapsed = c.status().elapsed() / 1000;
-        //        DLOG("elapsed %d %d\n", status.Elapsed, c.status().elapsed());
         if (updateElapsedCounter < 1) {
             status.Elapsed = c.status().elapsed() / 1000;
         } else {
             updateElapsedCounter--;
         }
-        //
-        //
-        //        parseCodecString(c.status().codec());
+
         status.Codec = c.status().codec();
         status.Bitrate = c.status().bitrate();
 
@@ -391,10 +378,10 @@ namespace Hagoromo {
 
         status.Bits = c.status().bitdepth();
 
-        status.pollRunning = false;
-
         for (const auto &client : clients) {
-            client->Notify();
+            if (client->active) {
+                client->Notify();
+            }
         }
     }
 
@@ -687,4 +674,3 @@ namespace Hagoromo {
     */
 
 } // namespace Hagoromo
-#endif // HAGOROMO_CPP

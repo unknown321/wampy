@@ -39,7 +39,8 @@ namespace Tape {
         TapeElements Elements;
         void *skin{};
         Connector *connector;
-        Song *song;
+        char *artist;
+        char *title;
         ImVec2 titleCoords{83.0f, 117.0f};
         ImVec2 artistCoords{83.0f, 82.0f};
         ImVec2 reelCoords{134.0f, 160.0f};

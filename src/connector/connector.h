@@ -55,10 +55,6 @@ struct Status {
     statusFields sf{};
 
     int Balance{};
-
-    //    bool formatted{}; // was status formatted by skin?
-    // TODO REMOVE ME
-    bool pollRunning{};
 };
 
 struct Connector {

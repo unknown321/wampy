@@ -16,8 +16,7 @@ namespace Cassette {
     static const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
 #endif
 
-    static const int ttfFontSize = 34;
-    static const int reelDelayMs = 55;
+    const int reelDelayMs = 55;
 
     std::vector<Tape::TapeType> tapeTypes = {
         Tape::MP3_128,
@@ -29,6 +28,14 @@ namespace Cassette {
         Tape::PCM,
         Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES,
         Tape::DSD};
+
+    Cassette::Cassette(Cassette const &other) : SkinVariant(other) {
+        // copy constructor implementation
+    }
+
+    Cassette &Cassette::Cassette::operator=(Cassette const &other) {
+        // copy assignment operator
+    }
 
     void Config::Default() {
         auto d = GetDefault();
@@ -51,7 +58,7 @@ namespace Cassette {
         return ret;
     }
 
-    int Cassette::AddFonts(ImFont *fontRegular) {
+    int Cassette::AddFonts(ImFont **fontRegular) {
         auto io = ImGui::GetIO();
         io.Fonts->Clear();
 
@@ -81,19 +88,49 @@ namespace Cassette {
         }
 
         range.BuildRanges(&gr);
-        fontRegular = io.Fonts->AddFontFromFileTTF(FontPath.c_str(), ttfFontSize, nullptr, gr.Data);
+        *fontRegular = io.Fonts->AddFontFromFileTTF(FontPath.c_str(), fontSizeTTF, nullptr, gr.Data);
 
         ImGui_ImplOpenGL3_DestroyFontsTexture();
         ImGui_ImplOpenGL3_CreateFontsTexture();
-
-        fontRegular->FontSize = 25; // this will scale down elements in settings
 
         return 0;
     }
 
     auto comp = [](const directoryEntry &a, const directoryEntry &b) { return a.name < b.name; };
 
-    void Cassette::Notify() {}
+    void Cassette::Notify() {
+        statusUpdatedM.lock();
+        statusUpdated = true;
+        statusUpdatedM.unlock();
+    }
+
+    void Cassette::processUpdate() {
+        updateThreadRunning = true;
+
+        while (true) {
+            if (childThreadsStop) {
+                break;
+            }
+
+            if (!statusUpdated) {
+                continue;
+            }
+
+            statusUpdatedM.lock();
+            statusUpdated = false;
+            statusUpdatedM.unlock();
+
+            bool c{};
+            changed(&c);
+            if (c) {
+                SelectTape();
+                format();
+            }
+        }
+
+        updateThreadRunning = false;
+        DLOG("update thread stopped\n");
+    }
 
     int Cassette::LoadReel(const std::string &path) {
         auto reelFiles = std::vector<directoryEntry>{};
@@ -156,7 +193,8 @@ namespace Cassette {
             }
 
             Tapes[path].skin = skin;
-            Tapes[path].song = &song;
+            Tapes[path].artist = artist;
+            Tapes[path].title = title;
             Tapes[path].connector = connector;
 
             if (Tapes[path].Load(e.fullPath) == Tape::ERR_NO_FILES) {
@@ -175,6 +213,8 @@ namespace Cassette {
     }
 
     void Cassette::Unload() {
+        childThreadsStop = true;
+
         for (auto &v : Tapes) {
             v.second.Unload();
         }
@@ -189,9 +229,14 @@ namespace Cassette {
         }
 
         Reels.clear();
-        Track = "";
 
-        reelThreadStop = true;
+        while (updateThreadRunning || reelThreadRunning) {
+            // wait for threads to stop
+        }
+
+        memset(previousTrack, 0, FIELD_SIZE);
+        memset(artist, 0, FIELD_SIZE);
+        memset(title, 0, FIELD_SIZE);
     }
 
     void Cassette::UnloadUnused() {
@@ -294,17 +339,24 @@ namespace Cassette {
         validateConfig();
     }
 
-    int Cassette::Load(std::string filename, ImFont *FontRegular) {
+    int Cassette::Load(std::string filename, ImFont **FontRegular) {
         loading = true;
 
-        SelectTape(true);
+        SelectTape();
         LoadImages();
 
         AddFonts(FontRegular);
 
         loading = false;
 
-        this->ReelThread();
+        childThreadsStop = false;
+        auto exec = [this]() { ReelLoop(); };
+        std::thread t(exec);
+        t.detach();
+
+        auto update = [this]() { processUpdate(); };
+        std::thread v(update);
+        v.detach();
 
         return 0;
     }
@@ -322,47 +374,44 @@ namespace Cassette {
         DLOG("tape: %s, reel %s\n", config->Get(tapeType)->tape.c_str(), config->Get(tapeType)->reel.c_str());
     }
 
-    void Cassette::SelectTape(bool force) {
+    void Cassette::changed(bool *changed) {
+        auto song = connector->playlist.at(0);
+        char tempTrack[FIELD_SIZE]{};
+
+        snprintf(tempTrack, FIELD_SIZE, "%s%s%s", song.Track.c_str(), song.Artist.c_str(), song.Title.c_str());
+        if (strcmp(tempTrack, previousTrack) == 0) {
+            *changed = false;
+            return;
+        }
+
+        *changed = true;
+        strcpy(previousTrack, tempTrack);
+    }
+
+    void Cassette::format() {
+        auto song = connector->playlist.at(0);
+        strncpy(artist, song.Artist.c_str(), FIELD_SIZE);
+        if (artist[0] != '\0') {
+            for (auto &c : artist) {
+                c = std::toupper(c);
+            }
+            CropTextToWidth(artist, ImGui::GetFont(), fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+        }
+
+        strncpy(title, song.Title.c_str(), FIELD_SIZE);
+        if (title[0] != '\0') {
+            for (auto &c : title) {
+                c = std::toupper(c);
+            }
+            CropTextToWidth(title, ImGui::GetFont(), fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+        }
+    }
+
+    void Cassette::SelectTape() {
         if (connector->playlist.empty()) {
             DLOG("no songs in playlist\n");
             defaultTape();
             return;
-        }
-
-        if (Track == connector->playlist.at(0).File && force == false) {
-            if (ActiveTape == nullptr || ActiveReel == nullptr) {
-                defaultTape();
-            }
-
-            return;
-        }
-
-        if (connector->status.pollRunning) {
-            if (ActiveTape == nullptr || ActiveReel == nullptr) {
-                defaultTape();
-            }
-
-            return;
-        }
-
-        DLOG("track is %s, file is %s\n", Track.c_str(), connector->playlist.at(0).File.c_str());
-
-        Track = connector->playlist.at(0).File;
-
-        song = connector->playlist.at(0);
-
-        if (!song.PlaylistStringsCalculated) {
-            for (auto &c : song.Artist) {
-                c = std::toupper(c);
-            }
-            for (auto &c : song.Title) {
-                c = std::toupper(c);
-            }
-
-            // TODO replace with pure imgui
-            song.Artist = CalculateTextWidth(song.Artist, Tapes[config->Get(tapeType)->tape].titleWidth);
-            song.Title = CalculateTextWidth(song.Title, Tapes[config->Get(tapeType)->tape].titleWidth);
-            song.PlaylistStringsCalculated = true;
         }
 
         if (config->randomize) {
@@ -370,19 +419,20 @@ namespace Cassette {
             return;
         }
 
-        std::string codec;
-#ifdef DESKTOP
-        codec = split(connector->playlist.at(0).File, ".").back();
-#else
-        codec = connector->status.Codec;
-#endif
+        if (ActiveTape == nullptr || ActiveReel == nullptr) {
+            defaultTape();
+            return;
+        }
+
+        char codec[10]{};
+        strncpy(codec, connector->status.Codec.c_str(), sizeof(codec));
         for (auto &c : codec) {
             c = std::tolower(c);
         }
 
         auto bitrate = connector->status.Bitrate;
 
-        switch (hash(codec.c_str())) {
+        switch (hash(codec)) {
         case hash("wma"):
         case hash("aac"):
         case hash("mp3"):
@@ -438,7 +488,7 @@ namespace Cassette {
         ActiveTape->name = config->Get(tapeType)->tape;
 
         if (debug) {
-            DLOG("%d %s %d %d %d\n", bitrate, codec.c_str(), tapeType, connector->status.SampleRate, connector->status.Bits);
+            DLOG("%d %s %d %d %d\n", bitrate, codec, tapeType, connector->status.SampleRate, connector->status.Bits);
         }
     }
 
@@ -458,8 +508,6 @@ namespace Cassette {
             return;
         }
 
-        SelectTape();
-
         ActiveTape->Draw();
 
         if (!ActiveReel->empty()) {
@@ -475,17 +523,12 @@ namespace Cassette {
         }
     }
 
-    void Cassette::ReelThread() {
-        reelThreadStop = false;
-        auto exec = [this]() { this->ReelLoop(); };
-        std::thread t(exec);
-        t.detach();
-    }
-
     void Cassette::ReelLoop() {
+        reelThreadRunning = true;
+
         for (;;) {
             std::this_thread::sleep_for(std::chrono::milliseconds(reelDelayMs));
-            if (reelThreadStop) {
+            if (childThreadsStop) {
                 break;
             }
 
@@ -499,16 +542,13 @@ namespace Cassette {
                 this->reelID++;
             }
         }
+
+        reelThreadRunning = false;
+        DLOG("reel thread stopped\n");
     }
 
     void Cassette::drawCodecInfo() const {
         ImGui::SetCursorPos({600, 40});
-        std::string codec;
-#ifdef DESKTOP
-        codec = split(connector->playlist.at(0).File, ".").back();
-#else
-        codec = connector->status.Codec;
-#endif
-        ImGui::Text("%s, %d", codec.c_str(), connector->status.Bitrate);
+        ImGui::Text("%s, %d", connector->status.Codec.c_str(), connector->status.Bitrate);
     }
 } // namespace Cassette

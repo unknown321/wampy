@@ -6,7 +6,11 @@
 #include "tape.h"
 #include <thread>
 
+#define FIELD_SIZE 2048
+
 namespace Cassette {
+    const float fontSizeTTF = 34.0f;
+
     struct ConfigEntry {
         std::string tape;
         std::string reel;
@@ -52,6 +56,9 @@ namespace Cassette {
       public:
         Cassette() = default;
 
+        Cassette(Cassette const &other);
+        Cassette &operator=(Cassette const &other);
+
         SkinList *reelList{};
         SkinList *tapeList{};
 
@@ -59,7 +66,7 @@ namespace Cassette {
 
         void Draw() override;
 
-        int Load(std::string filename, ImFont *FontRegular) override;
+        int Load(std::string filename, ImFont **FontRegular) override;
 
         void WithConfig(Config *c);
 
@@ -73,9 +80,9 @@ namespace Cassette {
 
         void LoadImages();
 
-        int AddFonts(ImFont *fontRegular);
+        int AddFonts(ImFont **fontRegular);
 
-        void SelectTape(bool force = false);
+        void SelectTape();
 
         void Notify() override;
 
@@ -84,25 +91,36 @@ namespace Cassette {
         std::map<std::string, Tape::Reel> Reels;
         int reelID = 0;
 
-        std::string Track; // prevents refreshing bitrate value for vbr tracks (mpd)
-        Song song;
+        char previousTrack[FIELD_SIZE]{}; // used to check if song changed
         Tape::TapeType tapeType = Tape::MP3_320;
         Tape::Tape *ActiveTape = nullptr;
         Tape::Reel *ActiveReel = nullptr;
 
-        bool reelThreadStop{};
+        char artist[FIELD_SIZE]{};
+        char title[FIELD_SIZE]{};
+
+        bool childThreadsStop{};
+        bool reelThreadRunning{};
+        bool updateThreadRunning{};
+
+        std::mutex statusUpdatedM;
+        bool statusUpdated{}; // set when connector sends an update notification
 
         void drawCodecInfo() const;
 
         void validateConfig();
-
-        void ReelThread();
 
         void ReelLoop();
 
         void randomizeTape();
 
         void defaultTape();
+
+        void format();
+
+        void processUpdate();
+
+        void changed(bool *changed);
     };
 } // namespace Cassette
 #endif // WAMPY_CASSETTE_H
