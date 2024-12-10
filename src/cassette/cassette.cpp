@@ -339,6 +339,10 @@ namespace Cassette {
         validateConfig();
     }
 
+    // it is possible to reduce loading time
+    // first, load font
+    // second, load tape + reel for current track and force tape selection
+    // then load rest of tapes in background
     int Cassette::Load(std::string filename, ImFont **FontRegular) {
         loading = true;
 
