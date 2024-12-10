@@ -1189,7 +1189,7 @@ namespace Winamp {
             }
 
             CropTextToWidth(d->text, f, f->FontSize, playlistSongWidth);
-            snprintf(d->duration, PLAYLIST_DURATION_SIZE, "%02d:%02d", song.Duration / 60, song.Duration % 60);
+            snprintf(d->duration, PLAYLIST_DURATION_SIZE, "%d:%02d", song.Duration / 60, song.Duration % 60);
             d->durationSize = f->CalcTextSizeA(f->FontSize, FLT_MAX, -1.0, d->duration).x;
         }
     }
@@ -1257,7 +1257,7 @@ namespace Winamp {
         snprintf(
             currentSongTitleTemp,
             PLAYLIST_SONG_SIZE,
-            "%s. %s - %s (%02d:%02d)",
+            "%s. %s - %s (%d:%02d)",
             n.Track.c_str(),
             n.Artist.c_str(),
             n.Title.c_str(),
