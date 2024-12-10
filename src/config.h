@@ -38,7 +38,7 @@ namespace AppConfig {
         bool debug{};
         FontRanges fontRanges;
         int badBoots{};
-        bool limitFPS = true;
+        bool limitFPS = false;
         std::string forceConnector{};
 
         int FindConfig();

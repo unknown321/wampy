@@ -107,7 +107,7 @@ namespace AppConfig {
         // NOLINTBEGIN
         badBoots = std::atoi(ini["wampy"]["badBoots"].c_str());
         if (ini["wampy"]["limitFPS"].empty()) {
-            limitFPS = true;
+            limitFPS = false;
         } else {
             limitFPS = (bool)std::atoi(ini["wampy"]["limitFPS"].c_str());
         }
