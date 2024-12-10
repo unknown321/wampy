@@ -512,10 +512,15 @@ namespace Winamp {
                 ImGui::PushStyleColor(ImGuiCol_Text, colors.PlaylistNormalTextU32);
             }
 
-            ImGui::SetCursorPos(ImVec2(38, PlaylistY + 60 + ((float)i * 30)));
+            auto plY = PlaylistY + 60 + ((float)i * 30);
+            if (config->useBitmapFontInPlaylist) {
+                plY = PlaylistY + 65 + ((float)i * 30);
+            }
+
+            ImGui::SetCursorPos(ImVec2(38, plY));
             ImGui::Text("%s", s.text);
 
-            ImGui::SetCursorPos(ImVec2(800 - s.durationSize - 60, PlaylistY + 60 + ((float)i * 30)));
+            ImGui::SetCursorPos(ImVec2(800 - s.durationSize - 60, plY));
             ImGui::Text("%s", s.duration);
             ImGui::PopStyleColor();
         }
