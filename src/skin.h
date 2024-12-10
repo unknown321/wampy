@@ -388,7 +388,6 @@ struct Skin {
         auto verSize = ImGui::CalcTextSize(SOFTWARE_VERSION);
         auto licenseSize = ImGui::CalcTextSize("License");
         auto license3Size = ImGui::CalcTextSize("License 3rdparty");
-        auto createLog = ImGui::CalcTextSize("Create log file");
         auto offset = 15.0f;
 
 #ifndef DESKTOP
