@@ -314,6 +314,8 @@ int main(int, char **) {
 
     skin.winamp.fontRanges = &config.fontRanges;
     skin.cassette.fontRanges = &config.fontRanges;
+    skin.winamp.WithConfig(&config.winamp);
+    skin.cassette.WithConfig(&config.cassette);
 
     connector->clients.push_back(&skin.winamp);
     connector->clients.push_back(&skin.cassette);

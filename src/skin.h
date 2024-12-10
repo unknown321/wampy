@@ -626,6 +626,7 @@ struct Skin {
             ImGui::PopStyleVar(2);
 
             if (ImGui::Button("Reset")) {
+                DLOG("resetting cassette config\n");
                 cassette.config->Default();
                 config->Save();
                 if (activeSkinVariant == CASSETTE) {
