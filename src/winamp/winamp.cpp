@@ -1235,8 +1235,13 @@ namespace Winamp {
                 snprintf(m.text, PLAYLIST_SONG_SIZE, "%s", mStaging.title);
             }
         } else {
-            auto ctx = ImGui::GetCurrentContext();
+            float sizeBackup = FontRegular->FontSize;
+            if (FontRegular->FontSize != fontSizeTTF) {
+                FontRegular->FontSize = fontSizeTTF;
+            }
             ImVec2 size = FontRegular->CalcTextSizeA(fontSizeTTF, FLT_MAX, -1.0f, mStaging.title, nullptr, nullptr);
+            FontRegular->FontSize = sizeBackup;
+
             if (size.x > MarqueeTitleWidthFont) {
                 memset(mStaging.format, 0, sizeof(mStaging.format));
                 snprintf(mStaging.text, PLAYLIST_SONG_SIZE, "%s%s%s%s", mStaging.title, separator, mStaging.title, separator);
@@ -1283,7 +1288,9 @@ namespace Winamp {
                 //                DLOG("not updating current song\n");
                 return;
             }
-        } // else { DLOG("small title %s, cst: %s\n", m.smallTitle, currentSongTitleTemp); }
+        }
+
+        //        DLOG("small title %s, cst: %s\n", m.title, currentSongTitleTemp);
 
         formatPlaylist();
 

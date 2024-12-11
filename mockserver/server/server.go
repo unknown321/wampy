@@ -136,8 +136,8 @@ func (s *Server) Start() {
 					}
 					tr2 := &command.Track{
 						Track:    proto.Int32(2),
-						Artist:   proto.String("やくしまるえつこ"),
-						Title:    proto.String("絶対ムッシュ制"),
+						Artist:   proto.String("Jesper Kyd"),
+						Title:    proto.String("Into the Void"),
 						Duration: proto.Int32(3*60 + 54),
 						Active:   proto.Bool(false),
 					}

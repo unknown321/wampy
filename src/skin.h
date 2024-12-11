@@ -543,7 +543,7 @@ struct Skin {
             if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
                 config->Save();
                 if (activeSkinVariant == WINAMP) {
-                    winamp.Format();
+                    winamp.Format(true);
                 }
             }
 

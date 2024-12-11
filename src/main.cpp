@@ -235,6 +235,10 @@ int main(int, char **) {
         socket = WAMPY_SOCKET;
         hold_toggled = true;
         hold_value = 1;
+        auto v = (Hagoromo::HagoromoConnector *)connector;
+        v->touchscreenStaysOFF = &config.features.touchscreenStaysOFF;
+        v->featureBigCover = &config.features.bigCover;
+        v->featureShowTime = &config.features.showTime;
     } else {
         connector = new MPD::MPDConnector();
         connector->address = config.MPDSocketPath.c_str();
