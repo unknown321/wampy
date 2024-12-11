@@ -100,6 +100,7 @@ namespace Hagoromo {
 #ifdef DESKTOP
         return;
 #endif
+
         char data[3] = "0\n";
         int tsFd = open(touchscreenPath, O_RDWR);
         if (write(tsFd, &data, sizeof(data)) < 0) {
@@ -149,27 +150,17 @@ namespace Hagoromo {
     }
 
     void HagoromoConnector::FeatureBigCover(bool enable) {
-        DLOG("\n");
-        config.cover = enable;
-
         auto c = Command::Command();
         c.set_type(Command::Type::CMD_FEATURE_BIG_COVER);
         c.mutable_featurebigcover()->set_enabled(enable);
         sendCMD(&c);
-
-        config.coverOK = c.code() == Command::OK;
-        DLOG("cover %d\n", config.coverOK);
     }
 
     void HagoromoConnector::FeatureShowTime(bool enable) {
-        DLOG("\n");
         auto c = Command::Command();
         c.set_type(Command::Type::CMD_FEATURE_SHOW_CLOCK);
         c.mutable_featureshowclock()->set_enabled(enable);
         sendCMD(&c);
-
-        config.timeOK = c.code() == Command::OK;
-        DLOG("time %d\n", config.timeOK);
     }
 
     void HagoromoConnector::ToggleHgrm(HgrmToggleAction action, bool *render) {
@@ -257,10 +248,7 @@ namespace Hagoromo {
             DLOG("hgrm window status: %d\n", c.windowstatus().visible());
         }
 
-        visible = false;
-        if (c.windowstatus().visible() == Command::VISIBILITY_YES) {
-            visible = true;
-        }
+        visible = c.windowstatus().visible() == Command::VISIBILITY_YES;
 
         if (visible) {
             DLOG("visible\n");
@@ -275,7 +263,13 @@ namespace Hagoromo {
         } else {
             *render = true;
             serverReady = true;
-            enableTouchscreen();
+
+            if (!*touchscreenStaysOFF || status.Volume == 100) {
+                enableTouchscreen();
+            }
+
+            FeatureBigCover(*featureBigCover);
+            FeatureShowTime(*featureShowTime);
         }
     }
 
@@ -592,31 +586,11 @@ namespace Hagoromo {
         }
     }
 
-    void HagoromoConnector::featuresLoop() {
-        while (true) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-            if (!config.coverOK) {
-                FeatureBigCover(config.cover);
-            }
-
-            if (!config.timeOK) {
-                FeatureShowTime(config.time);
-            }
-
-            break;
-        }
-    }
-
     void HagoromoConnector::Start() {
         Connector::Start();
         auto pwr = [this]() { powerLoop(render, &power); };
         std::thread powert(pwr);
         powert.detach();
-
-        auto fl = [this]() { featuresLoop(); };
-        std::thread featuresloop(fl);
-        featuresloop.detach();
     }
 
     /* alsa doesn't receive events (see `amixer sevents`)

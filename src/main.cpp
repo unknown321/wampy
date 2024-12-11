@@ -246,6 +246,11 @@ int main(int, char **) {
     listdirs("../cassetteunpacker/res/tape/", &tapeList);
 #else
     connector = new Hagoromo::HagoromoConnector();
+    auto v = (Hagoromo::HagoromoConnector *)connector;
+    v->touchscreenStaysOFF = &config.features.touchscreenStaysOFF;
+    v->featureBigCover = &config.features.bigCover;
+    v->featureShowTime = &config.features.showTime;
+
     socket = WAMPY_SOCKET;
     listdir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/", &skinList, ".wsz");
     listdir("/contents/wampy/skins/winamp/", &skinList, ".wsz");

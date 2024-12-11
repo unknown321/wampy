@@ -64,6 +64,7 @@ namespace AppConfig {
 
         ini["features"]["bigCover"] = std::to_string(features.bigCover);
         ini["features"]["showTime"] = std::to_string(features.showTime);
+        ini["features"]["touchscreenStaysOFF"] = std::to_string(features.touchscreenStaysOFF);
         ini["mpd"]["socketPath"] = MPDSocketPath;
 
 #ifdef DESKTOP
@@ -156,6 +157,7 @@ namespace AppConfig {
         misc.swapTrackButtons = (bool)std::atoi(ini["misc"]["swapTrackButtons"].c_str());
         features.bigCover = (bool)std::atoi(ini["features"]["bigCover"].c_str());
         features.showTime = (bool)std::atoi(ini["features"]["showTime"].c_str());
+        features.touchscreenStaysOFF = (bool)std::atoi(ini["features"]["touchscreenStaysOFF"].c_str());
 
 #ifdef DESKTOP
         fontRanges.ChineseFull = (bool)std::atoi(ini["fonts"]["chineseFull"].c_str());

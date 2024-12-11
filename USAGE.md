@@ -304,12 +304,15 @@ to `<artist> - <title>`.
 
 `Show time` adds current time to volume indicator. Time updates every 10 seconds, 24 hours format.
 
+`Disable touchscreen` disables touchscreen on next wampy toggle. To temporarily enable touchscreen in wampy while in
+this mode, set volume to 120 and toggle wampy twice.
+
 <img src="./images/hagoromo-fix.png" width="50%" alt="time and cover">
 
 ### Issues
 
-- `Huge cover art` and `Show time` are NOT applied on application start and have to be toggled off and on from wampy
-  after every boot. This happens because of complicated server architecture and hopefully will be fixed one day.
+- `Huge cover art` and `Show time` are NOT applied on application start. You need to toggle wampy once for these to
+  apply.
 
 ## Providing debug information
 

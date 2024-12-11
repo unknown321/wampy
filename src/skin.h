@@ -382,6 +382,10 @@ struct Skin {
             connector->FeatureShowTime(config->features.showTime);
         }
 
+        if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
+            config->Save();
+        }
+
 #endif
 
         auto website = ImGui::CalcTextSize("Website");
