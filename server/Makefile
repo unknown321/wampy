@@ -40,6 +40,7 @@ build/plugins/platforms/libqeglfs.so: prepare
 		-v $(PWD)/../libs/glad/include/KHR:/libs/KHR \
 		-v $(BUILD_DIR):/build \
 		-v $(PWD)/../libs/protobuf/:/protobuf/ \
+		-v $(PWD)/../src/Version.h:/Version.h \
 		-w /qt \
 		$(IMAGE) /bin/bash -c "\
 			rm -rf ./qtbase/src/plugins/platforms/eglfs/{.obj,.moc,.pch,.rcc,Makefile} ; \
@@ -122,6 +123,7 @@ fast: libMali_linux.so
 		-v $(PWD)/../libs/glad/include/KHR:/libs/KHR \
 		-v $(BUILD_DIR):/build \
 		-v $(PWD)/../libs/protobuf/:/protobuf/ \
+		-v $(PWD)/../src/Version.h:/Version.h \
 		-w /qt \
 		$(IMAGE) /bin/bash -c "\
 			rm -f ./qtbase/plugins/platforms/libqeglfs.so && \

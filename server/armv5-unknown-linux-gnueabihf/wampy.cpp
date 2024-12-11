@@ -3,6 +3,7 @@
 
 #if SECOND_PASS == 1
 
+#include "/Version.h"
 #include <future>
 
 // clang-format off
@@ -10,7 +11,7 @@
 // clang-format on
 
 void Start() {
-    DLOG("enter\n");
+    DLOG("ver %s\n", SOFTWARE_VERSION);
 
     auto exec = []() {
         auto server = new WampyServer();

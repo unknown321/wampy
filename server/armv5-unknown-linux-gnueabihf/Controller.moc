@@ -90,6 +90,9 @@ class Controller : public QObject {
     bool initialized = false;
     bool ready = false;
 
+    bool featureShowClockEnabled = false;
+    bool featureBigCoverEnabled = false;
+
   public:
     Provider provider;
 

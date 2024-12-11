@@ -908,6 +908,10 @@ void Controller::FeatureBigCover(Command::Command *c) {
     double height = 400;
     double imgHeight = 408;
 
+    if (c->featurebigcover().enabled() == featureBigCoverEnabled) {
+        return;
+    }
+
     if (c->featurebigcover().enabled()) {
         height = 480;
         imgHeight = 480;
@@ -969,6 +973,8 @@ void Controller::FeatureBigCover(Command::Command *c) {
     }
 
     c->set_code(Command::OK);
+
+    featureBigCoverEnabled = c->featurebigcover().enabled();
 }
 
 // big cover is so big that artist and album are hidden under track control buttons
@@ -999,6 +1005,11 @@ void Controller::UpdateTitleWithArtist() {
     auto titleV = meta->property("playTitle");
     if (!titleV.isValid()) {
         DLOG("no title to set\n");
+        return;
+    }
+
+    auto newTitle = artist + " - " + titleV.toString();
+    if (titleV == newTitle) {
         return;
     }
 
@@ -1075,6 +1086,10 @@ void Controller::getVolumeInHeader() {
 void Controller::FeatureShowClock(Command::Command *c) {
     c->set_code(Command::FAIL);
 
+    if (c->featureshowclock().enabled() == featureShowClockEnabled) {
+        return;
+    }
+
     if (timer == nullptr) {
         timer = new QTimer();
     }
@@ -1099,6 +1114,8 @@ void Controller::FeatureShowClock(Command::Command *c) {
     UpdateTime(true);
 
     c->set_code(Command::OK);
+
+    featureShowClockEnabled = c->featureshowclock().enabled();
 }
 
 void Controller::UpdateTime(bool with_time) {
