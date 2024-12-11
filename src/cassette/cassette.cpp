@@ -404,11 +404,16 @@ namespace Cassette {
     void Cassette::format() {
         auto song = connector->playlist.at(0);
         strncpy(artist, song.Artist.c_str(), FIELD_SIZE);
+        auto font = ImGui::GetFont();
+        auto sizeBackup = font->FontSize;
+
         if (artist[0] != '\0') {
             for (auto &c : artist) {
                 c = std::toupper(c);
             }
-            CropTextToWidth(artist, ImGui::GetFont(), fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+            font->FontSize = fontSizeTTF;
+            CropTextToWidth(artist, font, fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+            font->FontSize = sizeBackup;
         }
 
         strncpy(title, song.Title.c_str(), FIELD_SIZE);
@@ -416,7 +421,9 @@ namespace Cassette {
             for (auto &c : title) {
                 c = std::toupper(c);
             }
+            font->FontSize = fontSizeTTF;
             CropTextToWidth(title, ImGui::GetFont(), fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+            font->FontSize = sizeBackup;
         }
     }
 
