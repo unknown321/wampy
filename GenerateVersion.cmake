@@ -11,6 +11,13 @@ if (GIT_EXECUTABLE)
             RESULT_VARIABLE ERROR_CODE
             OUTPUT_STRIP_TRAILING_WHITESPACE
     )
+
+    execute_process(
+            COMMAND ${GIT_EXECUTABLE} log -1 "--format=%h"
+            OUTPUT_VARIABLE WAMPY_COMMIT
+            RESULT_VARIABLE ERROR_CODE_COMMIT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 endif ()
 
 if (WAMPY_VERSION STREQUAL "")
@@ -20,7 +27,7 @@ endif ()
 
 if (NOT DIRTY_STRINGS STREQUAL "")
     string(TIMESTAMP ts)
-    set(WAMPY_VERSION dirty-${ts})
+    set(WAMPY_VERSION ${WAMPY_COMMIT}-dirty-${ts})
     message(STATUS dirty)
 endif ()
 

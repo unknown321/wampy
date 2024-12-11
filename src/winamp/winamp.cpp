@@ -73,9 +73,18 @@ namespace Winamp {
     void Winamp::processUpdate() {
         updateThreadRunning = true;
 
-        while (true) {
+        for (;;) {
+            std::this_thread::sleep_for(std::chrono::microseconds(50 * 1000));
             if (childThreadsStop) {
                 break;
+            }
+
+            if (!*render) {
+                continue;
+            }
+
+            if (loading) {
+                continue;
             }
 
             if (!statusUpdated) {
@@ -1030,9 +1039,9 @@ namespace Winamp {
 
     void Winamp::StartThreads() {
         childThreadsStop = false;
+
         auto exec = [this]() { MarqueeLoop(); };
         std::thread t(exec);
-
         t.detach();
 
         auto update = [this]() { processUpdate(); };

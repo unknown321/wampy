@@ -101,10 +101,11 @@ release-clean:
 release: release-clean build-arm cassetteunpacker/res nw-installer/installer/userdata.tar
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT)
 
+# see also: `perf record` && `perf report`
 profile:
-	cd build && \
-		timeout 5 $(PRODUCT) ; \
-		gprof $(PRODUCT).out > $(PRODUCT).gprof && \
+	cd cmake-build-default && \
+		timeout 10 ./$(PRODUCT) ; \
+		gprof $(PRODUCT) gmon.out > $(PRODUCT).gprof && \
 		gprof2dot < $(PRODUCT).gprof | dot -Tsvg -o output.svg && \
 		firefox output.svg
 
@@ -113,7 +114,7 @@ profile-arm:
 	$(DOCKER) /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-gprof cmake-build-debug-docker/$(PRODUCT) gmon.out > gmon.prof
 	#gprof2dot -s -w -e 1 -n 1 -z "WinampSkin::WinampSkin::Draw()" < gmon.prof | dot -Tsvg -o output.svg
 	gprof2dot -s -w -e 1 -n 1 < gmon.prof | dot -Tsvg -o output.svg
-	/usr/local/bin/firefox output.svg
+	firefox output.svg
 
 valgrind:
 	cd build && valgrind --leak-check=full --read-var-info=yes --read-inline-info=yes --gen-suppressions=yes --suppressions=../suppressions.valgrind -s  ./$(PRODUCT)

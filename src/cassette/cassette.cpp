@@ -108,8 +108,17 @@ namespace Cassette {
         updateThreadRunning = true;
 
         while (true) {
+            std::this_thread::sleep_for(std::chrono::microseconds(50 * 1000));
             if (childThreadsStop) {
                 break;
+            }
+
+            if (!*render) {
+                continue;
+            }
+
+            if (loading) {
+                continue;
             }
 
             if (!statusUpdated) {
@@ -537,6 +546,14 @@ namespace Cassette {
             }
 
             if (connector->status.State != "play") {
+                continue;
+            }
+
+            if (!*render) {
+                continue;
+            }
+
+            if (loading) {
                 continue;
             }
 
