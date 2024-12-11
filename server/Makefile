@@ -131,7 +131,7 @@ fast: libMali_linux.so
 			./qtbase/bin/moc /qt/qtbase/mkspecs/devices/$(PLATFORM)/Provider.moc -o /qt/qtbase/mkspecs/devices/$(PLATFORM)/moc_Provider.cpp && \
 			./qtbase/bin/moc /qt/qtbase/mkspecs/devices/$(PLATFORM)/server.moc -o /qt/qtbase/mkspecs/devices/$(PLATFORM)/moc_server.cpp && \
 			cd /qt/qtbase/src/plugins/platforms/eglfs && \
-			make EGL_LIB='-lQt5Widgets -L/qt/qtdeclarative/lib -lQt5Qml -lQt5Quick -lQt5Network -L/protobuf/build-armv5/lib/ -lprotobuf' SECOND_PASS_CFLAGS='-DSECOND_PASS=1' \
+			make EGL_LIB='-lQt5Widgets -L/qt/qtdeclarative/lib -lQt5Qml -lQt5Quick -lQt5Network -L/protobuf/build-arm/lib/ -lprotobuf' SECOND_PASS_CFLAGS='-DSECOND_PASS=1' \
 		"
 	readelf -a ./qt/qtbase/plugins/platforms/libqeglfs.so | grep -q libQt5Widgets
 

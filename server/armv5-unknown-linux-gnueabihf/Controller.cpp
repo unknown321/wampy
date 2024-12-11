@@ -1102,12 +1102,6 @@ void Controller::FeatureShowClock(Command::Command *c) {
 }
 
 void Controller::UpdateTime(bool with_time) {
-    if (with_time) {
-        if (!window->isVisible()) {
-            return;
-        }
-    }
-
     getVolumeInHeader();
     if (volumeValueInHeader == nullptr) {
         DLOG("no volume in header\n");

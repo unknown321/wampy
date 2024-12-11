@@ -44,12 +44,6 @@
 - [x] missing bitrate
 - [x] swap next-prev buttons setting
 
-# winamp
-
-- [x] stop is not actual
-- [x] volume blinks on holding
-- [x] progressbar jumps sometimes
-
 # want
 
 - [x] huge cover art (hagoromo)
@@ -71,3 +65,5 @@
 - [ ] blink/marquee timers are not precise
 - [ ] fps limit works after application restart, because you need to reset `lasttime`; don't want to pass it through
   everything.
+- [ ] first clock update is not visible because it is immediately wiped by volume change (which is needed to get first
+  volume reading)
