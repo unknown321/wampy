@@ -1186,9 +1186,14 @@ namespace Winamp {
         }
 
         // playlist songs, crop to playlist width
-        for (int i = 0; i < PLAYLIST_SIZE; i++) {
+        int i;
+        for (i = 0; i < PLAYLIST_SIZE; i++) {
             auto song = connector->playlist.at(i);
             if (song.Duration < 1) {
+                auto d = &playlist[stagingPlaylistID][i];
+                memset(d->text, 0, PLAYLIST_SONG_SIZE);
+                memset(d->duration, 0, PLAYLIST_DURATION_SIZE);
+                d->durationSize = 0;
                 continue;
             }
 
@@ -1204,6 +1209,13 @@ namespace Winamp {
             CropTextToWidth(d->text, f, f->FontSize, playlistSongWidth);
             snprintf(d->duration, PLAYLIST_DURATION_SIZE, "%d:%02d", song.Duration / 60, song.Duration % 60);
             d->durationSize = f->CalcTextSizeA(f->FontSize, FLT_MAX, -1.0, d->duration).x;
+        }
+
+        for (; i < PLAYLIST_SIZE; i++) {
+            auto d = &playlist[stagingPlaylistID][i];
+            memset(d->text, 0, PLAYLIST_SONG_SIZE);
+            memset(d->duration, 0, PLAYLIST_DURATION_SIZE);
+            d->durationSize = 0;
         }
     }
 
