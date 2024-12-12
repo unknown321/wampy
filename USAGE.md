@@ -288,13 +288,7 @@ section.
 
 ## Misc
 
-<img src="images/misc.png" alt="misc settings">
-
-`Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is
-cassette.
-
-`Limit fps`, target fps = 24 . Does it really help to save battery/improve performance? Don't know, off by default.
-Applied after restart.
+<img src="images/settings-misc.png" alt="misc settings">
 
 `Swap prev/next buttons` swaps prev/next buttons when wampy is on to match Winamp track buttons. *Note*: if wampy is on
 and screen is off, this behaviour is NOT turned off. Don't be surprised when you turn on wampy with this option, turn
@@ -308,12 +302,19 @@ to `<artist> - <title>`.
 `Disable touchscreen` disables touchscreen on next wampy toggle. To temporarily enable touchscreen in wampy while in
 this mode, set volume to 120 and toggle wampy twice.
 
-<img src="./images/hagoromo-fix.png" width="50%" alt="time and cover">
+`Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is
+cassette.
+
+`Limit fps`, target fps = 24 . Does it really help to save battery/improve performance? Don't know, off by default.
+Applied after restart.
+
+<img src="./images/hagoromo-fix.png" alt="time and cover">
 
 ### Issues
 
 - `Huge cover art` and `Show time` are NOT applied on application start. You need to toggle wampy once for these to
   apply.
+- `Huge cover art` hides lyrics icon.
 
 ## Providing debug information
 

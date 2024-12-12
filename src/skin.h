@@ -200,19 +200,19 @@ struct Skin {
             ImGui::SameLine();
             ImGui::Text((key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key);
         }
-        ImGui::Text(
-            "Keys mods: %s%s%s%s",
-            io.KeyCtrl ? "CTRL " : "",
-            io.KeyShift ? "SHIFT " : "",
-            io.KeyAlt ? "ALT " : "",
-            io.KeySuper ? "SUPER " : ""
-        );
-        ImGui::Text("Chars queue:");
-        for (int i = 0; i < io.InputQueueCharacters.Size; i++) {
-            ImWchar c = io.InputQueueCharacters[i];
-            ImGui::SameLine();
-            ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c);
-        }
+        //        ImGui::Text(
+        //            "Keys mods: %s%s%s%s",
+        //            io.KeyCtrl ? "CTRL " : "",
+        //            io.KeyShift ? "SHIFT " : "",
+        //            io.KeyAlt ? "ALT " : "",
+        //            io.KeySuper ? "SUPER " : ""
+        //        );
+        //        ImGui::Text("Chars queue:");
+        //        for (int i = 0; i < io.InputQueueCharacters.Size; i++) {
+        //            ImWchar c = io.InputQueueCharacters[i];
+        //            ImGui::SameLine();
+        //            ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c);
+        //        }
     }
 
     static void ToggleDrawSettings(void *skin, void *) {
@@ -353,21 +353,8 @@ struct Skin {
     }
 
     void Misc() {
-        printFPS();
-
-        ImGui::NewLine();
-        if (ImGui::Checkbox("Debug", &config->debug)) {
-            winamp.debug = config->debug;
-            cassette.debug = config->debug;
-            config->Save();
-        }
-
-        if (ImGui::Checkbox("Limit fps", &config->limitFPS)) {
-            config->Save();
-        }
-
 #ifndef DESKTOP
-
+        ImGui::NewLine();
         if (ImGui::Checkbox("Swap prev/next buttons", &config->misc.swapTrackButtons)) {
             config->Save();
         }
@@ -385,8 +372,18 @@ struct Skin {
         if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
             config->Save();
         }
-
 #endif
+
+        ImGui::NewLine();
+        if (ImGui::Checkbox("Debug", &config->debug)) {
+            winamp.debug = config->debug;
+            cassette.debug = config->debug;
+            config->Save();
+        }
+
+        if (ImGui::Checkbox("Limit fps", &config->limitFPS)) {
+            config->Save();
+        }
 
         auto website = ImGui::CalcTextSize("Website");
         auto verSize = ImGui::CalcTextSize(SOFTWARE_VERSION);
@@ -396,12 +393,20 @@ struct Skin {
 
 #ifndef DESKTOP
         if (config->debug) {
+
+            ImGui::SetCursorPosY(480 - verSize.y - license3Size.y * 2 - ImGui::GetStyle().FramePadding.y * 3 - offset);
+            if (ImGui::Button("Start ADB daemon")) {
+                startADB();
+            }
+
             ImGui::SetCursorPosY(480 - verSize.y - license3Size.y - ImGui::GetStyle().FramePadding.y * 2);
             if (ImGui::Button("Create log file")) {
                 createDump();
             }
         }
 #endif
+        ImGui::SetCursorPosY(480 - verSize.y - ImGui::GetStyle().FramePadding.y);
+        printFPS();
 
         ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 3 - ImGui::GetStyle().FramePadding.y * 2 - offset * 2);
         ImGui::SetCursorPosX(800 - website.x - ImGui::GetStyle().FramePadding.x - offset);

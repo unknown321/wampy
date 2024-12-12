@@ -160,8 +160,7 @@ std::string join(const std::vector<std::string> &v, int start) {
 
 void printFPS() {
     auto io = ImGui::GetIO();
-    //    ImGui::SetCursorPos(ImVec2(0, 460));
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 }
 
 void CropTextToWidth(char *text, ImFont *font, float fontSize, float maxWidth) {
@@ -367,3 +366,5 @@ void createDump() {
     sprintf(comm, "/system/vendor/sony/bin/hdumpstate -o /contents/wampy/log/log.%s", buffer);
     system(comm);
 }
+
+void startADB() { system("/system/vendor/sony/bin/AdbEnabler"); }

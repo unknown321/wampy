@@ -71,4 +71,6 @@ void recoverDumps(const std::string &outdir);
 
 void createDump();
 
+void startADB();
+
 #endif // IMGUITEST_UTIL_H
