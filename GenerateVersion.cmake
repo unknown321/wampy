@@ -6,12 +6,14 @@ if (GIT_EXECUTABLE)
     )
 
     if (NOT DIRTY_STRINGS STREQUAL "")
+        string(TIMESTAMP date "%Y-%m-%d %H:%M")
         execute_process(
-                COMMAND ${GIT_EXECUTABLE} log -1 "--format=%h-dirty, %ad" "--date=format:%Y-%m-%d %H:%M"
+                COMMAND ${GIT_EXECUTABLE} log -1 --format=%h-dirty
                 OUTPUT_VARIABLE WAMPY_VERSION
                 RESULT_VARIABLE ERROR_CODE
                 OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+        string(CONCAT WAMPY_VERSION ${WAMPY_VERSION} ", " ${date})
     else ()
         execute_process(
                 COMMAND ${GIT_EXECUTABLE} log -1 "--format=%h, %ad" "--date=format:%Y-%m-%d %H:%M"
