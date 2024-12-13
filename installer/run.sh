@@ -1,6 +1,8 @@
 #!/bin/sh
 VENDOR=/system/vendor/unknown321/
 BINARY=wampy
+user=system
+group=system
 
 log()
 {
@@ -34,18 +36,21 @@ install() {
   cp libMagickCore-7.Q8HDRI.so ${VENDOR}/lib/
   cp libMagickWand-7.Q8HDRI.so ${VENDOR}/lib/
   chmod 0700 ${VENDOR}/lib/libMagick*-7.Q8HDRI.so
-  chown root:root ${VENDOR}/lib/libMagick*-7.Q8HDRI.so
+  chown ${user}:${group} ${VENDOR}/lib/libMagick*-7.Q8HDRI.so
 
   cp libjpeg.so.62.4.0 ${VENDOR}/lib/
   chmod 0700 ${VENDOR}/lib/libjpeg.so.62.4.0
-  chown root:root ${VENDOR}/lib/libjpeg.so.62.4.0
+  chown ${user}:${group} ${VENDOR}/lib/libjpeg.so.62.4.0
   ln -s ${VENDOR}/lib/libjpeg.so.62.4.0 ${VENDOR}/lib/libjpeg.so.62
+  busybox chown -h ${user}:${group} ${VENDOR}/lib/libjpeg.so.62
 
   cp libprotobuf.so.32.0.12 ${VENDOR}/lib/
   chmod 0700 ${VENDOR}/lib/libprotobuf.so.32.0.12
-  chown root:root ${VENDOR}/lib/libprotobuf.so.32.0.12
+  chown ${user}:${group} ${VENDOR}/lib/libprotobuf.so.32.0.12
   ln -s ${VENDOR}/lib/libprotobuf.so.32.0.12 ${VENDOR}/lib/libprotobuf.so.32
   ln -s ${VENDOR}/lib/libprotobuf.so.32.0.12 /system/vendor/sony/lib/libprotobuf.so.32
+  busybox chown -h ${user}:${group} ${VENDOR}/lib/libprotobuf.so.32
+  busybox chown -h ${user}:${group} /system/vendor/sony/lib/libprotobuf.so.32
 
   log "installing server"
   cp libqeglfs.so /system/vendor/sony/plugins/platforms/

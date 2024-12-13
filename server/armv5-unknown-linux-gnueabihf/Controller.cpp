@@ -75,6 +75,8 @@ int Controller::Initialize() {
         return 0;
     }
 
+    getModel();
+
     window = getWindow();
     if (window == nullptr) {
         DLOG("window fail\n");
@@ -865,7 +867,12 @@ void Controller::invokeDetailsPopup() {
         return;
     }
 
-    if (!QMetaObject::invokeMethod(NavBar, "OpenOptionMenu", Qt::DirectConnection, Q_ARG(int, DETAILS_POPUP_MENU_ID))) {
+    auto menuID = DETAILS_POPUP_MENU_ID;
+    if (isWalkmanOne) {
+        menuID = DETAILS_POPUP_MENU_ID_WALKMAN_ONE;
+    }
+
+    if (!QMetaObject::invokeMethod(NavBar, "OpenOptionMenu", Qt::DirectConnection, Q_ARG(int, menuID))) {
         DLOG("cannot invoke OpenOptionMenu\n");
         return;
     }
@@ -1025,6 +1032,52 @@ void Controller::UpdateTitleWithArtist() {
     }
 }
 
+// works poorly, text doesn't update and other elements must be moved so text would be visible
+void Controller::getVolumeInHeaderWalkmanOne() {
+    if (MusicWindow == nullptr) {
+        DLOG("no music window\n");
+        return;
+    }
+
+    QQuickItem *mw = qobject_cast<QQuickItem *>(MusicWindow);
+    if (mw->childItems().length() < 2) {
+        DLOG("not enough children, got %d\n", mw->childItems().length());
+        return;
+    }
+
+    auto headerArea = mw->childItems().at(1);
+    if (headerArea->childItems().length() < 3) {
+        DLOG("not enough children, got %d\n", headerArea->childItems().length());
+        return;
+    }
+
+    auto voluemeArea = headerArea->childItems().at(1);
+    if (voluemeArea->childItems().length() < 1) {
+        DLOG("not enough children, got zero\n");
+        return;
+    }
+
+    auto volumeAreaLoader = voluemeArea->childItems().at(0);
+    if (volumeAreaLoader->childItems().length() < 2) {
+        DLOG("not enough children, got %d\n", volumeAreaLoader->childItems().length());
+        return;
+    }
+
+    auto quickRectangle = volumeAreaLoader->childItems().at(1);
+    if (quickRectangle->childItems().length() < 3) {
+        DLOG("not enough children, got zero\n");
+        return;
+    }
+
+    auto quickItem = quickRectangle->childItems().at(1);
+    if (quickItem->childItems().length() < 6) {
+        DLOG("not enough children, got zero\n");
+        return;
+    }
+
+    volumeValueInHeader = quickItem->childItems().at(5);
+}
+
 // volume in header is usually destroyed on some screen transitions
 void Controller::getVolumeInHeader() {
     if (MusicWindow == nullptr) {
@@ -1034,49 +1087,49 @@ void Controller::getVolumeInHeader() {
 
     QQuickItem *mw = qobject_cast<QQuickItem *>(MusicWindow);
     if (mw->childItems().length() < 2) {
-        DLOG("not enough children\n");
+        DLOG("not enough children, got %d\n", mw->childItems().length());
         return;
     }
 
     auto headerArea = mw->childItems().at(1);
     if (headerArea->childItems().length() < 3) {
-        DLOG("not enough children\n");
+        DLOG("not enough children, got %d\n", headerArea->childItems().length());
         return;
     }
 
     auto status = headerArea->childItems().at(2);
     if (status->childItems().length() < 1) {
-        DLOG("not enough children\n");
+        DLOG("not enough children, got zero\n");
         return;
     }
 
     auto row = status->childItems().at(0);
     if (row->childItems().length() < 3) {
-        DLOG("not enough children\n");
+        DLOG("not enough children, got %d\n", row->childItems().length());
         return;
     }
 
     auto loader = row->childItems().at(2);
     if (loader->childItems().empty()) {
-        DLOG("not enough children\n");
+        DLOG("not enough children, got zero\n");
         return;
     }
 
     auto VolumeIcon = loader->childItems().at(0);
     if (VolumeIcon->childItems().empty()) {
-        DLOG("not enough children\n");
+        DLOG("not enough children, got zero\n");
         return;
     }
 
     auto area = VolumeIcon->childItems().at(0);
     if (area->childItems().length() < 2) {
-        DLOG("not enough children\n");
+        DLOG("not enough children, got %d\n", area->childItems().length());
         return;
     }
 
     auto volumeNum = area->childItems().at(1);
     if (volumeNum->childItems().empty()) {
-        DLOG("not enough children\n");
+        DLOG("not enough children, got zero\n");
         return;
     }
 
@@ -1085,6 +1138,10 @@ void Controller::getVolumeInHeader() {
 
 void Controller::FeatureShowClock(Command::Command *c) {
     c->set_code(Command::FAIL);
+    if (isWalkmanOne) {
+        DLOG("disabled on walkmanOne");
+        return;
+    }
 
     if (c->featureshowclock().enabled() == featureShowClockEnabled) {
         return;
@@ -1119,11 +1176,18 @@ void Controller::FeatureShowClock(Command::Command *c) {
 }
 
 void Controller::UpdateTime(bool with_time) {
-    getVolumeInHeader();
+    if (isWalkmanOne) {
+        DLOG("unsupported on WalkmanOne\n");
+    } else {
+        getVolumeInHeader();
+    }
+
     if (volumeValueInHeader == nullptr) {
         DLOG("no volume in header\n");
         return;
     }
+
+    DLOG("current vol is %s\n", volumeValueInHeader->property("text").toByteArray().constData());
 
     QString v = "";
     if (with_time) {
@@ -1138,6 +1202,18 @@ void Controller::UpdateTime(bool with_time) {
     }
 
     volumeValueInHeader = nullptr;
+}
+
+void Controller::getModel() {
+    QFile file("/dev/icx_nvp/033");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+    auto modelText = file.readAll();
+    DLOG("model %s\n", modelText.constData());
+
+    if (QDir("/etc/.mod").exists()) {
+        isWalkmanOne = true;
+    }
 }
 
 // void SearchContentData(ContentsDBEntryId entry_id) -> trackID + 0x10000000

@@ -368,3 +368,23 @@ void createDump() {
 }
 
 void startADB() { system("/system/vendor/sony/bin/AdbEnabler"); }
+
+void getModel(std::string *model, bool *isWalkmanOne) {
+#ifdef DESKTOP
+    *model = "desktop";
+    return;
+#endif
+    std::ifstream f;
+    f.open("/dev/icx_nvp/033");
+    std::string m((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    *model = m;
+    f.close();
+
+    struct stat info {};
+
+    if (stat("/etc/.mod", &info) == 0) {
+        if (info.st_mode & S_IFDIR) {
+            *isWalkmanOne = true;
+        }
+    }
+}

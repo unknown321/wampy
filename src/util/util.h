@@ -73,4 +73,6 @@ void createDump();
 
 void startADB();
 
+void getModel(std::string *model, bool *isWalkmanOne);
+
 #endif // IMGUITEST_UTIL_H

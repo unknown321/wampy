@@ -7,6 +7,7 @@
 #include "command.pb.h"
 
 #define DETAILS_POPUP_MENU_ID 3
+#define DETAILS_POPUP_MENU_ID_WALKMAN_ONE 4
 #define CLOCK_UPDATE_INTERVAL_SECONDS 10
 
 // Controller is in charge of:
@@ -27,6 +28,8 @@ class Controller : public QObject {
 
     void getVolumeInHeader();
 
+    void getVolumeInHeaderWalkmanOne();
+
     void findViewModels(QQuickItem *swipeItem);
 
     void initBasicPlayerControls();
@@ -46,6 +49,8 @@ class Controller : public QObject {
     void connectDetailInfoProvider();
 
     bool detailsAfterTransition();
+
+    void getModel();
 
     QVariant jsExpression(const char *text);
 
@@ -92,6 +97,7 @@ class Controller : public QObject {
 
     bool featureShowClockEnabled = false;
     bool featureBigCoverEnabled = false;
+    bool isWalkmanOne = false;
 
   public:
     Provider provider;

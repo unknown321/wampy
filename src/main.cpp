@@ -205,6 +205,11 @@ int main(int, char **) {
          "    This is free software, and you are welcome to redistribute it\n"
          "    under certain conditions; see Settings->Misc->License for details.\n");
 
+    std::string model = "unknown model";
+    bool isWalkmanOne{};
+    getModel(&model, &isWalkmanOne);
+    DLOG("device model: %s, walkmanOne: %d\n", model.c_str(), isWalkmanOne);
+
     recoverDumps(dumpDir);
     auto config = AppConfig::AppConfig();
     config.Load();
@@ -277,7 +282,7 @@ int main(int, char **) {
 
     const GLubyte *vendor = glGetString(GL_VENDOR);     // Returns the vendor
     const GLubyte *renderer = glGetString(GL_RENDERER); // Returns a hint to the model
-    DLOG("running on %s; %s\n", renderer, vendor);
+    DLOG("renderer %s; vendor %s\n", renderer, vendor);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -308,6 +313,7 @@ int main(int, char **) {
     MyMagick::InitMagick();
 
     auto skin = Skin();
+    skin.isWalkmanOne = isWalkmanOne;
     skin.render = &render;
     skin.skinList = &skinList;
     skin.reelList = &reelList;

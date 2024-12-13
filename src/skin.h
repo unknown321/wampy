@@ -65,8 +65,9 @@ struct Skin {
     std::string license3rdPath = "/system/vendor/unknown321/usr/share/wampy/doc/LICENSE_3rdparty";
     std::string qrPath = "/system/vendor/unknown321/usr/share/wampy/qr.bmp";
 #endif
-    GLuint qrTexture;
-    float qrSide;
+    GLuint qrTexture{};
+    float qrSide{};
+    bool isWalkmanOne{};
 
     void ReloadFont() {
         loading = true;
@@ -364,9 +365,17 @@ struct Skin {
             connector->FeatureBigCover(config->features.bigCover);
         }
 
+        if (isWalkmanOne) {
+            ImGui::BeginDisabled(true);
+        }
+
         if (ImGui::Checkbox("Show time", &config->features.showTime)) {
             config->Save();
             connector->FeatureShowTime(config->features.showTime);
+        }
+
+        if (isWalkmanOne) {
+            ImGui::EndDisabled();
         }
 
         if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
