@@ -404,7 +404,7 @@ struct Skin {
         if (config->debug) {
 
             ImGui::SetCursorPosY(480 - verSize.y - license3Size.y * 2 - ImGui::GetStyle().FramePadding.y * 3 - offset);
-            if (ImGui::Button("Start ADB daemon")) {
+            if (ImGui::Button("Start ADB daemon (next boot)")) {
                 startADB();
             }
 
