@@ -1139,7 +1139,7 @@ void Controller::getVolumeInHeader() {
 void Controller::FeatureShowClock(Command::Command *c) {
     c->set_code(Command::FAIL);
     if (isWalkmanOne) {
-        DLOG("disabled on walkmanOne");
+        DLOG("disabled on walkmanOne\n");
         return;
     }
 
