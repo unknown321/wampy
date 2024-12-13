@@ -11,10 +11,10 @@ Device will restart twice.
 #### Without adb (regular install):
 
 - copy corresponding `NW_WM_FW.UPG` to root directory on device (the one with MUSIC directory)
-- use [scsitool](https://www.rockbox.org/wiki/SonyNWDestTool.html)
-    - `scsitool list_devices`
-    - choose your device, I use `/dev/sg4`
-    - `scsitool -d -s nw-a50 /dev/sg4 do_fw_upgrade` (may require root)
+- use [scsitool](https://www.rockbox.org/wiki/SonyNWDestTool.html):
+  - `scsitool list_devices`
+  - choose your device, I use `/dev/sg4`
+  - `scsitool -d -s nw-a50 /dev/sg4 do_fw_upgrade` (may require root)
 - device reboots, upgrades a little, reboots again and upgrades again (fully)
 
 #### With adb:
