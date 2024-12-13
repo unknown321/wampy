@@ -210,13 +210,13 @@ Issues:
 - Dropdowns and tables in settings are broken, so not all values are selectable for `DSD` and `Hi-Res`.
 - Default reels have a lot of textures, which may negatively impact performance. Sometimes reboot is required after
   changing settings.
+- Changing active skin to cassette may crash device if there is not enough memory at the moment.
 
 Quirks:
 
 - Default reels and tapes load for quite some time (at least 70 seconds). Wampy is not available during loading and
   there is no indication of loading. Default player loads faster than that, so there is a period of time when user
-  expects
-  everything to work, but it is not possible yet.
+  expects everything to work, but it is not possible yet.
 
 ### Custom skins
 
