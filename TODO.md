@@ -46,14 +46,14 @@
 
 # want
 
-- [x] huge cover art (hagoromo)
-- [x] show time (hagoromo)
+- [ ] visualization from NW-WM1Z spectrum analyzer
 - [ ] regions.txt (winamp)
 - [ ] clickable lyrics icon (hagoromo)
 - [ ] simple clock skin
 - [ ] eq button custom action - too small?
 - [ ] "restart wampy" button in settings - use case?
 - [ ] single connection?
+- [ ] walkmanOne settings in wampy settings
 
 # hard to solve
 
