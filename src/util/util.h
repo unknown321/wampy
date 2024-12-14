@@ -75,4 +75,6 @@ void startADB();
 
 void getModel(std::string *model, bool *isWalkmanOne);
 
+void restoreCoredumpPattern();
+
 #endif // IMGUITEST_UTIL_H

@@ -388,3 +388,12 @@ void getModel(std::string *model, bool *isWalkmanOne) {
         }
     }
 }
+
+// restore core dump string
+// usually it's set to /bin/true on my device
+void restoreCoredumpPattern() {
+    std::string input = "|/bin/sh /system/vendor/sony/etc/hcoredump.sh /var/log";
+    std::ofstream out("/proc/sys/kernel/core_pattern");
+    out << input;
+    out.close();
+}

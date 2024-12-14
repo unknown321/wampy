@@ -218,15 +218,6 @@ int main(int, char **) {
         exit(1);
     }
 
-    if (config.debug) {
-        // restore core dump string
-        // usually it's disabled on my device
-        std::string input = "|/bin/sh /system/vendor/sony/etc/hcoredump.sh /var/log";
-        std::ofstream out("/proc/sys/kernel/core_pattern");
-        out << input;
-        out.close();
-    }
-
     config.badBoots += 1;
     config.Save();
 
