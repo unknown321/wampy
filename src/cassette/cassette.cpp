@@ -3,17 +3,17 @@
 #include <fstream>
 #include <thread>
 
-static const ImWchar rangesPunctuation[] = {
+const ImWchar rangesPunctuation[] = {
     0x2000, 0x206F, // General Punctuation
 };
 
 namespace Cassette {
 
 #ifdef DESKTOP
-    //    static const std::string FontPath = "../SSTJpPro-Regular.otf";
-    static const std::string FontPath = "../NotoSansKR-Regular.otf";
+    //    const std::string FontPath = "../SSTJpPro-Regular.otf";
+    const std::string FontPath = "../NotoSansKR-Regular.otf";
 #else
-    static const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
+    const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
 #endif
 
     const int reelDelayMs = 55;
@@ -62,9 +62,9 @@ namespace Cassette {
         auto io = ImGui::GetIO();
         io.Fonts->Clear();
 
-        static ImFontGlyphRangesBuilder range;
+        ImFontGlyphRangesBuilder range;
         range.Clear();
-        static ImVector<ImWchar> gr;
+        ImVector<ImWchar> gr;
         gr.clear();
 
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());

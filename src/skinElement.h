@@ -29,8 +29,8 @@ static ImVec2 uv1 = ImVec2(1.0f, 1.0f);                  // UV coordinates for (
 static ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);   // Black background
 static ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // No tint
 
-const float upscaleRatioWalkman = 800.0f / 275.0f;
-const float upscaleRatioCassette = 1.0f;
+static const float upscaleRatioWalkman = 800.0f / 275.0f;
+static const float upscaleRatioCassette = 1.0f;
 
 struct FlatTexture {
     explicit FlatTexture(FlatTexture *pTexture) {}

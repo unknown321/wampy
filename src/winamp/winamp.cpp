@@ -14,16 +14,16 @@ namespace Winamp {
     const float fontSizeBitmap = 17.0f;
     const float MarqueeTitleWidthBitmap = 585.0f;
     const float MarqueeTitleWidthFont = 446.0f;
-    static const int MarqueeMaxLengthBitmap = 32;
+    const int MarqueeMaxLengthBitmap = 32;
 
-    static const int blinkInterval = 1200 * 1000; // microseconds, got it via screen recording, winamp 2.95
-    static const int marqueeInterval = 200 * 1000;
+    const int blinkInterval = 1200 * 1000; // microseconds, got it via screen recording, winamp 2.95
+    const int marqueeInterval = 200 * 1000;
 
-    static const float PlaylistYRegular = 337.0;
-    static float PlaylistY = 337.0;
-    static const int PlaylistTitleHeight = 58;
-    static const int VolumeBarCount = 28;
-    static const int BalanceBarCount = 28;
+    const float PlaylistYRegular = 337.0;
+    float PlaylistY = 337.0;
+    const int PlaylistTitleHeight = 58;
+    const int VolumeBarCount = 28;
+    const int BalanceBarCount = 28;
 
     const int playlistSongWidth = 600.0f;
     const char *separator = "  ***   ";
@@ -31,13 +31,13 @@ namespace Winamp {
     const char *remainingTimeSignPlus = "";
 
 #ifdef DESKTOP
-    //    static const std::string FontPath = "../SSTJpPro-Regular.otf";
-    static const std::string FontPath = "../NotoSansKR-Regular.otf";
+    //    const std::string FontPath = "../SSTJpPro-Regular.otf";
+    const std::string FontPath = "../NotoSansKR-Regular.otf";
 #else
-    static const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
+    const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
 #endif
 
-    static const std::list<const char *> filenames = {
+    const std::list<const char *> filenames = {
         "main.bmp",
         "titlebar.bmp",
         "cbuttons.bmp",
@@ -1322,9 +1322,9 @@ namespace Winamp {
         auto io = ImGui::GetIO();
         io.Fonts->Clear();
 
-        static ImFontGlyphRangesBuilder range;
+        ImFontGlyphRangesBuilder range;
         range.Clear();
-        static ImVector<ImWchar> gr;
+        ImVector<ImWchar> gr;
         gr.clear();
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
         range.AddRanges(&rangesPunctuation[0]);
