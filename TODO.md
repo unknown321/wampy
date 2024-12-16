@@ -60,7 +60,7 @@
 - [ ] long cassette titles/artists is incorrectly formatted when changed and active screen is settings
 - [ ] winamp playlist flicker sometimes
 - [ ] time/cover features are not applied on boot
-- [ ] cassette tape combo is hidden by screen edge on hagoromo
+- [ ] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
 - [ ] font atlases are too big
 - [ ] blink/marquee timers are not precise
 - [ ] fps limit works after application restart, because you need to reset `lasttime`; don't want to pass it through
