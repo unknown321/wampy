@@ -36,3 +36,7 @@ See [INSTALL.md](./INSTALL.md)
 ## Build from source
 
 See [BUILD.md](./BUILD.md)
+
+## See also
+
+[Making of](./MAKING_OF.md)
