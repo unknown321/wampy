@@ -124,6 +124,8 @@ state and is also placed in `.data` or `.bss` section and if it is a member... H
 
 ---
 
+### Summary
+
 I don't think that C++ is a user-friendly modern language. It doesn't make sense to write new user applications using
 C++ unless performance is critical. Hopefully Carbon will take its place: code looks cleaner and tooling is expected to
 be on Go level. Perhaps it was my mistake of having expectations before using C++11 without 10+ years of commercial

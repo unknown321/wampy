@@ -227,10 +227,9 @@ needed, not sure about that>. This mechanism is decades old and backwards compat
 
 Why do I even care? First, it takes some time to analyze a song, like 10 seconds each. You need to launch Sony media
 application (Electron garbage) (which barely works on Linux), load all your tracks into it and wait for hours. Then your
-audio file grows by almost a megabyte of `SMFMF` data, possibly corrupting ID3 tags in process (unacceptable). So I
-deciced to take a look at what's going on.
+audio file grows by almost a megabyte of `SMFMF` data, possibly corrupting ID3 tags in process (unacceptable).
 
-Is there a way of faster and smaller tagging? Mood should be like what, 10 bytes of ids, right (Energetic (0x01)=10,
+Is there a way of faster tagging with fewer data? Mood should be like what, 10 bytes of ids, right (Energetic (0x01)=10,
 Relaxing (0x02)=2, Mellow (0x03)=0.5)? Tempo is literally a number, a sequence of numbers if it changes during song,
 not a megabyte. Perhaps I could feed my music to music-specialized LLM and write those bytes myself?
 
@@ -456,9 +455,9 @@ PID   USER     TIME   COMMAND
 
 </details>
 
-After some months directory with ghidra disasembly/debugging data grew up to 2.1 GB. A lot of lessons were
+After some months directory with Ghidra disassembly/debugging data grew up to 2.1 GB. A lot of lessons were
 learnt about C++, vtables, ARM, inheritance, toolchains, compilers, cross-compiling, ELF and other nonsense. An
-application was produced which was able to change volume pretending to be a genuine Volume Service client. I was ready
+application was produced which was able to change volume pretending to be a genuine `VolumeService` client. I was ready
 to grab song info… or was I?
 
 Here is the mistake: in server-client communication server keeps data for each client separately, meaning that I got
@@ -476,7 +475,7 @@ result - [scrobbler](https://github.com/unknown321/scrobbler). It just works.
 After successfully finishing scrobbler, I decided to take a shot at some GUI issues, such as lack of clock, lyrics icon
 and maybe more?
 
-Somewhere around that date Llama Group announced open-sourcing Winamp. There already were some projects recreating that
+Somewhere around that time Llama Group announced open-sourcing Winamp. There already were some projects recreating that
 iconic interface:
 
 - [Audacious](https://audacious-media-player.org/), multiplatform audio player with winamp skin support;
@@ -650,7 +649,7 @@ screen.
 > QML is a declarative language that allows user interfaces to be described in terms of their visual components and how
 > they interact and relate with one another (Qt documentation).
 
-Basically it's a dialect of javascript which is processed by built-in chromium javascript engine. Object in QML are
+Basically it's a dialect of javascript which is processed by built-in chromium javascript engine. Objects in QML are
 connected to C++ Qt objects, which provide information. Qt also has object hierarchy, which means that we can access
 almost anything in running application, you just need to know what.
 
@@ -688,7 +687,7 @@ eventually settled on removing culling altogether. This is a bad solution which 
 it works. Bad user experience, hoping to fix it one day.
 
 OK, done with rotation. Let's move on to touch events. These are produced by touchscreen driver and are compatible with
-linux input api. Some edits to window library (GLFW) and it works just like it should. Same with button input.
+Linux input api. Some edits to window library (GLFW) and it works just like it should. Same with button input.
 
 #### Drawing images
 
@@ -698,10 +697,9 @@ Let's draw something, like a texture from base skin. First of all, winamp skins 
 or a directory with bmp files), so unzipping comes first. Then you need to read bmp data using `stb` library, which is
 conveniently built in ImGui and supports bmp... or is it?
 
-Of course, it doesn't. Winamp's skins were made using a huge variety of techniques. That means that you'll encounter
-paletted bmps, 2bit-depth bmps, corrupted bmps, perhaps even non-rgb bmps? Winamp had built-in bmp decoder which somehow
-handled all of that, `stb` cannot process any of it. In fact, `base-2.91.wsz` from Skin Museum has `balance.bmp`
-corrupted:
+Winamp's skins were made using a huge variety of techniques. That means that you'll encounter paletted bmps, 2bit-depth
+bmps, corrupted bmps, perhaps even non-rgb bmps? Winamp had built-in bmp decoder which somehow handled all of
+that, `stb` cannot process any of it. In fact, `base-2.91.wsz` from Skin Museum has `balance.bmp` corrupted:
 
 ```shell
 $ file BALANCE.BMP 
@@ -714,9 +712,9 @@ How does Skin Museum handle that? Most likely your browser takes care of drawing
 
 So… ImageMagick. That's right, ImageMagick just to reliably read some bmps (and, later, jpegs for cassette).
 
-Great, after figuring out how to read/load images with ImageMagick we are ready to load them into GPU memory (which is
+Great, after figuring out how to read images with ImageMagick we are ready to load them into GPU memory (which is
 shared with main memory btw). Textures are loaded, drawn in proper orientation, but they are too small - resize
-required. Here comes another problem: winamp main window is `275` pixels wide and screen
+required. Here comes another problem: Winamp main window is `275` pixels wide and screen
 is `800`. `800 / 275 = 2.90909...` meaning that resized bitmap will be not pixel perfect. There is nothing you can do
 about it, so some elements may look off if you look close enough. Thankfully, small screen hides those imperfections
 unless you look really hard and know where to look. Resize is handled by ImageMagick, so it is not wasted on just
@@ -802,16 +800,18 @@ so I added `Randomize` option to choose random skin. No idea how it works on And
 there too. This is an option that fills me with joy. Just take a look at that colorful tape! Here comes another one!
 Can't stop changing tracks! L-love it.
 
+You can grab more tapes from http://tapedeck.org/.
+
 ### Client misc
 
 <figure>
-<img src="images/directon_sucks.jpg" alt="physical design is not mapped to virtual buttons">
+<img src="images/direction_sucks.jpg" alt="physical design is not mapped to virtual buttons">
 <figcaption>Swapped physical button in wampy to follow buttons' directions on screen.</figcaption>
 </figure>
 
-It's kinda hard to explain, but I'll try. Track starts in the leftmost position and moves to the right. Volume starts
-from low (vol down) to high (vol up). iRiver T10 follows that principle (see pic in the beginning), could be
-partly seen in iPods (no physical track control buttons, only volume cradle), but in Walkmans ignore it.
+It's kinda hard to explain, but I'll try. Track seek slider starts in the leftmost position and moves to the right.
+Volume starts from low (vol down) to high (vol up). iRiver T10 follows that principle (see pic in the beginning), could
+be partly seen in iPods (no physical track control buttons, only volume cradle), but in Walkmans ignore it.
 Physical buttons are on right side, but virtual buttons are off by 90°. `Next` button works out somehow, but `Prev` is
 wrong. I know, it sounds weird, but it feels just right in wampy with swapped buttons; they work like they should.
 

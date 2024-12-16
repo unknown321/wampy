@@ -6,7 +6,7 @@ skins/*.wsz
 skins/hpcalc_hp49g/
 src/cassette/res
 removeme
-*.svg
+/*.svg
 *.out
 *.prof
 *.pprof

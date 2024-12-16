@@ -47,6 +47,8 @@ like Java IPMI widgets for SuperMicro servers, Azureus (torrent client), older v
 Gatling and other crap. These days I use Java applications on desktop as a last resort, avoiding them as much as I can.
 Even JetBrains IDEs throw some garbage to console from time to time.
 
+#### Server applications
+
 Server applications are terrible. Usually they provide irreplaceable functionality, so you have no other choice but to
 use them. Stuff like Apache Kafka, Keycloak, Apache Guacamole, Camunda, Gerrit, Infinispan, JBoss, JUnit, Jenkins,
 Apache Zookeper... (what's the deal with Apache and Java?). These days those abominations are usually contained in
@@ -72,6 +74,10 @@ Or maybe `-XX:+UseContainerSupport -XX:MaxRAMPercentage=60.0`? We just don't kno
 Then everything works fine for a month or two, stacktraces don't bother you anymore (these were just 150 lines of
 notices, working as intended), memory consumption is ok... unless it is not. Something is leaking, and you start
 profiling that crap, looking for a leak. Maybe you'll find it, maybe you won't.
+
+---
+
+### Summary
 
 This is my typical experience with Java applications. They are horrible in any form. And remember, Java is used by your
 bank, hospital, public transport, runs in your phone, car, microwave, refrigerator and other 6 billion devices.

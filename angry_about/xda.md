@@ -15,6 +15,8 @@ XDA is not a resource, it is a forum with all problems of a regular forum, inclu
 I've visited XDA on different occasions trying to find information on different devices, such as Sony phones, Samsung
 tablets, MediaTek tooling, Qualcomm platforms. And every time I failed.
 
+### Basics
+
 Let's try to figure out how Sony Xperia S boots by googling `site:xdaforums.com how does sony xperia s boot`. First four
 threads are about bricked phones, fifth looks like a guide for
 starters: https://xdaforums.com/t/xperia-s-info-ref-all-that-u-need-to-know-before-u-begin.1526866/
@@ -26,6 +28,8 @@ like that it all comes together into "hold buttons, swipe to flash and pray".
 
 Perhaps XDA back in 2012 was a different place. What about more recent guides?
 
+### Modern basics
+
 February
 2023, https://xdaforums.com/t/how-to-enable-volte-and-5g-without-permanent-root-on-xperia-5-iii-and-1-iii.4551847/
 
@@ -33,6 +37,8 @@ Nope, just like 2012, random program names are thrown at you. Install this exe, 
 apk, don't ask what does it do, just execute orders.
 
 First reply? `Amazing detailed guide. Thanks for sharing.`
+
+### Asking easier questions
 
 All right, maybe stuff like this IS complicated and explaining everything in one guide will take pages of text. Let's
 ask something else, which should have a definitive answer. How about scatter file? From what I've gathered, this a file
@@ -112,6 +118,8 @@ simple `<partition:image file>` map file. This `Staff member` is either wrong or
 Another search (`scatter file syntax`), another page of questions and step-by-step guides without answers. Is it me
 asking wrong questions or there is no answer available online? By the way, there is no search form for unregistered
 users, you have to join the community.
+
+#### Why?
 
 Why bother with scatter file details? NW-A50 is a MediaTek device, but regular tools (MTK Droid Tools, SP Flash Tool,
 something else?) failed to dump partitions for reasons, asking for scatter
@@ -223,17 +231,21 @@ I assume that there are two main categories of users on XDA.
   thousands of messages. They are the guys who throw random words at you, like Magisk, Shizuku, ODIN, LAHAINA, IMS, TWRP
   and others.
 
-There is no "diving into details user" between them. No one makes guides explaining **what** every step does, it's only
-**how to execute** that step. That makes sense, because newbies are not interested in details, all they need is
-a shiny new firmware (camera doesn't work, 2G only) on their $40 phone. I am pretty sure that most of the power users
-are not aware of inner workings of tools they use. It's just "unpack firmware with X.exe, do Y, try Z.exe if X.exe
-fails" knowledge.
+There is no "diving into details and telling others" user between them. No one makes guides explaining **what** every
+step does, it's only **how to execute** that step. That makes sense, because newbies are not interested in details, all
+they need is a shiny new firmware (camera doesn't work, 2G only) on their $40 phone. I am pretty sure that most of the
+power users are not aware of inner workings of tools they use. It's just "unpack firmware with X.exe, do Y, try Z.exe if
+X.exe fails" knowledge.
 
 There is also a third group, which makes a couple of posts linking to their new shiny opensource tools replacing that
 old garbage power users used to work with. These are the guys who usually know what are they doing and not afraid to
 share their knowledge with others. GitHub issues for that project becomes a part of XDA with "please help
 bricked" issues. Sooner or later author stops communicating, because hell is other people.
-A great example: https://github.com/phhusson/treble_experimentations
+A great (and sad) example: https://github.com/phhusson/treble_experimentations
+
+---
+
+### Summary
 
 In my opinion, XDA is not a place where you can learn technical knowledge and understand how your device works. This is
 a place where step-by-step guides are born and bricked phones rest.
