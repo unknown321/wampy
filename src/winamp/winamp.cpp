@@ -1068,7 +1068,10 @@ namespace Winamp {
 
     void Winamp::Pause(void *winamp, void *) {
         auto w = (Winamp *)winamp;
-        w->stopped = false;
+        if (w->stopped) {
+            return;
+        }
+
         Connector::Pause(w->connector, nullptr);
     }
 

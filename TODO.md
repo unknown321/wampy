@@ -5,7 +5,7 @@
 - [x] winamp: play in paused state resumes playing
 - [x] winamp: next in paused state switches track and plays it
 - [ ] winamp: prev in paused/playing state starts playing previous track from the beginning
-- [ ] winamp: pause in stopped state does nothing
+- [x] winamp: pause in stopped state does nothing
 - [ ] winamp: prev/next in stopped state change tracks but do not start them, there is no seek button
 - [x] winamp: marquee works in stopped state
 - [x] Error in `/system/vendor/unknown321/bin/wampy': double free or corruption (out): 0xae900fc0
