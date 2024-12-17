@@ -1082,6 +1082,9 @@ namespace Winamp {
         auto w = (Winamp *)winamp;
         w->stopped = false;
         Connector::Next(w->connector, nullptr);
+        if (w->connector->status.State != "play") {
+            Connector::Play(w->connector, nullptr);
+        }
     }
 
     void elements::Unload() {
