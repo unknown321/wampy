@@ -481,6 +481,7 @@ and maybe more?
 Somewhere around that time Llama Group announced open-sourcing Winamp. There already were some projects recreating that
 iconic interface:
 
+- [WACUP](https://getwacup.com), Windows-only audio player;
 - [Audacious](https://audacious-media-player.org/), multiplatform audio player with winamp skin support;
 - [Winamp Skin Museum](https://skins.webamp.org/) replicating Winamp experience in your browser;
 - [Linamp](https://hackaday.io/project/196407-linamp/), physical box with Winamp-like interface;
@@ -491,12 +492,21 @@ Honestly, all of them suck in some way or another. Remember, user experience is 
 feels bad, no one will use it unless in dire need. Your user can compromise and still use your application, but he will
 be constantly reminded of your mistakes which is unacceptable. User experience is everything.
 
+##### WACUP
+
+Pixel-perfectThis is the most accurate implementation in this list, if you need modern Winamp experience on
+Windows, WACUP should be your choice. How does it suck? Windows only, failed to display valid ID3v2 tag in song display,
+time display is not a single clickable block, but separate numbers with a small non-clickable gap between them,
+visualization is too fast (but there is a frame limiter, <u>huge</u> respect for that), there are weird downloads during
+installation (like Winamp installer).
+
+But overall it's a great piece of software.
+
 ##### Audacious 4.2
 
 While looking pixel-perfect, behaviour is far from ideal. Marquee is off, visualization is too fast, track time is
-missing
-leading zero, "Seek to" text is missing percentage, balance slider is changing position while moving volume slider
-([why?](./images/audacious_quality.mp4))...
+missing leading zero, "Seek to" text is missing percentage, balance slider is changing position while moving volume
+slider ([why?](./images/audacious_quality.mp4))...
 
 ##### Linamp
 
