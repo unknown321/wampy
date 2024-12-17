@@ -219,11 +219,14 @@ Apple - [take a look](https://patents.google.com/?inventor=Steven+P.+Jobs).
 <img src="images/sensme.png" alt="sensme logo">
 
 It started with [SensMe™](https://en.wikipedia.org/wiki/SensMe). SensMe™ is a technology which detects mood/tempo in
-your audio track. This technology is made by Gracenote, Inc. (despite what Wikipedia says). It works like this: audio
-file is played into highly compressed version of itself and then stored into `SMFMF` ID3 tag. Then client (player
-software) reads that tag, possibly reanalyzing compressed data and saves mood data to internal database <citation
-needed, not sure about that>. This mechanism is decades old and backwards compatible, tracks analyzed with
-[Sony Media Center from like 2009](https://archive.org/download/SonyEricssonC510) are recognized by NW-A50 from 2018.
+your audio track. It was made by Gracenote, Inc. (despite what Wikipedia says) and works like this: audio
+stream is played into highly compressed version of itself, analyzed and stored into `SMFMF` ID3 tag. Then client (player
+software) reads that tag, possibly reanalyzing compressed data and saves mood data to internal database (citation
+needed, not sure about that). This mechanism is decades old and backwards compatible, tracks analyzed with
+[Sony Media Center from like 2009](https://archive.org/download/SonyEricssonC510) are recognized by NW-A50 from 2018. If
+you are interested in this stuff, you can look for Gracenote documentation, where this process is described a
+little better. If you are *really* interested, you can also decompile `gnsdk_*` libraries and find traces of various
+algorithms, sophisticated math... Fun stuff.
 
 Why do I even care? First, it takes some time to analyze a song, like 10 seconds each. You need to launch Sony media
 application (Electron garbage) (which barely works on Linux), load all your tracks into it and wait for hours. Then your
@@ -243,10 +246,10 @@ but nothing new about `SMFMF`.
 
 <img src="images/last.fm.png" alt="last fm logo">
 
-Last.fm is built around scrobbling - recording info online about songs you listen to. iPods supported scrobbling -
-Last.fm client was pulling song data from exposed `MTPDB.dat` file. However, Walkmans do not support scrobbling. Song
-data is not exposed, `listened` events are not even recorded. Stats are for nerds; premium SONY Walkman® devices are NOT
-for nerds.
+[Last.fm](https://last.fm) is built around scrobbling - recording info online about songs you listen to. iPods supported
+scrobbling - Last.fm client was pulling song data from exposed `MTPDB.dat` file. However, Walkmans do not support
+scrobbling. Song data is not exposed, `listened` events are not even recorded. Stats are for nerds; premium SONY
+Walkman® devices are NOT for nerds.
 
 What can we do at this point? That's right, [Rockbox](https://www.rockbox.org/wiki/SonyNW), which supports scrobbling
 and stuff! Except our device is not supported and most likely won't be. Reasons? Sony has nice sound enhancement
@@ -460,7 +463,7 @@ learnt about C++, vtables, ARM, inheritance, toolchains, compilers, cross-compil
 application was produced which was able to change volume pretending to be a genuine `VolumeService` client. I was ready
 to grab song info… or was I?
 
-Here is the mistake: in server-client communication server keeps data for each client separately, meaning that I got
+Here is another mistake: in server-client communication server keeps data for each client separately, meaning that I got
 nothing after connecting to `PlayerService`. In order to get info about playing song my client had to be the one that
 initiated playback. There are some other hacks, like injecting into GUI application to grab info from there or messing
 with Binder, but these were considered way too hard to get info I wanted.
@@ -480,7 +483,7 @@ iconic interface:
 
 - [Audacious](https://audacious-media-player.org/), multiplatform audio player with winamp skin support;
 - [Winamp Skin Museum](https://skins.webamp.org/) replicating Winamp experience in your browser;
-- [Linamp](https://hackaday.io/project/196407-linamp/), physical Winamp box;
+- [Linamp](https://hackaday.io/project/196407-linamp/), physical box with Winamp-like interface;
 - [Adafruit PyPortal Winamp](https://learn.adafruit.com/pyportal-winamp-mp3-player)
 - and some renders like [this](https://x.com/uttamk77/status/1271870451115896834).
 
@@ -633,8 +636,13 @@ the fun.
 There is a [Video For Linux API](https://www.kernel.org/doc/html/v4.9/media/uapi/v4l/v4l2.html), allowing you to draw
 images over other images on screen, Video Output Overlay Interface in particular. There is not much information about
 using it as a regular user and most manuals are like "here are a couple of console commands to dump info; point mplayer
-to that device to display video; that's it, have a nice day". I did my best at trying to make an overlay, but GPU driver
-rejected my advances in ways I forgot. Or was it kernel? Don't remember.
+to that device to display video; that's it, have a nice day". Other examples
+like [this](https://github.com/kmdouglass/v4l2-examples) had no mention of overlays. I did my best at trying to make an
+overlay, but GPU driver rejected my advances in ways I forgot. Or was it kernel? Don't remember.
+
+There is also this thing for NW-ZX300 - https://github.com/zhangboyang/llusbdac. It builds a kernel module and
+uses [SUPER DIRTY HACK](https://github.com/zhangboyang/llusbdac/blob/710a17415e785afbc773906798445bdf03626722/llusbdac/gui.c#L154)
+to display data.
 
 #### Back to Qt
 
@@ -649,9 +657,9 @@ screen.
 > QML is a declarative language that allows user interfaces to be described in terms of their visual components and how
 > they interact and relate with one another (Qt documentation).
 
-Basically it's a dialect of javascript which is processed by built-in chromium javascript engine. Objects in QML are
-connected to C++ Qt objects, which provide information. Qt also has object hierarchy, which means that we can access
-almost anything in running application, you just need to know what.
+Basically it's a markup language that also supports insanely small subset of javascript, which is processed by built-in
+chromium javascript engine. Objects in QML are connected to C++ Qt objects, which provide information. Qt also has
+object hierarchy, which means that we can access almost anything in running application, you just need to know what.
 
 Here comes [GammaRay](https://github.com/KDAB/GammaRay), which allows us to inspect any running Qt application. Last
 compatible version is 2.10.0, you need to compile probe against Sony-provided sources, launch application with probe
@@ -683,8 +691,8 @@ it in landscape. There are some ImGui issues about rotating
 screen, [#3972](https://github.com/ocornut/imgui/issues/3972) in particular, which looks like exactly what we need.
 Just modify projection matrix and that would be it, right? Wrong again, some widgets are not drawing anymore, because
 ImGui thinks that these are off-screen and culls them. I've spent weeks trying to do it properly using shaders and
-eventually settled on removing culling altogether. This is a bad solution which break some parts of settings window, but
-it works. Bad user experience, hoping to fix it one day.
+eventually settled on removing culling altogether (just like original poster). This is an ugly solution which break some
+parts of settings window, but it works. Bad user experience, hoping to fix it one day.
 
 OK, done with rotation. Let's move on to touch events. These are produced by touchscreen driver and are compatible with
 Linux input api. Some edits to window library (GLFW) and it works just like it should. Same with button input.
@@ -806,14 +814,14 @@ You can grab more tapes from http://tapedeck.org/.
 
 <figure>
 <img src="images/direction_sucks.jpg" alt="physical design is not mapped to virtual buttons">
-<figcaption>Swapped physical button in wampy to follow buttons' directions on screen.</figcaption>
+<figcaption>Swapped physical button in Wampy to follow buttons' directions on screen.</figcaption>
 </figure>
 
 It's kinda hard to explain, but I'll try. Track seek slider starts in the leftmost position and moves to the right.
 Volume starts from low (vol down) to high (vol up). iRiver T10 follows that principle (see pic in the beginning), could
 be partly seen in iPods (no physical track control buttons, only volume cradle), but in Walkmans ignore it.
 Physical buttons are on right side, but virtual buttons are off by 90°. `Next` button works out somehow, but `Prev` is
-wrong. I know, it sounds weird, but it feels just right in wampy with swapped buttons; they work like they should.
+wrong. I know, it sounds weird, but it feels just right in Wampy with swapped buttons; they work like they should.
 
 **Clock** finally came back. The reason it was missing in original firmware is simple: there are so many important
 indicators and not much space left. You can toggle disabled/hidden ones in GammaRay. Thankfully there is no designer
@@ -870,7 +878,7 @@ easier sharing. Hopefully that'll make post-release maintenance much easier.
 ### NW-WM1Z / Walkman One compatibility
 
 Walkman One firmware is quite popular. Under the hood it changes some system properties so software is tricked into
-changing interface and enabling features to match NW-WM1Z. Since software is mostly compatible with wampy, an effort was
+changing interface and enabling features to match NW-WM1Z. Since software is mostly compatible with Wampy, an effort was
 made to add Walkman One build (on that later).
 
 There is no firmware made specifically for NW-WM1Z, because I don't have hardware to test on. Even though software
@@ -1097,7 +1105,7 @@ Finally, we are ready to <del>ship</del> test.
 Delivering software to user without testing, especially GUI software (see [java.md](./angry_about/java.md)), is an
 insult to user.
 
-Start wampy, play music, wait for it to crash. Of course, it crashed.
+Start Wampy, play music, wait for it to crash. Of course, it crashed.
 
 There was a memory leak on each skin change - not all textures were unloaded.
 
