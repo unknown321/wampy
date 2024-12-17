@@ -84,7 +84,7 @@ struct Skin {
                 exit(1);
             }
 
-            winamp.Load(filepath, &FontRegular);
+            WinampSkinNewName = filepath;
             break;
         default:
             break;
@@ -108,7 +108,7 @@ struct Skin {
     }
 
     void Load() {
-        if (onlyFont) {
+        if (onlyFont && activeSkinVariant == CASSETTE) {
             ReloadFont();
             return;
         }
@@ -154,6 +154,7 @@ struct Skin {
             winamp.skin = (void *)this;
             winamp.WithConfig(&config->winamp);
             winamp.Load(filepath, &FontRegular);
+            WinampCurrentSkinName = filepath;
             winamp.active = true;
             break;
         case CASSETTE:
@@ -238,6 +239,7 @@ struct Skin {
         if (loadStatus != 0) {
             WinampCurrentSkinName = WinampSkinOldName;
             WinampSkinNewName = WinampSkinOldName;
+            DLOG("loading previous skin %s\n", WinampSkinOldName.c_str());
             winamp.Load(WinampSkinOldName, &FontRegular);
             loadStatusStr = winamp.loadStatusStr;
             return loadStatus;
@@ -345,6 +347,7 @@ struct Skin {
 #ifdef DESKTOP
         if (ImGui::Button("Apply")) {
             onlyFont = true;
+            WinampCurrentSkinName = "";
         }
 #else
         if (needRestartFonts) {
@@ -541,9 +544,9 @@ struct Skin {
             ImGui::SameLine();
             if (activeSkinVariant == WINAMP) {
                 if (ImGui::Button("Load skin")) {
-                    WinampSkinNewName = skinList->at(selectedSkinIdx).fullPath;
                     loadStatus = 0;
                     loadStatusStr = "loading " + skinList->at(selectedSkinIdx).name;
+                    WinampSkinNewName = skinList->at(selectedSkinIdx).fullPath;
                 }
             }
 

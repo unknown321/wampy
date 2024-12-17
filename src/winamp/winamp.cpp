@@ -158,13 +158,11 @@ namespace Winamp {
         }
 
         if (unzip(filename, &textures, &loadStatusStr) < 0) {
-            newFilename = filename;
             loading = false;
             return -1;
         }
 
         if (volumeIsBalance() < 0) {
-            newFilename = filename;
             loading = false;
             return -1;
         }

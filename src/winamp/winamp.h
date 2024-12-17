@@ -177,7 +177,6 @@ namespace Winamp {
         SkinColors colors{};
         TextureMap textures{};
         elements Elements{};
-        std::string newFilename{};
         bool MarqueeRunning{};
         bool childThreadsStop{};
         bool marqueeThreadRunning{};
