@@ -1,6 +1,13 @@
 # general
 
 - [ ] refactor winamp skin loading with error handling
+- [ ] winamp: play in playing state resets track to start and plays it again
+- [x] winamp: play in paused state resumes playing
+- [ ] winamp: next in paused state switches track and plays it
+- [ ] winamp: prev in any state starts playing previous track from the beginning
+- [ ] winamp: pause in stopped state does nothing
+- [ ] winamp: prev/next in stopped state change tracks but do not start them, there is no seek button
+- [x] winamp: marquee works in stopped state
 - [x] Error in `/system/vendor/unknown321/bin/wampy': double free or corruption (out): 0xae900fc0
 - [x] terminate called after throwing an instance of 'std::length_error' ; what():  basic_string::_ S_create
 - [x] README

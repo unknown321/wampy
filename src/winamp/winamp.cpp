@@ -1056,6 +1056,13 @@ namespace Winamp {
     void Winamp::Play(void *winamp, void *) {
         auto w = (Winamp *)winamp;
         w->stopped = false;
+        DLOG("state %s\n", w->connector->status.State.c_str());
+        if (w->connector->status.State == "pause") {
+            Connector::SetPosition(w->connector, 0);
+            Connector::Play(w->connector, nullptr);
+            return;
+        }
+
         Connector::Play(w->connector, nullptr);
     }
 
