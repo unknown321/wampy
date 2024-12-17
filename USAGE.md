@@ -247,6 +247,9 @@ wampy/
 
 Winamp has 3 custom skins, cassette has one custom reel with 2 frames and two tapes. Tape `ccc` uses default config.
 
+You can put `wampy` directory on device and SD card, both will be scanned. As for now, skin list is updated after device
+restart.
+
 #### Winamp
 
 Get skins with `.wsz` extension, drop into folder, restart device to refresh list.

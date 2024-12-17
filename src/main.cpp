@@ -254,12 +254,16 @@ int main(int, char **) {
     socket = WAMPY_SOCKET;
     listdir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/", &skinList, ".wsz");
     listdir("/contents/wampy/skins/winamp/", &skinList, ".wsz");
+    listdir("/contents_ext/wampy/skins/winamp/", &skinList, ".wsz");
 
     listdirs("/system/vendor/unknown321/usr/share/wampy/skins/cassette/reel/", &reelList);
     listdirs("/contents/wampy/skins/cassette/reel/", &reelList);
+    listdirs("/contents_ext/wampy/skins/cassette/reel/", &reelList);
 
     listdirs("/system/vendor/unknown321/usr/share/wampy/skins/cassette/tape/", &tapeList);
     listdirs("/contents/wampy/skins/cassette/tape/", &tapeList);
+    listdirs("/contents_ext/wampy/skins/cassette/tape/", &tapeList);
+
 #endif
     connector->render = &render;
 
