@@ -531,7 +531,7 @@ browser - [link](https://skins.webamp.org/skin/5e4f10275dcb1fb211d4a8b4f1bda236/
 playlist? Buttons are tiny and screen is huge; doubling main window in size looks off.
 
 Technology advanced, Winamp did not. It works only on smaller screens, not 1920x1080 and beyond. (Also, visualisation is
-too fast).
+too fast ([fix](https://github.com/captbaritone/webamp/pull/1260)?)).
 
 ##### Physical renders
 
