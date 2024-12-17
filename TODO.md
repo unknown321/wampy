@@ -1,7 +1,7 @@
 # general
 
 - [ ] refactor winamp skin loading with error handling
-- [ ] winamp: play in playing state resets track to start and plays it again
+- [x] winamp: play in playing state resets track to start and plays it again
 - [x] winamp: play in paused state resumes playing
 - [ ] winamp: next in paused state switches track and plays it
 - [ ] winamp: prev in any state starts playing previous track from the beginning
