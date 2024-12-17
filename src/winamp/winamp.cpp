@@ -1077,17 +1077,37 @@ namespace Winamp {
 
     void Winamp::Prev(void *winamp, void *) {
         auto w = (Winamp *)winamp;
+        if (w->stopped) {
+            Connector::Prev(w->connector, nullptr);
+            return;
+        }
+
         w->stopped = false;
-        Connector::Prev(w->connector, nullptr);
+
+        if (w->connector->status.State == "pause") {
+            Connector::SetPosition(w->connector, 0);
+            Connector::Prev(w->connector, nullptr);
+            return;
+        }
+
+        if (w->connector->status.State == "play") {
+            Connector::Pause(w->connector, nullptr);
+            Connector::SetPosition(w->connector, 0);
+            Connector::Prev(w->connector, nullptr);
+            Connector::Play(w->connector, nullptr);
+        }
     }
 
     void Winamp::Next(void *winamp, void *) {
         auto w = (Winamp *)winamp;
+        if (w->stopped) {
+            Connector::Next(w->connector, nullptr);
+            return;
+        }
+
         w->stopped = false;
         Connector::Next(w->connector, nullptr);
-        if (w->connector->status.State != "play") {
-            Connector::Play(w->connector, nullptr);
-        }
+        Connector::Play(w->connector, nullptr);
     }
 
     void elements::Unload() {

@@ -36,7 +36,7 @@ struct statusFields {
 
 struct Status {
     int Duration{};
-    int Elapsed{};
+    int Elapsed{}; // seconds
     int Bitrate{};
     int Volume{}; // percentage
     int Shuffle{};
