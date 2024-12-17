@@ -1187,7 +1187,7 @@ void Controller::UpdateTime(bool with_time) {
         return;
     }
 
-    DLOG("current vol is %s\n", volumeValueInHeader->property("text").toByteArray().constData());
+    //    DLOG("current vol is %s\n", volumeValueInHeader->property("text").toByteArray().constData());
 
     QString v = "";
     if (with_time) {
