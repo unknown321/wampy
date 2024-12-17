@@ -252,7 +252,9 @@ restart.
 
 #### Winamp
 
-Get skins with `.wsz` extension, drop into folder, restart device to refresh list.
+Get skins with `.wsz` extension, drop into folder, restart device to refresh list. Grab skins
+from [Winamp Skin Museum](https://skins.webamp.org/)
+or [make one yourself](https://github.com/WACUP/Winamp-Skinning-Archive/tree/master/Classic%20Skins).
 
 #### Cassette
 
