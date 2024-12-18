@@ -405,6 +405,11 @@ namespace Cassette {
         auto song = connector->playlist.at(0);
         strncpy(artist, song.Artist.c_str(), FIELD_SIZE);
         auto font = ImGui::GetFont();
+        if (font == nullptr) {
+            DLOG("no font available\n");
+            return;
+        }
+
         auto sizeBackup = font->FontSize;
 
         if (artist[0] != '\0') {
