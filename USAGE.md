@@ -296,14 +296,13 @@ section.
 <img src="images/settings-misc.png" alt="misc settings">
 
 `Swap prev/next buttons` swaps prev/next buttons when wampy is on to match Winamp track buttons. *Note*: if wampy is on
-and screen is off, this behaviour is NOT turned off. Don't be surprised when you turn on wampy with this option, turn
-off display and then change tracks just like you used to with default player.
+and screen is off, this behaviour is NOT turned off.
 
 `Huge cover art` changes cover art resolution in default player to 480x480. It also changes title field
 to `<artist> - <title>`.
 
 `Show time` adds current time to volume indicator. Time updates every 10 seconds, 24 hours format. Disabled on
-WalkmanOne due to interface clutter.
+Walkman One due to interface clutter.
 
 `Disable touchscreen` disables touchscreen on next wampy toggle. To temporarily enable touchscreen in wampy while in
 this mode, set volume to 120 and toggle wampy twice.
