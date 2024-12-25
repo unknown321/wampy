@@ -1,6 +1,10 @@
 # general
 
 - [ ] refactor winamp skin loading with error handling
+- [ ] read skins from sd card
+  - [ ] inotify for directory change? init signal on card insert?
+  - [ ] update skin list
+  - [ ] error handling (current skin was deleted, what happens next?)
 - [x] winamp: play in playing state resets track to start and plays it again
 - [x] winamp: play in paused state resumes playing
 - [x] winamp: next in paused state switches track and plays it
