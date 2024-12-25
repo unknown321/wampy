@@ -977,6 +977,8 @@ void Controller::FeatureBigCover(Command::Command *c) {
         if ((bool)updateTitleWithArtistBigCover) {
             disconnect(updateTitleWithArtistBigCover);
         }
+
+        restoreTitle();
     }
 
     c->set_code(Command::OK);
@@ -985,7 +987,7 @@ void Controller::FeatureBigCover(Command::Command *c) {
 }
 
 // big cover is so big that artist and album are hidden under track control buttons
-// marquee just works, just slap artist with title
+// marquee just works, just slap artist together with title
 void Controller::UpdateTitleWithArtist() {
     if (MusicPlayer == nullptr) {
         DLOG("no music player\n");
@@ -1015,6 +1017,7 @@ void Controller::UpdateTitleWithArtist() {
         return;
     }
 
+    regularTitle = titleV.toString();
     auto newTitle = artist + " - " + titleV.toString();
     if (titleV == newTitle) {
         return;
@@ -1030,6 +1033,23 @@ void Controller::UpdateTitleWithArtist() {
             DLOG("connection failed\n");
         }
     }
+}
+
+void Controller::restoreTitle() {
+    if (MusicPlayer == nullptr) {
+        DLOG("no music player\n");
+        return;
+    }
+
+    QQuickItem *mp = qobject_cast<QQuickItem *>(MusicPlayer);
+    if (mp->childItems().length() < 3) {
+        DLOG("not enough children\n");
+        return;
+    }
+
+    auto meta = mp->childItems().at(2);
+
+    meta->setProperty("playTitle", regularTitle);
 }
 
 // works poorly, text doesn't update and other elements must be moved so text would be visible

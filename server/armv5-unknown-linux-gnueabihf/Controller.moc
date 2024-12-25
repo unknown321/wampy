@@ -52,6 +52,8 @@ class Controller : public QObject {
 
     void getModel();
 
+    void restoreTitle();
+
     QVariant jsExpression(const char *text);
 
     QWindow *window = nullptr;
@@ -80,6 +82,7 @@ class Controller : public QObject {
 
     QQuickItem *volumeValueInHeader = nullptr;
     QTimer *timer = nullptr;
+    QString regularTitle{}; // title without artist, used to restore title on disabling huge cover
 
     // if details popup is not ready but window is already
     //  hidden, there will be no data in popup until window is visible
