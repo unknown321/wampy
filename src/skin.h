@@ -574,6 +574,10 @@ struct Skin {
             if (ImGui::Checkbox("Prefer time remaining", &config->winamp.preferTimeRemaining)) {
                 config->Save();
             }
+
+            if (ImGui::Checkbox("Show clutterbar", &config->winamp.showClutterbar)) {
+                config->Save();
+            }
         } else if (activeSettingsTab == CASSETTE) {
             if (ImGui::Checkbox("Randomize?", &config->cassette.randomize)) {
                 config->Save();

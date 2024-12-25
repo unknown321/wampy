@@ -383,7 +383,9 @@ namespace Winamp {
 
         Elements.Main.Draw();
         Elements.Title.Draw();
-        Elements.ClutterBar.Draw();
+        if (config->showClutterbar) {
+            Elements.ClutterBar.Draw();
+        }
 
         switch (hash(connector->status.State.c_str())) {
         case hash("play"):

@@ -59,6 +59,7 @@ namespace AppConfig {
         ini["winamp"]["bitmapFont"] = std::to_string(winamp.useBitmapFont);
         ini["winamp"]["bitmapFontInPlaylist"] = std::to_string(winamp.useBitmapFontInPlaylist);
         ini["winamp"]["preferTimeRemaining"] = std::to_string(winamp.preferTimeRemaining);
+        ini["winamp"]["showClutterbar"] = std::to_string(winamp.showClutterbar);
 
         ini["misc"]["swapTrackButtons"] = std::to_string(misc.swapTrackButtons);
 
@@ -143,6 +144,7 @@ namespace AppConfig {
 
         winamp.useBitmapFontInPlaylist = (bool)std::atoi(ini["winamp"]["bitmapFontInPlaylist"].c_str());
         winamp.preferTimeRemaining = (bool)std::atoi(ini["winamp"]["preferTimeRemaining"].c_str());
+        winamp.showClutterbar = (bool)std::atoi(ini["winamp"]["showClutterbar"].c_str());
         cassette.randomize = (bool)std::atoi(ini["cassette"]["randomize"].c_str());
         // NOLINTEND
 

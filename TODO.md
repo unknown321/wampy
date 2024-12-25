@@ -5,6 +5,7 @@
   - [ ] inotify for directory change? init signal on card insert?
   - [ ] update skin list
   - [ ] error handling (current skin was deleted, what happens next?)
+- [ ] update winamp settings screenshot in usage (clutterbar)
 - [x] winamp: play in playing state resets track to start and plays it again
 - [x] winamp: play in paused state resumes playing
 - [x] winamp: next in paused state switches track and plays it
@@ -66,7 +67,7 @@
 - [ ] eq button custom action - too small?
 - [ ] "restart wampy" button in settings - use case?
 - [ ] single connection?
-- [ ] walkmanOne settings in wampy settings
+- [ ] walkman One settings in wampy settings
 
 # hard to solve
 

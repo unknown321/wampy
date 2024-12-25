@@ -108,6 +108,7 @@ namespace Winamp {
         bool useBitmapFontInPlaylist{};
         bool useBitmapFont{};
         bool preferTimeRemaining{};
+        bool showClutterbar = true;
         std::string filename{};
 
         void Default();
