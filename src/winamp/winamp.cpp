@@ -938,7 +938,7 @@ namespace Winamp {
             if (isEx) {
                 ImGui::SetCursorPos(ImVec2(111, 76));
             } else {
-                ImGui::SetCursorPos(ImVec2(113, 92));
+                ImGui::SetCursorPos(ImVec2(113, 93));
             }
             ImGui::Text("%s", remainingTimeSign);
         }
