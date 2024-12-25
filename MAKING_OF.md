@@ -195,10 +195,10 @@ Perhaps this technology was lost?
 - Volume buttons on my wired Apple headphones don't work, but they do on my Samsung tablet. Why?
 
 - What is the `Hold` button for, preventing accidental button presses? In my experience it is pretty hard to press
-  button
-  with something else in my pocket. There is also an option to keep touchscreen enabled while `Hold`ing - for what
-  purpose? So screen is on (meaning you are looking at it and capable of doing anything), fully usable, but buttons are
-  off? Can't imagine a situation where I needed such behaviour.
+  button with something else in my pocket. There is also an option to keep touchscreen enabled while `Hold`ing - for
+  what purpose? So screen is on (meaning you are looking at it and capable of doing anything), fully usable, but buttons
+  are off? Can't imagine a situation where I needed such behaviour. `Hold` made sense on iRiver where buttons are
+  sticking out, not needed on iPod where buttons are very close to the frame.
 
 - Play, Prev and Hold physical buttons (in the bottom half of the device) are unreachable if you hold the player with
   right hand. Solution? Use left hand, just like on this promo image:
@@ -832,6 +832,9 @@ Volume starts from low (vol down) to high (vol up). iRiver T10 follows that prin
 be partly seen in iPods (no physical track control buttons, only volume cradle), but in Walkmans ignore it.
 Physical buttons are on right side, but virtual buttons are off by 90°. `Next` button works out somehow, but `Prev` is
 wrong. I know, it sounds weird, but it feels just right in Wampy with swapped buttons; they work like they should.
+
+Volume cradle is not affected by this option, because there is a tactile bump on VolUp. Swapping these buttons breaks
+your muscle memory.
 
 **Clock** finally came back. The reason it was missing in original firmware is simple: there are so many important
 indicators and not much space left. You can toggle disabled/hidden ones in GammaRay. Thankfully there is no designer
