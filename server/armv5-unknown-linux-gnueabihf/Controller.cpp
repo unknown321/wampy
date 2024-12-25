@@ -251,6 +251,7 @@ void Controller::GetStatus(Command::Command *c) {
 
     if (!detailInfoPopupPositionReset) {
         connectDetailInfoProvider();
+        provider.FromDetailsPopup();
     } else {
         if (!detailsFirstPull) {
             detailsFirstPull = QMetaObject::invokeMethod(ContentDetailedInfo, "listPositionReset", Qt::QueuedConnection);
