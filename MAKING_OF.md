@@ -224,24 +224,25 @@ Apple - [take a look](https://patents.google.com/?inventor=Steven+P.+Jobs).
 
 It started with [SensMe™](https://en.wikipedia.org/wiki/SensMe). SensMe™ is a technology which detects mood/tempo in
 your audio track. It was made by Gracenote, Inc. (despite what Wikipedia says) and works like this: audio
-stream is played into highly compressed version of itself, analyzed and stored into `SMFMF` ID3 tag. Then client (player
-software) reads that tag, possibly reanalyzing compressed data and saves mood data to internal database (citation
-needed, not sure about that). This mechanism is decades old and backwards compatible, tracks analyzed with
-[Sony Media Center from like 2009](https://archive.org/download/SonyEricssonC510) are recognized by NW-A50 from 2018. If
-you are interested in this stuff, you can look for Gracenote documentation, where this process is described a
-little better. If you are *really* interested, you can also decompile `gnsdk_*` libraries and find traces of various
-algorithms, sophisticated math... Fun stuff.
+stream is played into highly compressed version of itself, analyzed and stored into `GEOB` (General object) ID3 tag
+named `USR_SMFMF`. Then client (player software) reads that tag, possibly reanalyzing compressed data and saves mood
+data to internal database (citation needed, not sure about that). This mechanism is decades old and backwards
+compatible, tracks analyzed with [Sony Media Center from like 2009](https://archive.org/download/SonyEricssonC510) are
+recognized by NW-A50 from 2018. If you are interested in this stuff, you can look for Gracenote documentation, where
+this process is described a little better. If you are *really* interested, you can also decompile `gnsdk_*` libraries
+and find traces of various algorithms, sophisticated math... Fun stuff.
 
 Why do I even care? First, it takes some time to analyze a song, like 10 seconds each. You need to launch Sony media
 application (Electron garbage, which barely works on Linux), load all your tracks into it and wait for hours. Then your
-audio file grows by almost a megabyte of `SMFMF` data, possibly corrupting ID3 tags in process (unacceptable).
+audio file grows by almost a megabyte of `USR_SMFMF` data, possibly corrupting ID3 tags in process (unacceptable).
 
 Is there a way of faster tagging with fewer data? Mood should be like what, 10 bytes of ids, right (Energetic (0x01)=10,
 Relaxing (0x02)=2, Mellow (0x03)=0.5)? Tempo is literally a number, a sequence of numbers if it changes during song,
 not a megabyte. Perhaps I could feed my music to music-specialized LLM and write those bytes myself?
 
 So I tried to reverse engineer the format (and failed). There are at least 3 backwards-compatible
-versions of `SMFMF` data. It includes compressed song (in what format? citation needed) and various metadata in binary
+versions of `USR_SMFMF` data. It includes compressed song (in what format? citation needed) and various metadata in
+binary
 form. Unfortunately there was not enough time to investigate it further, but at least I managed to reverse engineer
 server-client communication between local client and Gracenote servers, which is used to identify your song. Had fun,
 but nothing new about `SMFMF`.
