@@ -30,7 +30,7 @@
 	ignore = dirty
 [submodule "cassetteunpacker"]
 	path = cassetteunpacker
-	url = ssh://git@192.168.10.105:3002/unknown/cassetteunpacker.git
+	url = https://github.com/unknown321/cassetteunpacker.git
 [submodule "nw-installer"]
 	path = nw-installer
-	url = ssh://git@192.168.10.105:3002/unknown/nw-installer.git
+	url = https://github.com/unknown321/nw-installer.git
