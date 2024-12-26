@@ -47,7 +47,7 @@ memory device.
 
 Here is the example:
 <details>
-<summary>MT8163 scatter file example</summary>
+<summary>MT8163 scatter file</summary>
 
 ```
 #########################################__WwR_MTK__########################################################
@@ -105,7 +105,7 @@ Here is the example:
 Okay, but what exactly it is? Is there some doc describing the format?
 Google: `site:xdaforums.com what is scatter file`.
 
-Google responds with 9 links of questions about getting the file,
+Google responds with 9 threads about getting the file,
 and [one (first one! could it be it?)](https://xdaforums.com/t/is-a-scatter-file-needed-for-building-a-custom-rom.4687546/)
 that says right there:
 
@@ -117,7 +117,7 @@ simple `<partition:image file>` map file. This `Staff member` is either wrong or
 
 Another search (`scatter file syntax`), another page of questions and step-by-step guides without answers. Is it me
 asking wrong questions or there is no answer available online? By the way, there is no search form for unregistered
-users, you have to join the community.
+users, you have to join the community (I did not).
 
 #### Why?
 

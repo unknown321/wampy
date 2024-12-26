@@ -40,12 +40,12 @@ Desktop applications meet you with mismatching GUI theme. That's right, detectin
 automatically is not of developers concern. You can change theme later somewhere in settings if dev was kind enough to
 add that option. Usually desktop applications have error handling, but it doesn't stop them from throwing stack traces
 at you. Take a look - https://github.com/NationalSecurityAgency/ghidra/issues/5468. Just so you know, application
-doesn't crash after that error, leaving you in "Am I still OK? Do I need to restart?" state. At least you can copy (
-screenshot?) that stacktrace and contact a developer; maybe it will be fixed. This one was, but there are much more I've
-personally encountered during ~3 years of using Ghidra. And this is a nice project, there was software much, much worse,
-like Java IPMI widgets for SuperMicro servers, Azureus (torrent client), older versions of OpenOffice, Eclipse, Jmeter,
-Gatling and other crap. These days I use Java applications on desktop as a last resort, avoiding them as much as I can.
-Even JetBrains IDEs throw some garbage to console from time to time.
+doesn't crash after that error, leaving you in "Am I still OK? Do I need to restart?" state. At least you can copy
+(screenshot?) that stacktrace and contact a developer; maybe it will be fixed. This one was, but there are much more
+I've personally encountered during ~3 years of using Ghidra. And this is a nice project, there was software much, much
+worse, like Java IPMI widgets for SuperMicro servers, Azureus (torrent client), older versions of OpenOffice, Eclipse,
+Jmeter, Gatling and other crap. These days I use Java applications on desktop as a last resort, avoiding them as much as
+I can. Even JetBrains IDEs throw some garbage to console from time to time.
 
 #### Server applications
 
@@ -72,7 +72,7 @@ enough, look at this:
 Or maybe `-XX:+UseContainerSupport -XX:MaxRAMPercentage=60.0`? We just don't know.
 
 Then everything works fine for a month or two, stacktraces don't bother you anymore (these were just 150 lines of
-notices, working as intended), memory consumption is ok... unless it is not. Something is leaking, and you start
+*notices*, working as intended), memory consumption is ok... unless it is not. Something is leaking, and you start
 profiling that crap, looking for a leak. Maybe you'll find it, maybe you won't.
 
 ---

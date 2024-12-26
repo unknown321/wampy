@@ -41,6 +41,8 @@ NOTES
        Instead, on failure they return an error number as the function
        result.  These error numbers have the same meanings as the error
        numbers returned in errno by other APIs.
+       
+       (man 3 errno)
 ```
 
 Why even bother with errno at this point, if you can just put error code in return value?
@@ -65,9 +67,6 @@ CMake-compatible one. Guess what, most popular one was unable to
 write `ini`, [only read it](https://github.com/ndevilla/iniparser/issues/91), because it's a `parser` (and I figured it
 out two days after). If that library doesn't support CMake, you'll have to integrate it into your project somehow. Go
 wins again with its superior tooling.
-
-There is no definitive standard library to use with functions needed to work with files, use strings and threading.
-GitHub keeps suggesting me different libs with same functionality.
 
 #### On project file structure
 
@@ -113,6 +112,9 @@ Stack traces? Of course not out of the box. You must build your application with
 application. It doesn't help if segfault occurs in standard library, like it did after 4 hours of waiting.
 
 And people say that it was even *worse* before C++11 - https://news.ycombinator.com/item?id=42495135.
+
+There is no definitive standard library to use with functions needed to work with files, strings, threads and network.
+GitHub keeps suggesting me different libs with same functionality.
 
 #### Documentation
 
