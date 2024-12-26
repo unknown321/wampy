@@ -203,6 +203,8 @@ present in table).
 After changing tape/reel to some new entry not used before, selected entry will be loaded which takes some time. There
 is no visual indication.
 
+Tap middle of the screen while in `Randomize?` mode to re-roll current tape/reel.
+
 #### Issues and quirks
 
 Issues:

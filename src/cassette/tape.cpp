@@ -109,6 +109,10 @@ namespace Tape {
             ->WithPosition(800 - bt.size.x, 0.0f)
             ->WithTextures(bts)
             ->WithCallback(Skin::Skin::ToggleDrawSettings, skin, nullptr);
+        Elements.RandomizeTape.WithID("randomizeTape")
+            ->WithPosition(400 - bt.size.x / 2, 240 - bt.size.y / 2)
+            ->WithTextures(bts)
+            ->WithCallback(Skin::Skin::RandomizeTape, skin, nullptr);
 
         return 0;
     }
@@ -116,6 +120,7 @@ namespace Tape {
     void Tape::Draw() {
         Elements.Main.Draw();
         Elements.ToggleSettings.Draw();
+        Elements.RandomizeTape.Draw();
 
         DrawSongInfo();
     }
@@ -140,6 +145,7 @@ namespace Tape {
         Elements.Main.Unload();
         DLOG("unload button\n");
         Elements.ToggleSettings.Unload();
+        Elements.RandomizeTape.Unload();
         valid = false;
     }
 } // namespace Tape

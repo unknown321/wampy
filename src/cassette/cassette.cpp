@@ -378,8 +378,22 @@ namespace Cassette {
     }
 
     void Cassette::randomizeTape() {
-        auto index = std::rand() % tapeTypes.size();
-        tapeType = tapeTypes[index];
+        auto oldType = tapeType;
+        size_t index;
+        Tape::TapeType newType = Tape::MP3_128;
+
+        for (int i = 0; i < 7; i++) {
+            index = std::rand() % tapeTypes.size();
+            newType = tapeTypes[index];
+            DLOG("old %d, new %d\n", oldType, newType);
+            if (newType != oldType) {
+                break;
+            }
+
+            DLOG("same type %d, retry\n", i);
+        }
+
+        tapeType = newType;
 
         ActiveTape = &Tapes[config->Get(tapeType)->tape];
         assert(ActiveTape);

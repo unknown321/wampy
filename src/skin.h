@@ -189,6 +189,14 @@ struct Skin {
         }
     }
 
+    static void RandomizeTape(void *skin, void *) {
+        auto s = (Skin *)skin;
+        assert(s);
+        if (s->cassette.config->randomize) {
+            s->cassette.SelectTape();
+        }
+    }
+
     void Header() {
         ImGui::Indent(15.0f);
         ImGui::Text("Settings");

@@ -30,9 +30,7 @@ namespace Tape {
     struct TapeElements {
         FlatTexture Main;
         Button ToggleSettings;
-        //        ImVec2 PosArtist;
-        //        ImVec2 PosText;
-        //        ImVec2 PosReel;
+        Button RandomizeTape;
     };
 
     struct Tape {
