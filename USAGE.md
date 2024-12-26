@@ -1,32 +1,29 @@
-# Table of contents
-
 <!-- TOC -->
 
-* [Table of contents](#table-of-contents)
-  * [Usage](#usage)
-  * [General issues and troubleshooting (read these)](#general-issues-and-troubleshooting-read-these)
-    * [⚠️What to do if device crashes / Wampy doesn't start?⚠️](#what-to-do-if-device-crashes--wampy-doesnt-start)
-    * [Wampy is on screen but doesn't respond and cannot be toggled off](#wampy-is-on-screen-but-doesnt-respond-and-cannot-be-toggled-off)
-    * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
-    * [Wampy is empty](#wampy-is-empty)
-    * [Notes on ugly settings](#notes-on-ugly-settings)
-    * [Fonts](#fonts)
-    * [There is a "detailed info" popup after turning screen off and on instead of Wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
-    * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
-  * [Using Wampy](#using-wampy)
-    * [Winamp](#winamp)
-      * [UI Buttons](#ui-buttons)
-      * [Settings screen](#settings-screen)
-      * [Known issues and quirks](#known-issues-and-quirks)
-    * [Cassette](#cassette)
-      * [Settings](#settings)
-      * [Issues and quirks](#issues-and-quirks)
-    * [Custom skins](#custom-skins)
-      * [Winamp skins](#winamp-skins)
-      * [Cassette skins](#cassette-skins)
-  * [Misc](#misc)
-    * [Issues](#issues)
-  * [Providing debug information](#providing-debug-information)
+* [Usage](#usage)
+* [General issues and troubleshooting (read these)](#general-issues-and-troubleshooting-read-these)
+  * [⚠️What to do if device crashes / Wampy doesn't start?⚠️](#what-to-do-if-device-crashes--wampy-doesnt-start)
+  * [Wampy is on screen but doesn't respond and cannot be toggled off](#wampy-is-on-screen-but-doesnt-respond-and-cannot-be-toggled-off)
+  * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
+  * [Wampy is empty](#wampy-is-empty)
+  * [Notes on ugly settings](#notes-on-ugly-settings)
+  * [Fonts](#fonts)
+  * [There is a "detailed info" popup after turning screen off and on instead of Wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
+  * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
+* [Using Wampy](#using-wampy)
+  * [Winamp](#winamp)
+    * [UI Buttons](#ui-buttons)
+    * [Settings screen](#settings-screen)
+    * [Known issues and quirks](#known-issues-and-quirks)
+  * [Cassette](#cassette)
+    * [Settings](#settings)
+    * [Issues and quirks](#issues-and-quirks)
+  * [Custom skins](#custom-skins)
+    * [Winamp skins](#winamp-skins)
+    * [Cassette skins](#cassette-skins)
+* [Misc](#misc)
+  * [Issues](#issues)
+* [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
 
@@ -61,16 +58,17 @@ for a minute.
 
 Otherwise, it might've crashed.
 
-### Wampy is empty
+### There is no song info
 
-Try toggling it on and off again. Perhaps device is connected to PC in Mass Storage mode?
+Try toggling it on and off again. Perhaps device is connected to PC in Mass Storage mode? Make sure you are using
+default music player, not SensMe or Language Study.
 
 ### Notes on ugly settings
 
 Due to unfortunate combination of font and framework quirks, all text in settings is placed slightly lower than
 expected.
 
-Rotation is not handled very well by framework, drawing backend and repo owner, so dropdowns are broken.
+Rotation is not handled very well by framework (and developer), drawing backend and repo owner, so dropdowns are broken.
 See https://github.com/ocornut/imgui/issues/7866 and [libs/imgui.patch](./libs/imgui.patch).
 
 ### Fonts
@@ -85,8 +83,8 @@ memory. GPU memory is shared with main memory and usually there is not much left
 this **will** cause crashes. Generally it is fine to turn on one or two of these. Chinese characters are guaranteed to
 crash your device, so they are explicitly disabled.
 
-If crashes occur, see
-to [What to do if device crashes / Wampy doesn't start?](#what-to-do-if-device-crashes--Wampy-doesnt-start) section.
+If crashes occur,
+see [What to do if device crashes / Wampy doesn't start?](#what-to-do-if-device-crashes--Wampy-doesnt-start) section.
 
 <img src="images/fonts.png" alt="fonts settings">
 
@@ -118,7 +116,7 @@ All buttons and sliders work just like you expect them to (except EQ, repeat, pl
 
 Not implemented:
 
-- Visualization: technical reasons. See [alsa.md](alsa.md).
+- Visualization: technical reasons. See [ALSA.md](./ALSA.md).
 - Title scrolling by touching: framework limitations/lack of knowledge
 - Scrolling playlist (backend doesn't provide enough data)
 - Editing playlist, not possible with current default player integration level
@@ -266,7 +264,9 @@ used. You can get some nice tapes from http://tapedeck.org/, non-transparent one
 Reel format: JPEG, any size, any name. All found files in directory are used. Position is defined by tape
 in `config.txt`.
 
-`config.txt`:
+Reel sprite changes every 55 ms. Default reels have 57 images each.
+
+`config.txt` contents:
 
 ```yaml
 reel: other           # default reel
@@ -285,6 +285,8 @@ Remember, `(0,0)` is top left corner.
 Set `artistx`/`titlex` to negative value to hide artist/title labels.
 
 Config file is not required; default one (with values above) will be used instead.
+
+Example [tape](./images/ic_audio_play_cassette_ahf_picture.jpg), [reel](./images/ic_audio_play_tape_reel_other_00.jpg).
 
 ⚠️**WARNING**⚠️
 

@@ -1,5 +1,16 @@
 ## Installing wampy
 
+<!-- TOC -->
+
+* [Installing wampy](#installing-wampy)
+  * [Windows](#windows)
+  * [Linux](#linux)
+    * [Without adb (regular install):](#without-adb-regular-install)
+    * [With adb:](#with-adb)
+  * [Mac:](#mac)
+
+<!-- TOC -->
+
 ### Windows
 
 Download exe from [releases](./releases), run and follow instructions.
@@ -8,7 +19,7 @@ Device will restart twice.
 
 ### Linux
 
-#### Without adb (regular install):
+#### Without adb
 
 - copy corresponding `NW_WM_FW.UPG` to root directory on device (the one with MUSIC directory)
 - use [scsitool](https://www.rockbox.org/wiki/SonyNWDestTool.html):
@@ -17,7 +28,7 @@ Device will restart twice.
   - `scsitool -d -s nw-a50 /dev/sg4 do_fw_upgrade` (may require root)
 - device reboots, upgrades a little, reboots again and upgrades again (fully)
 
-#### With adb:
+#### With adb
 
 If your player has adb on, there is no need for scsitool.
 
@@ -38,7 +49,7 @@ adb shell reboot
 
 Device reboots, upgrades a little, reboots again and upgrades again (fully).
 
-### Mac:
+### Mac
 
 No native installer.
 
