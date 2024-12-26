@@ -20,4 +20,5 @@ std::map<int, std::string> commandNames = {
     {Command::Type::CMD_STOP, "CMD_STOP"},
     {Command::Type::CMD_FEATURE_BIG_COVER, "CMD_FEATURE_BIG_COVER"},
     {Command::Type::CMD_FEATURE_SHOW_CLOCK, "CMD_FEATURE_SHOW_CLOCK"},
+    {Command::Type::CMD_FEATURE_SET_MAX_VOLUME, "CMD_FEATURE_SET_MAX_VOLUME"},
 };

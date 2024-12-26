@@ -21,6 +21,7 @@ namespace AppConfig {
     struct Features {
         bool bigCover = false;
         bool showTime = false;
+        bool limitVolume = false;
         bool touchscreenStaysOFF = false;
     };
 

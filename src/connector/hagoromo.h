@@ -14,6 +14,7 @@ namespace Hagoromo {
         bool *touchscreenStaysOFF{};
         bool *featureBigCover{};
         bool *featureShowTime{};
+        bool *featureLimitVolume{};
 
         static void sendData(char *data, size_t len, std::string *res);
 
@@ -64,6 +65,8 @@ namespace Hagoromo {
         void FeatureBigCover(bool enable) override;
 
         void FeatureShowTime(bool enable) override;
+
+        void FeatureSetMaxVolume(bool enable) override;
 
         void Start() override;
     };

@@ -172,6 +172,8 @@ struct Connector {
 
     virtual void FeatureShowTime(bool enable) = 0;
 
+    virtual void FeatureSetMaxVolume(bool enable) = 0;
+
     virtual void Start() {
         Connect();
         auto exec_run = [this]() { ReadLoop(); };

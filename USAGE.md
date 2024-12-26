@@ -5,15 +5,15 @@
 * [Table of contents](#table-of-contents)
   * [Usage](#usage)
   * [General issues and troubleshooting (read these)](#general-issues-and-troubleshooting-read-these)
-    * [⚠️What to do if device crashes / wampy doesn't start?⚠️](#what-to-do-if-device-crashes--wampy-doesnt-start)
+    * [⚠️What to do if device crashes / Wampy doesn't start?⚠️](#what-to-do-if-device-crashes--wampy-doesnt-start)
     * [Wampy is on screen but doesn't respond and cannot be toggled off](#wampy-is-on-screen-but-doesnt-respond-and-cannot-be-toggled-off)
     * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
     * [Wampy is empty](#wampy-is-empty)
     * [Notes on ugly settings](#notes-on-ugly-settings)
     * [Fonts](#fonts)
-    * [There is a "detailed info" popup after turning screen off and on instead of wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
+    * [There is a "detailed info" popup after turning screen off and on instead of Wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
     * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
-  * [Using wampy](#using-wampy)
+  * [Using Wampy](#using-wampy)
     * [Winamp](#winamp)
       * [UI Buttons](#ui-buttons)
       * [Settings screen](#settings-screen)
@@ -38,14 +38,14 @@ Use "Hold" toggle to enable/disable wampy.
 
 While wampy is running, default locking functionality is disabled - buttons and touchscreen are working.
 
-Holding volume button to rapidly change volume doesn't work. Volume is changed per click in 1% intervals (~2 in default
-player terms)).
+Holding volume button to rapidly change volume doesn't work. Volume is changed per button press in 1% intervals (~2
+points in default player terms).
 
 ## General issues and troubleshooting (read these)
 
-### ⚠️What to do if device crashes / wampy doesn't start?⚠️
+### ⚠️What to do if device crashes / Wampy doesn't start?⚠️
 
-If wampy failed to start 3 times (read: device rebooted trice), it stops starting until you edit `wampy/config.ini`.
+If Wampy failed to start 3 times (read: device rebooted trice), it stops starting until you edit `wampy/config.ini`.
 Remove config file or set `[wampy][badboots]` to 0 (along with device-breaking settings you changed such as fonts) and
 reboot the device. If you cannot access config file (device stuck in boot loop and won't connect to pc, very unlikely
 situation), restore it from backup that you made beforehand (see [BACKUP.md](./BACKUP.md)).
@@ -56,7 +56,7 @@ Reboot device by holding power button.
 
 ### Wampy is not showing when "Hold" is toggled
 
-If that happens right after device boots, wampy might be still loading (see [Cassette quirks](#issues-and-quirks)). Wait
+If that happens right after device boots, Wampy might be still loading (see [Cassette quirks](#issues-and-quirks)). Wait
 for a minute.
 
 Otherwise, it might've crashed.
@@ -86,13 +86,13 @@ this **will** cause crashes. Generally it is fine to turn on one or two of these
 crash your device, so they are explicitly disabled.
 
 If crashes occur, see
-to [What to do if device crashes / wampy doesn't start?](#what-to-do-if-device-crashes--wampy-doesnt-start) section.
+to [What to do if device crashes / Wampy doesn't start?](#what-to-do-if-device-crashes--Wampy-doesnt-start) section.
 
 <img src="images/fonts.png" alt="fonts settings">
 
-### There is a "detailed info" popup after turning screen off and on instead of wampy
+### There is a "detailed info" popup after turning screen off and on instead of Wampy
 
-This is the place where current track info is coming from. Toggle wampy on and off to close it automatically or just
+This is the place where current track info is coming from. Toggle Wampy on and off to close it automatically or just
 close it by hand.
 
 Why does it happen? Default player restores itself on power on and there is no indication of it being ready to be hidden
@@ -102,7 +102,7 @@ again. Hiding default player as soon as possible caused crashes, so... Sorry abo
 
 Reboot the device. I suppose that happens because of opengl texture unloading (or a memory leak:).
 
-## Using wampy
+## Using Wampy
 
 Wampy works with default music player.
 
@@ -166,8 +166,6 @@ Quirks:
 
 - Playlist is never full. Default player keeps up to 15 songs in memory, some of those have already been played,
   reducing playlist size further
-- It would be unwise to pull volume slider all the way to the right just like you did on desktop Winamp. Perhaps some
-  kind of volume limiter might help?
 - Some elements may look slightly off (if you look hard enough) due to upscaling (800/275 = 2.90909...).
 - There might be small delay between clicking button and getting response (noticeable on shuffle button)
 
@@ -290,15 +288,14 @@ Config file is not required; default one (with values above) will be used instea
 
 GPU memory is shared with main memory and usually there is not much left. Putting huge images as tapes/reels
 is a **bad** idea. Too many reel textures is bad too.
-Consult [What to do if device crashes / wampy doesn't start?](#what-to-do-if-device-crashes--wampy-doesnt-start)
+Consult [What to do if device crashes / Wampy doesn't start?](#what-to-do-if-device-crashes--Wampy-doesnt-start)
 section.
 
 ## Misc
 
 <img src="images/settings-misc.png" alt="misc settings">
 
-`Swap prev/next buttons` swaps prev/next buttons when wampy is on to match Winamp track buttons. *Note*: if wampy is on
-and screen is off, this behaviour is NOT turned off.
+`Swap prev/next buttons` swaps prev/next buttons when Wampy is on to match Winamp track buttons.
 
 `Huge cover art` changes cover art resolution in default player to 480x480. It also changes title field
 to `<artist> - <title>`.
@@ -306,8 +303,10 @@ to `<artist> - <title>`.
 `Show time` adds current time to volume indicator. Time updates every 10 seconds, 24 hours format. Disabled on
 Walkman One due to interface clutter.
 
-`Disable touchscreen` disables touchscreen on next wampy toggle. To temporarily enable touchscreen in wampy while in
-this mode, set volume to 120 and toggle wampy twice.
+`Limit max volume` limits max volume to 63 in Wampy, so you can use whole volume slider without going deaf.
+
+`Disable touchscreen` disables touchscreen on next Wampy toggle. To temporarily enable touchscreen in Wampy while in
+this mode, set volume to 120 in default player app and toggle Wampy on.
 
 `Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is
 cassette.
@@ -315,11 +314,14 @@ cassette.
 `Limit fps`, target fps = 24 . Does it really help to save battery/improve performance? Don't know, off by default.
 Applied after restart.
 
+<figure>
 <img src="./images/hagoromo-fix.png" alt="time and cover">
+<figcaption>"Huge cover art" and "show time" options</figcaption>
+</figure>
 
 ### Issues
 
-- `Huge cover art` and `Show time` are NOT applied on application start. You need to toggle wampy once for these to
+- `Huge cover art` and `Show time` are NOT applied on application start. You need to toggle Wampy once for these to
   apply.
 - `Huge cover art` hides lyrics icon.
 
@@ -328,5 +330,5 @@ Applied after restart.
 Wampy automatically collects crash dumps and logs on start. These are located in `wampy/log/` directory. Feel free to
 delete them if you need space. Usually these indicate that *something* crashed (might be some system service).
 
-You can generate a log when wampy is running. Enable `Settings->Misc->Debug`, tap "Create log file" at the bottom.
+You can generate a log when Wampy is running. Enable `Settings->Misc->Debug`, tap "Create log file" at the bottom.
 Log will be placed in `wampy/log/log.user.<date>`.

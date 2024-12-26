@@ -33,9 +33,12 @@ namespace Cassette {
         // copy constructor implementation
     }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
     Cassette &Cassette::Cassette::operator=(Cassette const &other) {
         // copy assignment operator
     }
+#pragma GCC diagnostic pop
 
     void Config::Default() {
         auto d = GetDefault();

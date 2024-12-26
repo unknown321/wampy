@@ -21,6 +21,7 @@ enum Type {
   CMD_FEATURE_BIG_COVER = 15;
   CMD_FEATURE_SHOW_CLOCK = 16;
   CMD_FAILURE = 17;
+  CMD_FEATURE_SET_MAX_VOLUME = 18;
 }
 
 enum ResponseCode {
@@ -46,6 +47,7 @@ message Command {
     Seek Seek = 6;
     FeatureBigCover FeatureBigCover = 7;
     FeatureShowClock FeatureShowClock = 8;
+    FeatureSetMaxVolume FeatureSetMaxVolume = 9;
   }
 }
 
@@ -54,6 +56,10 @@ message FeatureBigCover {
 }
 
 message FeatureShowClock {
+  required bool enabled = 1;
+}
+
+message FeatureSetMaxVolume {
   required bool enabled = 1;
 }
 

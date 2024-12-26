@@ -305,6 +305,11 @@ struct Skin {
             ImGui::EndDisabled();
         }
 
+        if (ImGui::Checkbox("Limit max volume", &config->features.limitVolume)) {
+            config->Save();
+            connector->FeatureSetMaxVolume(config->features.limitVolume);
+        }
+
         if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
             config->Save();
         }

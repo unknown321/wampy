@@ -117,6 +117,9 @@ QByteArray WampyServer::handle(QByteArray data) {
     case Command::Type::CMD_FEATURE_SHOW_CLOCK:
         controller.FeatureShowClock(&command);
         break;
+    case Command::Type::CMD_FEATURE_SET_MAX_VOLUME:
+        controller.FeatureSetMaxVolume(&command);
+        break;
     case Command::Type::CMD_UNKNOWN:
     default:
         DLOG("unknown command\n");

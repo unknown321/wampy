@@ -296,7 +296,7 @@ void Controller::GetStatus(Command::Command *c) {
     s->set_bitdepth(provider.bitDepth);
     s->set_elapsed(provider.curTime);
     s->set_hires(provider.hires);
-    s->set_volume(provider.volume * 100 / 120);
+    s->set_volume(provider.volume * 100 / maxVolume);
 
     c->set_code(Command::OK);
 }
@@ -310,27 +310,33 @@ void Controller::SetVolume(Command::Command *c) {
         }
     }
 
-    int newVal = c->setvolume().valuepercent() * 120 / 100;
+    int newVal = c->setvolume().valuepercent() * maxVolume / 100;
 
-    if (newVal < 0 || newVal > 120) {
+    if (newVal < 0 || newVal > maxVolume) {
         DLOG("invalid value %d\n", newVal);
         return;
     }
 
     int oldVal = provider.volume;
-    int oldPercent = provider.volume * 100 / 120;
+    int oldPercent = provider.volume * 100 / maxVolume;
 
     DLOG("set to %d (%d%%), was %d (%d%%)\n", newVal, c->setvolume().valuepercent(), oldVal, oldPercent);
 
     // this is a sad case of rounding int and refusing to work with raw volume values
     if (newVal == oldVal) {
-        int one = 120 / 100;
+        int one = maxVolume / 100;
+        if (one < 1) {
+            one = 1;
+        }
+
         if (oldPercent > c->setvolume().valuepercent()) {
             // decrease
             newVal -= one;
         } else {
             newVal += one;
         }
+
+        DLOG("fixed to %d (%d%%), was %d (%d%%)\n", newVal, c->setvolume().valuepercent(), oldVal, oldPercent);
     }
 
     if (!QMetaObject::invokeMethod(DACViewModel, "OnVolumeDialChanged", Q_ARG(int, newVal))) {
@@ -1235,6 +1241,19 @@ void Controller::getModel() {
     if (QDir("/etc/.mod").exists()) {
         isWalkmanOne = true;
     }
+}
+
+void Controller::FeatureSetMaxVolume(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (c->featuresetmaxvolume().enabled()) {
+        maxVolume = HAGOROMO_AVLS_VOLUME_MAX;
+    } else {
+        maxVolume = HAGOROMO_DEFAULT_VOLUME_MAX;
+    }
+
+    c->set_code(Command::OK);
+
+    featureSetMaxVolume = c->featuresetmaxvolume().enabled();
 }
 
 // void SearchContentData(ContentsDBEntryId entry_id) -> trackID + 0x10000000

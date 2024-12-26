@@ -235,6 +235,7 @@ int main(int, char **) {
         v->touchscreenStaysOFF = &config.features.touchscreenStaysOFF;
         v->featureBigCover = &config.features.bigCover;
         v->featureShowTime = &config.features.showTime;
+        v->featureLimitVolume = &config.features.limitVolume;
     } else {
         connector = new MPD::MPDConnector();
         connector->address = config.MPDSocketPath.c_str();
@@ -250,6 +251,7 @@ int main(int, char **) {
     v->touchscreenStaysOFF = &config.features.touchscreenStaysOFF;
     v->featureBigCover = &config.features.bigCover;
     v->featureShowTime = &config.features.showTime;
+    v->featureLimitVolume = &config.features.limitVolume;
 
     socket = WAMPY_SOCKET;
     listdir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/", &skinList, ".wsz");

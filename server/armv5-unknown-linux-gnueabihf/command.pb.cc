@@ -66,6 +66,20 @@ struct FeatureShowClockDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeatureShowClockDefaultTypeInternal _FeatureShowClock_default_instance_;
+PROTOBUF_CONSTEXPR FeatureSetMaxVolume::FeatureSetMaxVolume(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.enabled_)*/false} {}
+struct FeatureSetMaxVolumeDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR FeatureSetMaxVolumeDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~FeatureSetMaxVolumeDefaultTypeInternal() {}
+  union {
+    FeatureSetMaxVolume _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeatureSetMaxVolumeDefaultTypeInternal _FeatureSetMaxVolume_default_instance_;
 PROTOBUF_CONSTEXPR WindowStatus::WindowStatus(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
@@ -164,7 +178,7 @@ struct StatusDefaultTypeInternal {
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StatusDefaultTypeInternal _Status_default_instance_;
 }  // namespace Command
-static ::_pb::Metadata file_level_metadata_command_2eproto[9];
+static ::_pb::Metadata file_level_metadata_command_2eproto[10];
 static const ::_pb::EnumDescriptor* file_level_enum_descriptors_command_2eproto[3];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_command_2eproto = nullptr;
 
@@ -183,9 +197,11 @@ const uint32_t TableStruct_command_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
+  ::_pbi::kInvalidFieldOffsetTag,
   PROTOBUF_FIELD_OFFSET(::Command::Command, _impl_.Msg_),
   0,
   1,
+  ~0u,
   ~0u,
   ~0u,
   ~0u,
@@ -207,6 +223,14 @@ const uint32_t TableStruct_command_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::Command::FeatureShowClock, _impl_.enabled_),
+  0,
+  PROTOBUF_FIELD_OFFSET(::Command::FeatureSetMaxVolume, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Command::FeatureSetMaxVolume, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Command::FeatureSetMaxVolume, _impl_.enabled_),
   0,
   PROTOBUF_FIELD_OFFSET(::Command::WindowStatus, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Command::WindowStatus, _internal_metadata_),
@@ -285,21 +309,23 @@ const uint32_t TableStruct_command_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   1,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 15, -1, sizeof(::Command::Command)},
-  { 23, 30, -1, sizeof(::Command::FeatureBigCover)},
-  { 31, 38, -1, sizeof(::Command::FeatureShowClock)},
-  { 39, 46, -1, sizeof(::Command::WindowStatus)},
-  { 47, 54, -1, sizeof(::Command::SetVolume)},
-  { 55, 62, -1, sizeof(::Command::Seek)},
-  { 63, 74, -1, sizeof(::Command::Track)},
-  { 79, -1, -1, sizeof(::Command::Playlist)},
-  { 86, 103, -1, sizeof(::Command::Status)},
+  { 0, 16, -1, sizeof(::Command::Command)},
+  { 25, 32, -1, sizeof(::Command::FeatureBigCover)},
+  { 33, 40, -1, sizeof(::Command::FeatureShowClock)},
+  { 41, 48, -1, sizeof(::Command::FeatureSetMaxVolume)},
+  { 49, 56, -1, sizeof(::Command::WindowStatus)},
+  { 57, 64, -1, sizeof(::Command::SetVolume)},
+  { 65, 72, -1, sizeof(::Command::Seek)},
+  { 73, 84, -1, sizeof(::Command::Track)},
+  { 89, -1, -1, sizeof(::Command::Playlist)},
+  { 96, 113, -1, sizeof(::Command::Status)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
   &::Command::_Command_default_instance_._instance,
   &::Command::_FeatureBigCover_default_instance_._instance,
   &::Command::_FeatureShowClock_default_instance_._instance,
+  &::Command::_FeatureSetMaxVolume_default_instance_._instance,
   &::Command::_WindowStatus_default_instance_._instance,
   &::Command::_SetVolume_default_instance_._instance,
   &::Command::_Seek_default_instance_._instance,
@@ -309,7 +335,7 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 
 const char descriptor_table_protodef_command_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\rcommand.proto\022\007Command\"\330\002\n\007Command\022\033\n\004"
+  "\n\rcommand.proto\022\007Command\"\225\003\n\007Command\022\033\n\004"
   "Type\030\001 \002(\0162\r.Command.Type\022#\n\004Code\030\002 \002(\0162"
   "\025.Command.ResponseCode\022-\n\014WindowStatus\030\003"
   " \001(\0132\025.Command.WindowStatusH\000\022!\n\006Status\030"
@@ -318,39 +344,42 @@ const char descriptor_table_protodef_command_2eproto[] PROTOBUF_SECTION_VARIABLE
   "\r.Command.SeekH\000\0223\n\017FeatureBigCover\030\007 \001("
   "\0132\030.Command.FeatureBigCoverH\000\0225\n\020Feature"
   "ShowClock\030\010 \001(\0132\031.Command.FeatureShowClo"
-  "ckH\000B\005\n\003Msg\"\"\n\017FeatureBigCover\022\017\n\007enable"
-  "d\030\001 \002(\010\"#\n\020FeatureShowClock\022\017\n\007enabled\030\001"
-  " \002(\010\"7\n\014WindowStatus\022\'\n\007Visible\030\001 \002(\0162\026."
-  "Command.WindowVisible\"!\n\tSetVolume\022\024\n\014va"
-  "luePercent\030\001 \002(\005\"\025\n\004Seek\022\r\n\005value\030\001 \002(\005\""
-  "W\n\005Track\022\r\n\005Track\030\001 \002(\005\022\016\n\006Artist\030\002 \002(\t\022"
-  "\r\n\005Title\030\003 \002(\t\022\020\n\010Duration\030\004 \002(\005\022\016\n\006Acti"
-  "ve\030\005 \002(\010\")\n\010Playlist\022\035\n\005Track\030\001 \003(\0132\016.Co"
-  "mmand.Track\"\327\001\n\006Status\022\r\n\005Codec\030\001 \002(\t\022\017\n"
-  "\007Elapsed\030\002 \002(\005\022\021\n\tPlayState\030\003 \002(\005\022\r\n\005HiR"
-  "es\030\004 \002(\010\022\017\n\007Shuffle\030\005 \002(\010\022\016\n\006Repeat\030\006 \002("
-  "\005\022\016\n\006Volume\030\007 \002(\005\022\017\n\007BitRate\030\010 \001(\005\022\022\n\nSa"
-  "mpleRate\030\t \001(\002\022\020\n\010BitDepth\030\n \001(\005\022#\n\010Play"
-  "list\030\013 \002(\0132\021.Command.Playlist*\352\002\n\004Type\022\017"
-  "\n\013CMD_UNKNOWN\020\000\022\031\n\025CMD_GET_WINDOW_STATUS"
-  "\020\001\022\023\n\017CMD_HIDE_WINDOW\020\002\022\023\n\017CMD_SHOW_WIND"
-  "OW\020\003\022\022\n\016CMD_GET_STATUS\020\004\022\014\n\010CMD_TEST\020\005\022\022"
-  "\n\016CMD_SET_VOLUME\020\006\022\014\n\010CMD_SEEK\020\007\022\026\n\022CMD_"
-  "TOGGLE_SHUFFLE\020\010\022\025\n\021CMD_TOGGLE_REPEAT\020\t\022"
-  "\022\n\016CMD_NEXT_TRACK\020\n\022\022\n\016CMD_PREV_TRACK\020\013\022"
-  "\014\n\010CMD_PLAY\020\014\022\r\n\tCMD_PAUSE\020\r\022\014\n\010CMD_STOP"
-  "\020\016\022\031\n\025CMD_FEATURE_BIG_COVER\020\017\022\032\n\026CMD_FEA"
-  "TURE_SHOW_CLOCK\020\020\022\017\n\013CMD_FAILURE\020\021*-\n\014Re"
-  "sponseCode\022\013\n\007UNKNOWN\020\000\022\010\n\004FAIL\020\001\022\006\n\002OK\020"
-  "\002*N\n\rWindowVisible\022\026\n\022VISIBILITY_UNKNOWN"
-  "\020\000\022\022\n\016VISIBILITY_YES\020\001\022\021\n\rVISIBILITY_NO\020"
-  "\002"
+  "ckH\000\022;\n\023FeatureSetMaxVolume\030\t \001(\0132\034.Comm"
+  "and.FeatureSetMaxVolumeH\000B\005\n\003Msg\"\"\n\017Feat"
+  "ureBigCover\022\017\n\007enabled\030\001 \002(\010\"#\n\020FeatureS"
+  "howClock\022\017\n\007enabled\030\001 \002(\010\"&\n\023FeatureSetM"
+  "axVolume\022\017\n\007enabled\030\001 \002(\010\"7\n\014WindowStatu"
+  "s\022\'\n\007Visible\030\001 \002(\0162\026.Command.WindowVisib"
+  "le\"!\n\tSetVolume\022\024\n\014valuePercent\030\001 \002(\005\"\025\n"
+  "\004Seek\022\r\n\005value\030\001 \002(\005\"W\n\005Track\022\r\n\005Track\030\001"
+  " \002(\005\022\016\n\006Artist\030\002 \002(\t\022\r\n\005Title\030\003 \002(\t\022\020\n\010D"
+  "uration\030\004 \002(\005\022\016\n\006Active\030\005 \002(\010\")\n\010Playlis"
+  "t\022\035\n\005Track\030\001 \003(\0132\016.Command.Track\"\327\001\n\006Sta"
+  "tus\022\r\n\005Codec\030\001 \002(\t\022\017\n\007Elapsed\030\002 \002(\005\022\021\n\tP"
+  "layState\030\003 \002(\005\022\r\n\005HiRes\030\004 \002(\010\022\017\n\007Shuffle"
+  "\030\005 \002(\010\022\016\n\006Repeat\030\006 \002(\005\022\016\n\006Volume\030\007 \002(\005\022\017"
+  "\n\007BitRate\030\010 \001(\005\022\022\n\nSampleRate\030\t \001(\002\022\020\n\010B"
+  "itDepth\030\n \001(\005\022#\n\010Playlist\030\013 \002(\0132\021.Comman"
+  "d.Playlist*\212\003\n\004Type\022\017\n\013CMD_UNKNOWN\020\000\022\031\n\025"
+  "CMD_GET_WINDOW_STATUS\020\001\022\023\n\017CMD_HIDE_WIND"
+  "OW\020\002\022\023\n\017CMD_SHOW_WINDOW\020\003\022\022\n\016CMD_GET_STA"
+  "TUS\020\004\022\014\n\010CMD_TEST\020\005\022\022\n\016CMD_SET_VOLUME\020\006\022"
+  "\014\n\010CMD_SEEK\020\007\022\026\n\022CMD_TOGGLE_SHUFFLE\020\010\022\025\n"
+  "\021CMD_TOGGLE_REPEAT\020\t\022\022\n\016CMD_NEXT_TRACK\020\n"
+  "\022\022\n\016CMD_PREV_TRACK\020\013\022\014\n\010CMD_PLAY\020\014\022\r\n\tCM"
+  "D_PAUSE\020\r\022\014\n\010CMD_STOP\020\016\022\031\n\025CMD_FEATURE_B"
+  "IG_COVER\020\017\022\032\n\026CMD_FEATURE_SHOW_CLOCK\020\020\022\017"
+  "\n\013CMD_FAILURE\020\021\022\036\n\032CMD_FEATURE_SET_MAX_V"
+  "OLUME\020\022*-\n\014ResponseCode\022\013\n\007UNKNOWN\020\000\022\010\n\004"
+  "FAIL\020\001\022\006\n\002OK\020\002*N\n\rWindowVisible\022\026\n\022VISIB"
+  "ILITY_UNKNOWN\020\000\022\022\n\016VISIBILITY_YES\020\001\022\021\n\rV"
+  "ISIBILITY_NO\020\002"
   ;
 static ::_pbi::once_flag descriptor_table_command_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_command_2eproto = {
-    false, false, 1401, descriptor_table_protodef_command_2eproto,
+    false, false, 1534, descriptor_table_protodef_command_2eproto,
     "command.proto",
-    &descriptor_table_command_2eproto_once, nullptr, 0, 9,
+    &descriptor_table_command_2eproto_once, nullptr, 0, 10,
     schemas, file_default_instances, TableStruct_command_2eproto::offsets,
     file_level_metadata_command_2eproto, file_level_enum_descriptors_command_2eproto,
     file_level_service_descriptors_command_2eproto,
@@ -386,6 +415,7 @@ bool Type_IsValid(int value) {
     case 15:
     case 16:
     case 17:
+    case 18:
       return true;
     default:
       return false;
@@ -440,6 +470,7 @@ class Command::_Internal {
   static const ::Command::Seek& seek(const Command* msg);
   static const ::Command::FeatureBigCover& featurebigcover(const Command* msg);
   static const ::Command::FeatureShowClock& featureshowclock(const Command* msg);
+  static const ::Command::FeatureSetMaxVolume& featuresetmaxvolume(const Command* msg);
   static bool MissingRequiredFields(const HasBits& has_bits) {
     return ((has_bits[0] & 0x00000003) ^ 0x00000003) != 0;
   }
@@ -468,6 +499,10 @@ Command::_Internal::featurebigcover(const Command* msg) {
 const ::Command::FeatureShowClock&
 Command::_Internal::featureshowclock(const Command* msg) {
   return *msg->_impl_.Msg_.featureshowclock_;
+}
+const ::Command::FeatureSetMaxVolume&
+Command::_Internal::featuresetmaxvolume(const Command* msg) {
+  return *msg->_impl_.Msg_.featuresetmaxvolume_;
 }
 void Command::set_allocated_windowstatus(::Command::WindowStatus* windowstatus) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
@@ -559,6 +594,21 @@ void Command::set_allocated_featureshowclock(::Command::FeatureShowClock* featur
   }
   // @@protoc_insertion_point(field_set_allocated:Command.Command.FeatureShowClock)
 }
+void Command::set_allocated_featuresetmaxvolume(::Command::FeatureSetMaxVolume* featuresetmaxvolume) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  clear_Msg();
+  if (featuresetmaxvolume) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+      ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(featuresetmaxvolume);
+    if (message_arena != submessage_arena) {
+      featuresetmaxvolume = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, featuresetmaxvolume, submessage_arena);
+    }
+    set_has_featuresetmaxvolume();
+    _impl_.Msg_.featuresetmaxvolume_ = featuresetmaxvolume;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Command.Command.FeatureSetMaxVolume)
+}
 Command::Command(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -610,6 +660,11 @@ Command::Command(const Command& from)
     case kFeatureShowClock: {
       _this->_internal_mutable_featureshowclock()->::Command::FeatureShowClock::MergeFrom(
           from._internal_featureshowclock());
+      break;
+    }
+    case kFeatureSetMaxVolume: {
+      _this->_internal_mutable_featuresetmaxvolume()->::Command::FeatureSetMaxVolume::MergeFrom(
+          from._internal_featuresetmaxvolume());
       break;
     }
     case MSG_NOT_SET: {
@@ -690,6 +745,12 @@ void Command::clear_Msg() {
     case kFeatureShowClock: {
       if (GetArenaForAllocation() == nullptr) {
         delete _impl_.Msg_.featureshowclock_;
+      }
+      break;
+    }
+    case kFeatureSetMaxVolume: {
+      if (GetArenaForAllocation() == nullptr) {
+        delete _impl_.Msg_.featuresetmaxvolume_;
       }
       break;
     }
@@ -799,6 +860,14 @@ const char* Command::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) 
         } else
           goto handle_unusual;
         continue;
+      // .Command.FeatureSetMaxVolume FeatureSetMaxVolume = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
+          ptr = ctx->ParseMessage(_internal_mutable_featuresetmaxvolume(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -879,6 +948,12 @@ uint8_t* Command::_InternalSerialize(
       target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
         InternalWriteMessage(8, _Internal::featureshowclock(this),
           _Internal::featureshowclock(this).GetCachedSize(), target, stream);
+      break;
+    }
+    case kFeatureSetMaxVolume: {
+      target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(9, _Internal::featuresetmaxvolume(this),
+          _Internal::featuresetmaxvolume(this).GetCachedSize(), target, stream);
       break;
     }
     default: ;
@@ -972,6 +1047,13 @@ size_t Command::ByteSizeLong() const {
           *_impl_.Msg_.featureshowclock_);
       break;
     }
+    // .Command.FeatureSetMaxVolume FeatureSetMaxVolume = 9;
+    case kFeatureSetMaxVolume: {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.Msg_.featuresetmaxvolume_);
+      break;
+    }
     case MSG_NOT_SET: {
       break;
     }
@@ -1035,6 +1117,11 @@ void Command::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOB
           from._internal_featureshowclock());
       break;
     }
+    case kFeatureSetMaxVolume: {
+      _this->_internal_mutable_featuresetmaxvolume()->::Command::FeatureSetMaxVolume::MergeFrom(
+          from._internal_featuresetmaxvolume());
+      break;
+    }
     case MSG_NOT_SET: {
       break;
     }
@@ -1085,6 +1172,12 @@ bool Command::IsInitialized() const {
     case kFeatureShowClock: {
       if (_internal_has_featureshowclock()) {
         if (!_impl_.Msg_.featureshowclock_->IsInitialized()) return false;
+      }
+      break;
+    }
+    case kFeatureSetMaxVolume: {
+      if (_internal_has_featuresetmaxvolume()) {
+        if (!_impl_.Msg_.featuresetmaxvolume_->IsInitialized()) return false;
       }
       break;
     }
@@ -1503,6 +1596,199 @@ void FeatureShowClock::InternalSwap(FeatureShowClock* other) {
 
 // ===================================================================
 
+class FeatureSetMaxVolume::_Internal {
+ public:
+  using HasBits = decltype(std::declval<FeatureSetMaxVolume>()._impl_._has_bits_);
+  static void set_has_enabled(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static bool MissingRequiredFields(const HasBits& has_bits) {
+    return ((has_bits[0] & 0x00000001) ^ 0x00000001) != 0;
+  }
+};
+
+FeatureSetMaxVolume::FeatureSetMaxVolume(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Command.FeatureSetMaxVolume)
+}
+FeatureSetMaxVolume::FeatureSetMaxVolume(const FeatureSetMaxVolume& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  FeatureSetMaxVolume* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.enabled_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.enabled_ = from._impl_.enabled_;
+  // @@protoc_insertion_point(copy_constructor:Command.FeatureSetMaxVolume)
+}
+
+inline void FeatureSetMaxVolume::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.enabled_){false}
+  };
+}
+
+FeatureSetMaxVolume::~FeatureSetMaxVolume() {
+  // @@protoc_insertion_point(destructor:Command.FeatureSetMaxVolume)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void FeatureSetMaxVolume::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void FeatureSetMaxVolume::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void FeatureSetMaxVolume::Clear() {
+// @@protoc_insertion_point(message_clear_start:Command.FeatureSetMaxVolume)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.enabled_ = false;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* FeatureSetMaxVolume::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // required bool enabled = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _Internal::set_has_enabled(&has_bits);
+          _impl_.enabled_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* FeatureSetMaxVolume::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Command.FeatureSetMaxVolume)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  // required bool enabled = 1;
+  if (cached_has_bits & 0x00000001u) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_enabled(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Command.FeatureSetMaxVolume)
+  return target;
+}
+
+size_t FeatureSetMaxVolume::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Command.FeatureSetMaxVolume)
+  size_t total_size = 0;
+
+  // required bool enabled = 1;
+  if (_internal_has_enabled()) {
+    total_size += 1 + 1;
+  }
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData FeatureSetMaxVolume::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    FeatureSetMaxVolume::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*FeatureSetMaxVolume::GetClassData() const { return &_class_data_; }
+
+
+void FeatureSetMaxVolume::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<FeatureSetMaxVolume*>(&to_msg);
+  auto& from = static_cast<const FeatureSetMaxVolume&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Command.FeatureSetMaxVolume)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_has_enabled()) {
+    _this->_internal_set_enabled(from._internal_enabled());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void FeatureSetMaxVolume::CopyFrom(const FeatureSetMaxVolume& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Command.FeatureSetMaxVolume)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool FeatureSetMaxVolume::IsInitialized() const {
+  if (_Internal::MissingRequiredFields(_impl_._has_bits_)) return false;
+  return true;
+}
+
+void FeatureSetMaxVolume::InternalSwap(FeatureSetMaxVolume* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  swap(_impl_.enabled_, other->_impl_.enabled_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata FeatureSetMaxVolume::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_command_2eproto_getter, &descriptor_table_command_2eproto_once,
+      file_level_metadata_command_2eproto[3]);
+}
+
+// ===================================================================
+
 class WindowStatus::_Internal {
  public:
   using HasBits = decltype(std::declval<WindowStatus>()._impl_._has_bits_);
@@ -1697,7 +1983,7 @@ void WindowStatus::InternalSwap(WindowStatus* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata WindowStatus::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_command_2eproto_getter, &descriptor_table_command_2eproto_once,
-      file_level_metadata_command_2eproto[3]);
+      file_level_metadata_command_2eproto[4]);
 }
 
 // ===================================================================
@@ -1890,7 +2176,7 @@ void SetVolume::InternalSwap(SetVolume* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata SetVolume::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_command_2eproto_getter, &descriptor_table_command_2eproto_once,
-      file_level_metadata_command_2eproto[4]);
+      file_level_metadata_command_2eproto[5]);
 }
 
 // ===================================================================
@@ -2083,7 +2369,7 @@ void Seek::InternalSwap(Seek* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata Seek::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_command_2eproto_getter, &descriptor_table_command_2eproto_once,
-      file_level_metadata_command_2eproto[5]);
+      file_level_metadata_command_2eproto[6]);
 }
 
 // ===================================================================
@@ -2496,7 +2782,7 @@ void Track::InternalSwap(Track* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata Track::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_command_2eproto_getter, &descriptor_table_command_2eproto_once,
-      file_level_metadata_command_2eproto[6]);
+      file_level_metadata_command_2eproto[7]);
 }
 
 // ===================================================================
@@ -2683,7 +2969,7 @@ void Playlist::InternalSwap(Playlist* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata Playlist::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_command_2eproto_getter, &descriptor_table_command_2eproto_once,
-      file_level_metadata_command_2eproto[7]);
+      file_level_metadata_command_2eproto[8]);
 }
 
 // ===================================================================
@@ -3274,7 +3560,7 @@ void Status::InternalSwap(Status* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata Status::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_command_2eproto_getter, &descriptor_table_command_2eproto_once,
-      file_level_metadata_command_2eproto[8]);
+      file_level_metadata_command_2eproto[9]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -3291,6 +3577,10 @@ Arena::CreateMaybeMessage< ::Command::FeatureBigCover >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::Command::FeatureShowClock*
 Arena::CreateMaybeMessage< ::Command::FeatureShowClock >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Command::FeatureShowClock >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Command::FeatureSetMaxVolume*
+Arena::CreateMaybeMessage< ::Command::FeatureSetMaxVolume >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Command::FeatureSetMaxVolume >(arena);
 }
 template<> PROTOBUF_NOINLINE ::Command::WindowStatus*
 Arena::CreateMaybeMessage< ::Command::WindowStatus >(Arena* arena) {

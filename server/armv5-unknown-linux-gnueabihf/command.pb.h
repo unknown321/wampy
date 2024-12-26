@@ -52,6 +52,9 @@ extern CommandDefaultTypeInternal _Command_default_instance_;
 class FeatureBigCover;
 struct FeatureBigCoverDefaultTypeInternal;
 extern FeatureBigCoverDefaultTypeInternal _FeatureBigCover_default_instance_;
+class FeatureSetMaxVolume;
+struct FeatureSetMaxVolumeDefaultTypeInternal;
+extern FeatureSetMaxVolumeDefaultTypeInternal _FeatureSetMaxVolume_default_instance_;
 class FeatureShowClock;
 struct FeatureShowClockDefaultTypeInternal;
 extern FeatureShowClockDefaultTypeInternal _FeatureShowClock_default_instance_;
@@ -77,6 +80,7 @@ extern WindowStatusDefaultTypeInternal _WindowStatus_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Command::Command* Arena::CreateMaybeMessage<::Command::Command>(Arena*);
 template<> ::Command::FeatureBigCover* Arena::CreateMaybeMessage<::Command::FeatureBigCover>(Arena*);
+template<> ::Command::FeatureSetMaxVolume* Arena::CreateMaybeMessage<::Command::FeatureSetMaxVolume>(Arena*);
 template<> ::Command::FeatureShowClock* Arena::CreateMaybeMessage<::Command::FeatureShowClock>(Arena*);
 template<> ::Command::Playlist* Arena::CreateMaybeMessage<::Command::Playlist>(Arena*);
 template<> ::Command::Seek* Arena::CreateMaybeMessage<::Command::Seek>(Arena*);
@@ -105,11 +109,12 @@ enum Type : int {
   CMD_STOP = 14,
   CMD_FEATURE_BIG_COVER = 15,
   CMD_FEATURE_SHOW_CLOCK = 16,
-  CMD_FAILURE = 17
+  CMD_FAILURE = 17,
+  CMD_FEATURE_SET_MAX_VOLUME = 18
 };
 bool Type_IsValid(int value);
 constexpr Type Type_MIN = CMD_UNKNOWN;
-constexpr Type Type_MAX = CMD_FAILURE;
+constexpr Type Type_MAX = CMD_FEATURE_SET_MAX_VOLUME;
 constexpr int Type_ARRAYSIZE = Type_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* Type_descriptor();
@@ -233,6 +238,7 @@ class Command final :
     kSeek = 6,
     kFeatureBigCover = 7,
     kFeatureShowClock = 8,
+    kFeatureSetMaxVolume = 9,
     MSG_NOT_SET = 0,
   };
 
@@ -322,6 +328,7 @@ class Command final :
     kSeekFieldNumber = 6,
     kFeatureBigCoverFieldNumber = 7,
     kFeatureShowClockFieldNumber = 8,
+    kFeatureSetMaxVolumeFieldNumber = 9,
   };
   // required .Command.Type Type = 1;
   bool has_type() const;
@@ -457,6 +464,24 @@ class Command final :
       ::Command::FeatureShowClock* featureshowclock);
   ::Command::FeatureShowClock* unsafe_arena_release_featureshowclock();
 
+  // .Command.FeatureSetMaxVolume FeatureSetMaxVolume = 9;
+  bool has_featuresetmaxvolume() const;
+  private:
+  bool _internal_has_featuresetmaxvolume() const;
+  public:
+  void clear_featuresetmaxvolume();
+  const ::Command::FeatureSetMaxVolume& featuresetmaxvolume() const;
+  PROTOBUF_NODISCARD ::Command::FeatureSetMaxVolume* release_featuresetmaxvolume();
+  ::Command::FeatureSetMaxVolume* mutable_featuresetmaxvolume();
+  void set_allocated_featuresetmaxvolume(::Command::FeatureSetMaxVolume* featuresetmaxvolume);
+  private:
+  const ::Command::FeatureSetMaxVolume& _internal_featuresetmaxvolume() const;
+  ::Command::FeatureSetMaxVolume* _internal_mutable_featuresetmaxvolume();
+  public:
+  void unsafe_arena_set_allocated_featuresetmaxvolume(
+      ::Command::FeatureSetMaxVolume* featuresetmaxvolume);
+  ::Command::FeatureSetMaxVolume* unsafe_arena_release_featuresetmaxvolume();
+
   void clear_Msg();
   MsgCase Msg_case() const;
   // @@protoc_insertion_point(class_scope:Command.Command)
@@ -468,6 +493,7 @@ class Command final :
   void set_has_seek();
   void set_has_featurebigcover();
   void set_has_featureshowclock();
+  void set_has_featuresetmaxvolume();
 
   inline bool has_Msg() const;
   inline void clear_has_Msg();
@@ -492,6 +518,7 @@ class Command final :
       ::Command::Seek* seek_;
       ::Command::FeatureBigCover* featurebigcover_;
       ::Command::FeatureShowClock* featureshowclock_;
+      ::Command::FeatureSetMaxVolume* featuresetmaxvolume_;
     } Msg_;
     uint32_t _oneof_case_[1];
 
@@ -821,6 +848,166 @@ class FeatureShowClock final :
 };
 // -------------------------------------------------------------------
 
+class FeatureSetMaxVolume final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Command.FeatureSetMaxVolume) */ {
+ public:
+  inline FeatureSetMaxVolume() : FeatureSetMaxVolume(nullptr) {}
+  ~FeatureSetMaxVolume() override;
+  explicit PROTOBUF_CONSTEXPR FeatureSetMaxVolume(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  FeatureSetMaxVolume(const FeatureSetMaxVolume& from);
+  FeatureSetMaxVolume(FeatureSetMaxVolume&& from) noexcept
+    : FeatureSetMaxVolume() {
+    *this = ::std::move(from);
+  }
+
+  inline FeatureSetMaxVolume& operator=(const FeatureSetMaxVolume& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline FeatureSetMaxVolume& operator=(FeatureSetMaxVolume&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance);
+  }
+  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const FeatureSetMaxVolume& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const FeatureSetMaxVolume* internal_default_instance() {
+    return reinterpret_cast<const FeatureSetMaxVolume*>(
+               &_FeatureSetMaxVolume_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(FeatureSetMaxVolume& a, FeatureSetMaxVolume& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(FeatureSetMaxVolume* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(FeatureSetMaxVolume* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  FeatureSetMaxVolume* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<FeatureSetMaxVolume>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const FeatureSetMaxVolume& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const FeatureSetMaxVolume& from) {
+    FeatureSetMaxVolume::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(FeatureSetMaxVolume* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Command.FeatureSetMaxVolume";
+  }
+  protected:
+  explicit FeatureSetMaxVolume(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kEnabledFieldNumber = 1,
+  };
+  // required bool enabled = 1;
+  bool has_enabled() const;
+  private:
+  bool _internal_has_enabled() const;
+  public:
+  void clear_enabled();
+  bool enabled() const;
+  void set_enabled(bool value);
+  private:
+  bool _internal_enabled() const;
+  void _internal_set_enabled(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Command.FeatureSetMaxVolume)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    bool enabled_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_command_2eproto;
+};
+// -------------------------------------------------------------------
+
 class WindowStatus final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Command.WindowStatus) */ {
  public:
@@ -876,7 +1063,7 @@ class WindowStatus final :
                &_WindowStatus_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    4;
 
   friend void swap(WindowStatus& a, WindowStatus& b) {
     a.Swap(&b);
@@ -1036,7 +1223,7 @@ class SetVolume final :
                &_SetVolume_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    5;
 
   friend void swap(SetVolume& a, SetVolume& b) {
     a.Swap(&b);
@@ -1196,7 +1383,7 @@ class Seek final :
                &_Seek_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(Seek& a, Seek& b) {
     a.Swap(&b);
@@ -1356,7 +1543,7 @@ class Track final :
                &_Track_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   friend void swap(Track& a, Track& b) {
     a.Swap(&b);
@@ -1589,7 +1776,7 @@ class Playlist final :
                &_Playlist_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   friend void swap(Playlist& a, Playlist& b) {
     a.Swap(&b);
@@ -1753,7 +1940,7 @@ class Status final :
                &_Status_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   friend void swap(Status& a, Status& b) {
     a.Swap(&b);
@@ -2532,6 +2719,80 @@ inline ::Command::FeatureShowClock* Command::mutable_featureshowclock() {
   return _msg;
 }
 
+// .Command.FeatureSetMaxVolume FeatureSetMaxVolume = 9;
+inline bool Command::_internal_has_featuresetmaxvolume() const {
+  return Msg_case() == kFeatureSetMaxVolume;
+}
+inline bool Command::has_featuresetmaxvolume() const {
+  return _internal_has_featuresetmaxvolume();
+}
+inline void Command::set_has_featuresetmaxvolume() {
+  _impl_._oneof_case_[0] = kFeatureSetMaxVolume;
+}
+inline void Command::clear_featuresetmaxvolume() {
+  if (_internal_has_featuresetmaxvolume()) {
+    if (GetArenaForAllocation() == nullptr) {
+      delete _impl_.Msg_.featuresetmaxvolume_;
+    }
+    clear_has_Msg();
+  }
+}
+inline ::Command::FeatureSetMaxVolume* Command::release_featuresetmaxvolume() {
+  // @@protoc_insertion_point(field_release:Command.Command.FeatureSetMaxVolume)
+  if (_internal_has_featuresetmaxvolume()) {
+    clear_has_Msg();
+    ::Command::FeatureSetMaxVolume* temp = _impl_.Msg_.featuresetmaxvolume_;
+    if (GetArenaForAllocation() != nullptr) {
+      temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.Msg_.featuresetmaxvolume_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::Command::FeatureSetMaxVolume& Command::_internal_featuresetmaxvolume() const {
+  return _internal_has_featuresetmaxvolume()
+      ? *_impl_.Msg_.featuresetmaxvolume_
+      : reinterpret_cast< ::Command::FeatureSetMaxVolume&>(::Command::_FeatureSetMaxVolume_default_instance_);
+}
+inline const ::Command::FeatureSetMaxVolume& Command::featuresetmaxvolume() const {
+  // @@protoc_insertion_point(field_get:Command.Command.FeatureSetMaxVolume)
+  return _internal_featuresetmaxvolume();
+}
+inline ::Command::FeatureSetMaxVolume* Command::unsafe_arena_release_featuresetmaxvolume() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:Command.Command.FeatureSetMaxVolume)
+  if (_internal_has_featuresetmaxvolume()) {
+    clear_has_Msg();
+    ::Command::FeatureSetMaxVolume* temp = _impl_.Msg_.featuresetmaxvolume_;
+    _impl_.Msg_.featuresetmaxvolume_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void Command::unsafe_arena_set_allocated_featuresetmaxvolume(::Command::FeatureSetMaxVolume* featuresetmaxvolume) {
+  clear_Msg();
+  if (featuresetmaxvolume) {
+    set_has_featuresetmaxvolume();
+    _impl_.Msg_.featuresetmaxvolume_ = featuresetmaxvolume;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Command.Command.FeatureSetMaxVolume)
+}
+inline ::Command::FeatureSetMaxVolume* Command::_internal_mutable_featuresetmaxvolume() {
+  if (!_internal_has_featuresetmaxvolume()) {
+    clear_Msg();
+    set_has_featuresetmaxvolume();
+    _impl_.Msg_.featuresetmaxvolume_ = CreateMaybeMessage< ::Command::FeatureSetMaxVolume >(GetArenaForAllocation());
+  }
+  return _impl_.Msg_.featuresetmaxvolume_;
+}
+inline ::Command::FeatureSetMaxVolume* Command::mutable_featuresetmaxvolume() {
+  ::Command::FeatureSetMaxVolume* _msg = _internal_mutable_featuresetmaxvolume();
+  // @@protoc_insertion_point(field_mutable:Command.Command.FeatureSetMaxVolume)
+  return _msg;
+}
+
 inline bool Command::has_Msg() const {
   return Msg_case() != MSG_NOT_SET;
 }
@@ -2603,6 +2864,38 @@ inline void FeatureShowClock::_internal_set_enabled(bool value) {
 inline void FeatureShowClock::set_enabled(bool value) {
   _internal_set_enabled(value);
   // @@protoc_insertion_point(field_set:Command.FeatureShowClock.enabled)
+}
+
+// -------------------------------------------------------------------
+
+// FeatureSetMaxVolume
+
+// required bool enabled = 1;
+inline bool FeatureSetMaxVolume::_internal_has_enabled() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool FeatureSetMaxVolume::has_enabled() const {
+  return _internal_has_enabled();
+}
+inline void FeatureSetMaxVolume::clear_enabled() {
+  _impl_.enabled_ = false;
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline bool FeatureSetMaxVolume::_internal_enabled() const {
+  return _impl_.enabled_;
+}
+inline bool FeatureSetMaxVolume::enabled() const {
+  // @@protoc_insertion_point(field_get:Command.FeatureSetMaxVolume.enabled)
+  return _internal_enabled();
+}
+inline void FeatureSetMaxVolume::_internal_set_enabled(bool value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.enabled_ = value;
+}
+inline void FeatureSetMaxVolume::set_enabled(bool value) {
+  _internal_set_enabled(value);
+  // @@protoc_insertion_point(field_set:Command.FeatureSetMaxVolume.enabled)
 }
 
 // -------------------------------------------------------------------
@@ -3387,6 +3680,8 @@ inline void Status::set_allocated_playlist(::Command::Playlist* playlist) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

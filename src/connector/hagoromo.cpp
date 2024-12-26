@@ -163,6 +163,13 @@ namespace Hagoromo {
         sendCMD(&c);
     }
 
+    void HagoromoConnector::FeatureSetMaxVolume(bool enable) {
+        auto c = Command::Command();
+        c.set_type(Command::Type::CMD_FEATURE_SET_MAX_VOLUME);
+        c.mutable_featuresetmaxvolume()->set_enabled(enable);
+        sendCMD(&c);
+    }
+
     void HagoromoConnector::ToggleHgrm(HgrmToggleAction action, bool *render) {
         auto c = Command::Command();
         c.set_type(Command::Type::CMD_GET_WINDOW_STATUS);
@@ -270,6 +277,7 @@ namespace Hagoromo {
 
             FeatureBigCover(*featureBigCover);
             FeatureShowTime(*featureShowTime);
+            FeatureSetMaxVolume(*featureLimitVolume);
         }
     }
 

@@ -60,6 +60,8 @@ namespace MPD {
         void FeatureBigCover(bool enable) override{};
 
         void FeatureShowTime(bool enable) override{};
+
+        void FeatureSetMaxVolume(bool enable) override{};
     };
 } // namespace MPD
 
