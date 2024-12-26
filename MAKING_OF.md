@@ -189,9 +189,7 @@ Perhaps this technology was lost?
 <img src="images/lyrics-icon.png" alt="lyrics icon">
 </figure>
 
-- There is a "bookmark list" feature; what is even it for? Bookmarks are not exportable, just like playlists. That's
-  right, if you want to edit a playlist, you'll have to do it on that `3.1-inch (7.8 cm), WVGA(800 x 480 Pixels)`
-  display.
+- There is a "bookmark list" feature; what is even it for? Bookmarks are not exportable.
   Perhaps this is some power user feature, if you actually use it, please tell me how.
 
 - Volume buttons on my wired Apple headphones don't work, but they do on my Samsung tablet. Why?
