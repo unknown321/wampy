@@ -12,6 +12,7 @@
     * [Scrobbling](#scrobbling)
       * [Getting song info](#getting-song-info)
     * [My own GUI?](#my-own-gui)
+      * [WACUP](#wacup)
       * [Audacious 4.2](#audacious-42)
       * [Linamp](#linamp)
       * [Winamp Skin Museum](#winamp-skin-museum)
@@ -63,9 +64,9 @@ It all started with iRiver T10.
 <figcaption>Source: woot.com</figcaption>
 </figure>
 
-A device with 512 MB powered by AA battery capable of playing MP3/OGG/WMA, FM radio support, physical buttons and
-display introduced me to the world of portable music players and set a quality bar that is hard to surpass up to this
-day.
+A device with 512 MB of storage powered by AA battery capable of playing MP3/OGG/WMA, recording audio, FM radio,
+physical buttons and display introduced me to the world of portable music players and set a quality bar that is hard to
+surpass up to this day.
 
 Time has passed, technology moved on and iPod Touch 2G joined my device collection.
 
@@ -140,9 +141,8 @@ Of course, there were some nuisances.
 ### Nuisances
 
 - Proprietary cable (they got rid of it in later models)
-- metal frame (remember, winters are cold)
-- weight/size (compared to iPod Nano)
-- UI imperfections
+- Metal frame (remember, winters are cold)
+- Weight/size (compared to iPod Nano)
 
 Metal frame was probably used to add that "premium" feel - you know, slowly pulling out your shiny heavy metal device
 with "SONY" on top of it.
@@ -152,11 +152,13 @@ with "SONY" on top of it.
 
 Uhh okay, what about plastic cover in the back? Frame is made of metal only in front and sides.
 
+- UI imperfections
 - Buttons started to wiggle a little after some time.
 - There is a noticeable lag between pressing power button to turn screen on and screen lit up.
 - Metal frame is collecting dents, display gets scratches. Should've bought protective case I guess.
 - There is an unskippable "creating database" popup on every boot, even when nothing changed.
-- Album art is not displayed if it is encoded as interlaced JPEG .
+- Album art is not displayed if it is encoded as interlaced JPEG (CVE-2015-1858, CVE-2015-1859, CVE-2015-1860, but why
+  should I care as a user?).
 - Clock is not displayed anywhere except in settings! Even iRiver T10 from 2005 had clock on screen.
 
 <figure>
@@ -194,6 +196,8 @@ Perhaps this technology was lost?
 
 - Volume buttons on my wired Apple headphones don't work, but they do on my Samsung tablet. Why?
 
+- Lowest possible brightness is too bright
+
 - What is the `Hold` button for, preventing accidental button presses? In my experience it is pretty hard to press
   button with something else in my pocket. There is also an option to keep touchscreen enabled while `Hold`ing - for
   what purpose? So screen is on (meaning you are looking at it and capable of doing anything), fully usable, but buttons
@@ -229,7 +233,7 @@ little better. If you are *really* interested, you can also decompile `gnsdk_*` 
 algorithms, sophisticated math... Fun stuff.
 
 Why do I even care? First, it takes some time to analyze a song, like 10 seconds each. You need to launch Sony media
-application (Electron garbage) (which barely works on Linux), load all your tracks into it and wait for hours. Then your
+application (Electron garbage, which barely works on Linux), load all your tracks into it and wait for hours. Then your
 audio file grows by almost a megabyte of `SMFMF` data, possibly corrupting ID3 tags in process (unacceptable).
 
 Is there a way of faster tagging with fewer data? Mood should be like what, 10 bytes of ids, right (Energetic (0x01)=10,
@@ -237,7 +241,7 @@ Relaxing (0x02)=2, Mellow (0x03)=0.5)? Tempo is literally a number, a sequence o
 not a megabyte. Perhaps I could feed my music to music-specialized LLM and write those bytes myself?
 
 So I tried to reverse engineer the format (and failed). There are at least 3 backwards-compatible
-versions of `SMFMF` data. It includes compressed song <in what format? citation needed> and various metadata in binary
+versions of `SMFMF` data. It includes compressed song (in what format? citation needed) and various metadata in binary
 form. Unfortunately there was not enough time to investigate it further, but at least I managed to reverse engineer
 server-client communication between local client and Gracenote servers, which is used to identify your song. Had fun,
 but nothing new about `SMFMF`.
@@ -246,10 +250,10 @@ but nothing new about `SMFMF`.
 
 <img src="images/last.fm.png" alt="last fm logo">
 
-[Last.fm](https://last.fm) is built around scrobbling - recording info online about songs you listen to. iPods supported
-scrobbling - Last.fm client was pulling song data from exposed `MTPDB.dat` file. However, Walkmans do not support
-scrobbling. Song data is not exposed, `listened` events are not even recorded. Stats are for nerds; premium SONY
-Walkman® devices are NOT for nerds.
+I love stats and use Last.fm for what, 15 years already? [Last.fm](https://last.fm) is built around scrobbling -
+recording info online about songs you listen to. iPods supported scrobbling - Last.fm client was pulling song data from
+exposed `MTPDB.dat` file. However, Walkmans do not support scrobbling. Song data is not exposed, `listened` events are
+not even recorded. Stats are for nerds; premium SONY Walkman® devices are NOT for nerds.
 
 What can we do at this point? That's right, [Rockbox](https://www.rockbox.org/wiki/SonyNW), which supports scrobbling
 and stuff! Except our device is not supported and most likely won't be. Reasons? Sony has nice sound enhancement
@@ -494,17 +498,21 @@ be constantly reminded of your mistakes which is unacceptable. User experience i
 
 ##### WACUP
 
-Pixel-perfectThis is the most accurate implementation in this list, if you need modern Winamp experience on
-Windows, WACUP should be your choice. How does it suck? Windows only, failed to display valid ID3v2 tag in song display,
+This is the most accurate implementation in this list, if you need modern Winamp experience on Windows, WACUP should be
+your choice.
+
+How does it suck? Windows only, failed to display valid ID3v2 tag in song display,
 time display is not a single clickable block, but separate numbers with a small non-clickable gap between them,
 visualization is too fast (but there is a frame limiter, <u>huge</u> respect for that), there are weird downloads during
-installation (like Winamp installer).
+installation (like Winamp installer). On start, it spawns 5(?) additional windows with new features like
+waveform and huge clock and something else? Spent quite some time in settings (too many options!) looking for and
+disabling them.
 
 But overall it's a great piece of software.
 
 ##### Audacious 4.2
 
-While looking pixel-perfect, behaviour is far from ideal. Marquee is off, visualization is too fast, track time is
+Behaviour is far from ideal. Marquee is off, visualization is too fast, track time is
 missing leading zero, "Seek to" text is missing percentage, balance slider is changing position while moving volume
 slider ([why?](./images/audacious_quality.mp4))...
 
@@ -562,7 +570,7 @@ Walkmans - [link](https://www.forbes.com/sites/davidphelan/2019/09/07/sony-40th-
 
 You know, just after NW-A50 was released in 2018. No cassettes for NW-A50 (and other Linux-based players). That sucks.
 
-So here is the idea: write an application which uses Winamp skins and displays cassettes. Also known as Wampy.
+So here is the idea: make an application which uses Winamp skins and displays cassettes. Also known as Wampy.
 
 ## Wampy
 
@@ -1170,6 +1178,11 @@ classes. What am I supposed to do, just strip Sony copyright and pretend that th
 way of writing same code, but in another way? If Sony legal people are reading this, please help. I want to be friends
 with you, not in some legal hellhole because of 90 lines of "do nothing" code.
 
+Winamp base skin is taken from Winamp Skin Museum. Skin is not present as a `.wsz` file in Winamp 2.95 installation,
+where did it come from? WACUP does not include Winamp files; instead, it downloads Winamp installer and extracts needed
+files (which ones?) for you. I *think* that workaround violates license agreement. For user convenience base skin is
+included in installer, hopefully Llama Group will be nice about it.
+
 But what about license of Wampy itself? I want my code to be free to read, but not sold as an exclusive software mod in
 some audiophile shop on the other side the world. GPL does not cover these cases, but Commons Clause does. That's why
 Wampy is licensed under Commons Clause / GPLv3.
@@ -1194,7 +1207,8 @@ Sorry Gitea, it's not your fault.
 
 ---
 
-This is it I guess, software is packaged and ready to ship. This was a story of Wampy, an alternative frontend for
+This is it I guess, software is packaged and ready to ship. This was a story of Wampy, frontend addon for
 Walkman NW-A50.
 
-See also: rants about [Java](./angry_about/java.md), [C++11](./angry_about/sepples.md), [XDA](./angry_about/xda.md).
+See also: rants about [Java](./angry_about/java.md), [C++11](./angry_about/sepples.md), [XDA](./angry_about/xda.md). And
+a little more on [jack and brightness](./not-done.md).

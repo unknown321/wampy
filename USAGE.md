@@ -15,15 +15,15 @@
     * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
   * [Using wampy](#using-wampy)
     * [Winamp](#winamp)
-      * [Buttons](#buttons)
-      * [Settings](#settings)
+      * [UI Buttons](#ui-buttons)
+      * [Settings screen](#settings-screen)
       * [Known issues and quirks](#known-issues-and-quirks)
     * [Cassette](#cassette)
-      * [Settings](#settings-1)
+      * [Settings](#settings)
       * [Issues and quirks](#issues-and-quirks)
     * [Custom skins](#custom-skins)
-      * [Winamp](#winamp-1)
-      * [Cassette](#cassette-1)
+      * [Winamp skins](#winamp-skins)
+      * [Cassette skins](#cassette-skins)
   * [Misc](#misc)
     * [Issues](#issues)
   * [Providing debug information](#providing-debug-information)
@@ -126,7 +126,7 @@ Not implemented:
 - `regions.txt`, which allows making parts of skin transparent. Some skins may look bad (ex. Dremples.wsz).
 - Easter eggs (not important)
 
-#### Buttons
+#### UI Buttons
 
 EQ button does nothing because mapping EQ window to default player EQ is not an easy task.
 
@@ -137,7 +137,7 @@ Playlist button shows playlist in full screen. Touch top right corner to return.
 Balance slider does nothing for two reasons. First, integrating it with player sound subsystem is not that easy. Second,
 it's too small to make exact adjustments with finger.
 
-#### Settings
+#### Settings screen
 
 Press `Eject` button to open settings.
 
@@ -252,13 +252,13 @@ Winamp has 3 custom skins, cassette has one custom reel with 2 frames and two ta
 You can put `wampy` directory on device (*not* SD card). As for now, skin list is updated after device
 restart.
 
-#### Winamp
+#### Winamp skins
 
 Get skins with `.wsz` extension, drop into folder, restart device to refresh list. Grab skins
 from [Winamp Skin Museum](https://skins.webamp.org/)
 or [make one yourself](https://github.com/WACUP/Winamp-Skinning-Archive/tree/master/Classic%20Skins).
 
-#### Cassette
+#### Cassette skins
 
 Tape format: JPEG, 800x480 to cover whole screen, any name, `.jpg` extension. Only first found file in directory is
 used. You can get some nice tapes from http://tapedeck.org/, non-transparent ones work well with `other` reel.

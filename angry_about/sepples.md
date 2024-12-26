@@ -13,8 +13,7 @@ Coming from Go, I expected some standards. You know, like passing errors in some
 
 > The value in errno is significant only when the return value of the call indicated an error (i.e., -1 from most system
 > calls; -1 or NULL from most library functions); a function that succeeds is allowed to change errno. The value of
-> errno
-> is never set to zero by any system call or library function.
+> errno is never set to zero by any system call or library function.
 
 So `errno != 0` is not an error indicator, need also to check for return value. Like this:
 
@@ -67,6 +66,9 @@ write `ini`, [only read it](https://github.com/ndevilla/iniparser/issues/91), be
 out two days after). If that library doesn't support CMake, you'll have to integrate it into your project somehow. Go
 wins again with its superior tooling.
 
+There is no definitive standard library to use with functions needed to work with files, use strings and threading.
+GitHub keeps suggesting me different libs with same functionality.
+
 #### On project file structure
 
 I just don't know anymore. Here is [mindforger](https://github.com/dvorka/mindforger),
@@ -110,6 +112,8 @@ use plain C functions to avoid that nonsense.
 Stack traces? Of course not out of the box. You must build your application with `libunwind`. And that's only for your
 application. It doesn't help if segfault occurs in standard library, like it did after 4 hours of waiting.
 
+And people say that it was even *worse* before C++11 - https://news.ycombinator.com/item?id=42495135.
+
 #### Documentation
 
 Documentation online is scattered between a couple of sites dedicated to C++, obscure C forums
@@ -122,6 +126,9 @@ at `static` - [storage duration](https://en.cppreference.com/w/cpp/language/stor
 made static, meaning it is not tied to object instance. But if variable is static it becomes global-like and keeps its
 state and is also placed in `.data` or `.bss` section and if it is a member... How many conditions are there already?
 
+What about r/g/lvalues? https://blog.knatten.org/2018/03/09/lvalues-rvalues-glvalues-prvalues-xvalues-help/. Love this
+quote: `Instead, I only hope to give a basic intuition`. We can only hope to understand language.
+
 ---
 
 ### Summary
@@ -130,3 +137,5 @@ I don't think that C++ is a user-friendly modern language. It doesn't make sense
 C++ unless performance is critical. Hopefully Carbon will take its place: code looks cleaner and tooling is expected to
 be on Go level. Perhaps it was my mistake of having expectations before using C++11 without 10+ years of commercial
 experience.
+
+On the other side, modern languages are nice, because they were made with intention to be friendlier than C++.
