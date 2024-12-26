@@ -98,7 +98,7 @@ server:
 release-clean:
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) clean
 
-release: release-clean build-arm cassetteunpacker/res nw-installer/installer/userdata.tar
+release: release-clean build-arm server cassetteunpacker/res nw-installer/installer/userdata.tar
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT)
 
 # see also: `perf record` && `perf report`

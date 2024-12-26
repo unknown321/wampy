@@ -38,7 +38,7 @@ Preparing:
 
 ```shell
 git submodule update --recursive --init
-make prepare docker deps server
+make prepare docker deps
 ```
 
 Building:
