@@ -152,6 +152,8 @@ You can get skins from [Winamp Skin Museum](https://skins.webamp.org/).
 
 `Prefer time remaining` changes track time to negative on application start.
 
+`Show clutterbar` displays vertical list of options to the left of track time/visualization.
+
 #### Known issues and quirks
 
 Issues:

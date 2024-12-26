@@ -4,7 +4,8 @@
   - [ ] inotify for directory change? init signal on card insert?
   - [ ] update skin list
   - [ ] error handling (current skin was deleted, what happens next?)
-- [ ] update winamp settings screenshot in usage (added clutterbar)
+- [x] update winamp settings screenshot in usage (added clutterbar)
+- [x] long cassette titles/artists are incorrectly formatted when changed and active screen is settings
 - [x] refactor winamp skin loading with better error handling
 - [x] remove title artist duplication on "huge cover art" toggle
 - [x] winamp: play in playing state resets track to start and plays it again
@@ -67,14 +68,13 @@
 - [ ] simple clock skin
 - [ ] eq button custom action - too small?
 - [ ] "restart wampy" button in settings - use case?
-- [ ] single connection?
+- [ ] single connection over socket?
 - [ ] walkman One settings in wampy settings
 
 # hard to solve
 
-- [ ] long cassette titles/artists are incorrectly formatted when changed and active screen is settings
 - [ ] winamp playlist flicker sometimes (or is it?)
-- [ ] time/cover features are not applied on boot
+- [ ] time/cover features are not applied on device boot, only after first toggle
 - [ ] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
 - [ ] font atlases are too big
 - [ ] blink/marquee timers are not precise
