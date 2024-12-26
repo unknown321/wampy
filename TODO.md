@@ -1,11 +1,12 @@
 # general
 
-- [ ] refactor winamp skin loading with error handling
 - [ ] read skins from sd card
   - [ ] inotify for directory change? init signal on card insert?
   - [ ] update skin list
   - [ ] error handling (current skin was deleted, what happens next?)
-- [ ] update winamp settings screenshot in usage (clutterbar)
+- [ ] update winamp settings screenshot in usage (added clutterbar)
+- [x] refactor winamp skin loading with better error handling
+- [x] remove title artist duplication on "huge cover art" toggle
 - [x] winamp: play in playing state resets track to start and plays it again
 - [x] winamp: play in paused state resumes playing
 - [x] winamp: next in paused state switches track and plays it
@@ -71,8 +72,8 @@
 
 # hard to solve
 
-- [ ] long cassette titles/artists is incorrectly formatted when changed and active screen is settings
-- [ ] winamp playlist flicker sometimes
+- [ ] long cassette titles/artists are incorrectly formatted when changed and active screen is settings
+- [ ] winamp playlist flicker sometimes (or is it?)
 - [ ] time/cover features are not applied on boot
 - [ ] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
 - [ ] font atlases are too big

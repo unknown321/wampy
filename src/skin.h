@@ -29,15 +29,12 @@ struct Skin {
     std::string loadStatusStr{}; // skin loading status in settings
     Connector *connector{};
     bool loading{};
+    bool needLoad{};
     bool *hold_toggled = nullptr;
     int *hold_value = nullptr;
     bool *power_pressed = nullptr;
     int displaySettings{};
     SettingsTab displayTab = SettingsTab::SkinOpts;
-
-    std::string WinampSkinNewName{};
-    std::string WinampSkinOldName{};
-    std::string WinampCurrentSkinName{};
 
     ESkinVariant activeSkinVariant = EMPTY;
     int activeSettingsTab{};
@@ -45,9 +42,6 @@ struct Skin {
     Cassette::Cassette cassette{};
 
     AppConfig::AppConfig *config{};
-    //    int *hold_value{};
-    //    bool loading{};
-    int loadStatus{};
     bool onlyFont{};
 
     std::string needRestartFontsText = "Changes will be applied on device restart";
@@ -84,7 +78,6 @@ struct Skin {
                 exit(1);
             }
 
-            WinampSkinNewName = filepath;
             break;
         default:
             break;
@@ -109,13 +102,8 @@ struct Skin {
 
     void Load() {
         if (onlyFont && activeSkinVariant == CASSETTE) {
+            DLOG("reloading font for cassette\n");
             ReloadFont();
-            return;
-        }
-
-        LoadNewWinampSkin();
-
-        if (config->activeSkin == activeSkinVariant) {
             return;
         }
 
@@ -125,39 +113,31 @@ struct Skin {
         }
 
         loading = true;
-        const char *defaultSkinPath;
-#ifdef DESKTOP
-        defaultSkinPath = "../skins/base-2.91.wsz";
-#else
-        defaultSkinPath = "/system/vendor/unknown321/usr/share/skins/winamp/base-2.91.wsz";
-#endif
 
-        if (config->activeSkin != CASSETTE) {
+        if (config->activeSkin == WINAMP) {
+            DLOG("loading winamp\n");
             cassette.Unload();
             cassette.active = false;
-        }
 
-        if (config->activeSkin != WINAMP) {
-            winamp.Unload();
-            winamp.active = false;
-        }
+            std::string filepath{};
+            if (!SkinExists(config->winamp.filename, skinList, &filepath)) {
+                DLOG("no skin %s found in skin list\n", config->winamp.filename.c_str());
+            }
 
-        std::string filepath{};
-        if (!SkinExists(config->winamp.filename, skinList, &filepath)) {
-            DLOG("no skin %s found in skinlist\n", config->winamp.filename.c_str());
-            filepath = defaultSkinPath;
-        }
-
-        switch (config->activeSkin) {
-        case WINAMP:
             winamp.render = render;
             winamp.skin = (void *)this;
             winamp.WithConfig(&config->winamp);
-            winamp.Load(filepath, &FontRegular);
-            WinampCurrentSkinName = filepath;
+            winamp.changeSkin(filepath);
+            winamp.loadNewSkin(true);
+            FontRegular = winamp.GetFont();
             winamp.active = true;
-            break;
-        case CASSETTE:
+        }
+
+        if (config->activeSkin == CASSETTE) {
+            DLOG("loading cassette\n");
+            winamp.Unload();
+            winamp.active = false;
+
             cassette.reelList = reelList;
             cassette.tapeList = tapeList;
             cassette.render = render;
@@ -165,56 +145,38 @@ struct Skin {
             cassette.WithConfig(&config->cassette);
             cassette.Load("", &FontRegular);
             cassette.active = true;
-            break;
-        default:
-            //                winamp.Draw();
-            break;
         }
 
         activeSkinVariant = config->activeSkin;
         activeSettingsTab = activeSkinVariant;
     }
 
-    static void DisplayKeys() {
-        // We iterate both legacy native range and named ImGuiKey ranges. This is a little unusual/odd but this allows
-        // displaying the data for old/new backends.
-        // User code should never have to go through such hoops!
-        // You can generally iterate between ImGuiKey_NamedKey_BEGIN and ImGuiKey_NamedKey_END.
-#ifdef IMGUI_DISABLE_OBSOLETE_KEYIO
-        struct funcs {
-            static bool IsLegacyNativeDupe(ImGuiKey) { return false; }
-        };
-        ImGuiKey start_key = ImGuiKey_NamedKey_BEGIN;
-#else
-        struct funcs {
-            static bool IsLegacyNativeDupe(ImGuiKey key) { return key >= 0 && key < 512 && ImGui::GetIO().KeyMap[key] != -1; }
-        }; // Hide Native<>ImGuiKey duplicates when both exists in the array
-        auto start_key = (ImGuiKey)0;
-#endif
-        ImGui::SetCursorPos({0, 310});
-        ImGuiIO &io = ImGui::GetIO();
-        ImGui::Text("Mouse pos: (%g, %g)", io.MousePos.x, io.MousePos.y);
-        ImGui::SameLine();
-        ImGui::Text("Keys down:");
-        for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1)) {
-            if (funcs::IsLegacyNativeDupe(key) || !ImGui::IsKeyDown(key))
-                continue;
-            ImGui::SameLine();
-            ImGui::Text((key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key);
+    void LoadUpdatedSkin() {
+        if (!needLoad) {
+            return;
         }
-        //        ImGui::Text(
-        //            "Keys mods: %s%s%s%s",
-        //            io.KeyCtrl ? "CTRL " : "",
-        //            io.KeyShift ? "SHIFT " : "",
-        //            io.KeyAlt ? "ALT " : "",
-        //            io.KeySuper ? "SUPER " : ""
-        //        );
-        //        ImGui::Text("Chars queue:");
-        //        for (int i = 0; i < io.InputQueueCharacters.Size; i++) {
-        //            ImWchar c = io.InputQueueCharacters[i];
-        //            ImGui::SameLine();
-        //            ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c);
-        //        }
+
+        if (config->activeSkin != activeSkinVariant) {
+            DLOG("changing active skin type from %d to %d\n", activeSkinVariant, config->activeSkin);
+            Load();
+            needLoad = false;
+            return;
+        }
+
+        winamp.loadNewSkin();
+        FontRegular = winamp.GetFont();
+        loadStatusStr = "Loaded " + std::string(basename(winamp.GetCurrentSkin().c_str()));
+
+        for (const auto &v : *skinList) {
+            if (winamp.GetCurrentSkin() == v.fullPath) {
+                config->winamp.filename = v.name;
+                config->Save();
+                DLOG("config updated\n");
+                break;
+            }
+        }
+
+        needLoad = false;
     }
 
     static void ToggleDrawSettings(void *skin, void *) {
@@ -225,37 +187,6 @@ struct Skin {
         } else {
             s->displaySettings = 0;
         }
-    }
-
-    int LoadNewWinampSkin() {
-        if (WinampCurrentSkinName == WinampSkinNewName) {
-            return 0;
-        }
-
-        WinampSkinOldName = WinampCurrentSkinName;
-        WinampCurrentSkinName = WinampSkinNewName;
-        winamp.Unload();
-        loadStatus = winamp.Load(WinampCurrentSkinName, &FontRegular);
-        if (loadStatus != 0) {
-            WinampCurrentSkinName = WinampSkinOldName;
-            WinampSkinNewName = WinampSkinOldName;
-            DLOG("loading previous skin %s\n", WinampSkinOldName.c_str());
-            winamp.Load(WinampSkinOldName, &FontRegular);
-            loadStatusStr = winamp.loadStatusStr;
-            return loadStatus;
-        }
-
-        loadStatusStr = "Skin loaded";
-
-        for (const auto &v : *skinList) {
-            if (WinampCurrentSkinName == v.fullPath) {
-                config->winamp.filename = v.name;
-                config->Save();
-                break;
-            }
-        }
-
-        return 0;
     }
 
     void Header() {
@@ -344,16 +275,9 @@ struct Skin {
 #endif
 
         ImGui::NewLine();
-#ifdef DESKTOP
-        if (ImGui::Button("Apply")) {
-            onlyFont = true;
-            WinampCurrentSkinName = "";
-        }
-#else
         if (needRestartFonts) {
             ImGui::Text("%s", needRestartFontsText.c_str());
         }
-#endif
     }
 
     void Misc() {
@@ -513,7 +437,11 @@ struct Skin {
                     break;
                 }
 
+                DLOG("changed active skin type to %d\n", config->activeSkin);
+
                 config->Save();
+
+                needLoad = true;
             }
         }
 
@@ -544,14 +472,13 @@ struct Skin {
             ImGui::SameLine();
             if (activeSkinVariant == WINAMP) {
                 if (ImGui::Button("Load skin")) {
-                    loadStatus = 0;
-                    loadStatusStr = "loading " + skinList->at(selectedSkinIdx).name;
-                    WinampSkinNewName = skinList->at(selectedSkinIdx).fullPath;
+                    loadStatusStr = "Loading " + skinList->at(selectedSkinIdx).name;
+                    winamp.changeSkin(skinList->at(selectedSkinIdx).fullPath);
+                    needLoad = true;
                 }
             }
 
             if (!loadStatusStr.empty()) {
-                ImGui::SameLine();
                 ImGui::Text("%s", loadStatusStr.c_str());
             }
 

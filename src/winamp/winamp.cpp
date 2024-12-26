@@ -33,8 +33,10 @@ namespace Winamp {
 #ifdef DESKTOP
     //    const std::string FontPath = "../SSTJpPro-Regular.otf";
     const std::string FontPath = "../NotoSansKR-Regular.otf";
+    const char *defaultSkinPath = "../skins/base-2.91.wsz";
 #else
     const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
+    const char *defaultSkinPath = "/system/vendor/unknown321/usr/share/skins/winamp/base-2.91.wsz";
 #endif
 
     const std::list<const char *> filenames = {
@@ -54,15 +56,18 @@ namespace Winamp {
         "pledit.bmp",
         "pledit.txt"};
 
-    Winamp::Winamp() {}
+    Winamp::Winamp() = default;
 
     Winamp::Winamp(Winamp const &other) : SkinVariant(other) {
         // copy constructor implementation
     }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
     Winamp &Winamp::Winamp::operator=(Winamp const &other) {
         // copy assignment operator
     }
+#pragma GCC diagnostic pop
 
     void Winamp::Notify() {
         statusUpdatedM.lock();
@@ -102,7 +107,7 @@ namespace Winamp {
         DLOG("update thread stopped\n");
     }
 
-    int Winamp::AddFonts(ImFont **fontRegular) {
+    void Winamp::AddFonts(ImFont **fontRegular) {
         auto numFontData = textures["numbers.bmp"];
         if (textures["nums_ex.bmp"].len != 0) {
             numFontData = textures["nums_ex.bmp"];
@@ -119,11 +124,9 @@ namespace Winamp {
         ImGui_ImplOpenGL3_CreateFontsTexture();
 
         //        fontRegular->FontSize = 25; // this will scale down elements in settings
-
-        return 0;
     }
 
-    int Winamp::volumeIsBalance() {
+    int Winamp::volumeTextureIsBalance() {
         if (textures["balance.bmp"].len != 0) {
             return 0;
         }
@@ -151,6 +154,12 @@ namespace Winamp {
         loading = true;
         isEx = false;
         loadStatusStr = "";
+
+        if (filename.empty()) {
+            DLOG("invalid skin filename, using default\n");
+            filename = defaultSkinPath;
+        }
+
         DLOG("Unzip %s\n", filename.c_str());
 
         for (auto &f : filenames) {
@@ -162,7 +171,7 @@ namespace Winamp {
             return -1;
         }
 
-        if (volumeIsBalance() < 0) {
+        if (volumeTextureIsBalance() < 0) {
             loading = false;
             return -1;
         }
@@ -189,8 +198,43 @@ namespace Winamp {
 
         StartThreads();
 
+        currentSkin = filename;
+
         return 0;
     }
+
+    void Winamp::loadNewSkin(bool force) {
+        if ((currentSkin == newSkin) && !force) {
+            DLOG("not updating current skin %s\n", currentSkin.c_str());
+            return;
+        }
+
+        std::string oldSkin = currentSkin;
+
+        Unload();
+
+        if (Load(newSkin, &FontRegular) < 0) {
+            DLOG("failed to load skin %s, loading previous (%s)\n", newSkin.c_str(), oldSkin.c_str());
+            Unload();
+            newSkin = oldSkin;
+            if (Load(newSkin, &FontRegular) < 0) {
+                DLOG("failed to load old skin %s during fallback, loading default skin %s\n", oldSkin.c_str(), defaultSkinPath);
+                newSkin = defaultSkinPath;
+                if (Load(newSkin, &FontRegular) < 0) {
+                    DLOG("failed to load default skin %s, exiting\n", defaultSkinPath);
+                    exit(1);
+                }
+            }
+        }
+
+        currentSkin = newSkin;
+    }
+
+    ImFont *Winamp::GetFont() { return FontRegular; }
+
+    std::string Winamp::GetCurrentSkin() { return currentSkin; };
+
+    void Winamp::changeSkin(const std::string &s) { newSkin = s; }
 
     int Winamp::unzip(const std::string &filename, TextureMap *textures, std::string *status) {
         int err = unzipFiles(filename.c_str(), textures);
@@ -537,7 +581,7 @@ namespace Winamp {
         ImGui::PopFont();
     }
 
-    int Winamp::initializeElements() {
+    void Winamp::initializeElements() {
         Elements.Main.FromPair(textures["main.bmp"])
             ->WithCrop(Magick::RectangleInfo{275, 116, 0, 0})
             ->WithFilledRectangle({770, 96, 323, 78}, colors.trackTitleBackground)
@@ -579,11 +623,9 @@ namespace Winamp {
         this->initializeButtons();
         this->initializePlaylist();
         this->initializeSliders();
-
-        return 0;
     }
 
-    int Winamp::initializePlaylist() {
+    void Winamp::initializePlaylist() {
         Elements.PlaylistTitleBarLeftCorner.FromPair(textures["pledit.bmp"])
             ->WithCrop({25, 20, 0, 0})
             ->WithScale({73, 58}, false)
@@ -631,11 +673,9 @@ namespace Winamp {
             ->WithTextures(bts)
             ->WithID("playlistTitle")
             ->WithCallback(Winamp::togglePlaylistFullscreen, this, nullptr);
-
-        return 0;
     }
 
-    int Winamp::initializeButtons() {
+    void Winamp::initializeButtons() {
         FlatTexture flatTexture;
         ImGui::ButtonTexture bt;
         ImGui::ButtonTextures bts;
@@ -824,11 +864,9 @@ namespace Winamp {
             ->WithPosition(105.0f, 76.0f)
             ->WithTextures(bts)
             ->WithCallback(toggleTrackTime, this, nullptr);
-
-        return 0;
     }
 
-    int Winamp::initializeSliders() {
+    void Winamp::initializeSliders() {
         ImGui::SliderBarTextures barTs;
         ImGui::ButtonTextures butTs; // ;^)
         FlatTexture ft;
@@ -915,7 +953,6 @@ namespace Winamp {
             ->WithPosition(515.0f, 166.0f)
             ->WithCallbackReleased(Winamp::BalancePressed, this)
             ->WithCallbackReleased(Winamp::BalanceReleased, this);
-        return 0;
     }
 
     void Winamp::notImplemented(void *winampSkin, void *) {

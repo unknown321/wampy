@@ -77,4 +77,6 @@ void getModel(std::string *model, bool *isWalkmanOne);
 
 void restoreCoredumpPattern();
 
+void DisplayKeys();
+
 #endif // IMGUITEST_UTIL_H

@@ -156,7 +156,7 @@ namespace Winamp {
 
         int Load(std::string filename, ImFont **FontRegular) override;
 
-        int AddFonts(ImFont **fontRegular);
+        void AddFonts(ImFont **fontRegular);
 
         static void Stop(void *winamp, void *);
 
@@ -174,6 +174,14 @@ namespace Winamp {
 
         void Format(bool force = false);
 
+        void changeSkin(const std::string &newSkinPath);
+
+        void loadNewSkin(bool force = false);
+
+        ImFont *GetFont();
+
+        std::string GetCurrentSkin();
+
       private:
         SkinColors colors{};
         TextureMap textures{};
@@ -190,7 +198,8 @@ namespace Winamp {
         bool playlistFullscreen{};
         bool isEx{};             // uses nums_ex.bmp?
         bool timeRemaining{};    // current state of time display
-        bool timeRemainingSet{}; // option from config, must be set only once on start, skin change does not reset current value
+        bool timeRemainingSet{}; // option from config, must be set only once on changing skinVariant (cassette-winamp), wsz skin change
+                                 // does not reset current value
         const char *remainingTimeSign{};
         bool stopped{};
         int activePlaylistID{}; // used to swap currently updated playlist with displayed playlist
@@ -213,7 +222,10 @@ namespace Winamp {
         MarqueeInfo m{};
         MarqueeInfo mStaging{};
 
-        int volumeIsBalance();
+        std::string currentSkin{};
+        std::string newSkin{};
+
+        int volumeTextureIsBalance();
 
         void probeTrackTitleBackgroundColor();
 
@@ -227,13 +239,13 @@ namespace Winamp {
 
         void drawPlaylist() const;
 
-        int initializeElements();
+        void initializeElements();
 
-        int initializeButtons();
+        void initializeButtons();
 
-        int initializePlaylist();
+        void initializePlaylist();
 
-        int initializeSliders();
+        void initializeSliders();
 
         static void notImplemented(void *winampSkin, void *);
 

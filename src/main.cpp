@@ -422,7 +422,7 @@ int main(int, char **) {
 
         glfwSwapBuffers(window);
 
-        skin.Load();
+        skin.LoadUpdatedSkin();
 
         if (config.limitFPS) {
             //        https://github.com/glfw/glfw/issues/1308
