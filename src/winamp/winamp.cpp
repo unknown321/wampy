@@ -26,7 +26,7 @@ namespace Winamp {
     const int BalanceBarCount = 28;
 
     const int playlistSongWidth = 600.0f;
-    const char *separator = "  ***   ";
+    const char *separator = "  ***  ";
     const char *remainingTimeSignMinus = "-";
     const char *remainingTimeSignPlus = "";
 
