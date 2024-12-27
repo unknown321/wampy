@@ -100,6 +100,8 @@ release-clean:
 
 release: release-clean build-arm server cassetteunpacker/res nw-installer/installer/userdata.tar
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT)
+	cd nw-installer/installer/stock/ && tar -czvf stock.tar.gz NW_WM_FW.UPG
+	cd nw-installer/installer/walkmanOne/ && tar -czvf walkmanOne.tar.gz NW_WM_FW.UPG
 
 # see also: `perf record` && `perf report`
 profile:
