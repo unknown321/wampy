@@ -40,3 +40,5 @@ See [BUILD.md](./BUILD.md)
 ## See also
 
 [Making of](./MAKING_OF.md)
+
+[scrobbler](https://github.com/unknown321/scrobbler)
