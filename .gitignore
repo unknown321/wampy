@@ -19,3 +19,4 @@ src/Version.h
 LICENSE_3rdparty
 core..*
 hdumpstate*
+release/

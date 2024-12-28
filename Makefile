@@ -95,13 +95,33 @@ nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 server:
 	$(MAKE) -C server
 
+uninstaller:
+	$(MAKE) -C nw-installer prepare
+	cat LICENSE LICENSE_3rdparty > nw-installer/installer/windows/LICENSE.txt.user
+	tar -C uninstaller -cf nw-installer/installer/userdata.tar \
+		run.sh
+
 release-clean:
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) clean
+	-rm -rf release
 
 release: release-clean build-arm server cassetteunpacker/res nw-installer/installer/userdata.tar
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT)
+	mkdir -p release/installer/
 	cd nw-installer/installer/stock/ && tar -czvf stock.tar.gz NW_WM_FW.UPG
 	cd nw-installer/installer/walkmanOne/ && tar -czvf walkmanOne.tar.gz NW_WM_FW.UPG
+	mv nw-installer/installer/walkmanOne/walkmanOne.tar.gz release/installer
+	mv nw-installer/installer/stock/stock.tar.gz release/installer
+	mv nw-installer/installer/windows/${PRODUCT}.exe release/installer
+	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller clean
+	$(MAKE) uninstaller
+	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller build
+	mkdir -p release/uninstaller
+	cd nw-installer/installer/stock/ && tar -czvf stock.uninstaller.tar.gz NW_WM_FW.UPG
+	cd nw-installer/installer/walkmanOne/ && tar -czvf walkmanOne.uninstaller.tar.gz NW_WM_FW.UPG
+	mv nw-installer/installer/walkmanOne/walkmanOne.uninstaller.tar.gz release/uninstaller
+	mv nw-installer/installer/stock/stock.uninstaller.tar.gz release/uninstaller
+	mv nw-installer/installer/windows/${PRODUCT}.uninstaller.exe release/uninstaller
 
 # see also: `perf record` && `perf report`
 profile:
@@ -150,4 +170,4 @@ qr.bmp:
 	@convert qr.png -type palette qr.bmp
 	@rm qr.png
 
-.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server
+.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server uninstaller

@@ -53,6 +53,20 @@ install() {
   busybox chown -h ${user}:${group} /system/vendor/sony/lib/libprotobuf.so.32
 
   log "installing server"
+  test -f /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
+  if test $? -ne 0; then
+    # make sure this file is from SONY (not linked to libprotobuf)
+    busybox grep -q protobuf /system/vendor/sony/plugins/platforms/libqeglfs.so
+    if test $? -eq 1; then
+      log "backing up libqeglfs"
+      busybox cp -p /system/vendor/sony/plugins/platforms/libqeglfs.so /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
+    else
+      log "libqeglfs is linked to libprotobuf, not backing up"
+    fi
+  else
+    log "libqeglfs backup already exists"
+  fi
+
   cp libqeglfs.so /system/vendor/sony/plugins/platforms/
   chown root:shell /system/vendor/sony/plugins/platforms/libqeglfs.so
   chmod 0755 /system/vendor/sony/plugins/platforms/libqeglfs.so
