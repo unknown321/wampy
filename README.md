@@ -5,7 +5,7 @@ Frontend addon for NW-A50 series Walkman player.
 
 Also works on [Walkman One (NW-A50)](https://www.mrwalkman.com/p/sony-nw-a50series-custom-firmware.html).
 
-<img src="images/winamp.png" alt="winamp">&nbsp;<img src="images/cassette.png" alt="cassette">
+<img src="images/winamp.png" alt="winamp" width="49%">&nbsp;<img src="images/cassette.png" alt="cassette" width="49%">
 
 ## Features:
 
