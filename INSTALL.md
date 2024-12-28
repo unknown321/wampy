@@ -5,15 +5,16 @@
 * [Installing wampy](#installing-wampy)
   * [Windows](#windows)
   * [Linux](#linux)
-    * [Without adb (regular install):](#without-adb-regular-install)
-    * [With adb:](#with-adb)
-  * [Mac:](#mac)
+    * [Without adb](#without-adb)
+    * [With adb](#with-adb)
+  * [Mac](#mac)
+* [Uninstalling](#uninstalling)
 
 <!-- TOC -->
 
 ### Windows
 
-Download exe from [releases](./releases), run and follow instructions.
+Download exe from [releases](https://github.com/unknown321/wampy/releases), run and follow instructions.
 
 Device will restart twice.
 
@@ -54,3 +55,8 @@ Device reboots, upgrades a little, reboots again and upgrades again (fully).
 No native installer.
 
 See Linux section. You'll have to build `scsitool` yourself, good luck!
+
+## Uninstalling
+
+Download `*.uninstaller.*` file for your platform and firmware
+from [releases](https://github.com/unknown321/wampy/releases), follow instructions from `install` section above.
