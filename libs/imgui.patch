@@ -17,15 +17,35 @@ index 3c95f178..abcecb33 100644
      }
  }
 diff --git a/backends/imgui_impl_opengl3.cpp b/backends/imgui_impl_opengl3.cpp
-index bbe96c42..0e69aa0f 100644
+index bbe96c42..32557985 100644
 --- a/backends/imgui_impl_opengl3.cpp
 +++ b/backends/imgui_impl_opengl3.cpp
-@@ -603,7 +603,7 @@ void    ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
+@@ -602,8 +602,28 @@ void    ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
+                 if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
                      continue;
  
++#ifndef DESKTOP
++                auto sinr = -1;
++                auto cosr = 0;
++                auto x1 = (int) clip_min.x;
++                auto y1 = (int) ((float) 800 - clip_max.y);
++                auto width = (int) (clip_max.x - clip_min.x);
++                auto height = (int) (clip_max.y - clip_min.y);
++                auto originX = 0;
++                auto originY = 0;
++
++                auto newX1 = ((x1 - originX) * cosr - (y1 - originY) * sinr) + originX;
++//    auto newX2 = ((width - originX) * cosr - (height - originY) * sinr) + originX;
++                auto newY1 = ((x1 - originX) * sinr + (-y1 - originY) * cosr) + originY;
++//    auto newY2 = ((x2 - originX) * sinr + (-y2 - originY) * cosr) + originY;
++
++
++//                GL_CALL(glScissor(newX1, newY1, height, width));
++//                printf("new %d %d %d %d\n", newX1, newY1, height, width);
++#else
                  // Apply scissor/clipping rectangle (Y is inverted in OpenGL)
--                GL_CALL(glScissor((int)clip_min.x, (int)((float)fb_height - clip_max.y), (int)(clip_max.x - clip_min.x), (int)(clip_max.y - clip_min.y)));
-+//                GL_CALL(glScissor((int)clip_min.x, (int)((float)fb_height - clip_max.y), (int)(clip_max.x - clip_min.x), (int)(clip_max.y - clip_min.y)));
+                 GL_CALL(glScissor((int)clip_min.x, (int)((float)fb_height - clip_max.y), (int)(clip_max.x - clip_min.x), (int)(clip_max.y - clip_min.y)));
++#endif
  
                  // Bind texture, Draw
                  GL_CALL(glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->GetTexID()));
@@ -59,3 +79,15 @@ index a22e7ae9..651ec16b 100644
  
      // Gamepad (some of those are analog values, 0.0f to 1.0f)                          // NAVIGATION ACTION
      // (download controller mapping PNG/PSD at http://dearimgui.com/controls_sheets)
+diff --git a/imgui_widgets.cpp b/imgui_widgets.cpp
+index d261ba8f..33316a4a 100644
+--- a/imgui_widgets.cpp
++++ b/imgui_widgets.cpp
+@@ -1835,6 +1835,7 @@ bool ImGui::BeginComboPopup(ImGuiID popup_id, const ImRect& bb, ImGuiComboFlags
+             ImVec2 size_expected = CalcWindowNextAutoFitSize(popup_window);
+             popup_window->AutoPosLastDirection = (flags & ImGuiComboFlags_PopupAlignLeft) ? ImGuiDir_Left : ImGuiDir_Down; // Left = "Below, Toward Left", Down = "Below, Toward Right (default)"
+             ImRect r_outer = GetPopupAllowedExtentRect(popup_window);
++            r_outer.Max.y = 480.0f;
+             ImVec2 pos = FindBestWindowPosForPopupEx(bb.GetBL(), size_expected, &popup_window->AutoPosLastDirection, r_outer, bb, ImGuiPopupPositionPolicy_ComboBox);
+             SetNextWindowPos(pos);
+         }

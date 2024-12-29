@@ -99,7 +99,7 @@ index 4f097aa8..820df7a0 100644
      GLFW_PLATFORM_LIBRARY_WINDOW_STATE
      GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 diff --git a/src/null_monitor.c b/src/null_monitor.c
-index a9b528f0..1af83747 100644
+index a9b528f0..5c3e2883 100644
 --- a/src/null_monitor.c
 +++ b/src/null_monitor.c
 @@ -33,11 +33,10 @@
@@ -112,7 +112,7 @@ index a9b528f0..1af83747 100644
      GLFWvidmode mode;
 -    mode.width = 1920;
 -    mode.height = 1080;
-+    mode.width = 480;
++    mode.width = 800;
 +    mode.height = 800;
      mode.redBits = 8;
      mode.greenBits = 8;

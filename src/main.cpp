@@ -26,15 +26,20 @@
 #include "connector/hagoromo.h"
 #include "wampy.h"
 
+#define IMGUI_WIDTH 800.0f
+#define IMGUI_HEIGHT 480.0f
+
+#define GLFW_WIDTH 800.0f
+#define GLFW_HEIGHT 800.0f
+
 #ifdef DESKTOP
+
 #include "connector/mpd.h"
-#define WIDTH 800.0f
-#define HEIGHT 480.0f
+
 std::string dumpDir = "/tmp";
 #else
 std::string dumpDir = "/contents/wampy/log";
-#define WIDTH 480.0f
-#define HEIGHT 800.0f
+
 #endif
 
 #define TARGET_FPS 24
@@ -42,12 +47,37 @@ std::string dumpDir = "/contents/wampy/log";
 static void glfw_error_callback(int error, const char *description) { DLOG("Glfw Error %d: %s\n", error, description); }
 
 void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
+
+    //    printf("cliprect %f %f %f %f\n", cmd->ClipRect.x, cmd->ClipRect.y, cmd->ClipRect.z, cmd->ClipRect.w);
+    auto newCmd = (ImDrawCmd *)cmd;
+
+    ImVec2 clip_min((newCmd->ClipRect.x - 0) * 1, (newCmd->ClipRect.y - 0) * 1);
+    ImVec2 clip_max((newCmd->ClipRect.z - 0) * 1, (newCmd->ClipRect.w - 0) * 1);
+
+    auto sinr = -1;
+    auto cosr = 0;
+    auto x1 = (int)clip_min.x;
+    auto y1 = (int)((float)800 - clip_max.y);
+    auto width = (int)(clip_max.x - clip_min.x);
+    auto height = (int)(clip_max.y - clip_min.y);
+    auto originX = 0;
+    auto originY = 0;
+
+    auto newX1 = ((x1 - originX) * cosr - (y1 - originY) * sinr) + originX;
+    //    auto newX2 = ((width - originX) * cosr - (height - originY) * sinr) + originX;
+    auto newY1 = ((x1 - originX) * sinr + (-y1 - originY) * cosr) + originY;
+    //    auto newY2 = ((x2 - originX) * sinr + (-y2 - originY) * cosr) + originY;
+
+    newCmd->ClipRect = ImVec4((float)newX1, (float)newY1, (float)height, (float)width);
+    //    printf("cliprect %f %f %f %f\n", cmd->ClipRect.x, cmd->ClipRect.y, cmd->ClipRect.z, cmd->ClipRect.w);
+    glScissor(newX1, newY1, height, width);
+
     auto sp = (GLuint)(long)cmd->UserCallbackData;
     glUseProgram(sp);
 
     glUniform1i(glGetUniformLocation(sp, "Texture"), 0);
 
-    glm::mat4 Projection = glm::ortho(-WIDTH, 0.0f, HEIGHT, 0.0f);
+    glm::mat4 Projection = glm::ortho(-GLFW_WIDTH, 0.0f, GLFW_WIDTH, 0.0f);
     glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
     //    glm::mat4 ViewRotateX = glm::rotate( ViewTranslate, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f) );
@@ -58,7 +88,8 @@ void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
     glm::mat4 Model = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
 
     glm::mat4 MVP = Projection * View * Model;
-    glm::mat4 tMVP = glm::translate(MVP, glm::vec3(0, 0, 0));
+    glm::mat4 tMVP = glm::translate(MVP, glm::vec3(0, IMGUI_WIDTH - IMGUI_HEIGHT, 0));
+    //    glm::mat4 tMVP = glm::translate(MVP, glm::vec3(0, 0, 0));
     GLint uniTrans = glGetUniformLocation(sp, "ProjMtx");
     glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(tMVP));
 
@@ -84,6 +115,7 @@ GLFWwindow *CreateWindow() {
     glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_NULL);
     title = "";
 #endif
+
     if (!glfwInit()) {
         DLOG("glfw init failed\n");
         return nullptr;
@@ -103,7 +135,7 @@ GLFWwindow *CreateWindow() {
     GLFWmonitor *monitor = nullptr;
 #endif
 
-    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, title, monitor, nullptr);
+    GLFWwindow *window = glfwCreateWindow(GLFW_WIDTH, GLFW_HEIGHT, title, monitor, nullptr);
     if (window == nullptr) {
         DLOG("failed to create window\n");
         return nullptr;
@@ -301,11 +333,8 @@ int main(int, char **) {
 
     GLuint shaderProgram = ShaderProgram();
 
-    ImVec2 pos = ImVec2(0, 0);
-    ImVec2 size = ImVec2(WIDTH, HEIGHT);
-#ifndef DESKTOP
-    size = ImVec2(HEIGHT, HEIGHT);
-#endif
+    ImVec2 imguiWindowPos = ImVec2(0, 0);
+    ImVec2 imguiWindowSize = ImVec2(IMGUI_WIDTH, IMGUI_HEIGHT);
 
     MyMagick::InitMagick();
 
@@ -392,19 +421,16 @@ int main(int, char **) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::SetNextWindowPos(pos);
+        ImGui::SetNextWindowPos(imguiWindowPos);
 
         //        ImGui::ShowDemoWindow();
 
-        ImGui::SetNextWindowSize(size);
+        ImGui::SetNextWindowSize(imguiWindowSize);
 
         ImGui::Begin("1", nullptr, window_flags);
 
 #ifndef DESKTOP
         ImGui::GetBackgroundDrawList()->AddCallback(drawCallback, (void *)shaderProgram);
-        auto w = ImGui::GetCurrentWindow();
-        w->OuterRectClipped = ImRect(ImVec2(0, 0), ImVec2(HEIGHT, WIDTH));
-        ImGui::PushClipRect(ImVec2(0, 0), ImVec2(HEIGHT, HEIGHT), false);
 #endif
         skin.Draw();
 
