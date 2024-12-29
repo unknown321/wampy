@@ -6,6 +6,8 @@
 #include "helpers.h"
 #include <QVector>
 
+// main screen with icons is `gridArea -> MusicPlayerTop`, 93, qrc:/sid_0901_library/Contents.qml
+
 class QObjectConnectionListVector : public QVector<QObjectPrivate::ConnectionList> {
   public:
     bool orphaned; // the QObject owner of this vector has been destroyed while the vector was inUse

@@ -20,3 +20,4 @@ LICENSE_3rdparty
 core..*
 hdumpstate*
 release/
+*.swp
