@@ -17,20 +17,22 @@ index 3c95f178..abcecb33 100644
      }
  }
 diff --git a/backends/imgui_impl_opengl3.cpp b/backends/imgui_impl_opengl3.cpp
-index bbe96c42..32557985 100644
+index bbe96c42..1f939b22 100644
 --- a/backends/imgui_impl_opengl3.cpp
 +++ b/backends/imgui_impl_opengl3.cpp
-@@ -602,8 +602,28 @@ void    ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
+@@ -602,8 +602,29 @@ void    ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
                  if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
                      continue;
  
+-                // Apply scissor/clipping rectangle (Y is inverted in OpenGL)
 +#ifndef DESKTOP
 +                auto sinr = -1;
 +                auto cosr = 0;
 +                auto x1 = (int) clip_min.x;
-+                auto y1 = (int) ((float) 800 - clip_max.y);
++                auto y1 = (int) ((float) 480 - clip_max.y );
 +                auto width = (int) (clip_max.x - clip_min.x);
 +                auto height = (int) (clip_max.y - clip_min.y);
++//                printf("want to cull %f %f %d %d\n", clip_min.x, fb_height - clip_max.y, width, height);
 +                auto originX = 0;
 +                auto originY = 0;
 +
@@ -40,10 +42,10 @@ index bbe96c42..32557985 100644
 +//    auto newY2 = ((x2 - originX) * sinr + (-y2 - originY) * cosr) + originY;
 +
 +
-+//                GL_CALL(glScissor(newX1, newY1, height, width));
-+//                printf("new %d %d %d %d\n", newX1, newY1, height, width);
++                GL_CALL(glScissor(newX1, newY1, height, width+800));
++//                printf("cull %d %d (%d %d) %d %d\n", newX1, newY1, x1, y1, height, width );
 +#else
-                 // Apply scissor/clipping rectangle (Y is inverted in OpenGL)
++//                 Apply scissor/clipping rectangle (Y is inverted in OpenGL)
                  GL_CALL(glScissor((int)clip_min.x, (int)((float)fb_height - clip_max.y), (int)(clip_max.x - clip_min.x), (int)(clip_max.y - clip_min.y)));
 +#endif
  
