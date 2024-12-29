@@ -463,15 +463,7 @@ struct Skin {
         if (activeSettingsTab == WINAMP) {
             ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
             ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-            if (ImGui::BeginCombo("##", skinList->at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightSmall)) {
-#ifndef DESKTOP
-                auto clip_min = ImVec2(0, 0);
-                //                auto clip_max = ImVec2(ImGui::GetCursorPosX() + ImGui::GetTextLineHeightWithSpacing() * 6.3f,
-                //                                       ImGui::GetCursorPosY() + ImGui::GetTextLineHeightWithSpacing() * 5.0f);
-                auto clip_max = ImVec2(800, 800);
-                ImGui::PushClipRect(clip_min, clip_max, false);
-#endif
-
+            if (ImGui::BeginCombo("##", skinList->at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightRegular)) {
                 for (int n = 0; n < skinList->size(); n++) {
                     const bool is_selected = (selectedSkinIdx == n);
                     if (ImGui::Selectable(skinList->at(n).name.c_str(), is_selected)) {
