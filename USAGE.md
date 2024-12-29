@@ -68,9 +68,6 @@ default music player, not SensMe or Language Study.
 Due to unfortunate combination of font and framework quirks, all text in settings is placed slightly lower than
 expected.
 
-Rotation is not handled very well by framework (and developer), drawing backend and repo owner, so dropdowns are broken.
-See https://github.com/ocornut/imgui/issues/7866 and [libs/imgui.patch](./libs/imgui.patch).
-
 ### Fonts
 
 By default, basic latin characters plus various punctuation are used. If your songs have non-latin glyphs in their
@@ -207,7 +204,6 @@ Tap middle of the screen while in `Randomize?` mode to re-roll current tape/reel
 
 Issues:
 
-- Dropdowns and tables in settings are broken, so not all values are selectable for `DSD` and `Hi-Res`.
 - Default reels have a lot of textures, which may negatively impact performance. Sometimes reboot is required after
   changing settings.
 - Changing active skin to cassette may crash device if there is not enough memory at the moment.

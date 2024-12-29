@@ -75,7 +75,7 @@
 
 - [ ] winamp playlist flicker sometimes (or is it?)
 - [ ] time/cover features are not applied on device boot, only after first toggle
-- [ ] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
+- [x] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
 - [ ] font atlases are too big
 - [ ] blink/marquee timers are not precise
 - [ ] fps limit works after application restart, because you need to reset `lasttime`; don't want to pass it through
