@@ -1,7 +1,7 @@
 wampy
 =====
 
-Frontend addon for NW-A50 series Walkman player.
+Interface addon for NW-A50 series Walkman player.
 
 Also works on [Walkman One (NW-A50)](https://www.mrwalkman.com/p/sony-nw-a50series-custom-firmware.html).
 
@@ -15,6 +15,16 @@ Also works on [Walkman One (NW-A50)](https://www.mrwalkman.com/p/sony-nw-a50seri
 - Default player enhancements (add clock and increase cover art size)
 
 See [USAGE.md](./USAGE.md).
+
+## Device support
+
+| Device    | Status | Notes                                                            |
+|-----------|--------|------------------------------------------------------------------|
+| NW-A50    | ✅      |                                                                  |
+| NW-A30    | ?      | help wanted [#1](https://github.com/unknown321/wampy/issues/1)   |
+| NW-A40    | ?      | help wanted [#1](https://github.com/unknown321/wampy/issues/1)   |
+| NW-ZX300  | ?      | help wanted [#12](https://github.com/unknown321/wampy/issues/12) |
+| NW-WM1A/Z | ?      | help wanted [#13](https://github.com/unknown321/wampy/issues/13) |
 
 ## Install
 
