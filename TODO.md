@@ -62,6 +62,7 @@
 
 # want
 
+- [x] walkman One settings in wampy settings
 - [ ] visualization from NW-WM1Z spectrum analyzer
 - [ ] regions.txt (winamp)
 - [ ] clickable lyrics icon (hagoromo)
@@ -69,13 +70,12 @@
 - [ ] eq button custom action - too small?
 - [ ] "restart wampy" button in settings - use case?
 - [ ] single connection over socket?
-- [ ] walkman One settings in wampy settings
 
 # hard to solve
 
+- [x] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
 - [ ] winamp playlist flicker sometimes (or is it?)
 - [ ] time/cover features are not applied on device boot, only after first toggle
-- [x] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
 - [ ] font atlases are too big
 - [ ] blink/marquee timers are not precise
 - [ ] fps limit works after application restart, because you need to reset `lasttime`; don't want to pass it through

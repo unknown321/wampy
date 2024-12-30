@@ -18,7 +18,7 @@ enum SettingsTab {
     TabLicense3rd = 3,
     TabLicense = 4,
     TabWebsite = 5,
-    TabW1 = 6,
+    TabWalkmanOne = 6,
 };
 
 struct Skin {
@@ -28,6 +28,7 @@ struct Skin {
     SkinList *reelList{};
     SkinList *tapeList{};
     W1::W1Options w1Options{};
+    W1::WalkmanOneOptions walkmanOneOptions{};
     int selectedSkinIdx{};       // winamp skin idx
     std::string loadStatusStr{}; // skin loading status in settings
     Connector *connector{};
@@ -49,6 +50,7 @@ struct Skin {
 
     std::string needRestartFontsText = "Changes will be applied on device restart";
     bool needRestartFonts{};
+    bool needRestartWalkmanOne{};
 
     std::string license{};
     std::string license3rd{};
@@ -218,7 +220,7 @@ struct Skin {
         ImGui::SameLine(ImGui::CalcTextSize("Settings").x + ImGui::GetStyle().FramePadding.x * 2.f + offset * 2);
         if (ImGui::Button("W1")) {
             loadStatusStr = "";
-            displayTab = SettingsTab::TabW1;
+            displayTab = SettingsTab::TabWalkmanOne;
         }
 
         auto fontsSize = ImGui::CalcTextSize("Fonts").x + ImGui::GetStyle().FramePadding.x * 2.f;
@@ -398,13 +400,169 @@ struct Skin {
         ImGui::Image((void *)(intptr_t)qrTexture, ImVec2(qrSide, qrSide));
     }
 
+    void WalkmanOne() {
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10.0f, 15.0f));
+        ImGui::SeparatorText("Walkman One settings");
+        ImGui::PopStyleVar();
+
+        if (!walkmanOneOptions.configFound) {
+            ImGui::Text("config file not found\n");
+            return;
+        }
+
+        static ImGuiTableFlags flags =
+            ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchSame;
+
+        ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 3);
+
+        if (ImGui::BeginTable("walkmanOneTable", 2, flags, outer_size)) {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Interface color");
+
+            ImGui::TableNextColumn();
+            ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+            ImGui::PushItemWidth(-FLT_MIN);
+            if (ImGui::BeginCombo(
+                    "##walkmanOneColor", W1::colorByValueWalkmanOne.at(walkmanOneOptions.color).c_str(), ImGuiComboFlags_HeightRegular
+                )) {
+                for (const auto &entry : W1::colorByNameWalkmanOne) {
+                    if (ImGui::Selectable(entry.first.c_str(), false)) {
+                        walkmanOneOptions.color = entry.second;
+                        DLOG("selected color %s\n", W1::colorByValueWalkmanOne.at(walkmanOneOptions.color).c_str());
+                        walkmanOneOptions.Save();
+                        needRestartWalkmanOne = true;
+                    }
+                }
+                ImGui::EndCombo();
+            }
+            ImGui::PopStyleVar(2);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Sound signature");
+
+            ImGui::TableNextColumn();
+            ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+            if (ImGui::BeginCombo(
+                    "##walkmanOneSignature",
+                    W1::signatureByValueWalkmanOne.at(walkmanOneOptions.signature).c_str(),
+                    ImGuiComboFlags_HeightRegular
+                )) {
+                for (const auto &entry : W1::signatureByNameWalkmanOne) {
+                    if (ImGui::Selectable(entry.first.c_str(), false)) {
+                        walkmanOneOptions.signature = entry.second;
+                        DLOG("selected signature %s\n", W1::signatureByValueWalkmanOne.at(walkmanOneOptions.signature).c_str());
+                        walkmanOneOptions.Save();
+                        needRestartWalkmanOne = true;
+                        walkmanOneOptions.tuningChanged = true;
+                    }
+                }
+                ImGui::EndCombo();
+            }
+            ImGui::PopStyleVar(2);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Region");
+
+            ImGui::TableNextColumn();
+            ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+            if (ImGui::BeginCombo("##walkmanOneRegion", walkmanOneOptions.region, ImGuiComboFlags_HeightRegular)) {
+                for (const auto &entry : W1::regionWalkmanOne) {
+                    if (ImGui::Selectable(entry.c_str(), false)) {
+                        strncpy(walkmanOneOptions.region, entry.c_str(), sizeof walkmanOneOptions.region);
+                        DLOG("selected region %s\n", entry.c_str());
+                        walkmanOneOptions.Save();
+                        needRestartWalkmanOne = true;
+                    }
+                }
+                ImGui::EndCombo();
+            }
+            ImGui::PopStyleVar(2);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Remote option with any region");
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("##remote", &walkmanOneOptions.remote)) {
+                DLOG("Set remote option to %d\n", walkmanOneOptions.remote);
+                walkmanOneOptions.Save();
+                needRestartWalkmanOne = true;
+            }
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Plus mode v2");
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("##plusv2", &walkmanOneOptions.plusModeVersionBOOL)) {
+                DLOG("Set plus mode v2 to %d\n", walkmanOneOptions.plusModeVersionBOOL);
+                walkmanOneOptions.Save();
+                needRestartWalkmanOne = true;
+            }
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Plus mode by default");
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("##plusdefault", &walkmanOneOptions.plusModeByDefault)) {
+                DLOG("Set plus mode default to %d\n", walkmanOneOptions.plusModeByDefault);
+                walkmanOneOptions.Save();
+                needRestartWalkmanOne = true;
+            }
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Lower gain mode");
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("##gainmode", &walkmanOneOptions.gainMode)) {
+                DLOG("Set gain mode to %d\n", walkmanOneOptions.gainMode);
+                walkmanOneOptions.Save();
+                needRestartWalkmanOne = true;
+            }
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Different DAC init mode");
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("##dacinitmode", &walkmanOneOptions.dacInitializationMode)) {
+                DLOG("Set gain mode to %d\n", walkmanOneOptions.dacInitializationMode);
+                walkmanOneOptions.Save();
+                needRestartWalkmanOne = true;
+            }
+
+            ImGui::EndTable();
+        }
+
+        ImGui::NewLine();
+        if (needRestartWalkmanOne) {
+            if (ImGui::Button("Reboot device")) {
+                DLOG("rebooting\n");
+#ifndef DESKTOP
+                walkmanOneOptions.Reboot();
+#endif
+            }
+        }
+    }
+
+    void WalkmanOneTab() {
+        if (isWalkmanOne) {
+            WalkmanOne();
+        } else {
+            Wee1();
+        }
+    }
+
     void Wee1() {
         ImGui::NewLine();
         ImGui::Text("Interface color");
 
         ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-        if (ImGui::BeginCombo("##", W1::colorByValue.at(w1Options.deviceColor).c_str(), ImGuiComboFlags_HeightRegular)) {
+        if (ImGui::BeginCombo("##w1color", W1::colorByValue.at(w1Options.deviceColor).c_str(), ImGuiComboFlags_HeightRegular)) {
             for (const auto &entry : W1::colorByName) {
                 if (ImGui::Selectable(entry.first.c_str(), false)) {
                     w1Options.deviceColor = entry.second;
@@ -417,6 +575,18 @@ struct Skin {
         ImGui::SameLine();
         if (ImGui::Button("Change color")) {
             W1::SetColor(w1Options.deviceColor);
+            needRestartWalkmanOne = true;
+        }
+
+        if (needRestartWalkmanOne) {
+            ImGui::NewLine();
+            if (ImGui::Button("Reboot device")) {
+                DLOG("rebooting\n");
+#ifndef DESKTOP
+                system("sync");
+                system("reboot");
+#endif
+            }
         }
     }
 
@@ -656,8 +826,8 @@ struct Skin {
         case SettingsTab::TabWebsite:
             Website();
             break;
-        case SettingsTab::TabW1:
-            Wee1();
+        case SettingsTab::TabWalkmanOne:
+            WalkmanOneTab();
             break;
         default:
             break;

@@ -5,7 +5,7 @@
   * [⚠️What to do if device crashes / Wampy doesn't start?⚠️](#what-to-do-if-device-crashes--wampy-doesnt-start)
   * [Wampy is on screen but doesn't respond and cannot be toggled off](#wampy-is-on-screen-but-doesnt-respond-and-cannot-be-toggled-off)
   * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
-  * [Wampy is empty](#wampy-is-empty)
+  * [There is no song info](#there-is-no-song-info)
   * [Notes on ugly settings](#notes-on-ugly-settings)
   * [Fonts](#fonts)
   * [There is a "detailed info" popup after turning screen off and on instead of Wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
@@ -23,6 +23,8 @@
     * [Cassette skins](#cassette-skins)
 * [Misc](#misc)
   * [Issues](#issues)
+* [Walkman One](#walkman-one)
+  * [Stock firmware](#stock-firmware)
 * [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
@@ -324,6 +326,26 @@ Applied after restart.
 - `Huge cover art` and `Show time` are NOT applied on application start. You need to toggle Wampy once for these to
   apply.
 - `Huge cover art` hides lyrics icon.
+
+## Walkman One
+
+<figure>
+<img src="images/settings-w1-yes-walkmanOne.png">
+<figcaption>Walkman One settings</figcaption>
+</figure>
+
+User interface Walkman One firmware. Follow instructions in `CFW/settings.txt` file.
+
+Sound signature is applied on device without PC connection. `CFW/External_Tunings` directory **must** be present.
+
+### Stock firmware
+
+<figure>
+<img src="images/settings-w1-no-walkmanOne.png">
+<figcaption>W1 settings on stock firmware</figcaption>
+</figure>
+
+On stock firmware there is only one option: UI color change.
 
 ## Providing debug information
 
