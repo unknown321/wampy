@@ -80,6 +80,8 @@ namespace AppConfig {
         ini["fonts"]["korean"] = std::to_string(fontRanges.Korean);
         ini["fonts"]["thai"] = std::to_string(fontRanges.Thai);
         ini["fonts"]["vietnamese"] = std::to_string(fontRanges.Vietnamese);
+
+        ini["w1"]["deviceColor"] = std::to_string(w1Options.deviceColor);
     }
 
     void AppConfig::Default() {
@@ -175,6 +177,11 @@ namespace AppConfig {
         fontRanges.Korean = (bool)std::atoi(ini["fonts"]["korean"].c_str());
         fontRanges.Thai = (bool)std::atoi(ini["fonts"]["thai"].c_str());
         fontRanges.Vietnamese = (bool)std::atoi(ini["fonts"]["vietnamese"].c_str());
+
+        w1Options.deviceColor = std::atoi(ini["w1"]["deviceColor"].c_str());
+        if (W1::colorByValue.count(w1Options.deviceColor) == 0) {
+            w1Options.deviceColor = W1::defaultColor;
+        }
         // NOLINTEND
 
         MPDSocketPath = ini["mpd"]["socketPath"];

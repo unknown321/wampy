@@ -5,6 +5,7 @@
 #include "cassette/cassette.h"
 #include "config.h"
 #include "skinVariant.h"
+#include "w1/w1.h"
 #include "winamp/winamp.h"
 #include <thread>
 
@@ -17,6 +18,7 @@ enum SettingsTab {
     TabLicense3rd = 3,
     TabLicense = 4,
     TabWebsite = 5,
+    TabW1 = 6,
 };
 
 struct Skin {
@@ -25,6 +27,7 @@ struct Skin {
     SkinList *skinList{};
     SkinList *reelList{};
     SkinList *tapeList{};
+    W1::W1Options w1Options{};
     int selectedSkinIdx{};       // winamp skin idx
     std::string loadStatusStr{}; // skin loading status in settings
     Connector *connector{};
@@ -207,15 +210,21 @@ struct Skin {
         const auto timeinfo = localtime(&rawtime);
         strftime(buffer, sizeof(buffer), "%H:%M", timeinfo);
 
-        //        ImGui::SetCursorPosY(480.0f - ImGui::GetTextLineHeight() - 10.0f);
         ImGui::SameLine(380.0f);
         ImGui::Text("%s", buffer);
+
+        float offset = 15.0f;
+
+        ImGui::SameLine(ImGui::CalcTextSize("Settings").x + ImGui::GetStyle().FramePadding.x * 2.f + offset * 2);
+        if (ImGui::Button("W1")) {
+            loadStatusStr = "";
+            displayTab = SettingsTab::TabW1;
+        }
 
         auto fontsSize = ImGui::CalcTextSize("Fonts").x + ImGui::GetStyle().FramePadding.x * 2.f;
         auto miscSize = ImGui::CalcTextSize("Misc").x + ImGui::GetStyle().FramePadding.x * 2.f;
         auto skinSize = ImGui::CalcTextSize("Skin").x + ImGui::GetStyle().FramePadding.x * 2.f;
         auto closeSize = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.f;
-        float offset = 15.0f;
         ImGui::SameLine(800.0f - closeSize - miscSize - skinSize - fontsSize - offset * 4);
         if (ImGui::Button("Skin")) {
             loadStatusStr = "";
@@ -387,6 +396,28 @@ struct Skin {
         ImGui::Text("https://github.com/unknown321/wampy");
         ImGui::NewLine();
         ImGui::Image((void *)(intptr_t)qrTexture, ImVec2(qrSide, qrSide));
+    }
+
+    void Wee1() {
+        ImGui::NewLine();
+        ImGui::Text("Interface color");
+
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        if (ImGui::BeginCombo("##", W1::colorByValue.at(w1Options.deviceColor).c_str(), ImGuiComboFlags_HeightRegular)) {
+            for (const auto &entry : W1::colorByName) {
+                if (ImGui::Selectable(entry.first.c_str(), false)) {
+                    w1Options.deviceColor = entry.second;
+                    DLOG("selected %s\n", W1::colorByValue.at(w1Options.deviceColor).c_str());
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopStyleVar(2);
+        ImGui::SameLine();
+        if (ImGui::Button("Change color")) {
+            W1::SetColor(w1Options.deviceColor);
+        }
     }
 
     void ReadLicense() {
@@ -624,6 +655,9 @@ struct Skin {
             break;
         case SettingsTab::TabWebsite:
             Website();
+            break;
+        case SettingsTab::TabW1:
+            Wee1();
             break;
         default:
             break;

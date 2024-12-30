@@ -111,6 +111,7 @@ add_executable(${PROJECT_NAME}
         ${PROTOBUF_SOURCE}
         src/util/util.cpp
         src/wstring.cpp
+        src/w1/w1.cpp
         src/cassette/tape.cpp
         ${CONNECTOR_SOURCE}
         src/imgui_widgets.cpp
