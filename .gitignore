@@ -21,3 +21,5 @@ core..*
 hdumpstate*
 release/
 *.swp
+settings.txt
+ignoreme/

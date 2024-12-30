@@ -19,6 +19,9 @@ uninstall() {
   log "removing ${BINARY}"
   busybox rm -f ${VENDOR}/bin/${BINARY}
 
+  log "removing upgtool"
+  busybox rm -f ${VENDOR}/bin/upgtool-linux-arm5
+
   log "uninstalling ${BINARY} service"
   grep -q "init.${BINARY}.rc" "${INITRD_UNPACKED}/init.rc"
   if test $? -eq 0; then
