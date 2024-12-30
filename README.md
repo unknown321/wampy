@@ -25,6 +25,7 @@ See [USAGE.md](./USAGE.md).
 | NW-A40    | ?      | help wanted [#1](https://github.com/unknown321/wampy/issues/1)   |
 | NW-ZX300  | ?      | help wanted [#12](https://github.com/unknown321/wampy/issues/12) |
 | NW-WM1A/Z | ?      | help wanted [#13](https://github.com/unknown321/wampy/issues/13) |
+| DMP-Z1    | ❌      | no display                                                       |
 
 ## Install
 

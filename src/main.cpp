@@ -349,6 +349,10 @@ int main(int, char **) {
     skin.hold_value = &hold_value;
     skin.config = &config;
 
+    auto opt = W1::WalkmanOneOptions{};
+    W1::ParseSettings(&opt);
+    skin.walkmanOneOptions = opt;
+
     skin.connector = connector;
     skin.winamp.connector = connector;
     skin.cassette.connector = connector;

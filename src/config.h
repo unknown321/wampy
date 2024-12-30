@@ -4,6 +4,7 @@
 #include "cassette/cassette.h"
 #include "fontranges.h"
 #include "mini/ini.h"
+#include "w1/w1.h"
 #include "winamp/winamp.h"
 #include <string>
 
@@ -37,6 +38,7 @@ namespace AppConfig {
         Cassette::Config cassette{};
         Misc misc{};
         Features features{};
+        W1::W1Options w1Options{};
         bool debug{};
         FontRanges fontRanges;
         int badBoots{};

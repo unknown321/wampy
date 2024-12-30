@@ -66,7 +66,9 @@ nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 	cp $(INSTALL)/lib/libjpeg.so.62.4.0 installer/
 	cp $(INSTALL)/lib/libprotobuf.so.32.0.12 installer/
 	cp server/qt/qtbase/plugins/platforms/libqeglfs.so installer/
+	cp nw-installer/tools/upgtool/upgtool-linux-arm5 installer/
 	$(UPX) -qqq --best installer/$(PRODUCT)
+	$(UPX) -qqq --best installer/upgtool-linux-arm5
 	$(DOCKER) /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-strip installer/lib*
 	cp base-2.91.wsz installer/
 	tar -C cassetteunpacker/res -cf installer/cassette.tar \
@@ -86,6 +88,7 @@ nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 		libqeglfs.so \
 		base-2.91.wsz \
 		cassette.tar \
+		upgtool-linux-arm5 \
 		LICENSE \
 		LICENSE_3rdparty \
 		qr.bmp \

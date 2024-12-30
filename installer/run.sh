@@ -19,7 +19,11 @@ install() {
   log "installing ${BINARY}"
   mkdir -p ${VENDOR}/bin/
   cp ${BINARY} ${VENDOR}/bin/
-  chmod 0744 ${VENDOR}/bin/${BINARY}
+  chmod 0755 ${VENDOR}/bin/${BINARY}
+
+  log "installing upgtool"
+  cp upgtool-linux-arm5 ${VENDOR}/bin/
+  chmod 0755 ${VENDOR}/bin/upgtool-linux-arm5
 
   log "installing ${BINARY} service"
   cp "init.${BINARY}.rc" ${INITRD_UNPACKED}/
