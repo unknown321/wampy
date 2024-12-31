@@ -314,11 +314,6 @@ void Controller::SetVolume(Command::Command *c) {
 
     int newVal = c->setvolume().valuepercent() * maxVolume / 100;
 
-    if (newVal < 0 || newVal > maxVolume) {
-        DLOG("invalid value %d\n", newVal);
-        return;
-    }
-
     int oldVal = provider.volume;
     int oldPercent = provider.volume * 100 / maxVolume;
 
@@ -340,6 +335,16 @@ void Controller::SetVolume(Command::Command *c) {
 
         DLOG("fixed to %d (%d%%), was %d (%d%%)\n", newVal, c->setvolume().valuepercent(), oldVal, oldPercent);
     }
+
+    if (newVal > maxVolume) {
+        newVal = maxVolume;
+    }
+
+    if (newVal < 0) {
+        newVal = 0;
+    }
+
+    DLOG("new volume is %d\n", newVal);
 
     if (!QMetaObject::invokeMethod(DACViewModel, "OnVolumeDialChanged", Q_ARG(int, newVal))) {
         DLOG("failed to change volume\n");
