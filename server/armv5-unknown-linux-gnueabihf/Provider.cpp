@@ -40,6 +40,8 @@ void Provider::MSCSlot() { FromMSC(sender()); }
 
 // curTime, time, artist, album, title
 void Provider::FromMusicPlayer(QObject *o) {
+    DLOG("player: %s\n", o->metaObject()->className());
+
     auto m = o->property("meta_data");
     auto map = m.toMap();
     album = map["album_name"].toString();
@@ -197,15 +199,15 @@ void Provider::parseDetailsPopupEntry(QQuickItem *o, int index) {
     switch (index) {
     case CODEC:
         codec = value.split(" ").at(0);
-        //            DLOG("codec %s\n", codec.toUtf8().constData());
+        DLOG("codec %s\n", codec.toUtf8().constData());
         break;
     case BIT_DEPTH:
         bitDepth = value.split(" ").at(0).toInt();
-        //            DLOG("bitdepth %d\n", bitDepth);
+        DLOG("bitdepth %d\n", bitDepth);
         break;
     case BIT_RATE:
         bitRate = value.split(" ").at(0).toInt();
-        //            DLOG("bitrate %d\n", bitRate);
+        DLOG("bitrate %d\n", bitRate);
         break;
     case SAMPLE_RATE:
         sampleUnit = value.split(" ").at(1);
@@ -213,7 +215,7 @@ void Provider::parseDetailsPopupEntry(QQuickItem *o, int index) {
         if (sampleUnit == "MHz") {
             sampleRate = sampleRate * 1000;
         }
-        //            DLOG("sample rate %d\n", sampleRate);
+        DLOG("sample rate %d\n", sampleRate);
         break;
     default:
         break;

@@ -56,6 +56,10 @@ class Controller : public QObject {
 
     void restoreTitle();
 
+    QObject *getActivePlayer();
+
+    QObject *getActiveQMLPlayer();
+
     QVariant jsExpression(const char *text);
 
     QWindow *window = nullptr;
@@ -71,8 +75,13 @@ class Controller : public QObject {
     QObject *NavBar = nullptr;                     // dmpapp::NavigationBarForSettings
     QObject *ScreenTransitionController = nullptr; // dmpapp::ScreenTransitionController
     QObject *DACViewModel = nullptr;               // dmpapp::DACViewModel
+    QObject *StandardPlayer = nullptr;             // dmpapp::StandardPlayer
     QObject *MusicPlayerModel = nullptr;           // dmpapp::MusicPlayerDefaultViewModel
                                                    //    QObject *MusicWindowViewModel = nullptr; // dmpapp::MusicWindowViewModel
+
+    QObject *MusicPlayerDigitalLevelMeterModel = nullptr; // dmpapp::MusicPlayerDigitalLevelMeterViewModel
+    QObject *MusicPlayerLevelMeterModel = nullptr;        // dmpapp::MusicPlayerLevelMeterViewModel
+    QObject *MusicPlayerSpectrumModel = nullptr;          // dmpapp::MusicPlayerSpectrumViewModel
 
     QMetaObject::Connection transitionToDetailsPopup{};      // screen transition happened (want only player screen)
     QMetaObject::Connection popupParentChildrenChanged{};    // popup added/removed

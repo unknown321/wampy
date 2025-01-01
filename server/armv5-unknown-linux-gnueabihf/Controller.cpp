@@ -47,6 +47,7 @@ void Controller::jsFromFile() {
 }
 
 bool Controller::goToPlayer() {
+    DLOG("\n");
     if (provider.usbMounted) {
         DLOG("usb on\n");
         return false;
@@ -110,6 +111,7 @@ int Controller::Initialize() {
 }
 
 bool Controller::detailsAfterTransition() {
+    DLOG("\n");
     if ((bool)transitionToDetailsPopup) {
         DLOG("connection exists\n");
         return true;
@@ -131,11 +133,19 @@ bool Controller::detailsAfterTransition() {
 }
 
 bool Controller::isOnPlayerScreen() {
-    auto v = MusicPlayer->property("is_activated");
+    DLOG("\n");
+    auto player = getActivePlayer();
+    if (player == nullptr) {
+        DLOG("no active player found\n");
+        return false;
+    }
+
+    auto v = player->property("is_activated");
     if (!v.isValid()) {
         DLOG("invalid prop\n");
         return false;
     }
+    DLOG("is activated = %s\n", v.toString().toUtf8().constData());
 
     return v.toBool();
 }
@@ -165,6 +175,12 @@ void Controller::Hide(Command::Command *c) {
 
     waitingForHide = true;
 
+    auto activePlayer = getActiveQMLPlayer();
+    if (activePlayer != provider.qmlPlayer) {
+        DLOG("setting up connects\n");
+        setupConnects();
+    }
+
     auto popup = getDetailPopup();
     if (popup) {
         DLOG("details popup exists\n");
@@ -177,6 +193,8 @@ void Controller::Hide(Command::Command *c) {
         c->set_code(Command::OK);
 
         return;
+    } else {
+        DLOG("no details popup\n");
     }
 
     if (isOnPlayerScreen()) {
@@ -190,12 +208,18 @@ void Controller::Hide(Command::Command *c) {
             return;
         }
 
-        DLOG("connected transition, going to player screen\n");
-        if (!goToPlayer()) {
-            DLOG("cannot go to player screen\n");
-            disconnect(transitionToDetailsPopup);
-            c->set_code(Command::FAIL);
-            return;
+        DLOG("connected transition\n");
+        if (isOnPlayerScreen()) {
+            DLOG("already on player screen, invoking popup\n");
+            invokeDetailsPopup();
+        } else {
+            DLOG("going to player screen\n");
+            if (!goToPlayer()) {
+                DLOG("cannot go to player screen\n");
+                disconnect(transitionToDetailsPopup);
+                c->set_code(Command::FAIL);
+                return;
+            }
         }
     }
 
@@ -356,8 +380,16 @@ void Controller::SetVolume(Command::Command *c) {
 }
 
 void Controller::Seek(Command::Command *c) {
+    c->set_code(Command::FAIL);
     DLOG("seek to %d\n", c->seek().value());
-    if (!QMetaObject::invokeMethod(MusicPlayerModel, "OnScrubBarReleased", Qt::QueuedConnection, Q_ARG(int, c->seek().value()))) {
+
+    auto player = getActivePlayer();
+    if (player == nullptr) {
+        DLOG("no active player found\n");
+        return;
+    }
+
+    if (!QMetaObject::invokeMethod(player, "OnScrubBarReleased", Qt::QueuedConnection, Q_ARG(int, c->seek().value()))) {
         DLOG("seek fail\n");
         c->set_code(Command::FAIL);
         return;
@@ -451,8 +483,14 @@ void Controller::SeekToZero() {
 
 void Controller::Stop(Command::Command *c) {
     if (provider.isPlaying) {
+        auto player = getActivePlayer();
+        if (player == nullptr) {
+            DLOG("no active player found\n");
+            return;
+        }
+
         Pause(c);
-        seekAfterPause = QObject::connect(MusicPlayerModel, SIGNAL(playingChanged()), this, SLOT(SeekToZero()), Qt::DirectConnection);
+        seekAfterPause = QObject::connect(player, SIGNAL(playingChanged()), this, SLOT(SeekToZero()), Qt::DirectConnection);
         if (!seekAfterPause) {
             DLOG("connection failed\n");
             return;
@@ -484,7 +522,13 @@ void Controller::Repeat(Command::Command *c) {
         }
     }
 
-    if (!QMetaObject::invokeMethod(MusicPlayerModel, "OnRepeatClicked", Qt::QueuedConnection)) {
+    auto player = getActivePlayer();
+    if (player == nullptr) {
+        DLOG("no active player found\n");
+        return;
+    }
+
+    if (!QMetaObject::invokeMethod(player, "OnRepeatClicked", Qt::QueuedConnection)) {
         DLOG("click failed\n");
         c->set_code(Command::FAIL);
         return;
@@ -502,7 +546,13 @@ void Controller::Shuffle(Command::Command *c) {
         }
     }
 
-    if (!QMetaObject::invokeMethod(MusicPlayerModel, "OnShuffleClicked", Qt::QueuedConnection)) {
+    auto player = getActivePlayer();
+    if (player == nullptr) {
+        DLOG("no active player found\n");
+        return;
+    }
+
+    if (!QMetaObject::invokeMethod(player, "OnShuffleClicked", Qt::QueuedConnection)) {
         DLOG("click failed\n");
         c->set_code(Command::FAIL);
         return;
@@ -588,6 +638,94 @@ void Controller::findViewModels(QQuickItem *swipeItem) {
             }
         }
     }
+
+    if (MusicPlayerModel != nullptr) {
+        auto senders = QObjectPrivate::get(MusicPlayerModel)->senders;
+        if (senders == nullptr) {
+            DLOG("senders null\n");
+            return;
+        }
+
+        while (senders) {
+            if (senders->sender != nullptr) {
+                //                DLOG("MusicPlayerDefaultModel sender %s\n", senders->sender->metaObject()->className());
+                if (QString(senders->sender->metaObject()->className()) == "dmpapp::StandardPlayer") {
+                    StandardPlayer = senders->sender;
+                    DLOG("found StandardPlayer\n");
+                    break;
+                }
+            }
+
+            senders = senders->next;
+        }
+    }
+
+    if (StandardPlayer != nullptr) {
+        auto senders = QObjectPrivate::get(StandardPlayer)->senderList();
+        DLOG("senders %d\n", senders.size());
+        for (const auto &r : senders) {
+            if (QString(r->metaObject()->className()) == "dmpapp::MusicPlayerDigitalLevelMeterViewModel") {
+                MusicPlayerDigitalLevelMeterModel = r;
+                DLOG("found MusicPlayerDigitalLevelMeterModel\n");
+                continue;
+            }
+
+            if (QString(r->metaObject()->className()) == "dmpapp::MusicPlayerLevelMeterViewModel") {
+                MusicPlayerLevelMeterModel = r;
+                DLOG("found MusicPlayerLevelMeterViewModel\n");
+                continue;
+            }
+
+            if (QString(r->metaObject()->className()) == "dmpapp::MusicPlayerSpectrumViewModel") {
+                MusicPlayerSpectrumModel = r;
+                DLOG("found MusicPlayerSpectrumModel\n");
+                continue;
+            }
+        }
+    }
+}
+
+QObject *Controller::getActivePlayer() {
+    QList<QObject *> players = {MusicPlayerModel, MusicPlayerDigitalLevelMeterModel, MusicPlayerSpectrumModel, MusicPlayerLevelMeterModel};
+    for (const auto &p : players) {
+        if (p) {
+            //            DLOG("checking %s\n", p->metaObject()->className());
+            auto active = p->property("is_activated");
+            if (!active.isValid()) {
+                DLOG("invalid prop\n");
+                continue;
+            }
+
+            if (active.toBool()) {
+                DLOG("player: %s\n", p->metaObject()->className());
+                return p;
+            }
+        } else {
+            DLOG("player is null, skipping\n");
+        }
+    }
+
+    return nullptr;
+}
+
+QObject *Controller::getActiveQMLPlayer() {
+    auto player = getActivePlayer();
+    if (player == nullptr) {
+        DLOG("no active player found\n");
+        return nullptr;
+    }
+
+    auto qmlReceivers = QObjectPrivate::get(player)->receiverList("notifySeekError()");
+    if (qmlReceivers.empty()) {
+        DLOG("no receivers found\n");
+        return nullptr;
+    }
+
+    DLOG("receivers: %d\n", qmlReceivers.size());
+    auto qmlPlayer = qmlReceivers.at(0);
+    DLOG("current player is %s\n", qmlPlayer->metaObject()->className());
+
+    return qmlPlayer;
 }
 
 // finds BasicPlayerControls from MusicWindow
@@ -669,17 +807,29 @@ void Controller::setupConnects() {
         ready &= false;
     }
 
-    if (MusicPlayer != nullptr && (!provider.MusicPlayerHandle || !provider.MusicPlayerElapsedHandle)) {
-        provider.MusicPlayerHandle =
-            QObject::connect(MusicPlayer, SIGNAL(meta_dataChanged()), &provider, SLOT(MusicPlayerSlot()), Qt::QueuedConnection);
-        provider.FromMusicPlayer(MusicPlayer);
-        DLOG("MusicPlayer connect: %d\n", (bool)provider.MusicPlayerHandle);
-
-        provider.MusicPlayerElapsedHandle =
-            QObject::connect(MusicPlayer, SIGNAL(currently_playing_timeChanged()), &provider, SLOT(UpdateElapsed()), Qt::QueuedConnection);
-        DLOG("MusicPlayerElapsed connect: %d\n", (bool)provider.MusicPlayerElapsedHandle);
-    } else {
+    //    auto qmlPlayer = getActivePlayer();
+    auto qmlPlayer = getActiveQMLPlayer();
+    if (qmlPlayer == nullptr) {
+        DLOG("no active qml player found\n");
         ready &= false;
+    } else {
+        if (qmlPlayer != provider.qmlPlayer) {
+            disconnect(provider.MusicPlayerHandle);
+            disconnect(provider.MusicPlayerElapsedHandle);
+
+            provider.MusicPlayerHandle =
+                QObject::connect(qmlPlayer, SIGNAL(meta_dataChanged()), &provider, SLOT(MusicPlayerSlot()), Qt::QueuedConnection);
+            DLOG("MusicPlayer: %s, connect: %d\n", qmlPlayer->metaObject()->className(), (bool)provider.MusicPlayerHandle);
+
+            provider.MusicPlayerElapsedHandle = QObject::connect(
+                qmlPlayer, SIGNAL(currently_playing_timeChanged()), &provider, SLOT(UpdateElapsed()), Qt::QueuedConnection
+            );
+            DLOG("MusicPlayerElapsed: %s, connect: %d\n", qmlPlayer->metaObject()->className(), (bool)provider.MusicPlayerElapsedHandle);
+
+            provider.FromMusicPlayer(qmlPlayer);
+
+            provider.qmlPlayer = qmlPlayer;
+        }
     }
 
     if (DAC != nullptr && !provider.DACHandle) {
@@ -774,7 +924,7 @@ void Controller::connectDetailInfoProvider() {
 
     while (senders) {
         if (senders->sender != nullptr) {
-            DLOG("sender %s\n", senders->sender->metaObject()->className());
+            //            DLOG("sender %s\n", senders->sender->metaObject()->className());
             if (QString(senders->sender->metaObject()->className()) == "dmpapp::ContentDetailedInfo") {
                 ContentDetailedInfo = senders->sender;
                 detailInfoPopupPositionReset = QObject::connect(
@@ -798,6 +948,13 @@ QQuickItem *Controller::getDetailPopup() {
 
     DLOG("popups %d\n", popupParent->childItems().count());
     for (auto c : popupParent->childItems()) {
+        if (QString(c->metaObject()->className()).startsWith("QQuickRepeater_QML_")) {
+            DLOG("skip repeater\n");
+            continue;
+        }
+
+        //        DLOG("class %s\n", c->metaObject()->className());
+
         auto popStatus = c->property("status");
         if (!popStatus.isValid()) {
             continue;

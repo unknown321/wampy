@@ -54,6 +54,7 @@ class Provider : public QObject {
     QMetaObject::Connection MusicPlayerElapsedHandle{};
     QMetaObject::Connection DACHandle{};
     QMetaObject::Connection MusicWindowHandle{};
+    QObject *qmlPlayer{};
 
     void GetPlaylist();
 
