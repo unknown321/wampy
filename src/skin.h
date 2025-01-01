@@ -311,17 +311,11 @@ struct Skin {
             connector->FeatureBigCover(config->features.bigCover);
         }
 
-        if (isWalkmanOne) {
-            ImGui::BeginDisabled(true);
-        }
-
-        if (ImGui::Checkbox("Show time", &config->features.showTime)) {
-            config->Save();
-            connector->FeatureShowTime(config->features.showTime);
-        }
-
-        if (isWalkmanOne) {
-            ImGui::EndDisabled();
+        if (isWalkmanOne == false) {
+            if (ImGui::Checkbox("Show time", &config->features.showTime)) {
+                config->Save();
+                connector->FeatureShowTime(config->features.showTime);
+            }
         }
 
         if (ImGui::Checkbox("Limit max volume", &config->features.limitVolume)) {
