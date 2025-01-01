@@ -967,8 +967,7 @@ What happens next:
 
 - First, device boots from small ramdisk, which contains shell, decrypt tool (`fwpchk`) and some regular Linux tools.
 
-- Second, something extracts and runs `install.sh` from firmware upgrade file. I don't know what exactly happens, but
-  ultimately it doesn't matter.
+- Second, `install_update_script/icx_start_update.sh` extracts firmware upgrade file and and runs `install.sh`
 
 - Third, `install.sh` executes. Usually it runs `fwpchk` to decrypt and extract firmware files which could be anything.
   Extracted files are then flashed, copied, moved, removed - you name it.
