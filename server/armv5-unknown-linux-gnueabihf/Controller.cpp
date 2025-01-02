@@ -100,7 +100,6 @@ int Controller::Initialize() {
 
     auto swipeItem = qvariant_cast<QQuickItem *>(res);
 
-    DLOG("framework\n");
     FrameWork = swipeItem->parent();
 
     if (setup() == 0) {
