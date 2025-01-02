@@ -4,7 +4,9 @@
 #include <thread>
 
 const ImWchar rangesPunctuation[] = {
-    0x2000, 0x206F, // General Punctuation
+    0x2000,
+    0x206F, // General Punctuation
+    0,
 };
 
 namespace Cassette {
@@ -71,7 +73,7 @@ namespace Cassette {
         gr.clear();
 
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
-        range.AddRanges(&rangesPunctuation[0]);
+        range.AddRanges(rangesPunctuation);
 
         if (fontRanges) {
             if (fontRanges->Japanese)
@@ -249,6 +251,8 @@ namespace Cassette {
         memset(previousTrack, 0, FIELD_SIZE);
         memset(artist, 0, FIELD_SIZE);
         memset(title, 0, FIELD_SIZE);
+
+        ImGui_ImplOpenGL3_DestroyFontsTexture();
     }
 
     void Cassette::UnloadUnused() {

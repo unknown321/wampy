@@ -6,7 +6,9 @@
 #include <thread>
 
 const ImWchar rangesPunctuation[] = {
-    0x2000, 0x206F, // General Punctuation
+    0x2000,
+    0x206F, // General Punctuation
+    0,
 };
 
 namespace Winamp {
@@ -1208,6 +1210,8 @@ namespace Winamp {
         memset(mStaging.text, 0, PLAYLIST_SONG_SIZE);
         memset(mStaging.format, 0, PLAYLIST_SONG_SIZE);
         mStaging.start = 0;
+
+        ImGui_ImplOpenGL3_DestroyFontsTexture();
     }
 
     void Winamp::WithConfig(Config *c) { config = c; }
@@ -1397,7 +1401,7 @@ namespace Winamp {
         ImVector<ImWchar> gr;
         gr.clear();
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
-        range.AddRanges(&rangesPunctuation[0]);
+        range.AddRanges(rangesPunctuation);
 
         if (fontRanges) {
             if (fontRanges->Japanese)

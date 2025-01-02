@@ -361,6 +361,7 @@ int main(int, char **) {
     skin.cassette.fontRanges = &config.fontRanges;
     skin.winamp.WithConfig(&config.winamp);
     skin.cassette.WithConfig(&config.cassette);
+    skin.digitalClock.fontRanges = &config.fontRanges;
     skin.digitalClock.WithConfig(&config.digitalClock);
 
     connector->clients.push_back(&skin.winamp);

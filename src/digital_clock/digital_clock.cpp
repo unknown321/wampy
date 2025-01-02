@@ -3,12 +3,13 @@
 #include "imgui_impl_opengl3.h"
 
 const ImWchar rangesPunctuation[] = {
-    0x2000, 0x206F, // General Punctuation
+    0x2000,
+    0x206F, // General Punctuation
+    0,
 };
 
 namespace DigitalClock {
 #ifdef DESKTOP
-    //    const std::string FontPath = "../SSTJpPro-Regular.otf";
     const std::string FontPath = "../NotoSansKR-Regular.otf";
     const char *basePath = "../digital_clock";
 #else
@@ -344,24 +345,7 @@ namespace DigitalClock {
         gr.clear();
 
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
-        range.AddRanges(&rangesPunctuation[0]);
-
-        if (fontRanges) {
-            if (fontRanges->Japanese)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesJapanese());
-            if (fontRanges->ChineseFull)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
-            if (fontRanges->Cyrillic)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
-            if (fontRanges->Greek)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesGreek());
-            if (fontRanges->Korean)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesKorean());
-            if (fontRanges->Thai)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesThai());
-            if (fontRanges->Vietnamese)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesVietnamese());
-        }
+        range.AddRanges(rangesPunctuation);
 
         range.BuildRanges(&gr);
         *fontRegular = io.Fonts->AddFontFromFileTTF(FontPath.c_str(), fontSizeTTF, nullptr, gr.Data);
