@@ -4,6 +4,7 @@
 #include "Version.h"
 #include "cassette/cassette.h"
 #include "config.h"
+#include "digital_clock/digital_clock.h"
 #include "skinVariant.h"
 #include "w1/w1.h"
 #include "winamp/winamp.h"
@@ -44,6 +45,7 @@ struct Skin {
     int activeSettingsTab{};
     Winamp::Winamp winamp{};
     Cassette::Cassette cassette{};
+    DigitalClock::DigitalClock digitalClock{};
 
     AppConfig::AppConfig *config{};
     bool onlyFont{};
@@ -123,6 +125,7 @@ struct Skin {
             DLOG("loading winamp\n");
             cassette.Unload();
             cassette.active = false;
+            digitalClock.Unload();
 
             std::string filepath{};
             if (!SkinExists(config->winamp.filename, skinList, &filepath)) {
@@ -142,6 +145,7 @@ struct Skin {
             DLOG("loading cassette\n");
             winamp.Unload();
             winamp.active = false;
+            digitalClock.Unload();
 
             cassette.reelList = reelList;
             cassette.tapeList = tapeList;
@@ -150,6 +154,21 @@ struct Skin {
             cassette.WithConfig(&config->cassette);
             cassette.Load("", &FontRegular);
             cassette.active = true;
+        }
+
+        if (config->activeSkin == DIGITAL_CLOCK) {
+            DLOG("loading digital clock\n");
+            winamp.Unload();
+            winamp.active = false;
+            cassette.Unload();
+            cassette.active = false;
+
+            digitalClock.skin = (void *)this;
+            digitalClock.render = render;
+            digitalClock.Load(config->digitalClock.color, &FontRegular);
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+        } else {
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.06f, 0.06f, 0.06f, 0.94f));
         }
 
         activeSkinVariant = config->activeSkin;
@@ -168,17 +187,25 @@ struct Skin {
             return;
         }
 
-        winamp.loadNewSkin();
-        FontRegular = winamp.GetFont();
-        loadStatusStr = "Loaded " + std::string(basename(winamp.GetCurrentSkin().c_str()));
+        if (config->activeSkin == WINAMP) {
+            winamp.loadNewSkin();
+            FontRegular = winamp.GetFont();
+            loadStatusStr = "Loaded " + std::string(basename(winamp.GetCurrentSkin().c_str()));
 
-        for (const auto &v : *skinList) {
-            if (winamp.GetCurrentSkin() == v.fullPath) {
-                config->winamp.filename = v.name;
-                config->Save();
-                DLOG("config updated\n");
-                break;
+            for (const auto &v : *skinList) {
+                if (winamp.GetCurrentSkin() == v.fullPath) {
+                    config->winamp.filename = v.name;
+                    config->Save();
+                    DLOG("config updated\n");
+                    break;
+                }
             }
+        }
+
+        if (config->activeSkin == DIGITAL_CLOCK) {
+            digitalClock.LoadNewSkin();
+            FontRegular = digitalClock.GetFont();
+            config->Save();
         }
 
         needLoad = false;
@@ -630,6 +657,10 @@ struct Skin {
         if (ImGui::RadioButton("Cassette", &activeSettingsTab, CASSETTE)) {
             loadStatusStr = "";
         }
+        ImGui::SameLine();
+        if (ImGui::RadioButton("DigiClock", &activeSettingsTab, DIGITAL_CLOCK)) {
+            loadStatusStr = "";
+        }
 
         if (activeSkinVariant != activeSettingsTab) {
             ImGui::SameLine();
@@ -640,6 +671,9 @@ struct Skin {
                     break;
                 case CASSETTE:
                     config->activeSkin = CASSETTE;
+                    break;
+                case DIGITAL_CLOCK:
+                    config->activeSkin = DIGITAL_CLOCK;
                     break;
                 default:
                     break;
@@ -787,7 +821,25 @@ struct Skin {
                     cassette.UnloadUnused();
                 }
             }
+        } else if (activeSettingsTab == DIGITAL_CLOCK) {
+            DigitalClock();
         }
+    }
+
+    void DigitalClock() {
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        if (ImGui::BeginCombo("##digiClockColor", digitalClock.GetColorPreview().c_str(), ImGuiComboFlags_HeightRegular)) {
+            for (const auto &entry : DigitalClock::colorsDigitalClock) {
+                if (ImGui::Selectable(entry.first.c_str(), false)) {
+                    DLOG("selected color %s\n", entry.second.c_str());
+                    digitalClock.SetColor(entry.second);
+                    needLoad = true;
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopStyleVar(2);
     }
 
     // some winamp skins are ugly with unreadable text
@@ -840,6 +892,9 @@ struct Skin {
             case CASSETTE:
                 FontRegular->FontSize = Cassette::fontSizeTTF;
                 cassette.Draw();
+                break;
+            case DIGITAL_CLOCK:
+                digitalClock.Draw();
                 break;
             default:
                 FontRegular->FontSize = Winamp::fontSizeTTF;

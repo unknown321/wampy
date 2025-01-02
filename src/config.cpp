@@ -12,8 +12,8 @@ namespace AppConfig {
         SAVE_FAIL,
     };
 
-    std::map<ESkinVariant, std::string> ESkinToName{{WINAMP, "winamp"}, {CASSETTE, "cassette"}};
-    std::map<std::string, ESkinVariant> NameToESkin{{"winamp", WINAMP}, {"cassette", CASSETTE}};
+    std::map<ESkinVariant, std::string> ESkinToName{{WINAMP, "winamp"}, {CASSETTE, "cassette"}, {DIGITAL_CLOCK, "digital_clock"}};
+    std::map<std::string, ESkinVariant> NameToESkin{{"winamp", WINAMP}, {"cassette", CASSETTE}, {"digital_clock", DIGITAL_CLOCK}};
 
 #ifdef DESKTOP
     const char *defaultPath = "./config.ini";
@@ -82,12 +82,15 @@ namespace AppConfig {
         ini["fonts"]["vietnamese"] = std::to_string(fontRanges.Vietnamese);
 
         ini["w1"]["deviceColor"] = std::to_string(w1Options.deviceColor);
+
+        ini["digitalClock"]["color"] = digitalClock.color;
     }
 
     void AppConfig::Default() {
         cassette.Default();
         winamp.Default();
         fontRanges = FontRanges{};
+        digitalClock.Default();
 
         activeSkin = WINAMP;
         MPDSocketPath = MPDDefaultAddress;
@@ -185,6 +188,8 @@ namespace AppConfig {
         // NOLINTEND
 
         MPDSocketPath = ini["mpd"]["socketPath"];
+
+        digitalClock.color = ini["digitalClock"]["color"];
 
         return 0;
     }

@@ -2,7 +2,9 @@ DOCKER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` nw-crosstool
 #DEVICE_SERIAL=-s 10458B75388765
 ADB=adb $(DEVICE_SERIAL) wait-for-device
 IMAGE=wampy-builder
+IMAGE_DIGITAL_CLOCK=$(IMAGE)-digital-clock
 DOCKER_BUILDER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` $(IMAGE)
+DOCKER_DIGITAL_CLOCK=docker run -it --rm -v `pwd`:`pwd` -w `pwd` -u `id -u`:`id -g` $(IMAGE_DIGITAL_CLOCK)
 PRODUCT=wampy
 VENDOR=/system/vendor/unknown321
 TAPE_SOURCE_UPG=NW-A100_0003_V4_04_00_NW_WM_FW.UPG
@@ -14,8 +16,11 @@ ECHO=/usr/bin/echo
 prepare:
 	$(MAKE) -C nw-installer/crosstool
 
-docker:
+docker: docker_digital_clock
 	cat Dockerfile | docker image build -t $(IMAGE) -
+
+docker_digital_clock:
+	cat Dockerfile.digital_clock | docker image build -t $(IMAGE_DIGITAL_CLOCK) -
 
 build:
 	mkdir -p build && \
@@ -59,6 +64,12 @@ cassetteunpacker/res: cassetteunpacker/$(TAPE_SOURCE_UPG)
 	$(MAKE) -C cassetteunpacker docker
 	$(DOCKER_BUILDER) $(MAKE) -C cassetteunpacker run
 
+ipod_theme/body/229441876_0064.png:
+	$(DOCKER_DIGITAL_CLOCK) bash -c "cd ipod_theme && ./01_firmware_unpack_7g && ./02_art_unpack.py"
+
+digital_clock/yellow/0_big.jpg: ipod_theme/body/229441876_0064.png
+	$(MAKE) -C digital_clock
+
 nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 	$(MAKE) -C nw-installer prepare
 	cp $(INSTALL)/bin/$(PRODUCT) installer/
@@ -74,6 +85,18 @@ nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 	tar -C cassetteunpacker/res -cf installer/cassette.tar \
 		tape \
 		reel
+	tar -C digital_clock -cf installer/digital_clock.tar \
+		yellow \
+		gold \
+		green \
+		space_gray \
+		silver \
+		red_product \
+		blue_2012 \
+		pink_2012 \
+		purple \
+		pink \
+		blue
 	cp LICENSE installer/
 	cp LICENSE_3rdparty installer/
 	cp qr.bmp installer/
@@ -88,6 +111,7 @@ nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 		libqeglfs.so \
 		base-2.91.wsz \
 		cassette.tar \
+		digital_clock.tar \
 		upgtool-linux-arm5 \
 		LICENSE \
 		LICENSE_3rdparty \
@@ -108,7 +132,7 @@ release-clean:
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) clean
 	-rm -rf release
 
-release: release-clean build-arm server cassetteunpacker/res nw-installer/installer/userdata.tar
+release: release-clean build-arm server cassetteunpacker/res digital_clock/yellow/0_big.jpg nw-installer/installer/userdata.tar
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT)
 	mkdir -p release/installer/
 	cd nw-installer/installer/stock/ && tar -czvf stock.tar.gz NW_WM_FW.UPG
@@ -173,4 +197,4 @@ qr.bmp:
 	@convert qr.png -type palette qr.bmp
 	@rm qr.png
 
-.PHONY: build build-arm docker push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server uninstaller
+.PHONY: build build-arm docker docker_digital_clock push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server uninstaller

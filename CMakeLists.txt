@@ -113,6 +113,7 @@ add_executable(${PROJECT_NAME}
         src/wstring.cpp
         src/w1/w1.cpp
         src/cassette/tape.cpp
+        src/digital_clock/digital_clock.cpp
         ${CONNECTOR_SOURCE}
         src/imgui_widgets.cpp
         src/connector/song.cpp

@@ -361,6 +361,7 @@ int main(int, char **) {
     skin.cassette.fontRanges = &config.fontRanges;
     skin.winamp.WithConfig(&config.winamp);
     skin.cassette.WithConfig(&config.cassette);
+    skin.digitalClock.WithConfig(&config.digitalClock);
 
     connector->clients.push_back(&skin.winamp);
     connector->clients.push_back(&skin.cassette);
@@ -447,7 +448,7 @@ int main(int, char **) {
 
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.00f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

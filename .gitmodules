@@ -35,3 +35,6 @@
 	path = nw-installer
 	url = https://github.com/unknown321/nw-installer
 	ignore = dirty
+[submodule "ipod_theme"]
+	path = ipod_theme
+	url = https://github.com/nfzerox/ipod_theme

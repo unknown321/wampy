@@ -18,6 +18,8 @@
   * [Cassette](#cassette)
     * [Settings](#settings)
     * [Issues and quirks](#issues-and-quirks)
+  * [Digital clock](#digital-clock)
+    * [Settings](#settings-1)
   * [Custom skins](#custom-skins)
     * [Winamp skins](#winamp-skins)
     * [Cassette skins](#cassette-skins)
@@ -215,6 +217,20 @@ Quirks:
 - Default reels and tapes load for quite some time (at least 70 seconds). Wampy is not available during loading and
   there is no indication of loading. Default player loads faster than that, so there is a period of time when user
   expects everything to work, but it is not possible yet.
+
+### Digital clock
+
+Port of iPod Nano 7g digital clock. Custom skins are not supported.
+
+#### Settings
+
+Touch bottom right corner to open settings.
+
+<img src="images/digital-clock-settings-here.png" width="240">
+
+<img src="images/settings-digital-clock.png" alt="digital clock settings">
+
+Select color from dropdown, wait for it to load.
 
 ### Custom skins
 

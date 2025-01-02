@@ -102,7 +102,7 @@ struct FlatTexture {
     }
 
     void Crop() const {
-        if (crop.height < 0 || crop.width < 0) {
+        if (crop.height == 0 && crop.width == 0 && crop.y == 0 && crop.x == 0) {
             return;
         }
 
@@ -264,7 +264,7 @@ struct Button {
 
     void Draw(int key = 0) {
         if (this->textures.empty()) {
-            DLOG("no textures\n");
+            DLOG("%s no textures\n", iid);
             return;
         }
 

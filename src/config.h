@@ -2,6 +2,7 @@
 #define WAMPY_CONFIG_H
 
 #include "cassette/cassette.h"
+#include "digital_clock/digital_clock.h"
 #include "fontranges.h"
 #include "mini/ini.h"
 #include "w1/w1.h"
@@ -12,6 +13,7 @@ enum ESkinVariant {
     EMPTY,
     WINAMP,
     CASSETTE,
+    DIGITAL_CLOCK,
 };
 
 namespace AppConfig {
@@ -36,6 +38,7 @@ namespace AppConfig {
         ESkinVariant activeSkin{};
         Winamp::Config winamp{};
         Cassette::Config cassette{};
+        DigitalClock::Config digitalClock{};
         Misc misc{};
         Features features{};
         W1::W1Options w1Options{};

@@ -83,6 +83,10 @@ install() {
   mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/cassette/
   tar -C ${VENDOR}/usr/share/${BINARY}/skins/cassette/ -xf cassette.tar
 
+  log "installing digital clock"
+  mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/
+  tar -C ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/ -xf digital_clock.tar
+
   log "installing licenses"
   mkdir -p ${VENDOR}/usr/share/${BINARY}/doc/
   cp LICENSE ${VENDOR}/usr/share/${BINARY}/doc/

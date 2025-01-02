@@ -41,6 +41,11 @@ void MyMagick::Crop(Magick::Image *image, Magick::RectangleInfo g) {
         g.height = image->rows() - g.y;
     }
 
+    if (g.height == 0 || g.width == 0) {
+        DLOG("nothing to crop\n");
+        return;
+    }
+
     if (image->depth() != 8) {
         image->depth(8);
     }
