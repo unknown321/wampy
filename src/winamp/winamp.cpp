@@ -451,12 +451,17 @@ namespace Winamp {
             break;
         }
 
-        if (connector->status.Channels == 1) {
-            Elements.MonoOnIndicator.Draw();
+        if (stopped) {
             Elements.StereoOffIndicator.Draw();
-        } else {
             Elements.MonoOffIndicator.Draw();
-            Elements.StereoOnIndicator.Draw();
+        } else {
+            if (connector->status.Channels == 1) {
+                Elements.MonoOnIndicator.Draw();
+                Elements.StereoOffIndicator.Draw();
+            } else {
+                Elements.MonoOffIndicator.Draw();
+                Elements.StereoOnIndicator.Draw();
+            }
         }
 
         Elements.ShuffleButton.Draw(connector->status.Shuffle);
