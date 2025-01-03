@@ -336,7 +336,7 @@ void recoverDumps(const std::string &outdir) {
     if (stat(hdumpstatePath.c_str(), &sb) == 0) {
         mkpath(outdir.c_str(), 0755);
         out = outdir + "/hdumpstate......log" + t;
-        std::ifstream src(corePath, std::ios::binary);
+        std::ifstream src(hdumpstatePath, std::ios::binary);
         std::ofstream dst(out, std::ios::binary);
 
         dst << src.rdbuf();
