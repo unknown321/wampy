@@ -37,6 +37,7 @@ struct FlatTexture {
 
     FlatTexture() = default;
 
+    std::vector<int> pointList{};
     Magick::RectangleInfo crop{};
     Size upscaled{};
     bool fillUpscaled = true;
@@ -109,6 +110,14 @@ struct FlatTexture {
         MyMagick::Crop(image, crop);
     }
 
+    void Mask() const {
+        if (pointList.empty()) {
+            return;
+        }
+
+        MyMagick::Mask(image, pointList);
+    }
+
     void Upscale() {
         if (upscaled.width < 1) {
             upscaled.width = (unsigned int)((float)image->size().width() * ratio);
@@ -131,6 +140,11 @@ struct FlatTexture {
 
     FlatTexture *WithCrop(Magick::RectangleInfo c) {
         this->crop = c;
+        return this;
+    }
+
+    FlatTexture *WithPointList(std::vector<int> l) {
+        this->pointList = std::move(l);
         return this;
     }
 
@@ -169,6 +183,7 @@ struct FlatTexture {
 
     void load() {
         this->Crop();
+        this->Mask();
         this->Upscale();
         this->fillRectangle();
         this->LoadTexture();

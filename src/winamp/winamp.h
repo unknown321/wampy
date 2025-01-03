@@ -225,6 +225,8 @@ namespace Winamp {
         std::string currentSkin{};
         std::string newSkin{};
 
+        std::vector<int> pointList{};
+
         int volumeTextureIsBalance();
 
         void probeTrackTitleBackgroundColor();
@@ -236,6 +238,7 @@ namespace Winamp {
         void freeUnzippedTextures();
 
         void readPlEdit();
+        void readRegionTxt();
 
         void drawPlaylist() const;
 

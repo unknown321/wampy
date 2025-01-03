@@ -65,7 +65,7 @@
 - [x] walkman One settings in wampy settings
 - [x] simple clock skin
 - [ ] visualization from NW-WM1Z spectrum analyzer
-- [ ] regions.txt (winamp)
+- [ ] region.txt (winamp)
 - [ ] clickable lyrics icon (hagoromo)
 - [ ] eq button custom action - too small?
 - [ ] "restart wampy" button in settings - use case?

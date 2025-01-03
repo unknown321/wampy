@@ -15,6 +15,8 @@ namespace MyMagick {
     void Crop(Magick::Image *image, Magick::RectangleInfo g);
 
     void FillRectangle(Magick::Image *image, Magick::RectangleInfo g, const Magick::Color &color);
+
+    void Mask(Magick::Image *image, const std::vector<int> &pointlist);
 } // namespace MyMagick
 
 #endif

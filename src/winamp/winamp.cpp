@@ -54,6 +54,7 @@ namespace Winamp {
         "text.bmp",
         "volume.bmp",
         "viscolor.txt",
+        "region.txt",
         "balance.bmp",
         "pledit.bmp",
         "pledit.txt"};
@@ -179,6 +180,7 @@ namespace Winamp {
         }
 
         readPlEdit();
+        readRegionTxt();
 
         probeTrackTitleBackgroundColor();
 
@@ -248,7 +250,7 @@ namespace Winamp {
 
         // are all files present?
         for (auto const &k : *textures) {
-            if (k.first == "nums_ex.bmp" || k.first == "numbers.bmp" || k.first == "balance.bmp") {
+            if (k.first == "nums_ex.bmp" || k.first == "numbers.bmp" || k.first == "balance.bmp" || k.first == "region.txt") {
                 continue;
             }
 
@@ -284,6 +286,84 @@ namespace Winamp {
         }
 
         textures.clear();
+    }
+
+    void Winamp::readRegionTxt() {
+        if (textures["pledit.txt"].len == 0) {
+            DLOG("region.txt missing\n");
+            return;
+        }
+
+        auto text = std::string(textures["region.txt"].data, textures["region.txt"].len);
+
+        auto lines = split(text, "\n");
+        if (lines.empty()) {
+            lines = split(text, "\r\n");
+        }
+
+        if (lines.empty()) {
+            DLOG("no lines in region.txt found\n");
+            return;
+        }
+
+        bool normalFound{};
+        int numPoints{};
+
+        for (auto &line : lines) {
+            DLOG("line: %s\n", line.c_str());
+            if (line.rfind("[Normal]", 0) == 0) {
+                normalFound = true;
+                continue;
+            }
+
+            if (normalFound) {
+                while (line.find(" ") != std::string::npos) {
+                    line.erase(line.find(" "), 1);
+                }
+
+                if (line.find('\r') != std::string::npos) {
+                    line.erase(line.find('\r'), 1);
+                }
+
+                if (line.at(line.length() - 1) == ',') {
+                    line.erase(line.length() - 1, 1);
+                }
+
+                if (line.rfind("NumPoints", 0) == 0) {
+                    auto parts = split(line, "=");
+                    if (parts.size() < 2) {
+                        DLOG("not enough values for numpoints: %s\n", line.c_str());
+                        return;
+                    }
+                    numPoints = std::atoi(parts[1].c_str());
+                    continue;
+                }
+
+                if (numPoints > 0) {
+                    if (line.rfind("PointList", 0) == 0) {
+                        auto parts = split(line, "=");
+                        if (parts.size() < 2) {
+                            DLOG("not enough values in pointlist: %s\n", line.c_str());
+                            return;
+                        }
+
+                        auto points = split(parts[1], ",");
+                        for (const auto &point : points) {
+                            auto v = std::atoi(point.c_str());
+                            pointList.push_back(v);
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        DLOG("found %zu points\n", pointList.size());
+        if (pointList.size() % 2 != 0) {
+            DLOG("uneven point count, ignoring\n");
+            pointList.clear();
+        }
     }
 
     void Winamp::readPlEdit() {
@@ -592,8 +672,12 @@ namespace Winamp {
         Elements.Main.FromPair(textures["main.bmp"])
             ->WithCrop(Magick::RectangleInfo{275, 116, 0, 0})
             ->WithFilledRectangle({770, 96, 323, 78}, colors.trackTitleBackground)
+            ->WithPointList(pointList)
             ->Load();
-        Elements.Title.FromPair(textures["titlebar.bmp"])->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})->Load();
+        Elements.Title.FromPair(textures["titlebar.bmp"])
+            ->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})
+            ->WithPointList(pointList)
+            ->Load();
         Elements.ClutterBar.FromPair(textures["titlebar.bmp"])
             ->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})
             ->WithPosition(ImVec2(29.0f, 64.0f))
@@ -1202,6 +1286,7 @@ namespace Winamp {
     void Winamp::Unload() {
         Elements.Unload();
         childThreadsStop = true;
+        pointList.clear();
         while (marqueeThreadRunning || updateThreadRunning) {
             // wait for threads to stop
         }
