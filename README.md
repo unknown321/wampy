@@ -18,14 +18,14 @@ See [USAGE.md](./USAGE.md).
 
 ## Device support
 
-| Device    | Status | Notes                                                            |
-|-----------|--------|------------------------------------------------------------------|
-| NW-A50    | ✅      |                                                                  |
-| NW-A30    | ?      | help wanted [#1](https://github.com/unknown321/wampy/issues/1)   |
-| NW-A40    | ?      | help wanted [#1](https://github.com/unknown321/wampy/issues/1)   |
-| NW-ZX300  | ?      | help wanted [#12](https://github.com/unknown321/wampy/issues/12) |
-| NW-WM1A/Z | ?      | help wanted [#13](https://github.com/unknown321/wampy/issues/13) |
-| DMP-Z1    | ?      | help wanted                                                      |
+| Device    | Stock | Walkman One | Notes                                                            |
+|-----------|-------|-------------|------------------------------------------------------------------|
+| NW-A50    | ✅     | ✅           |                                                                  |
+| NW-A30    | ?     |             | help wanted [#1](https://github.com/unknown321/wampy/issues/1)   |
+| NW-A40    | ?     | ✅           | help wanted [#1](https://github.com/unknown321/wampy/issues/1)   |
+| NW-ZX300  | ?     |             | help wanted [#12](https://github.com/unknown321/wampy/issues/12) |
+| NW-WM1A/Z | ?     |             | help wanted [#13](https://github.com/unknown321/wampy/issues/13) |
+| DMP-Z1    | ?     |             | help wanted                                                      |
 
 ## Install
 
