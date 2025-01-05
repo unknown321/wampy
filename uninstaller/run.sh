@@ -64,6 +64,8 @@ uninstall() {
   busybox rm -rf ${VENDOR}/usr/share/${BINARY}/
 }
 
+log "uninstaller for $(cat product_info)"
+
 mount -t ext4 -o rw /emmc@android /system
 
 uninstall
