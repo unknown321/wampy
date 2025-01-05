@@ -120,9 +120,10 @@ GLFWwindow *CreateWindow() {
         DLOG("glfw init failed\n");
         return nullptr;
     }
+
     // Decide GL+GLSL versions
     // const char *glsl_version = "#version 100";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2); // OpenGL ES 2.0 is the minimal version with shader support
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
@@ -134,6 +135,8 @@ GLFWwindow *CreateWindow() {
 #else
     GLFWmonitor *monitor = nullptr;
 #endif
+
+    DLOG("monitor is %p\n", monitor);
 
     GLFWwindow *window = glfwCreateWindow(GLFW_WIDTH, GLFW_HEIGHT, title, monitor, nullptr);
     if (window == nullptr) {
@@ -149,6 +152,14 @@ GLFWwindow *CreateWindow() {
         DLOG("glad failed\n");
         return nullptr;
     }
+    DLOG("version: %d\n", version);
+
+    const GLubyte *vendor = glGetString(GL_VENDOR);
+    const GLubyte *renderer = glGetString(GL_RENDERER);
+    const GLubyte *glVersion = glGetString(GL_VERSION);
+    const GLubyte *extensions = glGetString(GL_EXTENSIONS);
+    DLOG("renderer %s; vendor %s; version %s\n", renderer, vendor, glVersion);
+    DLOG("GL extensions: %s\n", extensions);
 
     return window;
 }
@@ -308,10 +319,6 @@ int main(int, char **) {
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(GlMessageCallback, 0);
     }
-
-    const GLubyte *vendor = glGetString(GL_VENDOR);     // Returns the vendor
-    const GLubyte *renderer = glGetString(GL_RENDERER); // Returns a hint to the model
-    DLOG("renderer %s; vendor %s\n", renderer, vendor);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
