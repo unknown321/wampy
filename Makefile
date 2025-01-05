@@ -70,7 +70,7 @@ ipod_theme/body/229441876_0064.png:
 digital_clock/yellow/0_big.jpg: ipod_theme/body/229441876_0064.png
 	$(MAKE) -C digital_clock
 
-nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
+nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 	$(MAKE) -C nw-installer prepare
 	cp $(INSTALL)/bin/$(PRODUCT) installer/
 	bash -c "cp $(INSTALL)/lib/libMagick{++,Core,Wand}-7.Q8HDRI.so installer/"
@@ -100,7 +100,9 @@ nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 	cp LICENSE installer/
 	cp LICENSE_3rdparty installer/
 	cp qr.bmp installer/
-	tar -C installer -cf nw-installer/installer/userdata.tar \
+	echo -n "$(PRODUCT), version " > installer/product_info
+	grep VERSION src/Version.h | cut -f 3,4,5 -d " " | sed 's/"//g' >> installer/product_info
+	tar -C installer -cf nw-installer/installer/userdata.tar.gz \
 		init.wampy.rc \
 		run.sh \
 		libMagick++-7.Q8HDRI.so \
@@ -116,7 +118,8 @@ nw-installer/installer/userdata.tar: LICENSE_3rdparty qr.bmp
 		LICENSE \
 		LICENSE_3rdparty \
 		qr.bmp \
-		wampy || rm -f nw-installer/installer/userdata.tar
+		product_info \
+		wampy || rm -f nw-installer/installer/userdata.tar.gz
 	cat LICENSE LICENSE_3rdparty > nw-installer/installer/windows/LICENSE.txt.user
 
 server:
@@ -125,29 +128,36 @@ server:
 uninstaller:
 	$(MAKE) -C nw-installer prepare
 	cat LICENSE LICENSE_3rdparty > nw-installer/installer/windows/LICENSE.txt.user
-	tar -C uninstaller -cf nw-installer/installer/userdata.tar \
+	echo -n "$(PRODUCT), version " > uninstaller/product_info
+	grep VERSION src/Version.h | cut -f 3,4,5 -d " " | sed 's/"//g' >> uninstaller/product_info
+	tar -C uninstaller -cf nw-installer/installer/userdata.tar.gz \
+		product_info \
 		run.sh
 
 release-clean:
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) clean
 	-rm -rf release
 
-release: release-clean build-arm server cassetteunpacker/res digital_clock/yellow/0_big.jpg nw-installer/installer/userdata.tar
+release: release-clean build-arm server cassetteunpacker/res digital_clock/yellow/0_big.jpg nw-installer/installer/userdata.tar.gz
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT)
 	mkdir -p release/installer/
-	cd nw-installer/installer/stock/ && tar -czvf stock.tar.gz NW_WM_FW.UPG
+	cd nw-installer/installer/nw-a50/ && tar -czvf nw-a50.tar.gz NW_WM_FW.UPG
+	cd nw-installer/installer/nw-a40/ && tar -czvf nw-a40.tar.gz NW_WM_FW.UPG
 	cd nw-installer/installer/walkmanOne/ && tar -czvf walkmanOne.tar.gz NW_WM_FW.UPG
 	mv nw-installer/installer/walkmanOne/walkmanOne.tar.gz release/installer
-	mv nw-installer/installer/stock/stock.tar.gz release/installer
-	mv nw-installer/installer/windows/${PRODUCT}.exe release/installer
+#	mv nw-installer/installer/nw-a40/nw-a40.tar.gz release/installer
+	mv nw-installer/installer/nw-a50/nw-a50.tar.gz release/installer
+	mv nw-installer/installer/windows/${PRODUCT}.exe release/installer/${PRODUCT}.$(shell date --iso).$(shell git log -1 --format=%h).exe
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller clean
 	$(MAKE) uninstaller
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller build
 	mkdir -p release/uninstaller
-	cd nw-installer/installer/stock/ && tar -czvf stock.uninstaller.tar.gz NW_WM_FW.UPG
+	cd nw-installer/installer/nw-a50/ && tar -czvf nw-a50.uninstaller.tar.gz NW_WM_FW.UPG
+	cd nw-installer/installer/nw-a40/ && tar -czvf nw-a40.uninstaller.tar.gz NW_WM_FW.UPG
 	cd nw-installer/installer/walkmanOne/ && tar -czvf walkmanOne.uninstaller.tar.gz NW_WM_FW.UPG
 	mv nw-installer/installer/walkmanOne/walkmanOne.uninstaller.tar.gz release/uninstaller
-	mv nw-installer/installer/stock/stock.uninstaller.tar.gz release/uninstaller
+	mv nw-installer/installer/nw-a50/nw-a50.uninstaller.tar.gz release/uninstaller
+#	mv nw-installer/installer/nw-a40/nw-a40.uninstaller.tar.gz release/uninstaller
 	mv nw-installer/installer/windows/${PRODUCT}.uninstaller.exe release/uninstaller
 
 # see also: `perf record` && `perf report`

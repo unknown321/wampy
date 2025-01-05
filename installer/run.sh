@@ -96,6 +96,8 @@ install() {
   cp qr.bmp ${VENDOR}/usr/share/${BINARY}/
 }
 
+log "installing $(cat product_info)"
+
 mount -t ext4 -o rw /emmc@android /system
 
 install
