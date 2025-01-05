@@ -85,6 +85,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMAGICKCORE_QUANTUM_DEPTH=32")
 # exec; kill -10 <pid>
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-all")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --verbose")
 
 add_compile_definitions(IMGUI_USER_CONFIG="../../src/imgui.config.h")
