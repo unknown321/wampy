@@ -139,7 +139,7 @@ release-clean:
 	-rm -rf release
 
 release: release-clean build-arm server cassetteunpacker/res digital_clock/yellow/0_big.jpg nw-installer/installer/userdata.tar.gz
-	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT)
+	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) A40=0 A30=0
 	mkdir -p release/installer/
 	cd nw-installer/installer/nw-a50/ && tar -czvf nw-a50.tar.gz NW_WM_FW.UPG
 	cd nw-installer/installer/nw-a40/ && tar -czvf nw-a40.tar.gz NW_WM_FW.UPG
@@ -150,7 +150,7 @@ release: release-clean build-arm server cassetteunpacker/res digital_clock/yello
 	mv nw-installer/installer/windows/${PRODUCT}.exe release/installer/${PRODUCT}.$(shell date --iso).$(shell git log -1 --format=%h).exe
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller clean
 	$(MAKE) uninstaller
-	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller build
+	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller A40=0 A30=0 build
 	mkdir -p release/uninstaller
 	cd nw-installer/installer/nw-a50/ && tar -czvf nw-a50.uninstaller.tar.gz NW_WM_FW.UPG
 	cd nw-installer/installer/nw-a40/ && tar -czvf nw-a40.uninstaller.tar.gz NW_WM_FW.UPG
