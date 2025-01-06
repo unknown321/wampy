@@ -1530,9 +1530,7 @@ namespace Winamp {
             i++;
         }
 
-        //    std::pair<char *, size_t> data;
         char alphabetNum[] = "0123456789 -";
-        size_t len = sizeof(alphabetNum) - 1;
 
         ImFontConfig font_cfg = ImFontConfig();
 
@@ -1547,10 +1545,10 @@ namespace Winamp {
         ImFont *fontNumber = io.Fonts->AddFontDefault(&font_cfg);
 
         int iNum = 0;
-        int rect_ids_num[len];
+        int rect_ids_num[IM_ARRAYSIZE(alphabetNum) - 1];
         int width = 26;
         int height = 37;
-        for (i = 0; i < IM_ARRAYSIZE(alphabetNum); i++) {
+        for (i = 0; i < IM_ARRAYSIZE(alphabetNum) - 1; i++) {
             char c = alphabetNum[i];
             if (!isEx && i == (IM_ARRAYSIZE(alphabetNum) - 2)) { // last character, new minus
                 width = 14;
