@@ -17,7 +17,7 @@ namespace DigitalClock {
 
     struct Config {
         std::string color{};
-        void Default() { color = "Silver"; };
+        void Default() { color = "silver"; };
     };
 
     struct DigitalClockElements {
@@ -75,7 +75,8 @@ namespace DigitalClock {
 
         void SetColor(std::string s) { newColor = std::move(s); };
 
-        std::string GetColorPreview();
+        std::string GetActiveColorPreview();
+        static std::string GetColorPreview(const std::string &);
 
         DigitalClock() = default;
 
