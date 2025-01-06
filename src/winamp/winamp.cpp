@@ -289,7 +289,7 @@ namespace Winamp {
     }
 
     void Winamp::readRegionTxt() {
-        if (textures["pledit.txt"].len == 0) {
+        if (textures["region.txt"].len == 0) {
             DLOG("region.txt missing\n");
             return;
         }
@@ -310,25 +310,13 @@ namespace Winamp {
         int numPoints{};
 
         for (auto &line : lines) {
-            DLOG("line: %s\n", line.c_str());
+            //            DLOG("line: %s\n", line.c_str());
             if (line.rfind("[Normal]", 0) == 0) {
                 normalFound = true;
                 continue;
             }
 
             if (normalFound) {
-                while (line.find(" ") != std::string::npos) {
-                    line.erase(line.find(" "), 1);
-                }
-
-                if (line.find('\r') != std::string::npos) {
-                    line.erase(line.find('\r'), 1);
-                }
-
-                if (line.at(line.length() - 1) == ',') {
-                    line.erase(line.length() - 1, 1);
-                }
-
                 if (line.rfind("NumPoints", 0) == 0) {
                     auto parts = split(line, "=");
                     if (parts.size() < 2) {
@@ -347,10 +335,18 @@ namespace Winamp {
                             return;
                         }
 
-                        auto points = split(parts[1], ",");
-                        for (const auto &point : points) {
-                            auto v = std::atoi(point.c_str());
-                            pointList.push_back(v);
+                        std::string curchar;
+                        for (const auto &c : parts[1]) {
+                            if (c >= '0' && c <= '9') {
+                                curchar += c;
+                            } else {
+                                if (curchar.empty()) {
+                                    continue;
+                                }
+
+                                pointList.push_back(std::atoi(curchar.c_str()));
+                                curchar.clear();
+                            }
                         }
 
                         break;
@@ -359,9 +355,14 @@ namespace Winamp {
             }
         }
 
-        DLOG("found %zu points\n", pointList.size());
+        DLOG("found %zu numbers out of expected %d\n", pointList.size(), numPoints * 2);
         if (pointList.size() % 2 != 0) {
             DLOG("uneven point count, ignoring\n");
+            pointList.clear();
+        }
+
+        if (pointList.size() != (numPoints * 2)) {
+            DLOG("NumPoints and points found do not match, ignoring\n");
             pointList.clear();
         }
     }
@@ -608,6 +609,12 @@ namespace Winamp {
         }
 
         Elements.TrackTimeToggle.Draw();
+
+        if (config->skinTransparency) {
+            if (Elements.RegionMask.textureID > 0) {
+                Elements.RegionMask.Draw();
+            }
+        }
     }
 
     void Winamp::drawPlaylist() const {
@@ -672,12 +679,9 @@ namespace Winamp {
         Elements.Main.FromPair(textures["main.bmp"])
             ->WithCrop(Magick::RectangleInfo{275, 116, 0, 0})
             ->WithFilledRectangle({770, 96, 323, 78}, colors.trackTitleBackground)
-            ->WithPointList(pointList)
             ->Load();
-        Elements.Title.FromPair(textures["titlebar.bmp"])
-            ->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})
-            ->WithPointList(pointList)
-            ->Load();
+        Elements.Title.FromPair(textures["titlebar.bmp"])->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})->Load();
+        Elements.RegionMask.FromPointList(pointList);
         Elements.ClutterBar.FromPair(textures["titlebar.bmp"])
             ->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})
             ->WithPosition(ImVec2(29.0f, 64.0f))
@@ -1243,6 +1247,10 @@ namespace Winamp {
     void elements::Unload() {
         Main.Unload();
         Title.Unload();
+        if (RegionMask.textureID > 0) {
+            RegionMask.Unload();
+            RegionMask.Reset();
+        }
 
         ClutterBar.Unload();
         MonoOffIndicator.Unload();
@@ -1309,6 +1317,9 @@ namespace Winamp {
     void Config::Default() {
         useBitmapFont = true;
         useBitmapFontInPlaylist = false;
+        preferTimeRemaining = false;
+        showClutterbar = true;
+        skinTransparency = true;
         filename = "base-2.91.wsz";
     }
 

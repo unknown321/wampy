@@ -63,6 +63,7 @@ namespace Winamp {
     struct elements {
         FlatTexture Main;
         FlatTexture Title;
+        FlatTexture RegionMask;
         FlatTexture ClutterBar;
         FlatTexture MonoOffIndicator;
         FlatTexture MonoOnIndicator;
@@ -109,6 +110,7 @@ namespace Winamp {
         bool useBitmapFont{};
         bool preferTimeRemaining{};
         bool showClutterbar = true;
+        bool skinTransparency = true;
         std::string filename{};
 
         void Default();

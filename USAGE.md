@@ -153,6 +153,8 @@ You can get skins from [Winamp Skin Museum](https://skins.webamp.org/).
 
 `Show clutterbar` displays vertical list of options to the left of track time/visualization.
 
+`Skin transparency` enables skin transparency (`region.txt`). Background color is black.
+
 #### Known issues and quirks
 
 Issues:
@@ -166,6 +168,7 @@ Quirks:
 - Playlist is never full. Default player keeps up to 15 songs in memory, some of those have already been played,
   reducing playlist size further
 - Some elements may look slightly off (if you look hard enough) due to upscaling (800/275 = 2.90909...).
+- Skin transparency is not pixel perfect (irrational upscaling ratio).
 - There might be small delay between clicking button and getting response (noticeable on shuffle button)
 
 Improvements (compared to Winamp v2.95):

@@ -442,9 +442,9 @@ int main(int, char **) {
 
         ImGui::Begin("1", nullptr, window_flags);
 
-        // #ifndef DESKTOP
+#ifndef DESKTOP
         ImGui::GetBackgroundDrawList()->AddCallback(drawCallback, (void *)shaderProgram);
-        // #endif
+#endif
         skin.Draw();
 
         //        DrawWindowRects();
