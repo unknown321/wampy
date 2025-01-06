@@ -222,6 +222,8 @@ namespace DigitalClock {
         v.detach();
 
         loading = false;
+
+        return 0;
     }
 
     void DigitalClock::formatTime() {
@@ -356,9 +358,19 @@ namespace DigitalClock {
         return 0;
     }
 
-    std::string DigitalClock::GetColorPreview() {
+    std::string DigitalClock::GetActiveColorPreview() {
         for (const auto &v : colorsDigitalClock) {
             if (v.second == color) {
+                return v.first;
+            }
+        }
+
+        return DefaultColorPreview;
+    }
+
+    std::string DigitalClock::GetColorPreview(const std::string &c) {
+        for (const auto &v : colorsDigitalClock) {
+            if (v.second == c) {
                 return v.first;
             }
         }

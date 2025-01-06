@@ -690,151 +690,172 @@ struct Skin {
         ImGui::NewLine();
 
         if (activeSettingsTab == WINAMP) {
-            ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-            if (ImGui::BeginCombo("##", skinList->at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightRegular)) {
-                for (int n = 0; n < skinList->size(); n++) {
-                    const bool is_selected = (selectedSkinIdx == n);
-                    if (ImGui::Selectable(skinList->at(n).name.c_str(), is_selected)) {
-                        selectedSkinIdx = n;
-                    }
-                }
-                ImGui::EndCombo();
-            }
-            ImGui::PopStyleVar(2);
-
-            ImGui::SameLine();
-            if (activeSkinVariant == WINAMP) {
-                if (ImGui::Button("Load skin")) {
-                    loadStatusStr = "Loading " + skinList->at(selectedSkinIdx).name;
-                    winamp.changeSkin(skinList->at(selectedSkinIdx).fullPath);
-                    needLoad = true;
-                }
-            }
-
-            if (!loadStatusStr.empty()) {
-                ImGui::Text("%s", loadStatusStr.c_str());
-            }
-
-            ImGui::NewLine();
-
-            if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
-                config->Save();
-                if (activeSkinVariant == WINAMP) {
-                    winamp.Format(true);
-                }
-            }
-
-            if (ImGui::Checkbox("Use bitmap font in playlist", &config->winamp.useBitmapFontInPlaylist)) {
-                config->Save();
-                if (activeSkinVariant == WINAMP) {
-                    winamp.Format(true);
-                }
-            }
-
-            if (ImGui::Checkbox("Prefer time remaining", &config->winamp.preferTimeRemaining)) {
-                config->Save();
-            }
-
-            if (ImGui::Checkbox("Show clutterbar", &config->winamp.showClutterbar)) {
-                config->Save();
-            }
+            Winamp();
         } else if (activeSettingsTab == CASSETTE) {
-            if (ImGui::Checkbox("Randomize?", &config->cassette.randomize)) {
-                config->Save();
-            }
-
-            static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
-                                           ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
-
-            ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 7);
-
-            ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-            if (ImGui::BeginTable("configTable", 3, flags, outer_size)) {
-                ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
-                ImGui::TableSetupColumn("Codec", ImGuiTableColumnFlags_None);
-                ImGui::TableSetupColumn("Tape", ImGuiTableColumnFlags_None);
-                ImGui::TableSetupColumn("Reel", ImGuiTableColumnFlags_None);
-                ImGui::TableHeadersRow();
-
-                for (auto &tt : config->cassette.data) {
-                    ImGui::TableNextRow();
-                    ImGui::TableNextColumn();
-                    ImGui::Text("%s", tt.second.name.c_str());
-
-                    ImGui::TableNextColumn();
-                    if (ImGui::BeginCombo(("##" + tt.second.name + "tape").c_str(), tt.second.tape.c_str(), ImGuiComboFlags_HeightSmall)) {
-                        for (auto &n : *tapeList) {
-                            if (!n.valid) {
-                                continue;
-                            }
-
-                            if (ImGui::Selectable(n.name.c_str(), false)) {
-                                tt.second.tape = n.name;
-                                config->cassette.data.at(tt.first).tape = n.name;
-                                config->Save();
-
-                                if (activeSkinVariant == CASSETTE) {
-                                    cassette.UnloadUnused();
-                                    cassette.LoadTape(n.name);
-                                    cassette.SelectTape();
-                                }
-                            }
-                        }
-                        ImGui::EndCombo();
-                    }
-
-                    ImGui::TableNextColumn();
-                    if (ImGui::BeginCombo(("##" + tt.second.name + "reel").c_str(), tt.second.reel.c_str(), ImGuiComboFlags_HeightSmall)) {
-                        for (auto &n : *reelList) {
-                            if (!n.valid) {
-                                continue;
-                            }
-
-                            if (ImGui::Selectable(n.name.c_str(), false)) {
-                                tt.second.reel = n.name;
-                                config->cassette.data.at(tt.first).reel = n.name;
-                                config->Save();
-
-                                if (activeSkinVariant == CASSETTE) {
-                                    cassette.UnloadUnused();
-                                    cassette.LoadReel(n.name);
-                                    cassette.SelectTape();
-                                }
-                            }
-                        }
-                        ImGui::EndCombo();
-                    }
-                }
-                ImGui::EndTable();
-            }
-            ImGui::PopStyleVar(2);
-
-            if (ImGui::Button("Reset")) {
-                DLOG("resetting cassette config\n");
-                cassette.config->Default();
-                config->Save();
-                if (activeSkinVariant == CASSETTE) {
-                    cassette.SelectTape();
-                    cassette.LoadImages();
-                    cassette.UnloadUnused();
-                }
-            }
+            Cassette();
         } else if (activeSettingsTab == DIGITAL_CLOCK) {
             DigitalClock();
+        }
+    }
+
+    void Winamp() {
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        if (ImGui::BeginCombo("##", skinList->at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightRegular)) {
+            for (int n = 0; n < skinList->size(); n++) {
+                const bool is_selected = (selectedSkinIdx == n);
+                if (ImGui::Selectable(skinList->at(n).name.c_str(), is_selected)) {
+                    selectedSkinIdx = n;
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopStyleVar(2);
+
+        ImGui::SameLine();
+        if (activeSkinVariant == WINAMP) {
+            if (ImGui::Button("Load skin")) {
+                loadStatusStr = "Loading " + skinList->at(selectedSkinIdx).name;
+                winamp.changeSkin(skinList->at(selectedSkinIdx).fullPath);
+                needLoad = true;
+            }
+        }
+
+        if (!loadStatusStr.empty()) {
+            ImGui::Text("%s", loadStatusStr.c_str());
+        }
+
+        ImGui::NewLine();
+
+        if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
+            config->Save();
+            if (activeSkinVariant == WINAMP) {
+                winamp.Format(true);
+            }
+        }
+
+        if (ImGui::Checkbox("Use bitmap font in playlist", &config->winamp.useBitmapFontInPlaylist)) {
+            config->Save();
+            if (activeSkinVariant == WINAMP) {
+                winamp.Format(true);
+            }
+        }
+
+        if (ImGui::Checkbox("Prefer time remaining", &config->winamp.preferTimeRemaining)) {
+            config->Save();
+        }
+
+        if (ImGui::Checkbox("Show clutterbar", &config->winamp.showClutterbar)) {
+            config->Save();
+        }
+
+        if (ImGui::Checkbox("Skin transparency", &config->winamp.skinTransparency)) {
+            config->Save();
+        }
+    }
+
+    void Cassette() {
+        if (ImGui::Checkbox("Randomize?", &config->cassette.randomize)) {
+            config->Save();
+        }
+
+        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
+                                       ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
+
+        ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 7);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        if (ImGui::BeginTable("configTable", 3, flags, outer_size)) {
+            ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
+            ImGui::TableSetupColumn("Codec", ImGuiTableColumnFlags_None);
+            ImGui::TableSetupColumn("Tape", ImGuiTableColumnFlags_None);
+            ImGui::TableSetupColumn("Reel", ImGuiTableColumnFlags_None);
+            ImGui::TableHeadersRow();
+
+            for (auto &tt : config->cassette.data) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("%s", tt.second.name.c_str());
+
+                ImGui::TableNextColumn();
+                if (ImGui::BeginCombo(("##" + tt.second.name + "tape").c_str(), tt.second.tape.c_str(), ImGuiComboFlags_HeightSmall)) {
+                    for (auto &n : *tapeList) {
+                        if (!n.valid) {
+                            continue;
+                        }
+
+                        if (ImGui::Selectable(n.name.c_str(), false)) {
+                            tt.second.tape = n.name;
+                            config->cassette.data.at(tt.first).tape = n.name;
+                            config->Save();
+
+                            if (activeSkinVariant == CASSETTE) {
+                                cassette.UnloadUnused();
+                                cassette.LoadTape(n.name);
+                                cassette.SelectTape();
+                            }
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+
+                ImGui::TableNextColumn();
+                if (ImGui::BeginCombo(("##" + tt.second.name + "reel").c_str(), tt.second.reel.c_str(), ImGuiComboFlags_HeightSmall)) {
+                    for (auto &n : *reelList) {
+                        if (!n.valid) {
+                            continue;
+                        }
+
+                        if (ImGui::Selectable(n.name.c_str(), false)) {
+                            tt.second.reel = n.name;
+                            config->cassette.data.at(tt.first).reel = n.name;
+                            config->Save();
+
+                            if (activeSkinVariant == CASSETTE) {
+                                cassette.UnloadUnused();
+                                cassette.LoadReel(n.name);
+                                cassette.SelectTape();
+                            }
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+            }
+            ImGui::EndTable();
+        }
+        ImGui::PopStyleVar(2);
+
+        if (ImGui::Button("Reset")) {
+            DLOG("resetting cassette config\n");
+            cassette.config->Default();
+            config->Save();
+            if (activeSkinVariant == CASSETTE) {
+                cassette.SelectTape();
+                cassette.LoadImages();
+                cassette.UnloadUnused();
+            }
         }
     }
 
     void DigitalClock() {
         ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-        if (ImGui::BeginCombo("##digiClockColor", digitalClock.GetColorPreview().c_str(), ImGuiComboFlags_HeightRegular)) {
+        if (ImGui::BeginCombo(
+                "##digiClockColor",
+                DigitalClock::DigitalClock::GetColorPreview(config->digitalClock.color).c_str(),
+                ImGuiComboFlags_HeightRegular
+            )) {
             for (const auto &entry : DigitalClock::colorsDigitalClock) {
                 if (ImGui::Selectable(entry.first.c_str(), false)) {
                     DLOG("selected color %s\n", entry.second.c_str());
                     digitalClock.SetColor(entry.second);
-                    needLoad = true;
+                    if (activeSkinVariant == DIGITAL_CLOCK) {
+                        needLoad = true;
+                    } else {
+                        config->digitalClock.color = entry.second;
+                        config->Save();
+                    }
                 }
             }
             ImGui::EndCombo();

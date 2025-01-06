@@ -1,5 +1,6 @@
 #include "magick.h"
 #include "../util/util.h"
+#include "MagickCore/draw.h"
 
 void MyMagick::InitMagick() { Magick::InitializeMagick(""); }
 
@@ -66,6 +67,40 @@ void MyMagick::Crop(Magick::Image *image, Magick::RectangleInfo g) {
         image->backgroundColor(transparent);
         image->erase();
     }
+}
+
+void MyMagick::Mask(Magick::Image *image, const std::vector<int> &pointlist) {
+    if (pointlist.size() % 2 != 0) {
+        DLOG("uneven point list\n");
+        return;
+    }
+
+    if (pointlist.empty()) {
+        return;
+    }
+
+    Magick::CoordinateList coords{};
+    Magick::Coordinate c;
+    for (int i = 0; i < pointlist.size(); i = i + 2) {
+        c.x((double)pointlist.at(i));
+        c.y((double)pointlist.at(i + 1));
+        coords.push_back(c);
+    }
+
+    Magick::Image mask;
+    mask.size("275x116");
+    mask.fillColor("#ffffff");
+    mask.backgroundColor("#000000");
+    mask.erase();
+    mask.strokeWidth(0);
+    //    mask.strokeColor("#ff0000");
+
+    auto d = Magick::DrawablePolygon(coords);
+
+    mask.draw(d);
+    mask.write("bmp:/tmp/out.bmp");
+
+    image->composite(mask, "+0+0", MagickCore::MultiplyCompositeOp);
 }
 
 void MyMagick::FillRectangle(Magick::Image *image, Magick::RectangleInfo g, const Magick::Color &color) {

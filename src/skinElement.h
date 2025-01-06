@@ -37,6 +37,7 @@ struct FlatTexture {
 
     FlatTexture() = default;
 
+    std::vector<int> pointList{};
     Magick::RectangleInfo crop{};
     Size upscaled{};
     bool fillUpscaled = true;
@@ -52,7 +53,6 @@ struct FlatTexture {
 
     std::string magick = "BMP";
     float ratio = upscaleRatioWalkman;
-    bool valid{};
 
     FlatTexture *WithRatio(float r) {
         this->ratio = r;
@@ -67,6 +67,74 @@ struct FlatTexture {
     FlatTexture *FromPair(TextureMapEntry p) {
         this->FromData(p.data, p.len);
         return this;
+    }
+
+    // used only for winamp main window (for now), uses hardcoded dimensions and coords
+    // corrupted texture on NVIDIA desktop after changing to another skin with mask
+    void FromPointList(const std::vector<int> &pl) {
+        Magick::CoordinateList coords{};
+        for (int i = 0; i < pl.size(); i = i + 2) {
+            Magick::Coordinate c;
+            c.x((double)pl.at(i));
+            c.y((double)pl.at(i + 1));
+            coords.push_back(c);
+        }
+
+        if (coords.empty()) {
+            Reset();
+            return;
+        }
+
+        auto tmpimage = Magick::Image({275, 165}, "#000000");
+        tmpimage.magick("RGBA");
+        tmpimage.depth(8);
+        tmpimage.alpha(true);
+
+        auto mask = Magick::Image({275, 165}, "#000000");
+        mask.magick("RGBA");
+        mask.strokeColor("#000000");
+        mask.fillColor("#ffffff");
+        mask.strokeAntiAlias(true);
+        mask.strokeWidth(-1);
+        auto d = Magick::DrawablePolygon(coords);
+        mask.draw(d);
+        mask.negate();
+
+        tmpimage.writeMask(mask);
+        tmpimage.composite(tmpimage, "+0+0", MagickCore::ClearCompositeOp);
+
+        auto v = Magick::Geometry{800, 480, 0, 0};
+
+        tmpimage.compressType(MagickCore::NoCompression);
+        tmpimage.filterType(MagickCore::PointFilter);
+        v.aspect(true);
+        v.fillArea(false);
+        tmpimage.resize(v);
+
+        // playlist zone
+        auto mask2 = Magick::Image({tmpimage.size().width(), 480}, "#000000");
+        mask2.magick("RGBA");
+        mask2.strokeColor("#000000");
+        mask2.fillColor("#ffffff");
+        mask2.strokeAntiAlias(true);
+        mask2.strokeWidth(1);
+        auto r = Magick::DrawableRectangle({-3, -3, 800, 337});
+        mask2.draw(r);
+
+        tmpimage.writeMask(mask2);
+        tmpimage.composite(tmpimage, "+0+0", MagickCore::ClearCompositeOp);
+
+        this->image = new Magick::Image(tmpimage.size(), "#000000");
+        this->image->depth(8);
+        this->image->magick("RGBA");
+        this->image->composite(tmpimage, "+0+0", MagickCore::CopyCompositeOp);
+
+        this->LoadTexture();
+        this->upscaled.width = 800;
+        this->upscaled.height = 480;
+        this->position = ImVec2(0, 0);
+
+        this->Release();
     }
 
     Magick::Color GetColor(ssize_t x, ssize_t y) const { return image->pixelColor(x, y); }
@@ -151,15 +219,28 @@ struct FlatTexture {
         return this;
     }
 
-    void Unload() const { UnloadTexture(textureID); }
+    void Unload() {
+        UnloadTexture(textureID);
+        textureID = 0;
+    }
 
     // breaks in thread
     void LoadTexture() {
         if (textureID != 0) {
+            DLOG("delete text\n");
             glDeleteTextures(1, &textureID);
         }
+
         Magick::Blob blob;
         this->image->write(&blob);
+        //        DLOG(
+        //            "loading %zu bytes, size %zux%zu (%zu), magick %s\n",
+        //            blob.length(),
+        //            image->size().width(),
+        //            image->size().height(),
+        //            image->size().width() * image->size().height() * 4,
+        //            image->magick().c_str()
+        //        );
         bool ret = LoadTextureFromMagic(
             (unsigned char *)blob.data(), &textureID, (int)this->image->size().width(), (int)this->image->size().height()
         );
@@ -188,7 +269,7 @@ struct FlatTexture {
 
     void Draw() const {
         ImGui::SetCursorPos(position);
-        ImGui::Image((void *)(intptr_t)textureID, ImVec2(float(upscaled.width), float(upscaled.height)));
+        ImGui::Image((ImTextureID)(intptr_t)textureID, ImVec2(float(upscaled.width), float(upscaled.height)));
     }
 
     void DrawAt(float x, float y) const {

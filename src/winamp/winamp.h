@@ -63,6 +63,7 @@ namespace Winamp {
     struct elements {
         FlatTexture Main;
         FlatTexture Title;
+        FlatTexture RegionMask;
         FlatTexture ClutterBar;
         FlatTexture MonoOffIndicator;
         FlatTexture MonoOnIndicator;
@@ -109,6 +110,7 @@ namespace Winamp {
         bool useBitmapFont{};
         bool preferTimeRemaining{};
         bool showClutterbar = true;
+        bool skinTransparency = true;
         std::string filename{};
 
         void Default();
@@ -225,6 +227,8 @@ namespace Winamp {
         std::string currentSkin{};
         std::string newSkin{};
 
+        std::vector<int> pointList{};
+
         int volumeTextureIsBalance();
 
         void probeTrackTitleBackgroundColor();
@@ -236,6 +240,7 @@ namespace Winamp {
         void freeUnzippedTextures();
 
         void readPlEdit();
+        void readRegionTxt();
 
         void drawPlaylist() const;
 

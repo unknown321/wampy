@@ -54,6 +54,7 @@ namespace Winamp {
         "text.bmp",
         "volume.bmp",
         "viscolor.txt",
+        "region.txt",
         "balance.bmp",
         "pledit.bmp",
         "pledit.txt"};
@@ -179,6 +180,7 @@ namespace Winamp {
         }
 
         readPlEdit();
+        readRegionTxt();
 
         probeTrackTitleBackgroundColor();
 
@@ -248,7 +250,7 @@ namespace Winamp {
 
         // are all files present?
         for (auto const &k : *textures) {
-            if (k.first == "nums_ex.bmp" || k.first == "numbers.bmp" || k.first == "balance.bmp") {
+            if (k.first == "nums_ex.bmp" || k.first == "numbers.bmp" || k.first == "balance.bmp" || k.first == "region.txt") {
                 continue;
             }
 
@@ -284,6 +286,85 @@ namespace Winamp {
         }
 
         textures.clear();
+    }
+
+    void Winamp::readRegionTxt() {
+        if (textures["region.txt"].len == 0) {
+            DLOG("region.txt missing\n");
+            return;
+        }
+
+        auto text = std::string(textures["region.txt"].data, textures["region.txt"].len);
+
+        auto lines = split(text, "\n");
+        if (lines.empty()) {
+            lines = split(text, "\r\n");
+        }
+
+        if (lines.empty()) {
+            DLOG("no lines in region.txt found\n");
+            return;
+        }
+
+        bool normalFound{};
+        int numPoints{};
+
+        for (auto &line : lines) {
+            //            DLOG("line: %s\n", line.c_str());
+            if (line.rfind("[Normal]", 0) == 0) {
+                normalFound = true;
+                continue;
+            }
+
+            if (normalFound) {
+                if (line.rfind("NumPoints", 0) == 0) {
+                    auto parts = split(line, "=");
+                    if (parts.size() < 2) {
+                        DLOG("not enough values for numpoints: %s\n", line.c_str());
+                        return;
+                    }
+                    numPoints = std::atoi(parts[1].c_str());
+                    continue;
+                }
+
+                if (numPoints > 0) {
+                    if (line.rfind("PointList", 0) == 0) {
+                        auto parts = split(line, "=");
+                        if (parts.size() < 2) {
+                            DLOG("not enough values in pointlist: %s\n", line.c_str());
+                            return;
+                        }
+
+                        std::string curchar;
+                        for (const auto &c : parts[1]) {
+                            if (c >= '0' && c <= '9') {
+                                curchar += c;
+                            } else {
+                                if (curchar.empty()) {
+                                    continue;
+                                }
+
+                                pointList.push_back(std::atoi(curchar.c_str()));
+                                curchar.clear();
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        DLOG("found %zu numbers out of expected %d\n", pointList.size(), numPoints * 2);
+        if (pointList.size() % 2 != 0) {
+            DLOG("uneven point count, ignoring\n");
+            pointList.clear();
+        }
+
+        if (pointList.size() != (numPoints * 2)) {
+            DLOG("NumPoints and points found do not match, ignoring\n");
+            pointList.clear();
+        }
     }
 
     void Winamp::readPlEdit() {
@@ -528,6 +609,12 @@ namespace Winamp {
         }
 
         Elements.TrackTimeToggle.Draw();
+
+        if (config->skinTransparency) {
+            if (Elements.RegionMask.textureID > 0) {
+                Elements.RegionMask.Draw();
+            }
+        }
     }
 
     void Winamp::drawPlaylist() const {
@@ -594,6 +681,7 @@ namespace Winamp {
             ->WithFilledRectangle({770, 96, 323, 78}, colors.trackTitleBackground)
             ->Load();
         Elements.Title.FromPair(textures["titlebar.bmp"])->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})->Load();
+        Elements.RegionMask.FromPointList(pointList);
         Elements.ClutterBar.FromPair(textures["titlebar.bmp"])
             ->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})
             ->WithPosition(ImVec2(29.0f, 64.0f))
@@ -1159,6 +1247,10 @@ namespace Winamp {
     void elements::Unload() {
         Main.Unload();
         Title.Unload();
+        if (RegionMask.textureID > 0) {
+            RegionMask.Unload();
+            RegionMask.Reset();
+        }
 
         ClutterBar.Unload();
         MonoOffIndicator.Unload();
@@ -1202,6 +1294,7 @@ namespace Winamp {
     void Winamp::Unload() {
         Elements.Unload();
         childThreadsStop = true;
+        pointList.clear();
         while (marqueeThreadRunning || updateThreadRunning) {
             // wait for threads to stop
         }
@@ -1224,6 +1317,9 @@ namespace Winamp {
     void Config::Default() {
         useBitmapFont = true;
         useBitmapFontInPlaylist = false;
+        preferTimeRemaining = false;
+        showClutterbar = true;
+        skinTransparency = true;
         filename = "base-2.91.wsz";
     }
 
@@ -1445,9 +1541,7 @@ namespace Winamp {
             i++;
         }
 
-        //    std::pair<char *, size_t> data;
         char alphabetNum[] = "0123456789 -";
-        size_t len = sizeof(alphabetNum) - 1;
 
         ImFontConfig font_cfg = ImFontConfig();
 
@@ -1462,10 +1556,10 @@ namespace Winamp {
         ImFont *fontNumber = io.Fonts->AddFontDefault(&font_cfg);
 
         int iNum = 0;
-        int rect_ids_num[len];
+        int rect_ids_num[IM_ARRAYSIZE(alphabetNum) - 1];
         int width = 26;
         int height = 37;
-        for (i = 0; i < IM_ARRAYSIZE(alphabetNum); i++) {
+        for (i = 0; i < IM_ARRAYSIZE(alphabetNum) - 1; i++) {
             char c = alphabetNum[i];
             if (!isEx && i == (IM_ARRAYSIZE(alphabetNum) - 2)) { // last character, new minus
                 width = 14;
