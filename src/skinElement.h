@@ -53,7 +53,6 @@ struct FlatTexture {
 
     std::string magick = "BMP";
     float ratio = upscaleRatioWalkman;
-    bool valid{};
 
     FlatTexture *WithRatio(float r) {
         this->ratio = r;
@@ -68,6 +67,78 @@ struct FlatTexture {
     FlatTexture *FromPair(TextureMapEntry p) {
         this->FromData(p.data, p.len);
         return this;
+    }
+
+    // used only for main window (for now), uses hardcoded dimensions and coords
+    void FromPointList(const std::vector<int> &pl) {
+        Magick::Geometry g = {800, 480, 0, 0};
+        Magick::CoordinateList coords{};
+        Magick::Coordinate c;
+        for (int i = 0; i < pl.size(); i = i + 2) {
+            c.x((double)pl.at(i));
+            c.y((double)pl.at(i + 1));
+            coords.push_back(c);
+        }
+
+        if (coords.empty()) {
+            Reset();
+            return;
+        }
+
+        auto tmpimage = Magick::Image({275, 165}, "black");
+        tmpimage.magick("RGBA");
+        tmpimage.depth(8);
+        tmpimage.alpha(true);
+
+        auto dask = Magick::Image({275, 165}, "black");
+        dask.magick("RGBA");
+        dask.strokeColor("black");
+        dask.fillColor("white");
+        dask.strokeAntiAlias(true);
+        dask.strokeWidth(-1);
+        auto d = Magick::DrawablePolygon(coords);
+        dask.draw(d);
+        dask.negate();
+
+        tmpimage.writeMask(dask);
+        tmpimage.composite(tmpimage, "+0+0", MagickCore::ClearCompositeOp);
+
+        Magick::Geometry v = Magick::Geometry{800, 480, 0, 0};
+        //        MyMagick::Upscale(&tmpimage, (Magick::Geometry &)v, false);
+
+        tmpimage.compressType(MagickCore::NoCompression);
+        tmpimage.filterType(MagickCore::PointFilter);
+        v.aspect(true);
+        v.fillArea(false);
+        tmpimage.resize(g);
+
+        DLOG("%zu %zu\n", tmpimage.size().width(), tmpimage.size().height());
+        //        Upscale();
+        auto dask2 = Magick::Image({tmpimage.size().width(), 480}, "black");
+        dask2.magick("RGBA");
+        dask2.strokeColor("black");
+        dask2.fillColor("white");
+        dask2.strokeAntiAlias(true);
+        dask2.strokeWidth(1);
+        auto r = Magick::DrawableRectangle({-3, -3, 800, 337});
+        dask2.draw(r);
+
+        tmpimage.writeMask(dask2);
+        tmpimage.composite(tmpimage, "+0+0", MagickCore::ClearCompositeOp);
+
+        this->image = new Magick::Image(tmpimage.size(), "black");
+        this->image->depth(8);
+        this->image->magick("RGBA");
+        this->image->composite(tmpimage, "+0+0", MagickCore::CopyCompositeOp);
+
+        DLOG("size %zu %zu\n", image->size().width(), image->size().height());
+        this->LoadTexture();
+        DLOG("tid %d\n", this->textureID);
+        this->upscaled.width = 800;
+        this->upscaled.height = 480;
+        this->position = ImVec2(0, 0);
+        this->image->erase();
+        this->Release();
     }
 
     Magick::Color GetColor(ssize_t x, ssize_t y) const { return image->pixelColor(x, y); }
@@ -108,14 +179,6 @@ struct FlatTexture {
         }
 
         MyMagick::Crop(image, crop);
-    }
-
-    void Mask() const {
-        if (pointList.empty()) {
-            return;
-        }
-
-        MyMagick::Mask(image, pointList);
     }
 
     void Upscale() {
@@ -165,13 +228,18 @@ struct FlatTexture {
         return this;
     }
 
-    void Unload() const { UnloadTexture(textureID); }
+    void Unload() {
+        UnloadTexture(textureID);
+        textureID = 0;
+    }
 
     // breaks in thread
     void LoadTexture() {
         if (textureID != 0) {
+            DLOG("delete text\n");
             glDeleteTextures(1, &textureID);
         }
+
         Magick::Blob blob;
         this->image->write(&blob);
         bool ret = LoadTextureFromMagic(
@@ -183,7 +251,6 @@ struct FlatTexture {
 
     void load() {
         this->Crop();
-        this->Mask();
         this->Upscale();
         this->fillRectangle();
         this->LoadTexture();

@@ -222,6 +222,8 @@ namespace DigitalClock {
         v.detach();
 
         loading = false;
+
+        return 0;
     }
 
     void DigitalClock::formatTime() {
