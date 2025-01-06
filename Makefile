@@ -142,8 +142,8 @@ release: release-clean build-arm server cassetteunpacker/res digital_clock/yello
 	# first, build and move uninstaller upgs
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller A40=0 A30=0 USERDATA_FILENAME=userdata.uninstaller.tar.gz build
 	mkdir -p release/uninstaller
-	cd nw-installer/installer/nw-a50/ && tar -czvf ../../../release/uninstaller/nw-a50.uninstaller.tar.gz NW_WM_FW.UPG
-	cd nw-installer/installer/walkmanOne/ && tar -czvf ../../../release/uninstaller/walkmanOne.uninstaller.tar.gz NW_WM_FW.UPG
+	cd nw-installer/installer/nw-a50/ && tar -czvf ../../../release/uninstaller/nw-a50.uninstaller.tar.gz NW_WM_FW.UPG && rm NW_WM_FW.UPG
+	cd nw-installer/installer/walkmanOne/ && tar -czvf ../../../release/uninstaller/walkmanOne.uninstaller.tar.gz NW_WM_FW.UPG && rm NW_WM_FW.UPG
 	# second, build installer upgs
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) A40=0 A30=0 build
 	# next, build installer (with uninstaller included)
