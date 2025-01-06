@@ -1,9 +1,6 @@
 #include "wstring.h"
 #include <cstring>
 
-const wchar_t *emptyChar = reinterpret_cast<const wchar_t *>("");
-std::wstring emptyWchar = std::wstring(emptyChar);
-
 static std::wstring stringShift(const std::wstring &s, std::vector<std::vector<int>> &shift, int len) {
     int val = 0;
     for (auto &i : shift)
@@ -35,7 +32,7 @@ static std::wstring to_wide(const char *mbstr) {
     std::mbstate_t state = std::mbstate_t();
     std::size_t len = 1 + std::mbsrtowcs(nullptr, &mbstr, 0, &state);
     if (len == 0) {
-        return emptyWchar;
+        return (reinterpret_cast<const wchar_t *>(""));
     }
     std::vector<wchar_t> wstr(len);
     std::mbsrtowcs(&wstr[0], &mbstr, wstr.size(), &state);
