@@ -70,6 +70,7 @@ ipod_theme/body/229441876_0064.png:
 digital_clock/yellow/0_big.jpg: ipod_theme/body/229441876_0064.png
 	$(MAKE) -C digital_clock
 
+
 nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 	$(MAKE) -C nw-installer prepare
 	cp $(INSTALL)/bin/$(PRODUCT) installer/
@@ -82,9 +83,8 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 	$(UPX) -qqq --best installer/upgtool-linux-arm5
 	$(DOCKER) /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-strip installer/lib*
 	cp base-2.91.wsz installer/
-	tar -C cassetteunpacker/res -cf installer/cassette.tar \
-		tape \
-		reel
+	$(MAKE) -C cassette
+	cp cassette/cassette.tar installer
 	tar -C digital_clock -cf installer/digital_clock.tar \
 		yellow \
 		gold \

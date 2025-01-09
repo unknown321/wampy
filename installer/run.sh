@@ -79,6 +79,9 @@ install() {
   mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/winamp/
   cp "base-2.91.wsz" ${VENDOR}/usr/share/${BINARY}/skins/winamp/
 
+  log "wiping old cassettes"
+  rm -r ${VENDOR}/usr/share/${BINARY}/skins/cassette/
+
   log "installing cassettes"
   mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/cassette/
   tar -C ${VENDOR}/usr/share/${BINARY}/skins/cassette/ -xf cassette.tar
