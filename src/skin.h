@@ -831,8 +831,8 @@ struct Skin {
             cassette.config->Default();
             config->Save();
             if (activeSkinVariant == CASSETTE) {
-                cassette.SelectTape();
                 cassette.LoadImages();
+                cassette.SelectTape();
                 cassette.UnloadUnused();
             }
         }

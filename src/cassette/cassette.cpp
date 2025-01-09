@@ -146,10 +146,52 @@ namespace Cassette {
         DLOG("update thread stopped\n");
     }
 
+    int Cassette::LoadReelAtlas(const std::string &path) {
+        DLOG("loading %s\n", path.c_str());
+        if (ReelsAtlas.find(path) != ReelsAtlas.end()) {
+            DLOG("reel atlas %s already loaded, %zu images\n", path.c_str(), ReelsAtlas.at(path).images.size());
+            return Tape::ERR_OK;
+        }
+
+        std::string fp;
+        for (auto &entry : *reelList) {
+            if (entry.name != path) {
+                continue;
+            }
+
+            DLOG("check %s for atlas files\n", entry.fullPath.c_str());
+
+            if (exists(entry.fullPath + "/atlas.pkm") && exists(entry.fullPath + "/atlas.txt")) {
+                fp = entry.fullPath;
+                break;
+            }
+        }
+
+        if (fp.empty()) {
+            DLOG("no atlas files found\n");
+            return Tape::ERR_NO_FILES;
+        }
+
+        DLOG("loading reel atlas %s (%s)\n", path.c_str(), fp.c_str());
+
+        auto a = LoadAtlas(fp + "/atlas.pkm", fp + "/atlas.txt");
+        if (a.images.empty()) {
+            DLOG("no images in atlas\n");
+            return Tape::ERR_NO_FILES;
+        }
+
+        ReelsAtlas[path] = a;
+
+        DLOG("loaded atlas, %zu images\n", ReelsAtlas.at(path).images.size());
+
+        return Tape::ERR_OK;
+    }
+
     int Cassette::LoadReel(const std::string &path) {
         auto reelFiles = std::vector<directoryEntry>{};
-        if (!Reels[path].empty()) {
-            DLOG("reel %s already loaded, %zu textures\n", path.c_str(), Reels[path].size());
+
+        if (Reels.find(path) != Reels.end()) {
+            DLOG("reel %s already loaded, %zu textures\n", path.c_str(), Reels.at(path).size());
             return Tape::ERR_OK;
         }
 
@@ -316,6 +358,16 @@ namespace Cassette {
             }
         }
 
+        Atlas firstValidReelAtlas{};
+        std::string firstValidReelAtlasName;
+        for (const auto &v : ReelsAtlas) {
+            if (!v.second.images.empty()) {
+                firstValidReelAtlas = v.second;
+                firstValidReelAtlasName = v.first;
+                break;
+            }
+        }
+
         for (auto const t : tapeTypes) {
             auto tape = config->Get(t)->tape;
             auto tapeName = tape;
@@ -330,15 +382,46 @@ namespace Cassette {
             }
 
             auto reel = config->Get(t)->reel;
-            auto reelName = reel;
-            if (Reels[reel].empty()) {
-                if (firstValidReel.empty()) {
-                    DLOG("reel %s invalid, no suitable replacement found, exiting\n", reel.c_str());
-                    exit(1);
+            std::string reelName;
+            //            DLOG("looking for valid reel %s\n", reel.c_str());
+            while (true) {
+                if (!Reels[reel].empty()) {
+                    reelName = reel;
+                    //                    DLOG("found\n");
+                    break;
                 }
 
-                DLOG("reel %s invalid, using first valid reel %s\n", reel.c_str(), firstValidReelName.c_str());
-                reelName = firstValidReelName;
+                if (ReelsAtlas.find(reel) != ReelsAtlas.end()) {
+                    if (!ReelsAtlas.at(reel).images.empty()) {
+                        reelName = reel;
+                        //                    DLOG("found\n");
+                        break;
+                    }
+                }
+
+                // no reel found, falling back to valid atlas first
+                if (!firstValidReelAtlas.images.empty()) {
+                    reelName = firstValidReelAtlasName;
+                    //                    DLOG("found\n");
+                    break;
+                }
+
+                if (!firstValidReel.empty()) {
+                    reelName = firstValidReelName;
+                    //                    DLOG("found\n");
+                    break;
+                }
+
+                break;
+            }
+
+            if (reelName.empty()) {
+                DLOG("reel %s invalid, no suitable replacement found, exiting\n", reel.c_str());
+                exit(1);
+            }
+
+            if (reelName != reel) {
+                DLOG("reel %s invalid, using %s\n", reel.c_str(), reelName.c_str());
             }
 
             config->Set(t, {tapeName, reelName, config->Get(t)->name});
@@ -348,7 +431,9 @@ namespace Cassette {
 
     void Cassette::LoadImages() {
         for (auto const t : tapeTypes) {
-            LoadReel(config->Get(t)->reel);
+            if (LoadReelAtlas(config->Get(t)->reel) != Tape::ERR_OK) {
+                LoadReel(config->Get(t)->reel);
+            }
             LoadTape(config->Get(t)->tape);
         }
 
@@ -362,8 +447,8 @@ namespace Cassette {
     int Cassette::Load(std::string filename, ImFont **FontRegular) {
         loading = true;
 
-        SelectTape();
         LoadImages();
+        SelectTape();
 
         AddFonts(FontRegular);
 
@@ -385,8 +470,9 @@ namespace Cassette {
         auto oldType = tapeType;
         size_t index;
         Tape::TapeType newType = Tape::MP3_128;
+        int retries = 8;
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < retries; i++) {
             index = std::rand() % tapeTypes.size();
             newType = tapeTypes[index];
             DLOG("old %d, new %d\n", oldType, newType);
@@ -399,10 +485,32 @@ namespace Cassette {
 
         tapeType = newType;
 
-        ActiveTape = &Tapes[config->Get(tapeType)->tape];
+        if (Tapes.find(config->Get(tapeType)->tape) != Tapes.end()) {
+            ActiveTape = &Tapes.at(config->Get(tapeType)->tape);
+        } else {
+            ActiveTape = nullptr;
+        }
+
         assert(ActiveTape);
-        ActiveReel = &Reels[config->Get(tapeType)->reel];
-        assert(ActiveReel);
+
+        if (ReelsAtlas.find(config->Get(tapeType)->reel) == ReelsAtlas.end()) {
+            DLOG("atlas not found, using regular reel\n");
+            ActiveAtlas = nullptr;
+
+            if (Reels.find(config->Get(tapeType)->reel) != Reels.end()) {
+                ActiveReel = &Reels.at(config->Get(tapeType)->reel);
+            } else {
+                ActiveReel = nullptr;
+            }
+
+            assert(ActiveReel);
+
+        } else {
+            DLOG("found atlas for %s\n", config->Get(tapeType)->reel.c_str());
+            ActiveAtlas = &ReelsAtlas.at(config->Get(tapeType)->reel);
+            DLOG("images: %zu\n", ActiveAtlas->images.size());
+            ActiveReel = nullptr;
+        }
 
         ActiveTape->name = config->Get(tapeType)->tape;
         DLOG("tape: %s, reel %s\n", config->Get(tapeType)->tape.c_str(), config->Get(tapeType)->reel.c_str());
@@ -465,11 +573,6 @@ namespace Cassette {
             return;
         }
 
-        if (ActiveTape == nullptr || ActiveReel == nullptr) {
-            defaultTape();
-            return;
-        }
-
         char codec[10]{};
         strncpy(codec, connector->status.Codec.c_str(), sizeof(codec));
         for (auto &c : codec) {
@@ -526,10 +629,26 @@ namespace Cassette {
         }
 
         DLOG("tape: %s, reel %s\n", config->Get(tapeType)->tape.c_str(), config->Get(tapeType)->reel.c_str());
-        ActiveTape = &Tapes[config->Get(tapeType)->tape];
+
+        if (Tapes.find(config->Get(tapeType)->tape) != Tapes.end()) {
+            ActiveTape = &Tapes[config->Get(tapeType)->tape];
+        } else {
+            ActiveTape = nullptr;
+        }
+
         assert(ActiveTape);
-        ActiveReel = &Reels[config->Get(tapeType)->reel];
-        assert(ActiveReel);
+
+        if (Reels.find(config->Get(tapeType)->reel) != Reels.end()) {
+            ActiveReel = &Reels.at(config->Get(tapeType)->reel);
+        } else {
+            ActiveReel = nullptr;
+        }
+
+        if (ReelsAtlas.find(config->Get(tapeType)->reel) != ReelsAtlas.end()) {
+            ActiveAtlas = &ReelsAtlas.at(config->Get(tapeType)->reel);
+        } else {
+            ActiveAtlas = nullptr;
+        }
 
         ActiveTape->name = config->Get(tapeType)->tape;
 
@@ -541,10 +660,15 @@ namespace Cassette {
     void Cassette::defaultTape() {
         DLOG("\n");
         tapeType = Tape::MP3_320;
-        ActiveTape = &Tapes[config->Get(tapeType)->tape];
-        assert(ActiveTape);
-        ActiveReel = &Reels[config->Get(tapeType)->reel];
-        assert(ActiveReel);
+        ActiveTape = &Tapes.at(config->Get(tapeType)->tape);
+        ActiveReel = &Reels.at(config->Get(tapeType)->reel);
+
+        if (ReelsAtlas.find(config->Get(tapeType)->reel) != ReelsAtlas.end()) {
+            ActiveAtlas = &ReelsAtlas.at(config->Get(tapeType)->reel);
+            ActiveReel = nullptr;
+        } else {
+            ActiveAtlas = nullptr;
+        }
 
         ActiveTape->name = config->Get(tapeType)->tape;
     }
@@ -556,11 +680,27 @@ namespace Cassette {
 
         ActiveTape->Draw();
 
-        if (!ActiveReel->empty()) {
-            if (reelID > (ActiveReel->size() - 1)) {
-                ActiveReel->at(0).DrawAt(ActiveTape->reelCoords);
-            } else {
-                ActiveReel->at(reelID).DrawAt(ActiveTape->reelCoords);
+        if (ActiveReel) {
+            if (!ActiveReel->empty()) {
+                if (reelIndex > (ActiveReel->size() - 1)) {
+                    ActiveReel->at(0).DrawAt(ActiveTape->reelCoords);
+                } else {
+                    ActiveReel->at(reelIndex).DrawAt(ActiveTape->reelCoords);
+                }
+            }
+        }
+
+        if (ActiveAtlas) {
+            if (!ActiveAtlas->images.empty()) {
+                auto vvv = ActiveAtlas->images.at(reelIndex);
+                ImGui::SetCursorPos(ActiveTape->reelCoords);
+                ImGui::Image(
+                    (ImTextureID)ActiveAtlas->textureID,
+                    ImVec2(vvv.width, vvv.height),
+                    ImVec2(vvv.u0, vvv.v0),
+                    ImVec2(vvv.u1, vvv.v1),
+                    ImVec4(1, 1, 1, 1)
+                );
             }
         }
 
@@ -590,10 +730,20 @@ namespace Cassette {
                 continue;
             }
 
-            if (this->reelID >= (this->Reels[config->Get(tapeType)->reel].size() - 1)) {
-                this->reelID = 0;
-            } else {
-                this->reelID++;
+            if (ActiveReel) {
+                if (this->reelIndex >= ActiveReel->size() - 1) {
+                    this->reelIndex = 0;
+                } else {
+                    this->reelIndex++;
+                }
+            }
+
+            if (ActiveAtlas) {
+                if (this->reelIndex >= ActiveAtlas->images.size() - 1) {
+                    this->reelIndex = 0;
+                } else {
+                    this->reelIndex++;
+                }
             }
         }
 

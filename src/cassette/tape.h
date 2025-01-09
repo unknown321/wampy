@@ -50,6 +50,8 @@ namespace Tape {
 
         int Load(const std::string &directoryPath);
 
+        int LoadFromJPEGS(const std::string &directoryPath);
+
         void Draw();
 
         void DrawSongInfo() const;

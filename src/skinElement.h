@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include "glad/glad.h"
+#include <fstream>
 #include <utility>
 
 #include "imgui_widgets.h"
@@ -67,6 +68,43 @@ struct FlatTexture {
     FlatTexture *FromPair(TextureMapEntry p) {
         this->FromData(p.data, p.len);
         return this;
+    }
+
+    int FromPKM(const std::string &texturePath) {
+        std::fstream s;
+        s.open(texturePath, std::fstream::in | std::fstream::binary);
+
+        s.seekg(0, std::fstream::end);
+        int length = s.tellg();
+        s.seekg(0, std::fstream::beg);
+
+        auto header = PKMHeader(&s);
+        if (header.width < 1 || header.height < 1 || header.width > ETC_MAX_SIZE || header.height > ETC_MAX_SIZE) {
+            DLOG("texture resolution %dx%d invalid\n", header.width, header.height);
+            s.close();
+            return -1;
+        }
+
+        if (strcmp(header.ver, "10") != 0) {
+            DLOG("unexpected etc version\n");
+            s.close();
+            return -1;
+        }
+
+        std::string contents;
+
+        char *b = new char[length - ETC_PKM_HEADER_SIZE];
+        s.read(b, length - ETC_PKM_HEADER_SIZE);
+
+        textureID = LoadCompressedTexture(header.width, header.height, length - ETC_PKM_HEADER_SIZE, b);
+        s.close();
+
+        if (textureID > 0) {
+            this->upscaled.width = header.width;
+            this->upscaled.height = header.height;
+        }
+
+        return 0;
     }
 
     // used only for winamp main window (for now), uses hardcoded dimensions and coords

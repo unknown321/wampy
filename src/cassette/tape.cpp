@@ -5,9 +5,7 @@
 #include <sstream>
 
 namespace Tape {
-    int Tape::Load(const std::string &directoryPath) {
-        DLOG("loading tape from %s\n", directoryPath.c_str());
-
+    int Tape::LoadFromJPEGS(const std::string &directoryPath) {
         SkinList files{};
         listdir((directoryPath + "/").c_str(), &files, ".jpg");
 
@@ -22,15 +20,29 @@ namespace Tape {
         Elements.Main.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
         f.close();
 
-        this->InitializeButtons();
+        return 0;
+    }
 
-        std::string directory;
-        const size_t last_slash_idx = files[0].fullPath.rfind('/');
-        if (std::string::npos != last_slash_idx) {
-            directory = files[0].fullPath.substr(0, last_slash_idx);
+    int Tape::Load(const std::string &directoryPath) {
+        DLOG("loading tape from %s\n", directoryPath.c_str());
+
+        if (exists(directoryPath + "/tape.pkm")) {
+            DLOG("loading ETC from %s\n", (directoryPath + "/tape.pkm").c_str());
+            if (Elements.Main.FromPKM(directoryPath + "/tape.pkm") != 0) {
+                DLOG("failed to load tape from pkm, back to jpegs\n");
+                if (LoadFromJPEGS(directoryPath) != 0) {
+                    return ERR_NO_FILES;
+                }
+            }
+        } else {
+            DLOG("loading tape from regular files from %s\n", directoryPath.c_str());
+            if (LoadFromJPEGS(directoryPath) != 0) {
+                return ERR_NO_FILES;
+            }
         }
 
-        f.open(directory + "/config.txt");
+        std::ifstream f;
+        f.open(directoryPath + "/config.txt");
         if (!f.is_open()) {
             DLOG("using default config for %s\n", directoryPath.c_str());
             return 0;
@@ -40,8 +52,10 @@ namespace Tape {
         buf << f.rdbuf();
         f.close();
 
-        contents = buf.str();
+        std::string contents = buf.str();
         ParseConfig(contents);
+
+        this->InitializeButtons();
 
         return 0;
     }

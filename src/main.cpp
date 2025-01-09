@@ -160,6 +160,9 @@ GLFWwindow *CreateWindow() {
     const GLubyte *extensions = glGetString(GL_EXTENSIONS);
     DLOG("renderer %s; vendor %s; version %s\n", renderer, vendor, glVersion);
     DLOG("GL extensions: %s\n", extensions);
+    int textureSize;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &textureSize); // 4096
+    DLOG("texture size %d\n", textureSize);
 
     return window;
 }

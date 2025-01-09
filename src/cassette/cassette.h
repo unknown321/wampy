@@ -76,6 +76,8 @@ namespace Cassette {
 
         int LoadReel(const std::string &path);
 
+        int LoadReelAtlas(const std::string &path);
+
         int LoadTape(const std::string &path);
 
         void LoadImages();
@@ -89,12 +91,14 @@ namespace Cassette {
       private:
         std::map<std::string, Tape::Tape> Tapes;
         std::map<std::string, Tape::Reel> Reels;
-        int reelID = 0;
+        std::map<std::string, Atlas> ReelsAtlas;
+        int reelIndex = 0; // TODO mutex
 
         char previousTrack[FIELD_SIZE]{}; // used to check if song changed
         Tape::TapeType tapeType = Tape::MP3_320;
         Tape::Tape *ActiveTape = nullptr;
         Tape::Reel *ActiveReel = nullptr;
+        Atlas *ActiveAtlas = nullptr;
 
         char artist[FIELD_SIZE]{};
         char title[FIELD_SIZE]{};

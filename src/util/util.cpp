@@ -1,6 +1,5 @@
 #include "util.h"
 #include "../wstring.h"
-#include "GLFW/glfw3.h"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "imgui_impl_glfw.h"
@@ -264,6 +263,11 @@ bool IsMounted() {
     return (stat("/contents/MUSIC/", &sb) != 0);
 }
 
+bool exists(const std::string &s) {
+    struct stat sb {};
+    return (stat(s.c_str(), &sb) == 0);
+}
+
 static int do_mkdir(const char *path, mode_t mode) {
     struct stat st {};
     int status = 0;
@@ -438,4 +442,170 @@ void DisplayKeys() {
     //            ImGui::SameLine();
     //            ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c);
     //        }
+}
+
+void swapbyte(uint16_t *v) { *v = (*v & 0xff) << 8 | (*v & 0xff00) >> 8; }
+
+PKMHeader::PKMHeader(const std::string &path) {
+    std::fstream f;
+    f.open(path, std::fstream::in | std::fstream::binary);
+    f.read((char *)&sig, sizeof(sig));
+    f.read((char *)&ver, sizeof(ver));
+    f.read((char *)&imageType, sizeof(imageType));
+    f.read((char *)&width, sizeof(width));
+    f.read((char *)&height, sizeof(height));
+    f.read((char *)&origHeight, sizeof(origHeight));
+    f.read((char *)&origWidth, sizeof(origWidth));
+    f.close();
+
+    swapbyte(&imageType);
+    swapbyte(&width);
+    swapbyte(&height);
+    swapbyte(&origHeight);
+    swapbyte(&origWidth);
+}
+
+PKMHeader::PKMHeader(std::fstream *s) {
+    s->seekg(0, std::ios::beg);
+    s->read((char *)&sig, sizeof(sig));
+    s->read((char *)&ver, sizeof(ver));
+    s->read((char *)&imageType, sizeof(imageType));
+    s->read((char *)&width, sizeof(width));
+    s->read((char *)&height, sizeof(height));
+    s->read((char *)&origHeight, sizeof(origHeight));
+    s->read((char *)&origWidth, sizeof(origWidth));
+
+    swapbyte(&imageType);
+    swapbyte(&width);
+    swapbyte(&height);
+    swapbyte(&origHeight);
+    swapbyte(&origWidth);
+}
+
+GLuint LoadCompressedTexture(int width, int height, ulong size, const char *data) {
+    // https://arm-software.github.io/opengl-es-sdk-for-android/etc_texture.html
+    GLuint image_texture = 0;
+    glGenTextures(1, &image_texture);
+    glBindTexture(GL_TEXTURE_2D, image_texture);
+
+    // Setup filtering parameters for display
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+
+    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, width, height, 0, (int)size, data);
+
+    return image_texture;
+}
+
+std::vector<AtlasImage> LoadCoords(const std::string &path) {
+    std::fstream s;
+    s.open(path);
+
+    std::vector<AtlasImage> result;
+
+    std::string line;
+    while (std::getline(s, line)) {
+        auto parts = split(line, " ");
+        if (parts.size() != 4) {
+            DLOG("invalid line %s\n", line.c_str());
+            continue;
+        }
+
+        auto a = AtlasImage{};
+
+        a.x = std::atof(parts[0].c_str());
+        a.y = std::atof(parts[1].c_str());
+        a.width = std::atof(parts[2].c_str());
+        a.height = std::atof(parts[3].c_str());
+
+        result.push_back(a);
+    }
+
+    s.close();
+
+    return result;
+}
+
+void AtlasImage::ToUV(float w, float h) {
+    this->u0 = (float)x / w;
+    this->v0 = (float)y / h;
+    this->u1 = float(width + x) / w;
+    this->v1 = float(height + y) / h;
+
+    if (u0 > 1 || u1 > 1 || v0 > 1 || v1 > 1) {
+        DLOG("uv is out of bounds: %f %f %f %f : %d %d %d %d\n", u0, v0, u1, v1, x, y, width, height);
+        u0 = 0;
+        u1 = 0;
+        v0 = 0;
+        v1 = 0;
+    }
+}
+
+Atlas LoadAtlas(const std::string &texturePath, const std::string &coordsPath) {
+    struct stat buffer {};
+    if (stat(texturePath.c_str(), &buffer) != 0) {
+        DLOG("cannot find %s\n", texturePath.c_str());
+        return Atlas{};
+    }
+
+    if (stat(coordsPath.c_str(), &buffer) != 0) {
+        DLOG("cannot find %s\n", coordsPath.c_str());
+        return Atlas{};
+    }
+
+    auto coords = LoadCoords(coordsPath);
+    if (coords.empty()) {
+        DLOG("coordinates file is empty\n");
+        return Atlas{};
+    }
+
+    std::fstream s;
+    s.open(texturePath, std::fstream::in | std::fstream::binary);
+
+    s.seekg(0, std::fstream::end);
+    int length = s.tellg();
+    s.seekg(0, std::fstream::beg);
+
+    auto header = PKMHeader(&s);
+    if (header.width < 1 || header.height < 1 || header.width > ETC_MAX_SIZE || header.height > ETC_MAX_SIZE) {
+        DLOG("texture resolution %dx%d invalid\n", header.width, header.height);
+        s.close();
+        return Atlas{};
+    }
+
+    if (strcmp(header.ver, "10") != 0) {
+        DLOG("unexpected etc version\n");
+        s.close();
+        return Atlas{};
+    }
+
+    std::string contents;
+
+    char *b = new char[length - ETC_PKM_HEADER_SIZE];
+    s.read(b, length - ETC_PKM_HEADER_SIZE);
+
+    auto tid = LoadCompressedTexture(header.width, header.height, length - ETC_PKM_HEADER_SIZE, b);
+    s.close();
+
+    if (tid == 0) {
+        DLOG("texture upload failed\n");
+        return Atlas{};
+    }
+
+    auto a = Atlas{};
+    a.textureID = tid;
+    a.width = header.width;
+    a.height = header.height;
+    for (int i = 0; i < coords.size(); i++) {
+        auto c = coords.at(i);
+        c.ToUV(header.width, header.height);
+        coords.at(i) = c;
+    }
+
+    a.images = coords;
+
+    return a;
 }
