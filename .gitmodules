@@ -29,7 +29,7 @@
 	url = https://github.com/glfw/glfw.git
 	ignore = dirty
 [submodule "cassetteunpacker"]
-	path = cassetteunpacker
+	path = cassette/cassetteunpacker
 	url = https://github.com/unknown321/cassetteunpacker
 [submodule "nw-installer"]
 	path = nw-installer

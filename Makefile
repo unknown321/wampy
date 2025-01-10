@@ -7,8 +7,6 @@ DOCKER_BUILDER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` $(IMAGE)
 DOCKER_DIGITAL_CLOCK=docker run -it --rm -v `pwd`:`pwd` -w `pwd` -u `id -u`:`id -g` $(IMAGE_DIGITAL_CLOCK)
 PRODUCT=wampy
 VENDOR=/system/vendor/unknown321
-TAPE_SOURCE_UPG=NW-A100_0003_V4_04_00_NW_WM_FW.UPG
-TAPE_SOURCE_UPG_URL=https://info.update.sony.net/PA001/NW-A100Series_0003/contents/0013/$(TAPE_SOURCE_UPG)
 INSTALL=install/arm
 UPX=nw-installer/tools/upx/upx/upx
 ECHO=/usr/bin/echo
@@ -55,14 +53,6 @@ push:
 	$(ADB) shell ln -s  $(VENDOR)/lib/libjpeg.so.62.4.0 $(VENDOR)/lib/libjpeg.so.62
 	$(ADB) push base-2.91.wsz $(VENDOR)/usr/share/skins/winamp/base-2.91.wsz
 	$(MAKE) -C server push
-
-
-cassetteunpacker/$(TAPE_SOURCE_UPG):
-	test -f $@ || curl --output-dir cassetteunpacker -O $(TAPE_SOURCE_UPG_URL)
-
-cassetteunpacker/res: cassetteunpacker/$(TAPE_SOURCE_UPG)
-	$(MAKE) -C cassetteunpacker docker
-	$(DOCKER_BUILDER) $(MAKE) -C cassetteunpacker run
 
 nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 	$(MAKE) -C nw-installer prepare
@@ -123,7 +113,7 @@ release-clean:
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) clean
 	-rm -rf release
 
-release: release-clean build-arm server cassetteunpacker/res nw-installer/installer/userdata.tar.gz nw-installer/installer/userdata.uninstaller.tar.gz
+release: release-clean build-arm server nw-installer/installer/userdata.tar.gz nw-installer/installer/userdata.uninstaller.tar.gz
 	# first, build and move uninstaller upgs
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller A40=0 A30=0 USERDATA_FILENAME=userdata.uninstaller.tar.gz build
 	mkdir -p release/uninstaller

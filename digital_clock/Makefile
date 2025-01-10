@@ -1,4 +1,5 @@
 IMAGE_DIGITAL_CLOCK ?= wampy-builder-digital-clock
+DOCKER_DIGITAL_CLOCK=docker run -it --rm -v `pwd`:`pwd` -w `pwd` -u `id -u`:`id -g` $(IMAGE_DIGITAL_CLOCK)
 
 prepare:
 	cat Dockerfile | docker image build -t $(IMAGE_DIGITAL_CLOCK) -
