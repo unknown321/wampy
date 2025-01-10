@@ -508,7 +508,6 @@ namespace Cassette {
         } else {
             DLOG("found atlas for %s\n", config->Get(tapeType)->reel.c_str());
             ActiveAtlas = &ReelsAtlas.at(config->Get(tapeType)->reel);
-            DLOG("images: %zu\n", ActiveAtlas->images.size());
             ActiveReel = nullptr;
         }
 

@@ -23,6 +23,7 @@
   * [Custom skins](#custom-skins)
     * [Winamp skins](#winamp-skins)
     * [Cassette skins](#cassette-skins)
+    * [Cassette skins, advanced](#cassette-skins-advanced)
 * [Misc](#misc)
   * [Issues](#issues)
 * [Walkman One](#walkman-one)
@@ -307,10 +308,60 @@ Example [tape](./images/ic_audio_play_cassette_ahf_picture.jpg), [reel](./images
 
 ⚠️**WARNING**⚠️
 
-GPU memory is shared with main memory and usually there is not much left. Putting huge images as tapes/reels
+GPU memory is shared with main memory and usually there is not much left. Using huge images as tapes/reels
 is a **bad** idea. Too many reel textures is bad too.
 Consult [What to do if device crashes / Wampy doesn't start?](#what-to-do-if-device-crashes--Wampy-doesnt-start)
 section.
+
+Alternatively, see advanced section below.
+
+#### Cassette skins, advanced
+
+JPEG-based skins are very slow to load and take a lot of memory. You shoul use compressed textures (ETC1) and atlases.
+
+File naming:
+
+- tapes/myCoolTape/tape.pkm
+- reels/awesomeReel/atlas.pkm
+- reels/awesomeReel/atlas.txt
+
+ETC1 textures are produced from PNG by
+etc1tool - [Windows](https://dl.google.com/android/repository/platform-tools-latest-windows.zip),
+[Mac](https://dl.google.com/android/repository/platform-tools-latest-darwin.zip),
+[Linux](https://dl.google.com/android/repository/platform-tools-latest-linux.zip)
+
+Atlas contains all the reel images. Maximum resolution: 4096x4096.
+
+Creating atlas, Linux, ImageMagick installed:
+
+```shell
+# 4-column atlas with all reel images
+montage -mode concatenate -tile 4x reel_source_dir/*.jpg reel_source_dir/atlas.png
+# create reel_source_dir/atlas.pkm
+etc1tool reel_source_dir/atlas.png
+```
+
+After creating pkm file you need to produce `atlas.txt`. This file contains coordinates for your reel tiles.
+
+Format:
+
+```text
+<x> <y> <width> <height>
+```
+
+Example:
+
+[Atlas image](./images/example-atlas.jpg)
+
+`atlas.txt`:
+
+```text
+0 0 528 116
+528 0 528 116
+1056 0 528 116
+1584 0 528 116
+0 116 528 116
+```
 
 ## Misc
 
