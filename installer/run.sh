@@ -86,9 +86,12 @@ install() {
   mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/cassette/
   busybox tar -C ${VENDOR}/usr/share/${BINARY}/skins/cassette/ -xf cassette.tar.gz
 
+  log "wiping old digital clock"
+  rm -r ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/
+
   log "installing digital clock"
   mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/
-  tar -C ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/ -xf digital_clock.tar
+  busybox tar -C ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/ -xf digital_clock.tar.gz
 
   log "installing licenses"
   mkdir -p ${VENDOR}/usr/share/${BINARY}/doc/

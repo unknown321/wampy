@@ -20,7 +20,7 @@ docker: docker_digital_clock
 	cat Dockerfile | docker image build -t $(IMAGE) -
 
 docker_digital_clock:
-	cat Dockerfile.digital_clock | docker image build -t $(IMAGE_DIGITAL_CLOCK) -
+	$(MAKE) -C digital_clock docker
 
 build:
 	mkdir -p build && \
@@ -64,13 +64,6 @@ cassetteunpacker/res: cassetteunpacker/$(TAPE_SOURCE_UPG)
 	$(MAKE) -C cassetteunpacker docker
 	$(DOCKER_BUILDER) $(MAKE) -C cassetteunpacker run
 
-ipod_theme/body/229441876_0064.png:
-	$(DOCKER_DIGITAL_CLOCK) bash -c "cd ipod_theme && ./01_firmware_unpack_7g && ./02_art_unpack.py"
-
-digital_clock/yellow/0_big.jpg: ipod_theme/body/229441876_0064.png
-	$(MAKE) -C digital_clock
-
-
 nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 	$(MAKE) -C nw-installer prepare
 	cp $(INSTALL)/bin/$(PRODUCT) installer/
@@ -84,19 +77,9 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 	$(DOCKER) /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-strip installer/lib*
 	cp base-2.91.wsz installer/
 	$(MAKE) -C cassette
-	cp cassette/cassette.tar.gz installer
-	tar -C digital_clock -cf installer/digital_clock.tar \
-		yellow \
-		gold \
-		green \
-		space_gray \
-		silver \
-		red_product \
-		blue_2012 \
-		pink_2012 \
-		purple \
-		pink \
-		blue
+	cp cassette/cassette.tar.gz installer/
+	$(MAKE) -C digital_clock
+	cp digital_clock/digital_clock.tar.gz installer/
 	cp LICENSE installer/
 	cp LICENSE_3rdparty installer/
 	cp qr.bmp installer/
@@ -113,7 +96,7 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 		libqeglfs.so \
 		base-2.91.wsz \
 		cassette.tar.gz \
-		digital_clock.tar \
+		digital_clock.tar.gz \
 		upgtool-linux-arm5 \
 		LICENSE \
 		LICENSE_3rdparty \
@@ -121,6 +104,8 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 		product_info \
 		wampy || rm -f nw-installer/installer/userdata.tar.gz
 	cat LICENSE LICENSE_3rdparty > nw-installer/installer/windows/LICENSE.txt.user
+
+userdata: nw-installer/installer/userdata.tar.gz
 
 server:
 	$(MAKE) -C server
@@ -138,7 +123,7 @@ release-clean:
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) clean
 	-rm -rf release
 
-release: release-clean build-arm server cassetteunpacker/res digital_clock/yellow/0_big.jpg nw-installer/installer/userdata.tar.gz nw-installer/installer/userdata.uninstaller.tar.gz
+release: release-clean build-arm server cassetteunpacker/res nw-installer/installer/userdata.tar.gz nw-installer/installer/userdata.uninstaller.tar.gz
 	# first, build and move uninstaller upgs
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller A40=0 A30=0 USERDATA_FILENAME=userdata.uninstaller.tar.gz build
 	mkdir -p release/uninstaller
@@ -201,4 +186,4 @@ qr.bmp:
 	@convert qr.png -type palette qr.bmp
 	@rm qr.png
 
-.PHONY: build build-arm docker docker_digital_clock push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server
+.PHONY: build build-arm docker docker_digital_clock push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server userdata

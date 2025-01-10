@@ -2,7 +2,7 @@ FROM nw-crosstool
 ARG CMAKE_RELEASE_VERSION=3.25.3
 ENV CMAKE_RELEASE_VERSION=$CMAKE_RELEASE_VERSION
 RUN apt-get build-dep qtbase5-dev -y && \
-    apt-get install e2tools etc1tool -y && \
+    apt-get install e2tools -y && \
     apt-get clean && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     cd /opt && \

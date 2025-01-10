@@ -30,7 +30,7 @@ def run():
             pass
         os.mkdir(directory)
         while i <= total:
-            fname = "../ipod_theme/body/{}_0064.png".format(start + step * i)
+            fname = "./ipod_theme/body/{}_0064.png".format(start + step * i)
             if i < 10:
                 newname = "{}_big.jpg".format(i)
             if i >= 10 and i < 20:

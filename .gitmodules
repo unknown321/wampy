@@ -36,5 +36,5 @@
 	url = https://github.com/unknown321/nw-installer
 	ignore = dirty
 [submodule "ipod_theme"]
-	path = ipod_theme
+	path = digital_clock/ipod_theme
 	url = https://github.com/nfzerox/ipod_theme
