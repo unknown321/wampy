@@ -1,6 +1,7 @@
 *.so
 wampy
 userdata.tar
+*.tar.gz
 lib*
 *.tar
 *.wsz

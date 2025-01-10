@@ -84,7 +84,7 @@ install() {
 
   log "installing cassettes"
   mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/cassette/
-  tar -C ${VENDOR}/usr/share/${BINARY}/skins/cassette/ -xf cassette.tar
+  busybox tar -C ${VENDOR}/usr/share/${BINARY}/skins/cassette/ -xf cassette.tar.gz
 
   log "installing digital clock"
   mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/

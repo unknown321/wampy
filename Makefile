@@ -84,7 +84,7 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 	$(DOCKER) /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-strip installer/lib*
 	cp base-2.91.wsz installer/
 	$(MAKE) -C cassette
-	cp cassette/cassette.tar installer
+	cp cassette/cassette.tar.gz installer
 	tar -C digital_clock -cf installer/digital_clock.tar \
 		yellow \
 		gold \
@@ -112,7 +112,7 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 		libprotobuf.so.32.0.12 \
 		libqeglfs.so \
 		base-2.91.wsz \
-		cassette.tar \
+		cassette.tar.gz \
 		digital_clock.tar \
 		upgtool-linux-arm5 \
 		LICENSE \

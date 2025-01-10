@@ -20,14 +20,14 @@ reels_pkms = $(addsuffix /atlas.pkm, $(addprefix $(INDIR)/reel/,$(reels)))
 tapes_pkms = $(addsuffix /tape.pkm, $(addprefix $(INDIR)/tape/,$(tapes)))
 reel_atlas_config = $(addsuffix /atlas.txt, $(addprefix $(INDIR)/reel/,$(reels)))
 
-cassette.tar:
-	find $(INDIR) \( -name "*.pkm" -o -name "*.txt" \) | sed 's|$(INDIR)/||g' |  tar -C $(INDIR) -cvf cassette.tar -T -
+cassette.tar.gz:
+	find $(INDIR) \( -name "*.pkm" -o -name "*.txt" \) | sed 's|$(INDIR)/||g' |  tar -C $(INDIR) -czvf cassette.tar.gz -T -
 
-build: $(reels_pkms) $(tapes_pkms) $(reel_atlas_config) cassette.tar
+build: $(reels_pkms) $(tapes_pkms) $(reel_atlas_config) cassette.tar.gz
 
 clean:
 	find $(INDIR) \( -name "*.pkm" -o -name "*.png" -o -name "*.pkm" -o -name atlas.txt \) -delete
-	rm cassette.tar
+	rm cassette.tar.gz
 
 .DEFAULT_GOAL := build
 .PHONY: clean build
