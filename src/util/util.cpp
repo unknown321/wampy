@@ -589,6 +589,7 @@ Atlas LoadAtlas(const std::string &texturePath, const std::string &coordsPath) {
 
     auto tid = LoadCompressedTexture(header.width, header.height, length - ETC_PKM_HEADER_SIZE, b);
     s.close();
+    delete[] b;
 
     if (tid == 0) {
         DLOG("texture upload failed\n");

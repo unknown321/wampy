@@ -98,6 +98,7 @@ struct FlatTexture {
 
         textureID = LoadCompressedTexture(header.width, header.height, length - ETC_PKM_HEADER_SIZE, b);
         s.close();
+        delete[] b;
 
         if (textureID > 0) {
             this->upscaled.width = header.width;

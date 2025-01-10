@@ -271,6 +271,10 @@ namespace Cassette {
     void Cassette::Unload() {
         childThreadsStop = true;
 
+        ActiveReel = nullptr;
+        ActiveTape = nullptr;
+        ActiveAtlas = nullptr;
+
         for (auto &v : Tapes) {
             v.second.Unload();
         }
