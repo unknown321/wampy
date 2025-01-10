@@ -286,6 +286,13 @@ namespace Cassette {
 
         Reels.clear();
 
+        for (auto &v : ReelsAtlas) {
+            DLOG("unload atlas %s\n", v.first.c_str());
+            UnloadTexture(v.second.textureID);
+        }
+
+        ReelsAtlas.clear();
+
         while (updateThreadRunning || reelThreadRunning) {
             // wait for threads to stop
         }
