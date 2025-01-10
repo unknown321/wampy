@@ -502,7 +502,7 @@ GLuint LoadCompressedTexture(int width, int height, ulong size, const char *data
 
 std::vector<AtlasImage> LoadCoords(const std::string &path) {
     std::fstream s;
-    s.open(path);
+    s.open(path, std::ios::in);
 
     std::vector<AtlasImage> result;
 
