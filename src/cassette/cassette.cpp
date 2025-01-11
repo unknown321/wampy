@@ -543,13 +543,17 @@ namespace Cassette {
 
     void Cassette::format() {
         auto ctx = ImGui::GetCurrentContext();
+        DLOG("waiting for context\n");
         while (!ctx->WithinFrameScope) {
-            DLOG("no context available\n");
         }
 
-        auto font = ImGui::GetFont();
-        auto sizeBackup = font->FontSize;
+        ImFont *font = nullptr;
+        DLOG("waiting for font\n");
+        while (font == nullptr) {
+            font = ImGui::GetFont();
+        }
 
+        auto sizeBackup = font->FontSize;
         auto song = connector->playlist.at(0);
 
         char tempArtist[FIELD_SIZE];
