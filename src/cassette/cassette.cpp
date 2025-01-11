@@ -112,6 +112,7 @@ namespace Cassette {
     void Cassette::processUpdate() {
         updateThreadRunning = true;
 
+        bool c{};
         while (true) {
             std::this_thread::sleep_for(std::chrono::microseconds(50 * 1000));
             if (childThreadsStop) {
@@ -134,9 +135,9 @@ namespace Cassette {
             statusUpdated = false;
             statusUpdatedM.unlock();
 
-            bool c{};
             changed(&c);
             if (c) {
+                DLOG("changed\n");
                 SelectTape();
                 format();
             }
@@ -541,34 +542,40 @@ namespace Cassette {
     }
 
     void Cassette::format() {
-        auto song = connector->playlist.at(0);
-        strncpy(artist, song.Artist.c_str(), FIELD_SIZE);
-        auto font = ImGui::GetFont();
-        if (font == nullptr) {
-            DLOG("no font available\n");
-            return;
+        auto ctx = ImGui::GetCurrentContext();
+        while (!ctx->WithinFrameScope) {
+            DLOG("no context available\n");
         }
 
+        auto font = ImGui::GetFont();
         auto sizeBackup = font->FontSize;
 
-        if (artist[0] != '\0') {
-            for (auto &c : artist) {
+        auto song = connector->playlist.at(0);
+
+        char tempArtist[FIELD_SIZE];
+        strncpy(tempArtist, song.Artist.c_str(), FIELD_SIZE);
+        if (tempArtist[0] != '\0') {
+            for (auto &c : tempArtist) {
                 c = std::toupper(c);
             }
             font->FontSize = fontSizeTTF;
-            CropTextToWidth(artist, font, fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+            CropTextToWidth(tempArtist, font, fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
             font->FontSize = sizeBackup;
         }
 
-        strncpy(title, song.Title.c_str(), FIELD_SIZE);
-        if (title[0] != '\0') {
-            for (auto &c : title) {
+        char tempTitle[FIELD_SIZE];
+        strncpy(tempTitle, song.Title.c_str(), FIELD_SIZE);
+        if (tempTitle[0] != '\0') {
+            for (auto &c : tempTitle) {
                 c = std::toupper(c);
             }
             font->FontSize = fontSizeTTF;
-            CropTextToWidth(title, ImGui::GetFont(), fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+            CropTextToWidth(tempTitle, ImGui::GetFont(), fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
             font->FontSize = sizeBackup;
         }
+
+        strncpy(title, tempTitle, FIELD_SIZE);
+        strncpy(artist, tempArtist, FIELD_SIZE);
     }
 
     void Cassette::SelectTape() {
@@ -580,6 +587,9 @@ namespace Cassette {
 
         if (config->randomize) {
             randomizeTape();
+            if (*render) {
+                format();
+            }
             return;
         }
 

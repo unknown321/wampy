@@ -1,11 +1,10 @@
 # general
 
-- [ ] cassette default tape text pos bug on first start
-
 - [ ] read skins from sd card
   - [ ] inotify for directory change? init signal on card insert?
   - [ ] update skin list
   - [ ] error handling (current skin was deleted, what happens next?)
+- [x] cassette default tape text pos bug on first start
 - [x] <s>digital clock compressed</s> quality drop
 - [x] cassette compressed
 - [x] update winamp settings screenshot in usage (added clutterbar)
