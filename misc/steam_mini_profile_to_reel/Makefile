@@ -23,7 +23,7 @@ png: $(OUTPNG)
 
 default: 
 	$(MAKE) bmp
-	rm *_003.bmp *_020.bmp
+	-rm *_003.bmp *_020.bmp
 	$(MAKE) png
 	$(MAKE) atlas.pkm
 	$(MAKE) atlas.txt
