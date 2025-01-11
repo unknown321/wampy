@@ -1,11 +1,8 @@
 # general
 
-- [ ] read skins from sd card
-  - [ ] inotify for directory change? init signal on card insert?
-  - [ ] update skin list
-  - [ ] error handling (current skin was deleted, what happens next?)
+- [x] <s>read skins from sd card</s> a lot of code for like what, 10 mb of skins on sd card? just use internal storage
 - [x] cassette default tape text pos bug on first start
-- [x] <s>digital clock compressed</s> quality drop
+- [x] <s>digital clock compressed</s> quality drops no matter what
 - [x] cassette compressed
 - [x] update winamp settings screenshot in usage (added clutterbar)
 - [x] long cassette titles/artists are incorrectly formatted when changed and active screen is settings
@@ -65,15 +62,17 @@
 
 # want
 
+- [ ] compressed winamp (increased loading time (bad), better memory usage (good), reduced quality(maybe?))
+- [ ] winamp: reduce texture amount (but increase memory usage?)
+- [ ] visualization from NW-WM1Z spectrum analyzer
+- [ ] eq button custom action - too small?
+- [ ] single connection over socket?
 - [x] walkman One settings in wampy settings
 - [x] simple clock skin
 - [x] region.txt (winamp)
 - [x] <s>"restart wampy" button in settings - use case?</s> no use
-- [ ] compressed winamp (performance?)
-- [ ] visualization from NW-WM1Z spectrum analyzer
-- [ ] clickable lyrics icon (hagoromo)
-- [ ] eq button custom action - too small?
-- [ ] single connection over socket?
+- [x] <s>clickable lyrics icon (hagoromo)</s> huge cover hides it, no one in their mind would use small cover after huge
+  one
 
 # hard to solve
 
