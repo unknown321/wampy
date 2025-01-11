@@ -8,6 +8,8 @@
 
 #define FIELD_SIZE 2048
 
+#define REEL_DELAY_MS 55;
+
 namespace Cassette {
     const float fontSizeTTF = 34.0f;
 
@@ -52,6 +54,15 @@ namespace Cassette {
         }
     };
 
+    struct AtlasConfig {
+        int delayMS = REEL_DELAY_MS;
+    };
+
+    struct ReelAtlas {
+        Atlas atlas;
+        AtlasConfig config;
+    };
+
     class Cassette : public SkinVariant, public INotifiable {
       public:
         Cassette() = default;
@@ -78,6 +89,8 @@ namespace Cassette {
 
         int LoadReelAtlas(const std::string &path);
 
+        AtlasConfig LoadReelAtlasConfig(const std::string &path);
+
         int LoadTape(const std::string &path);
 
         void LoadImages();
@@ -91,14 +104,14 @@ namespace Cassette {
       private:
         std::map<std::string, Tape::Tape> Tapes;
         std::map<std::string, Tape::Reel> Reels;
-        std::map<std::string, Atlas> ReelsAtlas;
+        std::map<std::string, ReelAtlas> ReelsAtlas;
         int reelIndex = 0; // TODO mutex
 
         char previousTrack[FIELD_SIZE]{}; // used to check if song changed
         Tape::TapeType tapeType = Tape::MP3_320;
         Tape::Tape *ActiveTape = nullptr;
         Tape::Reel *ActiveReel = nullptr;
-        Atlas *ActiveAtlas = nullptr;
+        ReelAtlas *ActiveAtlas = nullptr;
 
         char artist[FIELD_SIZE]{};
         char title[FIELD_SIZE]{};

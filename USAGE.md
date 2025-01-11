@@ -317,13 +317,15 @@ Alternatively, see advanced section below.
 
 #### Cassette skins, advanced
 
-JPEG-based skins are very slow to load and take a lot of memory. You shoul use compressed textures (ETC1) and atlases.
+JPEG-based skins are very slow to load and take a lot of memory. You should use compressed textures (ETC1) and atlases.
 
 File naming:
 
 - tapes/myCoolTape/tape.pkm
+- tapes/myCoolTape/config.txt
 - reels/awesomeReel/atlas.pkm
 - reels/awesomeReel/atlas.txt
+- reels/awesomeReel/config.txt
 
 ETC1 textures are produced from PNG by
 etc1tool - [Windows](https://dl.google.com/android/repository/platform-tools-latest-windows.zip),
@@ -361,6 +363,14 @@ Example:
 1056 0 528 116
 1584 0 528 116
 0 116 528 116
+```
+
+Compressed atlases support configurable animation delay. Put `config.txt` along with atlas files.
+
+Contents:
+
+```text
+delayMS: 100
 ```
 
 ## Misc

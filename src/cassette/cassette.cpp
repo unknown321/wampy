@@ -1,6 +1,7 @@
 #include "cassette.h"
 #include "imgui_impl_opengl3.h"
 #include <fstream>
+#include <sstream>
 #include <thread>
 
 const ImWchar rangesPunctuation[] = {
@@ -17,8 +18,6 @@ namespace Cassette {
 #else
     const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
 #endif
-
-    const int reelDelayMs = 55;
 
     std::vector<Tape::TapeType> tapeTypes = {
         Tape::MP3_128,
@@ -147,10 +146,44 @@ namespace Cassette {
         DLOG("update thread stopped\n");
     }
 
+    AtlasConfig Cassette::LoadReelAtlasConfig(const std::string &path) {
+        auto p = path + "/config.txt";
+        if (!exists(p)) {
+            DLOG("%s is missing\n", p.c_str());
+            return AtlasConfig{};
+        }
+
+        std::ifstream infile(p);
+        std::string line;
+
+        AtlasConfig res;
+
+        while (std::getline(infile, line)) {
+            std::istringstream iss(line);
+            if (line.empty()) {
+                continue;
+            }
+
+            auto kv = split(line, ":");
+            if (kv.size() != 2) {
+                continue;
+            }
+
+            //            DLOG("key %s, value %s\n", kv.at(0).c_str(), kv.at(1).c_str());
+            switch (hash(kv.at(0).c_str())) {
+            case hash("delayMS"):
+                res.delayMS = std::atoi(kv.at(1).c_str());
+                break;
+            }
+        }
+
+        return res;
+    }
+
     int Cassette::LoadReelAtlas(const std::string &path) {
         DLOG("loading %s\n", path.c_str());
         if (ReelsAtlas.find(path) != ReelsAtlas.end()) {
-            DLOG("reel atlas %s already loaded, %zu images\n", path.c_str(), ReelsAtlas.at(path).images.size());
+            DLOG("reel atlas %s already loaded, %zu images\n", path.c_str(), ReelsAtlas.at(path).atlas.images.size());
             return Tape::ERR_OK;
         }
 
@@ -181,9 +214,12 @@ namespace Cassette {
             return Tape::ERR_NO_FILES;
         }
 
-        ReelsAtlas[path] = a;
+        DLOG("loading reel config\n");
+        auto c = LoadReelAtlasConfig(fp);
 
-        DLOG("loaded atlas, %zu images\n", ReelsAtlas.at(path).images.size());
+        ReelsAtlas[path] = {a, c};
+
+        DLOG("loaded atlas, %zu images\n", ReelsAtlas.at(path).atlas.images.size());
 
         return Tape::ERR_OK;
     }
@@ -293,7 +329,7 @@ namespace Cassette {
 
         for (auto &v : ReelsAtlas) {
             DLOG("unload atlas %s\n", v.first.c_str());
-            UnloadTexture(v.second.textureID);
+            UnloadTexture(v.second.atlas.textureID);
         }
 
         ReelsAtlas.clear();
@@ -370,10 +406,10 @@ namespace Cassette {
             }
         }
 
-        Atlas firstValidReelAtlas{};
+        ReelAtlas firstValidReelAtlas{};
         std::string firstValidReelAtlasName;
         for (const auto &v : ReelsAtlas) {
-            if (!v.second.images.empty()) {
+            if (!v.second.atlas.images.empty()) {
                 firstValidReelAtlas = v.second;
                 firstValidReelAtlasName = v.first;
                 break;
@@ -404,7 +440,7 @@ namespace Cassette {
                 }
 
                 if (ReelsAtlas.find(reel) != ReelsAtlas.end()) {
-                    if (!ReelsAtlas.at(reel).images.empty()) {
+                    if (!ReelsAtlas.at(reel).atlas.images.empty()) {
                         reelName = reel;
                         //                    DLOG("found\n");
                         break;
@@ -412,7 +448,7 @@ namespace Cassette {
                 }
 
                 // no reel found, falling back to valid atlas first
-                if (!firstValidReelAtlas.images.empty()) {
+                if (!firstValidReelAtlas.atlas.images.empty()) {
                     reelName = firstValidReelAtlasName;
                     //                    DLOG("found\n");
                     break;
@@ -717,16 +753,16 @@ namespace Cassette {
         }
 
         if (ActiveAtlas) {
-            if (!ActiveAtlas->images.empty()) {
+            if (!ActiveAtlas->atlas.images.empty()) {
                 AtlasImage vvv;
-                if (reelIndex > (ActiveAtlas->images.size() - 1)) {
-                    vvv = ActiveAtlas->images.at(0);
+                if (reelIndex > (ActiveAtlas->atlas.images.size() - 1)) {
+                    vvv = ActiveAtlas->atlas.images.at(0);
                 } else {
-                    vvv = ActiveAtlas->images.at(reelIndex);
+                    vvv = ActiveAtlas->atlas.images.at(reelIndex);
                 }
                 ImGui::SetCursorPos(ActiveTape->reelCoords);
                 ImGui::Image(
-                    (ImTextureID)ActiveAtlas->textureID,
+                    (ImTextureID)ActiveAtlas->atlas.textureID,
                     ImVec2(vvv.width, vvv.height),
                     ImVec2(vvv.u0, vvv.v0),
                     ImVec2(vvv.u1, vvv.v1),
@@ -743,8 +779,13 @@ namespace Cassette {
     void Cassette::ReelLoop() {
         reelThreadRunning = true;
 
+        int delay = REEL_DELAY_MS;
         for (;;) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(reelDelayMs));
+            if (ActiveAtlas) {
+                delay = ActiveAtlas->config.delayMS;
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             if (childThreadsStop) {
                 break;
             }
@@ -770,7 +811,7 @@ namespace Cassette {
             }
 
             if (ActiveAtlas) {
-                if (this->reelIndex >= ActiveAtlas->images.size() - 1) {
+                if (this->reelIndex >= ActiveAtlas->atlas.images.size() - 1) {
                     this->reelIndex = 0;
                 } else {
                     this->reelIndex++;
