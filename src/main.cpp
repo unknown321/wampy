@@ -289,8 +289,8 @@ int main(int, char **) {
     }
 
     listdir("../skins/", &skinList, ".wsz");
-    listdirs("../cassetteunpacker/res/reel/", &reelList);
-    listdirs("../cassetteunpacker/res/tape/", &tapeList);
+    listdirs("../cassette/cassetteunpacker/res/reel/", &reelList);
+    listdirs("../cassette/cassetteunpacker/res/tape/", &tapeList);
 #else
     connector = new Hagoromo::HagoromoConnector();
     auto v = (Hagoromo::HagoromoConnector *)connector;
