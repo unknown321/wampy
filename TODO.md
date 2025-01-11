@@ -1,9 +1,13 @@
 # general
 
+- [ ] cassette default tape text pos bug on first start
+
 - [ ] read skins from sd card
   - [ ] inotify for directory change? init signal on card insert?
   - [ ] update skin list
   - [ ] error handling (current skin was deleted, what happens next?)
+- [x] <s>digital clock compressed</s> quality drop
+- [x] cassette compressed
 - [x] update winamp settings screenshot in usage (added clutterbar)
 - [x] long cassette titles/artists are incorrectly formatted when changed and active screen is settings
 - [x] refactor winamp skin loading with better error handling
@@ -64,17 +68,18 @@
 
 - [x] walkman One settings in wampy settings
 - [x] simple clock skin
+- [x] region.txt (winamp)
+- [x] <s>"restart wampy" button in settings - use case?</s> no use
+- [ ] compressed winamp (performance?)
 - [ ] visualization from NW-WM1Z spectrum analyzer
-- [ ] region.txt (winamp)
 - [ ] clickable lyrics icon (hagoromo)
 - [ ] eq button custom action - too small?
-- [ ] "restart wampy" button in settings - use case?
 - [ ] single connection over socket?
 
 # hard to solve
 
 - [x] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
-- [ ] winamp playlist flicker sometimes (or is it?)
+- [x] <s>winamp playlist flicker sometimes (or is it?)</s> not anymore
 - [ ] time/cover features are not applied on device boot, only after first toggle
 - [ ] font atlases are too big
 - [ ] blink/marquee timers are not precise
