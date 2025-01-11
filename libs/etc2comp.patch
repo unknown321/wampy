@@ -1,0 +1,31 @@
+diff --git a/EtcTool/EtcFile.cpp b/EtcTool/EtcFile.cpp
+index 7c006f6..b6165e8 100644
+--- a/EtcTool/EtcFile.cpp
++++ b/EtcTool/EtcFile.cpp
+@@ -56,7 +56,7 @@ File::File(const char *a_pstrFilename, Format a_fileformat, Image::Format a_imag
+ 	if (m_fileformat == Format::INFER_FROM_FILE_EXTENSION)
+ 	{
+ 		// ***** TODO: add this later *****
+-		m_fileformat = Format::KTX;
++		m_fileformat = Format::PKM;
+ 	}
+ 
+ 	m_imageformat = a_imageformat;
+@@ -108,7 +108,7 @@ File::File(const char *a_pstrFilename, Format a_fileformat, Image::Format a_imag
+ 	if (m_fileformat == Format::INFER_FROM_FILE_EXTENSION)
+ 	{
+ 		// ***** TODO: add this later *****
+-		m_fileformat = Format::KTX;
++		m_fileformat = Format::PKM;
+ 	}
+ 
+ 	m_imageformat = a_imageformat;
+@@ -159,7 +159,7 @@ File::File(const char *a_pstrFilename, Format a_fileformat)
+ 	if (m_fileformat == Format::INFER_FROM_FILE_EXTENSION)
+ 	{
+ 		// ***** TODO: add this later *****
+-		m_fileformat = Format::KTX;
++		m_fileformat = Format::PKM;
+ 	}
+ 
+ 	FILE *pfile = fopen(m_pstrFilename, "rb");

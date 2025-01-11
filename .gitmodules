@@ -38,3 +38,7 @@
 [submodule "ipod_theme"]
 	path = digital_clock/ipod_theme
 	url = https://github.com/nfzerox/ipod_theme
+[submodule "libs/etc2comp"]
+	path = libs/etc2comp
+	url = https://github.com/google/etc2comp
+	ignore = dirty

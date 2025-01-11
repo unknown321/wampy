@@ -14,6 +14,7 @@ ARM_OPTS=$(ARM_HOST) \
 patch:
 	-cd imgui && git apply ../imgui.patch
 	-cd glfw && git apply ../glfw.patch
+	-cd etc2comp && git apply ../etc2comp.patch
 
 alsa-lib/src:
 	make -C alsa-lib
@@ -63,6 +64,13 @@ ImageMagick/build-arm:
 	make && \
 	make install"
 
+etc2comp/build-x86:
+	mkdir -p $@
+	$(DOCKER) bash -c "\
+		cd $@ && \
+		cmake .. && \
+		make \
+"
 
 libjpeg-turbo/build-x86:
 	mkdir -p $@
@@ -89,6 +97,8 @@ libGLESv2.so: libMali_linux.so
 libMali_linux.so:
 	test -f $@
 
+etctool: etc2comp/build-x86
+
 libjpeg: libjpeg-turbo/build-arm libjpeg-turbo/build-x86
 
 magick: ImageMagick/build-x86 ImageMagick/build-arm
@@ -98,16 +108,17 @@ protobuf:
 		make -f Makefile.protobuf \
 "
 
-all: patch libEGL.so libGLESv2.so libjpeg magick protobuf
+all: patch libEGL.so libGLESv2.so libjpeg magick protobuf etctool
 
 clean:
 	rm -rf libjpeg-turbo/build-*
 	rm -rf ImageMagick/build-*
 	rm -rf protobuf/build-*
+	rm -rf etc2comp/build-*
 	-make -C protobuf clean
 	-make -C ImageMagick clean
 
 
 .DEFAULT_GOAL := all
 
-.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch
+.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch etctool libjpeg magick

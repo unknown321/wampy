@@ -1,6 +1,8 @@
 IMAGE_DIGITAL_CLOCK ?= wampy-builder-digital-clock
 DOCKER_DIGITAL_CLOCK=docker run -it --rm -v `pwd`:`pwd` -w `pwd` -u `id -u`:`id -g` $(IMAGE_DIGITAL_CLOCK)
 
+ETCTOOL=../libs/etc2comp/build-x86/EtcTool/EtcTool
+
 prepare:
 	cat Dockerfile | docker image build -t $(IMAGE_DIGITAL_CLOCK) -
 
@@ -17,7 +19,7 @@ colors_config = $(addsuffix /atlas.txt, $(colors))
 	montage -mode concatenate -tile 5x $(@D)/day_*.png PNG32:$(@D)/day_atlas.png
 	montage -mode concatenate -tile 4x $(@D)/dot.png $(@D)/minus.png $(@D)/shoe.png $(@D)/colon.png PNG32:$(@D)/misc_atlas.png
 	montage -mode concatenate -tile 1x $(@D)/*_atlas.png PNG32:$(@D)/atlas.png
-	etc1tool $(@D)/atlas.png
+	$(ETCTOOL) $(@D)/atlas.png -format ETC1 -effort 100 -output $(@D)/atlas.pkm
 
 %/atlas.txt:
 	echo $@
