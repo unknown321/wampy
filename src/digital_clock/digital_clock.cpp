@@ -37,153 +37,93 @@ namespace DigitalClock {
     std::string DefaultColor = "silver";
     std::string DefaultColorPreview = "Silver";
 
+    void DigitalClock::drawFromAtlas(uint index, ImVec2 pos) {
+        auto vvv = elements.atlas.images.at(index);
+        //        DLOG("value %d, index %d, %dx%d, %d %d\n", value, atlasIndex + value, vvv.width, vvv.height, vvv.x, vvv.y);
+        ImGui::SetCursorPos(pos);
+        ImGui::Image(
+            (ImTextureID)elements.atlas.textureID,
+            ImVec2(vvv.width, vvv.height),
+            ImVec2(vvv.u0, vvv.v0),
+            ImVec2(vvv.u1, vvv.v1),
+            ImVec4(1, 1, 1, 1)
+        );
+    }
+
+    void DigitalClock::drawNum(NumType t, uint value, ImVec2 pos) {
+        int atlasIndex;
+        switch (t) {
+        case NUM_BIG:
+            atlasIndex = 0;
+            break;
+        case NUM_MEDIUM:
+            atlasIndex = 17;
+            break;
+        case NUM_SMALL:
+            atlasIndex = 31;
+            break;
+        default:
+            atlasIndex = 0;
+            break;
+        }
+
+        drawFromAtlas(atlasIndex + value, pos);
+    }
+
     void DigitalClock::Draw() {
         if (loading) {
             return;
         }
         // no leading zeroes except seconds
         elements.ToggleSettings.Draw();
+
         if (H1 > 0) {
-            elements.NumbersBig.at(H1).DrawAt(304, screenWidth - numberWidth - 12);
+            drawNum(NUM_BIG, H1, {304, screenWidth - numberWidth - 12});
         }
-        elements.NumbersBig.at(H2).DrawAt(304, screenWidth - numberWidth - 116);
-        elements.Colon.DrawAt(344, screenWidth - 30 - 226);
-        elements.NumbersBig.at(M1).DrawAt(304, screenWidth - numberWidth - 262);
-        elements.NumbersBig.at(M2).DrawAt(304, screenWidth - numberWidth - 366);
+        drawNum(NUM_BIG, H2, {304, screenWidth - numberWidth - 116});
+        drawFromAtlas(colonIndex, {344, screenWidth - 30 - 226});
+        drawNum(NUM_BIG, M1, {304, screenWidth - numberWidth - 262});
+        drawNum(NUM_BIG, M2, {304, screenWidth - numberWidth - 366});
 
-        elements.Days.at(timeinfo->tm_wday).DrawAt(34, screenWidth - 140 - 20);
+        drawFromAtlas(daysIndex + timeinfo->tm_wday, {34, screenWidth - 140 - 20});
 
-        elements.NumbersMedium.at(Day2).DrawAt(34, screenWidth - 62 - 402);
+        drawNum(NUM_MEDIUM, Day2, {34, screenWidth - 62 - 402});
         if (Day1 > 0) {
-            elements.NumbersMedium.at(Day1).DrawAt(34, screenWidth - 62 - 342);
-            elements.Minus.DrawAt(66, screenWidth - 34 - 308);
-            elements.NumbersMedium.at(Month2).DrawAt(34, screenWidth - 62 - 246);
+            drawNum(NUM_MEDIUM, Day1, {34, screenWidth - 62 - 342});
+            drawFromAtlas(minusIndex, {66, screenWidth - 34 - 308});
+            drawNum(NUM_MEDIUM, Month2, {34, screenWidth - 62 - 246});
             if (Month1 > 0) {
-                elements.NumbersMedium.at(Month1).DrawAt(34, screenWidth - 62 - 184);
+                drawNum(NUM_MEDIUM, Month1, {34, screenWidth - 62 - 184});
             }
         } else {
-            elements.Minus.DrawAt(66, screenWidth - 62 - 342);
-            elements.NumbersMedium.at(Month2).DrawAt(34, screenWidth - 62 - 308);
+            drawFromAtlas(minusIndex, {66, screenWidth - 62 - 342});
+            drawNum(NUM_MEDIUM, Month2, {34, screenWidth - 62 - 308});
             if (Month1 > 0) {
-                elements.NumbersMedium.at(Month1).DrawAt(34, screenWidth - 62 - 246);
+                drawNum(NUM_MEDIUM, Month1, {34, screenWidth - 62 - 246});
             }
         }
 
-        elements.NumbersSmall.at(Sec2).DrawAt(714, screenWidth - 460);
-        elements.NumbersSmall.at(Sec1).DrawAt(714, screenWidth - 30 * -1 - 460);
+        drawNum(NUM_SMALL, Sec2, {714, screenWidth - 460});
+        drawNum(NUM_SMALL, Sec1, {714, screenWidth - 30 * -1 - 460});
 
         //        elements.Shoe.DrawAt(670, screenWidth - 132);
 
-        elements.NumbersSmall.at(Year1).DrawAt(714, screenWidth - 30 - 20);
-        elements.NumbersSmall.at(Year2).DrawAt(714, screenWidth - 30 * 2 - 20);
-        elements.NumbersSmall.at(Year3).DrawAt(714, screenWidth - 30 * 3 - 20);
-        elements.NumbersSmall.at(Year4).DrawAt(714, screenWidth - 30 * 4 - 20);
+        drawNum(NUM_SMALL, Year1, {714, screenWidth - 30 - 20});
+        drawNum(NUM_SMALL, Year2, {714, screenWidth - 30 * 2 - 20});
+        drawNum(NUM_SMALL, Year3, {714, screenWidth - 30 * 3 - 20});
+        drawNum(NUM_SMALL, Year4, {714, screenWidth - 30 * 4 - 20});
     }
 
-    void DigitalClock::loadTextures(const std::string &c) {
-        DLOG("loading clock %s\n", c.c_str());
-
-        std::ifstream f;
-        for (int i = 0; i < 10; i++) {
-            char p[256];
-            sprintf(p, "%s/%s/%d_big.jpg", basePath, c.c_str(), i);
-            f.open(p);
-            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-            auto ft = FlatTexture();
-
-            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-
-            elements.NumbersBig.emplace_back(ft);
-            f.close();
+    void DigitalClock::loadAtlas(const std::string &c) {
+        DLOG("loading atlas for clock %s\n", c.c_str());
+        elements.atlas = LoadAtlas(std::string(basePath) + "/" + c + "/atlas.pkm", std::string(basePath) + "/" + c + "/atlas.txt");
+        DLOG("%s\n", (std::string(basePath) + "/" + c + "/atlas.txt").c_str());
+        if (elements.atlas.images.empty()) {
+            DLOG("no images in atlas %s\n", c.c_str());
+            return;
         }
 
-        for (int i = 0; i < 10; i++) {
-            char p[256];
-            sprintf(p, "%s/%s/%d_medium.jpg", basePath, c.c_str(), i);
-            f.open(p);
-            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-            auto ft = FlatTexture();
-
-            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-            elements.NumbersMedium.emplace_back(ft);
-            f.close();
-        }
-
-        for (int i = 0; i < 10; i++) {
-            char p[256];
-            sprintf(p, "%s/%s/%d_small.jpg", basePath, c.c_str(), i);
-            f.open(p);
-            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-            auto ft = FlatTexture();
-
-            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-            elements.NumbersSmall.emplace_back(ft);
-            f.close();
-        }
-
-        for (int i = 0; i < 7; i++) {
-            char p[256];
-            sprintf(p, "%s/%s/day_%d.jpg", basePath, c.c_str(), i);
-            f.open(p);
-            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-            auto ft = FlatTexture();
-
-            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-            elements.Days.emplace_back(ft);
-            f.close();
-        }
-
-        // ======
-        char p[256];
-        sprintf(p, "%s/%s/colon.jpg", basePath, c.c_str());
-        f.open(p);
-        std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-        auto ft = FlatTexture();
-
-        ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-        elements.Colon = ft;
-        f.close();
-
-        // ======
-        sprintf(p, "%s/%s/dot.jpg", basePath, c.c_str());
-        f.open(p);
-        std::string contents2((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-        ft.Reset();
-        ft = FlatTexture();
-
-        ft.WithMagick("JPEG")->FromData((char *)contents2.c_str(), contents2.size())->WithRatio(1.0f)->Load();
-        elements.Dot = ft;
-        f.close();
-
-        // ======
-        sprintf(p, "%s/%s/shoe.jpg", basePath, c.c_str());
-        f.open(p);
-        std::string contents3((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-        ft.Reset();
-        ft = FlatTexture();
-
-        ft.WithMagick("JPEG")->FromData((char *)contents3.c_str(), contents3.size())->WithRatio(1.0f)->Load();
-        elements.Shoe = ft;
-        f.close();
-
-        // ======
-        sprintf(p, "%s/%s/minus.jpg", basePath, c.c_str());
-        f.open(p);
-        std::string contents4((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-        ft.Reset();
-        ft = FlatTexture();
-
-        ft.WithMagick("JPEG")->FromData((char *)contents4.c_str(), contents4.size())->WithRatio(1.0f)->Load();
-        elements.Minus = ft;
-        f.close();
+        DLOG("%zu images in atlas\n", elements.atlas.images.size());
     }
 
     int DigitalClock::Load(std::string filename, ImFont **fontRegular) {
@@ -209,7 +149,7 @@ namespace DigitalClock {
 
         initializeButton();
         addFonts(fontRegular);
-        loadTextures(filename);
+        loadAtlas(filename);
 
         color = filename;
 
@@ -289,31 +229,8 @@ namespace DigitalClock {
 
         ImGui_ImplOpenGL3_DestroyFontsTexture();
 
-        for (auto &e : elements.NumbersBig) {
-            e.Unload();
-        }
-
-        for (auto &e : elements.NumbersMedium) {
-            e.Unload();
-        }
-
-        for (auto &e : elements.NumbersSmall) {
-            e.Unload();
-        }
-
-        for (auto &e : elements.Days) {
-            e.Unload();
-        }
-
-        elements.Colon.Unload();
-        elements.Dot.Unload();
-        elements.Shoe.Unload();
-        elements.Minus.Unload();
-
-        elements.Days.clear();
-        elements.NumbersSmall.clear();
-        elements.NumbersMedium.clear();
-        elements.NumbersBig.clear();
+        UnloadTexture(elements.atlas.textureID);
+        elements.atlas.images.clear();
 
         while (tickerThreadRunning) {
             // wait for threads to stop

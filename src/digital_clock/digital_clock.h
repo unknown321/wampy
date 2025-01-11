@@ -21,16 +21,18 @@ namespace DigitalClock {
     };
 
     struct DigitalClockElements {
-        std::vector<FlatTexture> NumbersBig;
-        std::vector<FlatTexture> NumbersMedium;
-        std::vector<FlatTexture> NumbersSmall;
-        std::vector<FlatTexture> Days;
-        FlatTexture Colon;
-        FlatTexture Dot;
-        FlatTexture Shoe;
-        FlatTexture Minus;
         Button ToggleSettings;
+        Atlas atlas;
     };
+
+    enum NumType { NUM_BIG = 1, NUM_MEDIUM = 2, NUM_SMALL = 3 };
+
+    const int dotIndex = 27;
+    const int minusIndex = 28;
+    const int shoeIndex = 29;
+    const int colonIndex = 30;
+
+    const int daysIndex = 10;
 
     class DigitalClock : public SkinVariant {
       private:
@@ -64,11 +66,15 @@ namespace DigitalClock {
 
         int addFonts(ImFont **fontRegular);
 
-        void loadTextures(const std::string &color);
+        void loadAtlas(const std::string &c);
 
         void ticker();
 
         void formatTime();
+
+        void drawNum(NumType t, uint value, ImVec2 pos);
+
+        void drawFromAtlas(uint index, ImVec2 pos);
 
       public:
         std::string GetColor() { return color; };
