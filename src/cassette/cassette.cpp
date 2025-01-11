@@ -506,7 +506,7 @@ namespace Cassette {
         assert(ActiveTape);
 
         if (ReelsAtlas.find(config->Get(tapeType)->reel) == ReelsAtlas.end()) {
-            DLOG("atlas not found, using regular reel\n");
+            DLOG("atlas %s not found, using regular reel\n", config->Get(tapeType)->reel.c_str());
             ActiveAtlas = nullptr;
 
             if (Reels.find(config->Get(tapeType)->reel) != Reels.end()) {
@@ -592,7 +592,9 @@ namespace Cassette {
         if (config->randomize) {
             randomizeTape();
             if (*render) {
-                format();
+                if (ImGui::GetCurrentContext()->WithinFrameScope) {
+                    format();
+                }
             }
             return;
         }
@@ -716,7 +718,12 @@ namespace Cassette {
 
         if (ActiveAtlas) {
             if (!ActiveAtlas->images.empty()) {
-                auto vvv = ActiveAtlas->images.at(reelIndex);
+                AtlasImage vvv;
+                if (reelIndex > (ActiveAtlas->images.size() - 1)) {
+                    vvv = ActiveAtlas->images.at(0);
+                } else {
+                    vvv = ActiveAtlas->images.at(reelIndex);
+                }
                 ImGui::SetCursorPos(ActiveTape->reelCoords);
                 ImGui::Image(
                     (ImTextureID)ActiveAtlas->textureID,
