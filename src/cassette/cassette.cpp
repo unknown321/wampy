@@ -73,6 +73,9 @@ namespace Cassette {
 
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
         range.AddRanges(rangesPunctuation);
+        range.AddChar(ImWchar(0x266a));
+        range.AddChar(ImWchar(0x266b));
+        range.AddChar(ImWchar(0x24c8));
 
         if (fontRanges) {
             if (fontRanges->Japanese)
@@ -754,13 +757,15 @@ namespace Cassette {
 
         if (ActiveAtlas) {
             if (!ActiveAtlas->atlas.images.empty()) {
-                AtlasImage vvv;
+                AtlasImage vvv{};
                 if (reelIndex > (ActiveAtlas->atlas.images.size() - 1)) {
                     vvv = ActiveAtlas->atlas.images.at(0);
                 } else {
                     vvv = ActiveAtlas->atlas.images.at(reelIndex);
                 }
                 ImGui::SetCursorPos(ActiveTape->reelCoords);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
                 ImGui::Image(
                     (ImTextureID)ActiveAtlas->atlas.textureID,
                     ImVec2(vvv.width, vvv.height),
@@ -768,6 +773,7 @@ namespace Cassette {
                     ImVec2(vvv.u1, vvv.v1),
                     ImVec4(1, 1, 1, 1)
                 );
+#pragma GCC diagnostic pop
             }
         }
 

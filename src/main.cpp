@@ -243,6 +243,9 @@ void setupProfiling() {
 SkinList skinList{};
 SkinList reelList{};
 SkinList tapeList{};
+std::vector<directoryEntry> masterVolumeTableDSDFiles{};
+std::vector<directoryEntry> masterVolumeTableFiles{};
+std::vector<directoryEntry> toneControlFiles{};
 
 int main(int, char **) {
     DLOG("starting, commit %s\n", SOFTWARE_VERSION);
@@ -291,6 +294,13 @@ int main(int, char **) {
     listdir("../skins/", &skinList, ".wsz");
     listdirs("../cassette/cassetteunpacker/res/reel/", &reelList);
     listdirs("../cassette/cassetteunpacker/res/tape/", &tapeList);
+    listdir("../ss/system/master_volume_dsd/", &masterVolumeTableDSDFiles, ".tbl");
+    listdir("../ss/system/master_volume/", &masterVolumeTableFiles, ".tbl");
+    listdir("../ss/system/tone_control/", &toneControlFiles, ".tbl");
+
+    listdir("../ss/user/master_volume_dsd/", &masterVolumeTableDSDFiles, ".tbl");
+    listdir("../ss/user/master_volume/", &masterVolumeTableFiles, ".tbl");
+    listdir("../ss/user/tone_control/", &toneControlFiles, ".tbl");
 #else
     connector = new Hagoromo::HagoromoConnector();
     auto v = (Hagoromo::HagoromoConnector *)connector;
@@ -302,16 +312,34 @@ int main(int, char **) {
     socket = WAMPY_SOCKET;
     listdir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/", &skinList, ".wsz");
     listdir("/contents/wampy/skins/winamp/", &skinList, ".wsz");
-    //    listdir("/contents_ext/wampy/skins/winamp/", &skinList, ".wsz");
 
     listdirs("/system/vendor/unknown321/usr/share/wampy/skins/cassette/reel/", &reelList);
     listdirs("/contents/wampy/skins/cassette/reel/", &reelList);
-    //    listdirs("/contents_ext/wampy/skins/cassette/reel/", &reelList);
 
     listdirs("/system/vendor/unknown321/usr/share/wampy/skins/cassette/tape/", &tapeList);
     listdirs("/contents/wampy/skins/cassette/tape/", &tapeList);
-    //    listdirs("/contents_ext/wampy/skins/cassette/tape/", &tapeList);
 
+    listdir("/system/vendor/unknown321/usr/share/wampy/sound_settings/master_volume_dsd/", &masterVolumeTableDSDFiles, ".tbl");
+    listdir("/contents/wampy/sound_settings/master_volume_dsd/", &masterVolumeTableDSDFiles, ".tbl");
+
+    listdir("/system/vendor/unknown321/usr/share/wampy/sound_settings/master_volume/", &masterVolumeTableFiles, ".tbl");
+    listdir("/contents/wampy/sound_settings/master_volume/", &masterVolumeTableFiles, ".tbl");
+
+    listdir("/system/vendor/unknown321/usr/share/wampy/sound_settings/tone_control/", &toneControlFiles, ".tbl");
+    listdir("/contents/wampy/sound_settings/tone_control/", &toneControlFiles, ".tbl");
+
+    // device fallback, desktop will just crash
+    if (masterVolumeTableDSDFiles.empty()) {
+        listdir("/system/usr/share/audio_dac/", &masterVolumeTableDSDFiles, ".tbl");
+    }
+
+    if (masterVolumeTableFiles.empty()) {
+        listdir("/system/usr/share/audio_dac/", &masterVolumeTableFiles, ".tbl");
+    }
+
+    if (toneControlFiles.empty()) {
+        listdir("/system/usr/share/audio_dac/", &toneControlFiles, ".tbl");
+    }
 #endif
     connector->render = &render;
 
@@ -354,6 +382,9 @@ int main(int, char **) {
     skin.skinList = &skinList;
     skin.reelList = &reelList;
     skin.tapeList = &tapeList;
+    skin.masterVolumeDSDFiles = &masterVolumeTableDSDFiles;
+    skin.masterVolumeFiles = &masterVolumeTableFiles;
+    skin.toneControlFiles = &toneControlFiles;
     skin.hold_toggled = &hold_toggled;
     skin.power_pressed = &power_pressed;
     skin.hold_value = &hold_value;
@@ -386,7 +417,8 @@ int main(int, char **) {
 
     skin.ReadLicense();
     skin.ReadQR();
-
+    skin.PreprocessTableFilenames();
+    skin.GetLogsDirSize();
     skin.Load();
 
     if (socket.empty()) {

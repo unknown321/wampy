@@ -348,6 +348,9 @@ namespace DigitalClock {
 
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
         range.AddRanges(rangesPunctuation);
+        range.AddChar(ImWchar(0x266a));
+        range.AddChar(ImWchar(0x266b));
+        range.AddChar(ImWchar(0x24c8));
 
         range.BuildRanges(&gr);
         *fontRegular = io.Fonts->AddFontFromFileTTF(FontPath.c_str(), fontSizeTTF, nullptr, gr.Data);

@@ -10,3 +10,8 @@ RUN apt-get build-dep qtbase5-dev -y && \
     tar -xf cmake-${CMAKE_RELEASE_VERSION}-linux-x86_64.tar.gz && \
     rm cmake-${CMAKE_RELEASE_VERSION}-linux-x86_64.tar.gz && \
     ln -s /opt/cmake-${CMAKE_RELEASE_VERSION}-linux-x86_64/bin/cmake /usr/bin/cmake
+
+RUN ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-ld /usr/bin/arm-linux-gnueabihf-ld && \
+		ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-ld.bfd /usr/bin/arm-linux-gnueabihf-ld.bfd && \
+		ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc && \
+		ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-strip /usr/bin/arm-linux-gnueabihf-strip

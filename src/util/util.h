@@ -127,4 +127,29 @@ void swapbyte(uint16_t t);
 
 bool exists(const std::string &s);
 
+std::string GetProduct();
+
+std::string GetModelID();
+
+std::string GetRegionID();
+std::string GetRegionIDStr();
+
+std::pair<std::string, std::string> AudioDeviceInUse();
+
+extern std::string DefaultRegion;
+extern std::map<std::string, std::string> RegionIDToString;
+
+std::string RunWithOutput(const std::string &command);
+
+std::string ReadFile(const std::string &path);
+
+bool DisableLLUSBDAC();
+
+bool EnableLLUSBDAC();
+
+void rstrip(std::string *s, const char &what);
+
+void ExportBookmarks();
+
+void RemoveLogs();
 #endif // IMGUITEST_UTIL_H

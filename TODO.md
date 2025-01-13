@@ -1,5 +1,9 @@
-# general
+#general
 
+- [ ] make llusbdac build everywhere, not just on my machine
+- [ ] apply tunings on boot
+- [x] export bookmarks
+- [x] current volume on volume table graphs
 - [x] <s>read skins from sd card</s> a lot of code for like what, 10 mb of skins on sd card? just use internal storage
 - [x] cassette default tape text pos bug on first start
 - [x] <s>digital clock compressed</s> quality drops no matter what
@@ -67,6 +71,7 @@
 - [ ] visualization from NW-WM1Z spectrum analyzer
 - [ ] eq button custom action - too small?
 - [ ] single connection over socket?
+- [ ] enqueue?
 - [x] walkman One settings in wampy settings
 - [x] simple clock skin
 - [x] region.txt (winamp)

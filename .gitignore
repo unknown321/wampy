@@ -25,3 +25,5 @@ settings.txt
 ignoreme/
 product_info
 libMali*
+ss/*
+*.tbl

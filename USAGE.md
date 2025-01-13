@@ -28,6 +28,7 @@
   * [Issues](#issues)
 * [Walkman One](#walkman-one)
   * [Stock firmware](#stock-firmware)
+* [Sound settings, Low-latency USB DAC (♪♫ button)](#sound-settings-low-latency-usb-dac--button)
 * [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
@@ -161,7 +162,6 @@ You can get skins from [Winamp Skin Museum](https://skins.webamp.org/).
 Issues:
 
 - Tapping position bar doesn't work sometimes
-- Playlist flickers sometimes
 - Track time and title marquee tick in uneven intervals
 
 Quirks:
@@ -210,17 +210,9 @@ Tap middle of the screen while in `Randomize?` mode to re-roll current tape/reel
 
 #### Issues and quirks
 
-Issues:
+Issues: none?
 
-- Default reels have a lot of textures, which may negatively impact performance. Sometimes reboot is required after
-  changing settings.
-- Changing active skin to cassette may crash device if there is not enough memory at the moment.
-
-Quirks:
-
-- Default reels and tapes load for quite some time (at least 70 seconds). Wampy is not available during loading and
-  there is no indication of loading. Default player loads faster than that, so there is a period of time when user
-  expects everything to work, but it is not possible yet.
+Quirks: none?
 
 ### Digital clock
 
@@ -317,20 +309,33 @@ Alternatively, see advanced section below.
 
 #### Cassette skins, advanced
 
-JPEG-based skins are very slow to load and take a lot of memory. You should use compressed textures (ETC1) and atlases.
+JPEG-based skins are very slow to load and take a lot of memory. You should use compressed textures (ETC1, `.pkm`
+extension) and atlases.
 
 File naming:
 
-- tapes/myCoolTape/tape.pkm
-- tapes/myCoolTape/config.txt
-- reels/awesomeReel/atlas.pkm
-- reels/awesomeReel/atlas.txt
-- reels/awesomeReel/config.txt
+```text
+wampy/
+├── config.ini
+└── skins
+    ├── reels
+    │   └── awesomeReel
+    │       ├── atlas.pkm
+    │       ├── atlas.txt
+    │       └── config.txt
+    └── tapes
+        └── myCoolTape
+            ├── config.txt
+            └── tape.pkm
+```
 
-ETC1 textures are produced from PNG by
-etc1tool - [Windows](https://dl.google.com/android/repository/platform-tools-latest-windows.zip),
-[Mac](https://dl.google.com/android/repository/platform-tools-latest-darwin.zip),
-[Linux](https://dl.google.com/android/repository/platform-tools-latest-linux.zip)
+ETC1 textures are produced from PNG by etc1tool - [Windows][1], [Mac][2], [Linux][3]
+
+[1]: https://dl.google.com/android/repository/platform-tools-latest-windows.zip
+
+[2]: https://dl.google.com/android/repository/platform-tools-latest-darwin.zip
+
+[3]: https://dl.google.com/android/repository/platform-tools-latest-linux.zip
 
 Atlas contains all the reel images. Maximum resolution: 4096x4096.
 
@@ -377,23 +382,27 @@ delayMS: 100
 
 <img src="images/settings-misc.png" alt="misc settings">
 
-`Swap prev/next buttons` swaps prev/next buttons when Wampy is on to match Winamp track buttons.
+`Swap prev/next buttons` swaps prev/next buttons when Wampy is on to match Winamp track button directions.
 
-`Huge cover art` changes cover art resolution in default player to 480x480. It also changes title field
+`Huge cover art` changes cover art resolution in default player to 480x480 (max width). It also changes title field
 to `<artist> - <title>`.
 
 `Show time` adds current time to volume indicator. Time updates every 10 seconds, 24 hours format. Disabled on
 Walkman One due to interface clutter.
 
-`Limit max volume` limits max volume to 63 in Wampy, so you can use whole volume slider without going deaf.
+`Limit max volume` limits max volume to 63 in Wampy, so you can use whole Winamp volume slider without going deaf.
 
 `Disable touchscreen` disables touchscreen on next Wampy toggle. To temporarily enable touchscreen in Wampy while in
 this mode, set volume to 120 in default player app and toggle Wampy on.
 
+`Export bookmarks` button saves bookmark files to `wampy/bookmarks/` directory.
+
+`Remove wampy logs` button removes logs from `wampy/log/` directory.
+
 `Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is
 cassette.
 
-`Limit fps`, target fps = 24 . Does it really help to save battery/improve performance? Don't know, off by default.
+`Limit fps`, target fps = 24. Does it really help to save battery/improve performance? Don't know, off by default.
 Applied after restart.
 
 <figure>
@@ -414,7 +423,7 @@ Applied after restart.
 <figcaption>Walkman One settings</figcaption>
 </figure>
 
-User interface Walkman One firmware. Follow instructions in `CFW/settings.txt` file.
+User interface for Walkman One firmware. Follow instructions in `CFW/settings.txt` file.
 
 Sound signature is applied on device without PC connection. `CFW/External_Tunings` directory **must** be present.
 
@@ -426,6 +435,10 @@ Sound signature is applied on device without PC connection. `CFW/External_Tuning
 </figure>
 
 On stock firmware there is only one option: UI color change.
+
+## Sound settings, Low-latency USB DAC (♪♫ button)
+
+See [SOUND_SETTINGS.md](./SOUND_SETTINGS.md)
 
 ## Providing debug information
 

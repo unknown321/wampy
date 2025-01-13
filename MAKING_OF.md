@@ -37,7 +37,7 @@
   * [Client misc](#client-misc)
   * [Settings](#settings)
   * [Config file](#config-file)
-  * [NW-WM1Z / Walkman One compatibility](#nw-wm1z--walkman-one-compatibility)
+  * [Walkman One compatibility](#walkman-one-compatibility)
   * [Build](#build)
     * [Cross-compilation](#cross-compilation)
     * [Qt](#qt)
@@ -627,9 +627,9 @@ about that, but no definitive solution. I've spent embarrassing amount of time f
 <img src="images/drawing.png" alt="an example of beautiful drawing">
 
 
-Just as usual, task looks easy. After some googling you may find out that there is magic `QT_QPA_EGLFS_FB` env variable,
-which points to framebuffer to draw to. Can we tell `HgrmMediaPlayerApp` to temporarily change framebuffer? No, we
-can't, this variable is set only on application start.
+Just as usual, task looks easy. After some googling you may find out that there is magical `QT_QPA_EGLFS_FB` env
+variable, which points to framebuffer to draw to. Can we tell `HgrmMediaPlayerApp` to temporarily change framebuffer?
+No, we can't, this variable is set only on application start.
 
 #### Kernel module?
 
@@ -871,6 +871,8 @@ all dropdowns show their content downwards. That breaks tape/reel selection at t
 <figcaption>Dropdown dropping in a wrong direction</figcaption>
 </figure>
 
+That issue was fixed later, but the memory remains.
+
 There is also an issue with elements' size. Make them bigger = introduce screen scrolling. This is undesirable with
 broken culling. Personally, I am fine with current layout and scaling, but my fingers are not that big.
 
@@ -895,15 +897,11 @@ with software mod not starting aside from making an issue on GitHub? So here com
 protection. Everything from settings is reflected in config file, crash logs are collected into user directory for
 easier sharing. Hopefully that'll make post-release maintenance much easier.
 
-### NW-WM1Z / Walkman One compatibility
+### Walkman One compatibility
 
 Walkman One firmware is quite popular. Under the hood it changes some system properties so software is tricked into
 changing interface and enabling features to match NW-WM1Z. Since software is mostly compatible with Wampy, an effort was
 made to add Walkman One build (on that later).
-
-There is no firmware made specifically for NW-WM1Z, because I don't have hardware to test on. Even though software
-works, upgrade process may fail in unexpected way and brick the device. If you really want Wampy on your device, please
-provide backup file (see [BACKUP.md](./BACKUP.md)).
 
 ### Build
 

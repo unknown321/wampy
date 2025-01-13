@@ -1,0 +1,18 @@
+# works on my machine
+
+KERNEL_PATH ?= $(shell pwd)/../../../../walkman/NW-A50/kernel/linux
+IMAGE=wampy-builder
+DOCKER=docker run -it --rm -v $(KERNEL_PATH):$(KERNEL_PATH) -v `pwd`:`pwd` -w `pwd` $(IMAGE)
+
+llusbdac/kernel:
+	ln -s $(KERNEL_PATH) $(shell pwd)/llusbdac/kernel
+
+llusbdac/llusbdac/llusbdac.ko:
+	$(DOCKER) bash -c "cd llusbdac/llusbdac/ && make"
+
+all: llusbdac/llusbdac/llusbdac.ko
+
+clean:
+	$(DOCKER) bash -c "cd llusbdac/llusbdac/ && make clean"
+
+.DEFAULT_GOAL := all

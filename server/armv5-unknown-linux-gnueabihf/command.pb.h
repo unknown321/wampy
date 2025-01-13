@@ -2024,6 +2024,7 @@ class Status final :
     kBitRateFieldNumber = 8,
     kSampleRateFieldNumber = 9,
     kBitDepthFieldNumber = 10,
+    kVolumeRawFieldNumber = 12,
   };
   // required string Codec = 1;
   bool has_codec() const;
@@ -2178,6 +2179,19 @@ class Status final :
   void _internal_set_bitdepth(int32_t value);
   public:
 
+  // required int32 VolumeRaw = 12;
+  bool has_volumeraw() const;
+  private:
+  bool _internal_has_volumeraw() const;
+  public:
+  void clear_volumeraw();
+  int32_t volumeraw() const;
+  void set_volumeraw(int32_t value);
+  private:
+  int32_t _internal_volumeraw() const;
+  void _internal_set_volumeraw(int32_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Command.Status)
  private:
   class _Internal;
@@ -2202,6 +2216,7 @@ class Status final :
     int32_t bitrate_;
     float samplerate_;
     int32_t bitdepth_;
+    int32_t volumeraw_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_command_2eproto;
@@ -3675,6 +3690,34 @@ inline void Status::set_allocated_playlist(::Command::Playlist* playlist) {
   }
   _impl_.playlist_ = playlist;
   // @@protoc_insertion_point(field_set_allocated:Command.Status.Playlist)
+}
+
+// required int32 VolumeRaw = 12;
+inline bool Status::_internal_has_volumeraw() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
+  return value;
+}
+inline bool Status::has_volumeraw() const {
+  return _internal_has_volumeraw();
+}
+inline void Status::clear_volumeraw() {
+  _impl_.volumeraw_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000800u;
+}
+inline int32_t Status::_internal_volumeraw() const {
+  return _impl_.volumeraw_;
+}
+inline int32_t Status::volumeraw() const {
+  // @@protoc_insertion_point(field_get:Command.Status.VolumeRaw)
+  return _internal_volumeraw();
+}
+inline void Status::_internal_set_volumeraw(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00000800u;
+  _impl_.volumeraw_ = value;
+}
+inline void Status::set_volumeraw(int32_t value) {
+  _internal_set_volumeraw(value);
+  // @@protoc_insertion_point(field_set:Command.Status.VolumeRaw)
 }
 
 #ifdef __GNUC__

@@ -1,0 +1,94 @@
+05858758014f7021d422c0a796fd2a01  ./eclipse2/tbl/ov_dsd_1280.tbl
+05858758014f7021d422c0a796fd2a01  ./nw-a40/ov_dsd_1290.tbl
+05858758014f7021d422c0a796fd2a01  ./nw-a50/ov_dsd_1291.tbl
+05858758014f7021d422c0a796fd2a01  ./nw-wm1a/ov_dsd_1280.tbl
+05858758014f7021d422c0a796fd2a01  ./walkmanOne/mod/gain/gain_n/ov_dsd_127x_cew.tbl
+05858758014f7021d422c0a796fd2a01  ./walkmanOne/mod/gain/gain_n/ov_dsd_127x.tbl
+05858758014f7021d422c0a796fd2a01  ./walkmanOne/system/audio_dac/ov_dsd_127x_cew.tbl
+05858758014f7021d422c0a796fd2a01  ./walkmanOne/system/audio_dac/ov_dsd_127x.tbl
+05858758014f7021d422c0a796fd2a01  ./walkmanOne/system/audio_dac/ov_dsd_1280.tbl
+05858758014f7021d422c0a796fd2a01  ./zx-300/ov_dsd_1290.tbl
+
+05bcde3d052582b0451817f7ebcd775b  ./nw-a40/tc_1290.tbl
+05bcde3d052582b0451817f7ebcd775b  ./nw-a50/tc_1291.tbl
+05bcde3d052582b0451817f7ebcd775b  ./zx-300/tc_1290.tbl
+
+12399a1deb62306b9135a7f70e20fb25  ./nw-a30/tc_127x.tbl
+
+142c8a330a7b7a4d90b2581d72ce3d49  ./eclipse2/tbl/ov_dsd_127x.tbl
+142c8a330a7b7a4d90b2581d72ce3d49  ./nw-a40/ov_dsd_1288.tbl
+142c8a330a7b7a4d90b2581d72ce3d49  ./nw-wm1a/ov_dsd_127x.tbl
+142c8a330a7b7a4d90b2581d72ce3d49  ./walkmanOne/mod/gain/gain_l/ov_dsd_127x_cew.tbl
+142c8a330a7b7a4d90b2581d72ce3d49  ./walkmanOne/mod/gain/gain_l/ov_dsd_127x.tbl
+142c8a330a7b7a4d90b2581d72ce3d49  ./zx-300/ov_dsd_1288.tbl
+
+22d850f26b625cf3be98fe1e9638d613  ./nw-a30/ov_dsd_127x_cew.tbl
+
+39a60adc7240be8deab95c39becf4419  ./eclipse2/tbl/ov_127x.tbl
+39a60adc7240be8deab95c39becf4419  ./nw-a40/ov_1288.tbl
+39a60adc7240be8deab95c39becf4419  ./nw-wm1a/ov_127x.tbl
+39a60adc7240be8deab95c39becf4419  ./walkmanOne/mod/gain/gain_l/ov_127x_cew.tbl
+39a60adc7240be8deab95c39becf4419  ./walkmanOne/mod/gain/gain_l/ov_127x.tbl
+39a60adc7240be8deab95c39becf4419  ./zx-300/ov_1288.tbl
+
+4ab93bdcd509c3cc4bc0157d92a3eaa0  ./nw-a40/ov_1290_cew.tbl
+4ab93bdcd509c3cc4bc0157d92a3eaa0  ./nw-a50/ov_1291_cew.tbl
+4ab93bdcd509c3cc4bc0157d92a3eaa0  ./zx-300/ov_1290_cew.tbl
+
+4e99bb279d17906084d8701a088ae5b4  ./nw-a30/ov_1280_cew.tbl
+
+5793c7c5ec554044e19cff2f3d02a9e0  ./nw-a30/ov_dsd_1280.tbl
+
+5bf930c0209cbe4b7ba871e74e6b2b30  ./eclipse2/tbl/ov_1280.tbl
+5bf930c0209cbe4b7ba871e74e6b2b30  ./nw-wm1a/ov_1280.tbl
+5bf930c0209cbe4b7ba871e74e6b2b30  ./walkmanOne/system/audio_dac/ov_1280.tbl
+
+741e6d9167445f7d1842dbe57ae8d8ce  ./eclipse2/tbl/ov_dsd_1280_cew.tbl
+741e6d9167445f7d1842dbe57ae8d8ce  ./nw-a40/ov_dsd_1290_cew.tbl
+741e6d9167445f7d1842dbe57ae8d8ce  ./nw-a50/ov_dsd_1291_cew.tbl
+741e6d9167445f7d1842dbe57ae8d8ce  ./nw-wm1a/ov_dsd_1280_cew.tbl
+741e6d9167445f7d1842dbe57ae8d8ce  ./walkmanOne/system/audio_dac/ov_dsd_1280_cew.tbl
+741e6d9167445f7d1842dbe57ae8d8ce  ./zx-300/ov_dsd_1290_cew.tbl
+
+84614ebdf1a8f85e17478f9de6863748  ./nw-a30/ov_dsd_1280_cew.tbl
+
+864e0fb3872b6ccbb8f16f64268c0c96  ./eclipse2/tbl/ov_127x_cew.tbl
+864e0fb3872b6ccbb8f16f64268c0c96  ./nw-a40/ov_1288_cew.tbl
+864e0fb3872b6ccbb8f16f64268c0c96  ./nw-wm1a/ov_127x_cew.tbl
+864e0fb3872b6ccbb8f16f64268c0c96  ./zx-300/ov_1288_cew.tbl
+
+86dc28f9379d74c532de21954fd0a4f1  ./eclipse2/tbl/ov_1280_cew.tbl
+86dc28f9379d74c532de21954fd0a4f1  ./nw-wm1a/ov_1280_cew.tbl
+86dc28f9379d74c532de21954fd0a4f1  ./walkmanOne/system/audio_dac/ov_1280_cew.tbl
+
+9a73d2e23ec8b891bdb48b0636cd2154  ./nw-a30/ov_127x_cew.tbl
+
+a3bee4f2a78d96a720b4ebe66d326894  ./nw-a30/tc_1280.tbl
+
+bb5ccae7b1a147b3507cb787cda522a6  ./nw-a40/ov_1290.tbl
+bb5ccae7b1a147b3507cb787cda522a6  ./nw-a50/ov_1291.tbl
+bb5ccae7b1a147b3507cb787cda522a6  ./walkmanOne/mod/gain/gain_n/ov_127x_cew.tbl
+bb5ccae7b1a147b3507cb787cda522a6  ./walkmanOne/mod/gain/gain_n/ov_127x.tbl
+bb5ccae7b1a147b3507cb787cda522a6  ./walkmanOne/system/audio_dac/ov_127x_cew.tbl
+bb5ccae7b1a147b3507cb787cda522a6  ./walkmanOne/system/audio_dac/ov_127x.tbl
+bb5ccae7b1a147b3507cb787cda522a6  ./zx-300/ov_1290.tbl
+
+c12175bb3e3ac48869661fbc4b048621  ./nw-a30/ov_127x.tbl
+
+d2a191ab97398bbcadb2b2f6c54d3574  ./nw-a30/ov_1280.tbl
+
+f678cb93161a8428ca41fb0d4dc104db  ./eclipse2/tbl/tc_127x.tbl
+f678cb93161a8428ca41fb0d4dc104db  ./eclipse2/tbl/tc_1280.tbl
+f678cb93161a8428ca41fb0d4dc104db  ./nw-a40/tc_1288.tbl
+f678cb93161a8428ca41fb0d4dc104db  ./nw-wm1a/tc_127x.tbl
+f678cb93161a8428ca41fb0d4dc104db  ./nw-wm1a/tc_1280.tbl
+f678cb93161a8428ca41fb0d4dc104db  ./walkmanOne/system/audio_dac/tc_127x.tbl
+f678cb93161a8428ca41fb0d4dc104db  ./walkmanOne/system/audio_dac/tc_1280.tbl
+f678cb93161a8428ca41fb0d4dc104db  ./zx-300/tc_1288.tbl
+
+f81fb03fc637922f565bcd01bd5041bb  ./nw-a30/ov_dsd_127x.tbl
+
+ff5fe61bd181f4e5655fd7a313797258  ./eclipse2/tbl/ov_dsd_127x_cew.tbl
+ff5fe61bd181f4e5655fd7a313797258  ./nw-a40/ov_dsd_1288_cew.tbl
+ff5fe61bd181f4e5655fd7a313797258  ./nw-wm1a/ov_dsd_127x_cew.tbl
+ff5fe61bd181f4e5655fd7a313797258  ./zx-300/ov_dsd_1288_cew.tbl

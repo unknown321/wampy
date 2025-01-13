@@ -4,7 +4,9 @@
 #include "Version.h"
 #include "cassette/cassette.h"
 #include "config.h"
+#include "dac/dac.h"
 #include "digital_clock/digital_clock.h"
+#include "imgui_curve.h"
 #include "skinVariant.h"
 #include "w1/w1.h"
 #include "winamp/winamp.h"
@@ -20,6 +22,8 @@ enum SettingsTab {
     TabLicense = 4,
     TabWebsite = 5,
     TabWalkmanOne = 6,
+    TabSoundSettings = 7,
+    TabCurveEditor = 8,
 };
 
 struct Skin {
@@ -33,12 +37,11 @@ struct Skin {
     int selectedSkinIdx{};       // winamp skin idx
     std::string loadStatusStr{}; // skin loading status in settings
     Connector *connector{};
-    bool loading{};
     bool needLoad{};
     bool *hold_toggled = nullptr;
     int *hold_value = nullptr;
     bool *power_pressed = nullptr;
-    int displaySettings{};
+    int displaySettings = 0;
     SettingsTab displayTab = SettingsTab::SkinOpts;
 
     ESkinVariant activeSkinVariant = EMPTY;
@@ -61,17 +64,82 @@ struct Skin {
     std::string licensePath = "../LICENSE";
     std::string license3rdPath = "../LICENSE_3rdparty";
     std::string qrPath = "../qr.bmp";
+    std::string qrDonatePath = "../qrDonate.bmp";
+    std::string soundSettingsPathSystemWampy = "../ss/system/";
+    std::string soundSettingsPathSystemHagoromo = "../ss/system/";
+    std::string soundSettingsPathUser = "../ss/user/";
 #else
     std::string licensePath = "/system/vendor/unknown321/usr/share/wampy/doc/LICENSE";
     std::string license3rdPath = "/system/vendor/unknown321/usr/share/wampy/doc/LICENSE_3rdparty";
     std::string qrPath = "/system/vendor/unknown321/usr/share/wampy/qr.bmp";
+    std::string qrDonatePath = "/system/vendor/unknown321/usr/share/wampy/qrDonate.bmp";
+    std::string soundSettingsPathUser = "/contents/wampy/sound_settings/";
+    std::string soundSettingsPathSystemWampy = "/system/vendor/unknown321/usr/share/wampy/sound_settings/";
+    std::string soundSettingsPathSystemHagoromo = "/system/usr/share/audio_dac/";
 #endif
     GLuint qrTexture{};
+    GLuint qrDonateTexture{};
     float qrSide{};
     bool isWalkmanOne{};
 
+    int zoomDirection = 0;
+    int zoomZero = 0;
+
+    std::string systemMark = "Ⓢ ";
+    std::string systemMarkHagoromo = "Ⓗ ";
+
+    std::vector<directoryEntry> *masterVolumeFiles;
+    int masterVolumeFileSelected = 0;
+    bool soundEffectOn = true;
+    int MasterVolumeTableType = MASTER_VOLUME_TABLE_SMASTER_SE_HG;
+    int MasterVolumeValueType = MASTER_VOLUME_VALUE_HPOUT;
+    master_volume masterVolume{};
+    ImVec2 masterVolumeValues[2][MASTER_VOLUME_TABLE_MAX + 1][MASTER_VOLUME_VALUE_MAX][MASTER_VOLUME_MAX + 1 + 1] = {
+        {{{{-FLT_MIN, -FLT_MIN}}}}};
+    ImVec2 masterVolumeValueBuffer[MASTER_VOLUME_MAX + 1 + 1] = {{0, 0}};
+    std::string statusStringMasterVolume;
+
+    std::vector<directoryEntry> *masterVolumeDSDFiles;
+    int masterVolumeDSDFileSelected;
+    master_volume_dsd masterVolumeDSD{};
+    ImVec2 masterVolumeDSDValues[MASTER_VOLUME_TABLE_MAX + 1][MASTER_VOLUME_MAX + 1] = {{{-FLT_MIN, -FLT_MIN}}};
+    ImVec2 masterVolumeDSDValueBuffer[MASTER_VOLUME_MAX + 1] = {{0, 0}};
+    int MasterVolumeDSDTableType = MASTER_VOLUME_TABLE_SMASTER_SE_DSD64_HG;
+    std::string statusStringMasterVolumeDSD;
+
+    std::vector<directoryEntry> *toneControlFiles;
+    int toneControlFileSelected;
+    tone_control toneControl{};
+    ImVec2 toneControlValues[TONE_CONTROL_TABLE_MAX + 1][CODEC_RAM_SIZE] = {{{-FLT_MIN, -FLT_MIN}}};
+    ImVec2 toneControlValueBuffer[CODEC_RAM_SIZE] = {{0, 0}};
+    int toneControlTableType = TONE_CONTROL_TABLE_SAMP_GENERAL_HP;
+    std::string statusStringToneControl;
+
+    std::string statusMasterVTFile;
+    std::string statusMasterVTDSDFile;
+    std::string statusToneControlFile;
+    std::string deviceProduct;
+    std::string deviceModelID;
+    std::string deviceRegionID;
+    std::string deviceRegionStr;
+    std::pair<std::string, std::string> deviceAudioInUse;
+    std::string minCpuFreq;
+    std::string curCpuFreq;
+    std::string freqStr;
+
+    float *curveEditorTarget = (float *)masterVolumeValues[int(soundEffectOn)][MasterVolumeTableType][MasterVolumeValueType];
+    float curveYLimit;
+    int curveElementCount = 121;
+
+    bool llusbdacLoaded;
+    std::string llusbdacStatus;
+
+    std::string bookmarkExportStatus;
+    std::string logCleanupStatus;
+    std::string logCleanupButtonLabel;
+    std::string refreshStatus;
+
     void ReloadFont() {
-        loading = true;
         std::string filepath{};
         switch (activeSkinVariant) {
         case CASSETTE:
@@ -93,7 +161,6 @@ struct Skin {
         config->Save();
 
         onlyFont = false;
-        loading = false;
     }
 
     void ReadQR() {
@@ -105,6 +172,14 @@ struct Skin {
         i.write(&blob);
         qrSide = (float)i.size().width();
         LoadTextureFromMagic((unsigned char *)blob.data(), &qrTexture, (int)i.size().width(), (int)i.size().height());
+
+        Magick::Image v;
+        v.read(qrDonatePath);
+        v.magick("RGBA");
+        v.depth(8);
+        Magick::Blob blob2;
+        v.write(&blob2);
+        LoadTextureFromMagic((unsigned char *)blob2.data(), &qrDonateTexture, (int)v.size().width(), (int)v.size().height());
     }
 
     void Load() {
@@ -118,8 +193,6 @@ struct Skin {
             DLOG("cannot load in frame, perhaps this https://github.com/ocornut/imgui/pull/3761 ?\n");
             return;
         }
-
-        loading = true;
 
         if (config->activeSkin == WINAMP) {
             DLOG("loading winamp\n");
@@ -211,6 +284,75 @@ struct Skin {
         needLoad = false;
     }
 
+    void MasterVolumeTableToImVec2() {
+        for (int index = 0; index < 2; index++) {
+            for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+                for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
+
+                    for (int valType = MASTER_VOLUME_VALUE_MIN; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
+                        auto val = masterVolume.GetValue(index, tableID, i, (MASTER_VOLUME_VALUE)valType);
+                        //                        if (val != 0) {
+                        //                            DLOG("Got %d -> %f, %f\n", val, (float)val, float(val));
+                        //                        }
+                        masterVolumeValues[index][tableID][valType][i].x = (float)i;
+                        masterVolumeValues[index][tableID][valType][i].y = (float)val;
+                    }
+                }
+            }
+        }
+    }
+
+    void MasterVolumeDSDTableToImVec2() {
+        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+            for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
+                auto val = masterVolumeDSD.v[tableID][i];
+                masterVolumeDSDValues[tableID][i] = ImVec2((float)i, (float)val);
+            }
+        }
+    }
+
+    void ToneControlToImVec2() {
+        for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX; tableID++) {
+            for (int i = 0; i < CODEC_RAM_SIZE; i++) {
+                auto val = toneControl.v[tableID][i];
+                toneControlValues[tableID][i] = ImVec2((float)i, (float)val);
+            }
+        }
+    }
+
+    void MasterVolumeImVec2ToTable() {
+        for (int index = 0; index < 2; index++) {
+            for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+                for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
+                    for (int valType = 1; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
+                        auto val = masterVolumeValues[index][tableID][valType][i].y;
+                        masterVolume.SetValue(index, tableID, i, (MASTER_VOLUME_VALUE)valType, uint(val));
+                    }
+                }
+            }
+        }
+    }
+
+    void MasterVolumeDSDImVec2ToTable() {
+        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+            for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
+                for (int valType = 1; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
+                    auto val = masterVolumeDSDValues[tableID][i];
+                    masterVolumeDSD.v[tableID][i] = (int)val.y;
+                }
+            }
+        }
+    }
+
+    void ToneControlImVec2ToTable() {
+        for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX; tableID++) {
+            for (int i = 0; i < CODEC_RAM_SIZE; i++) {
+                auto val = toneControlValues[tableID][i];
+                toneControl.v[tableID][i] = (int)val.y;
+            }
+        }
+    }
+
     static void ToggleDrawSettings(void *skin, void *) {
         auto s = (Skin *)skin;
         assert(s);
@@ -248,6 +390,11 @@ struct Skin {
         if (ImGui::Button("W1")) {
             loadStatusStr = "";
             displayTab = SettingsTab::TabWalkmanOne;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("♪♫")) {
+            loadStatusStr = "";
+            displayTab = SettingsTab::TabSoundSettings;
         }
 
         auto fontsSize = ImGui::CalcTextSize("Fonts").x + ImGui::GetStyle().FramePadding.x * 2.f;
@@ -327,52 +474,109 @@ struct Skin {
     }
 
     void Misc() {
-#ifndef DESKTOP
         ImGui::NewLine();
-        if (ImGui::Checkbox("Swap prev/next buttons", &config->misc.swapTrackButtons)) {
-            config->Save();
-        }
-
-        if (ImGui::Checkbox("Huge cover art", &config->features.bigCover)) {
-            config->Save();
-            connector->FeatureBigCover(config->features.bigCover);
-        }
-
-        if (isWalkmanOne == false) {
-            if (ImGui::Checkbox("Show time", &config->features.showTime)) {
+        if (ImGui::BeginTable("##misctable", 4, ImGuiTableFlags_None)) {
+            // #ifndef DESKTOP
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("Swap prev/next buttons", &config->misc.swapTrackButtons)) {
                 config->Save();
-                connector->FeatureShowTime(config->features.showTime);
             }
+            ImGui::TableNextColumn();
+            ImGui::Text("     "); // padding
+
+            ImGui::TableNextColumn();
+            if (ImGui::Button("Export bookmarks")) {
+                ExportBookmarks();
+                bookmarkExportStatus = "Exported";
+            }
+
+            ImGui::TableNextColumn();
+            ImGui::Text(bookmarkExportStatus.c_str());
+            ImGui::SameLine(20);
+            if (ImGui::InvisibleButton("##bookmarkStatus", ImVec2(246, 30))) {
+                bookmarkExportStatus = "";
+            }
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("Huge cover art", &config->features.bigCover)) {
+                config->Save();
+                connector->FeatureBigCover(config->features.bigCover);
+            }
+
+            ImGui::TableNextColumn();
+            ImGui::TableNextColumn();
+            if (ImGui::Button(logCleanupButtonLabel.c_str())) {
+                RemoveLogs();
+                logCleanupStatus = "Removed!";
+                GetLogsDirSize();
+            }
+
+            ImGui::TableNextColumn();
+            ImGui::Text(logCleanupStatus.c_str());
+            ImGui::SameLine(20);
+            if (ImGui::InvisibleButton("##logCleanupStatus", ImVec2(246, 30))) {
+                logCleanupStatus = "";
+            }
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            if (isWalkmanOne == false) {
+                if (ImGui::Checkbox("Show time", &config->features.showTime)) {
+                    config->Save();
+                    connector->FeatureShowTime(config->features.showTime);
+                }
+            }
+            ImGui::TableNextColumn();
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("Limit max volume", &config->features.limitVolume)) {
+                config->Save();
+                connector->FeatureSetMaxVolume(config->features.limitVolume);
+            }
+            ImGui::TableNextColumn();
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
+                config->Save();
+            }
+            ImGui::TableNextColumn();
+            // #endif
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("");
+
+            ImGui::TableNextColumn();
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("Debug", &config->debug)) {
+                winamp.debug = config->debug;
+                cassette.debug = config->debug;
+                config->Save();
+            }
+            ImGui::TableNextColumn();
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("Limit fps", &config->limitFPS)) {
+                config->Save();
+            }
+            ImGui::TableNextColumn();
+
+            ImGui::EndTable();
         }
 
-        if (ImGui::Checkbox("Limit max volume", &config->features.limitVolume)) {
-            config->Save();
-            connector->FeatureSetMaxVolume(config->features.limitVolume);
-        }
-
-        if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
-            config->Save();
-        }
-#endif
-
-        ImGui::NewLine();
-        if (ImGui::Checkbox("Debug", &config->debug)) {
-            winamp.debug = config->debug;
-            cassette.debug = config->debug;
-            config->Save();
-        }
-
-        if (ImGui::Checkbox("Limit fps", &config->limitFPS)) {
-            config->Save();
-        }
-
-        auto website = ImGui::CalcTextSize("Website");
+        auto website = ImGui::CalcTextSize("Website / Donate");
         auto verSize = ImGui::CalcTextSize(SOFTWARE_VERSION);
         auto licenseSize = ImGui::CalcTextSize("License");
         auto license3Size = ImGui::CalcTextSize("License 3rdparty");
         auto offset = 15.0f;
 
-#ifndef DESKTOP
+        // #ifndef DESKTOP
         if (config->debug) {
 
             ImGui::SetCursorPosY(480 - verSize.y - license3Size.y * 2 - ImGui::GetStyle().FramePadding.y * 3 - offset);
@@ -385,13 +589,13 @@ struct Skin {
                 createDump();
             }
         }
-#endif
+        // #endif
         ImGui::SetCursorPosY(480 - verSize.y - ImGui::GetStyle().FramePadding.y);
         printFPS();
 
         ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 3 - ImGui::GetStyle().FramePadding.y * 2 - offset * 2);
         ImGui::SetCursorPosX(800 - website.x - ImGui::GetStyle().FramePadding.x - offset);
-        if (ImGui::Button("Website")) {
+        if (ImGui::Button("Website / Donate")) {
             displayTab = SettingsTab::TabWebsite;
             loadStatusStr = "";
         }
@@ -416,9 +620,43 @@ struct Skin {
     }
 
     void Website() const {
-        ImGui::Text("https://github.com/unknown321/wampy");
         ImGui::NewLine();
-        ImGui::Image((void *)(intptr_t)qrTexture, ImVec2(qrSide, qrSide));
+        float columnWidth = 380.0f;
+        if (ImGui::BeginTable("##website", 2, ImGuiTableFlags_None)) {
+            ImGui::TableSetupColumn("Github", ImGuiTableColumnFlags_WidthFixed, 380);
+            ImGui::TableSetupColumn("Donate", ImGuiTableColumnFlags_WidthFixed, 380);
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth / 2 - ImGui::CalcTextSize("Github").x / 2);
+            ImGui::Text("Github");
+            ImGui::TableNextColumn();
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth / 2 - ImGui::CalcTextSize("Donate").x / 2);
+            ImGui::Text("Donate");
+
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth / 2 - qrSide / 2);
+            ImGui::Image((void *)(intptr_t)qrTexture, ImVec2(qrSide, qrSide));
+
+            ImGui::TableNextColumn();
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth / 2 - qrSide / 2);
+            ImGui::Image((void *)(intptr_t)qrDonateTexture, ImVec2(qrSide, qrSide));
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth / 2 - ImGui::CalcTextSize("github.com/unknown321/wampy").x / 2);
+            ImGui::Text("github.com/unknown321/wampy");
+
+            ImGui::TableNextColumn();
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth / 2 - ImGui::CalcTextSize("boosty.to/unknown321/donate").x / 2);
+            ImGui::Text("boosty.to/unknown321/donate");
+
+            ImGui::EndTable();
+        }
     }
 
     void WalkmanOne() {
@@ -873,6 +1111,15 @@ struct Skin {
         FontRegular->FontSize = SETTINGS_FONT_SIZE;
 
         ImGui::PushFont(FontRegular);
+
+        // no header for curve editor only
+        if (displayTab == SettingsTab::TabCurveEditor) {
+            CurveEditor();
+
+            ImGui::PopFont();
+            return;
+        }
+
         Header();
         switch (displayTab) {
         case SettingsTab::SkinOpts:
@@ -896,11 +1143,793 @@ struct Skin {
         case SettingsTab::TabWalkmanOne:
             WalkmanOneTab();
             break;
+        case SettingsTab::TabSoundSettings:
+            SoundSettings();
+            break;
         default:
             break;
         }
 
         ImGui::PopFont();
+    }
+
+    void PreprocessTableFilenames() {
+        std::vector<std::vector<directoryEntry> *> tables = {masterVolumeFiles, masterVolumeDSDFiles, toneControlFiles};
+        for (auto &table : tables) {
+            for (int i = 0; i < table->size(); i++) {
+                auto entry = table->at(i);
+                if (entry.fullPath.rfind(soundSettingsPathSystemWampy, 0) == 0) {
+                    table->at(i).name = systemMark + entry.name;
+                    continue;
+                }
+                if (entry.fullPath.rfind(soundSettingsPathSystemHagoromo, 0) == 0) {
+                    table->at(i).name = systemMarkHagoromo + entry.name;
+                    continue;
+                }
+            }
+        }
+    }
+
+    static void CopyTableEntry(TableLike *table, std::vector<directoryEntry> *fileList, int *selectedIndex, const std::string &outDir) {
+        mkpath(outDir.c_str(), 0755);
+
+        auto d = directoryEntry{};
+        d.name = basename(fileList->at(*selectedIndex).fullPath.c_str());
+        d.fullPath = outDir + d.name;
+        d.valid = true;
+
+        DLOG("copying to %s\n", d.fullPath.c_str());
+
+        table->ToFile(d.fullPath);
+
+        bool exists{};
+        for (int i = 0; i < fileList->size(); i++) {
+            if (fileList->at(i).fullPath == d.fullPath) {
+                exists = true;
+                *selectedIndex = i;
+                break;
+            }
+        }
+
+        if (!exists) {
+            fileList->push_back(d);
+            *selectedIndex = (int)fileList->size() - 1;
+        }
+    }
+
+    void TabMasterVolume() {
+        if (ImGui::BeginTabItem(Dac::TableTypeToString.at(TABLE_ID_MASTER_VOLUME).c_str())) {
+            curveEditorTarget = (float *)masterVolumeValues[int(soundEffectOn)][MasterVolumeTableType][MasterVolumeValueType];
+            curveYLimit = (1 << 8) - 1; // 255
+            curveElementCount = MASTER_VOLUME_MAX + 1;
+
+            if (ImGui::BeginTable("##mvtable", 3, ImGuiTableFlags_None)) {
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_None);
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, 384);
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_None);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("File:");
+
+                ImGui::TableNextColumn();
+                ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+                ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+                ImGui::PushItemWidth(-FLT_MIN);
+                if (ImGui::BeginCombo(
+                        "##masterVolumeFileCombo",
+                        masterVolumeFiles->at(masterVolumeFileSelected).name.c_str(),
+                        ImGuiComboFlags_HeightRegular
+                    )) {
+                    for (int idx = 0; idx < masterVolumeFiles->size(); idx++) {
+                        auto entry = masterVolumeFiles->at(idx);
+                        if (ImGui::Selectable(entry.name.c_str(), false)) {
+                            masterVolumeFileSelected = idx;
+                            DLOG("selected file %s\n", entry.name.c_str());
+                            masterVolume.Reset();
+                            memset(&masterVolumeValues, 0, sizeof(masterVolumeValues));
+                            if (masterVolume.FromFile(entry.fullPath) != 0) {
+                                DLOG("failed to load master volume table file %s\n", entry.fullPath.c_str());
+                                statusStringMasterVolume = "Failed";
+                            } else {
+                                MasterVolumeTableToImVec2();
+                                statusStringMasterVolume = "Loaded";
+                            }
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                ImGui::PopItemWidth();
+                ImGui::PopStyleVar(2);
+
+                ImGui::TableNextColumn();
+
+                if (!statusStringMasterVolume.empty()) {
+                    ImGui::Text(statusStringMasterVolume.c_str());
+                    ImGui::SameLine(20);
+                    if (ImGui::InvisibleButton("##statusmastervolume", ImVec2(246, 30))) {
+                        statusStringMasterVolume = "";
+                    }
+                }
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Table type:");
+                ImGui::TableNextColumn();
+                ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+                ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+                const char *preview;
+                preview = Dac::MasterVolumeTableTypeToString.at(MasterVolumeTableType).c_str();
+                ImGui::PushItemWidth(-FLT_MIN);
+                if (ImGui::BeginCombo("##masterVolumeTypeCombo", preview, ImGuiComboFlags_HeightRegular)) {
+                    for (const auto &entry : Dac::MasterVolumeTableTypeToString) {
+                        if (ImGui::Selectable(entry.second.c_str(), false)) {
+                            MasterVolumeTableType = entry.first;
+                            DLOG("selected type %s\n", entry.second.c_str());
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                ImGui::PopItemWidth();
+                ImGui::PopStyleVar(2);
+                ImGui::TableNextColumn();
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Value type:");
+                ImGui::TableNextColumn();
+
+                ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+                ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+                ImGui::PushItemWidth(-FLT_MIN);
+                if (ImGui::BeginCombo(
+                        "##masterVolumeValueTypeCombo",
+                        Dac::MasterVolumeValueTypeToString.at(MasterVolumeValueType).c_str(),
+                        ImGuiComboFlags_HeightRegular
+                    )) {
+                    for (const auto &entry : Dac::MasterVolumeValueTypeToString) {
+                        if (ImGui::Selectable(entry.second.c_str(), false)) {
+                            MasterVolumeValueType = entry.first;
+                            DLOG("selected value type %s (%d)\n", entry.second.c_str(), entry.first);
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                ImGui::PopItemWidth();
+                ImGui::PopStyleVar(2);
+
+                ImGui::TableNextColumn();
+                ImGui::Checkbox("Sound effect", &soundEffectOn);
+            }
+            ImGui::EndTable();
+
+            if (ImGui::BeginTable("##mvtcontent", 2, ImGuiTableFlags_None)) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+
+                if (masterVolumeValues[0][0][0][0].x == -FLT_MIN) {
+                    ImGui::NewLine();
+                    if (ImGui::Button("Load", ImVec2(512, 150))) {
+                        if (masterVolume.FromFile(masterVolumeFiles->at(masterVolumeFileSelected).fullPath) != 0) {
+                            DLOG(
+                                "failed to load master volume table file %s\n",
+                                masterVolumeFiles->at(masterVolumeFileSelected).fullPath.c_str()
+                            );
+                            statusStringMasterVolume = "Failed";
+                        } else {
+                            MasterVolumeTableToImVec2();
+                            statusStringMasterVolume = "Loaded";
+                        }
+                    }
+                } else {
+                    CurveEditorSmall(&connector->status.VolumeRaw, ImVec2(512, 270));
+
+                    ImGui::TableNextColumn();
+
+                    // not efficient at all
+                    if (masterVolumeFiles->at(masterVolumeFileSelected).name.rfind(systemMark, 0) == 0) {
+                        if (ImGui::Button("Copy and edit", ImVec2(246, 60))) {
+                            auto outDir = soundSettingsPathUser + "master_volume/";
+                            CopyTableEntry(&masterVolume, masterVolumeFiles, &masterVolumeFileSelected, outDir);
+                            displayTab = TabCurveEditor;
+                        }
+                    } else {
+                        if (ImGui::Button("Edit", ImVec2(246, 60))) {
+                            displayTab = TabCurveEditor;
+                        }
+                    }
+
+                    if (masterVolumeFiles->at(masterVolumeFileSelected).name.rfind(systemMark, 0) == 0) {
+                        ImGui::BeginDisabled();
+                    }
+
+                    if (ImGui::Button("Save", ImVec2(246, 60))) {
+                        auto out = masterVolumeFiles->at(masterVolumeFileSelected).fullPath;
+                        DLOG("Saving to %s\n", out.c_str());
+                        MasterVolumeImVec2ToTable();
+                        if (masterVolume.ToFile(out) == 0) {
+                            statusStringMasterVolume = "Saved";
+                        } else {
+                            statusStringMasterVolume = "Failed";
+                        }
+                    }
+
+                    if (masterVolumeFiles->at(masterVolumeFileSelected).name.rfind(systemMark, 0) == 0) {
+                        ImGui::EndDisabled();
+                    }
+
+                    if (ImGui::Button("Apply", ImVec2(246, 60))) {
+                        DLOG("Applying\n");
+                        MasterVolumeImVec2ToTable();
+                        if (masterVolume.Apply(Dac::volumeTableOutPath) == 0) {
+                            statusStringMasterVolume = "Applied";
+                        } else {
+                            statusStringMasterVolume = "Failed";
+                        }
+                    }
+
+                    if (ImGui::Button("Copy val", ImVec2(121, 60))) {
+                        memcpy(
+                            masterVolumeValueBuffer,
+                            masterVolumeValues[(int)soundEffectOn][MasterVolumeTableType][MasterVolumeValueType],
+                            sizeof(masterVolumeValueBuffer)
+                        );
+                        statusStringMasterVolume = "Copied";
+                    }
+                    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Paste val", ImVec2(121, 60))) {
+                        memcpy(
+                            masterVolumeValues[(int)soundEffectOn][MasterVolumeTableType][MasterVolumeValueType],
+                            masterVolumeValueBuffer,
+                            sizeof(masterVolumeValueBuffer)
+                        );
+                        statusStringMasterVolume = "Pasted";
+                    }
+                    ImGui::PopStyleVar();
+                }
+                ImGui::EndTable();
+            }
+            ImGui::EndTabItem();
+        }
+    }
+
+    void TabMasterDSDVolume() {
+        if (ImGui::BeginTabItem(Dac::TableTypeToString.at(TABLE_ID_MASTER_VOLUME_DSD).c_str())) {
+            curveEditorTarget = (float *)masterVolumeDSDValues[MasterVolumeDSDTableType];
+            curveYLimit = (1 << 15) - 1; // 32767
+            curveElementCount = MASTER_VOLUME_MAX + 1;
+
+            if (ImGui::BeginTable("##mvDSDtable", 3, ImGuiTableFlags_None)) {
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_None);
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, 384);
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_None);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("File:");
+
+                ImGui::TableNextColumn();
+                ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+                ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+                ImGui::PushItemWidth(-FLT_MIN);
+                if (ImGui::BeginCombo(
+                        "##masterVolumeDSDFileCombo",
+                        masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).name.c_str(),
+                        ImGuiComboFlags_HeightRegular
+                    )) {
+                    for (int idx = 0; idx < masterVolumeDSDFiles->size(); idx++) {
+                        auto entry = masterVolumeDSDFiles->at(idx);
+                        if (ImGui::Selectable(entry.name.c_str(), false)) {
+                            DLOG("selected dsd file %s\n", entry.fullPath.c_str());
+                            masterVolumeDSDFileSelected = idx;
+                            masterVolumeDSD.Reset();
+                            memset(&masterVolumeDSDValues, 0, sizeof(masterVolumeDSDValues));
+                            if (masterVolumeDSD.FromFile(entry.fullPath) != 0) {
+                                DLOG("failed to load master volume dsd table file %s\n", entry.fullPath.c_str());
+                                statusStringMasterVolumeDSD = "Failed";
+                            } else {
+                                MasterVolumeDSDTableToImVec2();
+                                statusStringMasterVolumeDSD = "Loaded";
+                            }
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                ImGui::PopItemWidth();
+                ImGui::PopStyleVar(2);
+
+                ImGui::TableNextColumn();
+                if (!statusStringMasterVolumeDSD.empty()) {
+                    ImGui::Text(statusStringMasterVolumeDSD.c_str());
+                    ImGui::SameLine(20);
+                    if (ImGui::InvisibleButton("##statusmastervolumeDSD", ImVec2(246, 30))) {
+                        statusStringMasterVolumeDSD = "";
+                    }
+                }
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Table type:");
+
+                ImGui::TableNextColumn();
+                ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+                ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+                ImGui::PushItemWidth(-FLT_MIN);
+                const char *preview;
+                preview = Dac::MasterVolumeTableTypeToString.at(MasterVolumeDSDTableType).c_str();
+                if (ImGui::BeginCombo("##masterVolumeDSDTypeCombo", preview, ImGuiComboFlags_HeightRegular)) {
+                    for (const auto &entry : Dac::MasterVolumeTableTypeToString) {
+                        if (ImGui::Selectable(entry.second.c_str(), false)) {
+                            MasterVolumeDSDTableType = entry.first;
+                            DLOG("selected dsd type %s\n", entry.second.c_str());
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                ImGui::PopItemWidth();
+                ImGui::PopStyleVar(2);
+                ImGui::TableNextColumn();
+
+                ImGui::EndTable();
+            }
+
+            if (ImGui::BeginTable("##mvtDSDcontent", 2, ImGuiTableFlags_None)) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+
+                if (masterVolumeDSDValues[0][0].x == -FLT_MIN) {
+                    ImGui::NewLine();
+                    if (ImGui::Button("Load", ImVec2(512, 150))) {
+                        if (masterVolumeDSD.FromFile(masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).fullPath) != 0) {
+                            DLOG(
+                                "failed to load master volume DSD table file %s\n",
+                                masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).fullPath.c_str()
+                            );
+                            statusStringMasterVolumeDSD = "Failed";
+                        } else {
+                            MasterVolumeDSDTableToImVec2();
+                            statusStringMasterVolumeDSD = "Loaded";
+                        }
+                    }
+                } else {
+                    CurveEditorSmall(&connector->status.VolumeRaw, ImVec2(512, 305));
+
+                    ImGui::TableNextColumn();
+
+                    // not efficient at all
+                    if (masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
+                        if (ImGui::Button("Copy and edit", ImVec2(246, 60))) {
+                            auto outDir = soundSettingsPathUser + "master_volume_dsd/";
+                            CopyTableEntry(&masterVolumeDSD, masterVolumeDSDFiles, &masterVolumeDSDFileSelected, outDir);
+                            displayTab = TabCurveEditor;
+                        }
+                    } else {
+                        if (ImGui::Button("Edit", ImVec2(246, 60))) {
+                            displayTab = TabCurveEditor;
+                        }
+                    }
+
+                    if (masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
+                        ImGui::BeginDisabled();
+                    }
+
+                    if (ImGui::Button("Save", ImVec2(246, 60))) {
+                        auto out = masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).fullPath;
+                        DLOG("Saving to %s\n", out.c_str());
+                        MasterVolumeDSDImVec2ToTable();
+                        if (masterVolumeDSD.ToFile(out) == 0) {
+                            statusStringMasterVolumeDSD = "Saved";
+                        } else {
+                            statusStringMasterVolumeDSD = "Failed";
+                        }
+                    }
+
+                    if (masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
+                        ImGui::EndDisabled();
+                    }
+
+                    if (ImGui::Button("Apply", ImVec2(246, 60))) {
+                        DLOG("Applying to %s\n", Dac::volumeTableDSDOutPath.c_str());
+                        MasterVolumeDSDImVec2ToTable();
+                        if (masterVolumeDSD.Apply(Dac::volumeTableDSDOutPath) == 0) {
+                            statusStringMasterVolumeDSD = "Applied";
+                        } else {
+                            statusStringMasterVolumeDSD = "Failed";
+                        }
+                    }
+
+                    if (ImGui::Button("Copy val", ImVec2(121, 60))) {
+                        memcpy(
+                            masterVolumeDSDValueBuffer, masterVolumeDSDValues[MasterVolumeDSDTableType], sizeof(masterVolumeDSDValueBuffer)
+                        );
+                        statusStringMasterVolumeDSD = "Copied";
+                    }
+                    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Paste val", ImVec2(121, 60))) {
+                        memcpy(
+                            masterVolumeDSDValues[MasterVolumeDSDTableType], masterVolumeDSDValueBuffer, sizeof(masterVolumeDSDValueBuffer)
+                        );
+                        statusStringMasterVolumeDSD = "Pasted";
+                    }
+                    ImGui::PopStyleVar();
+                }
+
+                ImGui::EndTable();
+            }
+
+            ImGui::EndTabItem();
+        }
+    }
+
+    void TabToneControl() {
+        if (ImGui::BeginTabItem(Dac::TableTypeToString.at(TABLE_ID_TONE_CONTROL).c_str())) {
+            curveEditorTarget = (float *)toneControlValues[toneControlTableType];
+            curveYLimit = (1 << 8) - 1; // 255
+            curveElementCount = CODEC_RAM_SIZE;
+
+            if (ImGui::BeginTable("##mvtable", 3, ImGuiTableFlags_None)) {
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_None);
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, 384);
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_None);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("File:");
+
+                ImGui::TableNextColumn();
+                ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+                ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+                ImGui::PushItemWidth(-FLT_MIN);
+                if (ImGui::BeginCombo(
+                        "##toneControlFileCombo", toneControlFiles->at(toneControlFileSelected).name.c_str(), ImGuiComboFlags_HeightRegular
+                    )) {
+                    for (int idx = 0; idx < toneControlFiles->size(); idx++) {
+                        auto entry = toneControlFiles->at(idx);
+                        if (ImGui::Selectable(entry.name.c_str(), false)) {
+                            DLOG("selected tone control file %s\n", entry.fullPath.c_str());
+                            toneControlFileSelected = idx;
+                            toneControl.Reset();
+                            memset(&toneControlValues, 0, sizeof(toneControlValues));
+                            if (toneControl.FromFile(entry.fullPath) != 0) {
+                                DLOG("failed to load tone control table file %s\n", entry.fullPath.c_str());
+                                statusStringToneControl = "Failed";
+                            } else {
+                                ToneControlToImVec2();
+                                statusStringToneControl = "Loaded";
+                            }
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+
+                ImGui::PopItemWidth();
+                ImGui::PopStyleVar(2);
+
+                ImGui::TableNextColumn();
+                if (!statusStringToneControl.empty()) {
+                    ImGui::Text(statusStringToneControl.c_str());
+                    ImGui::SameLine(20);
+                    if (ImGui::InvisibleButton("##statusToneControl", ImVec2(246, 30))) {
+                        statusStringToneControl = "";
+                    }
+                }
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Table type:");
+
+                ImGui::TableNextColumn();
+                ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+                ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+                const char *preview;
+                preview = Dac::ToneControlTableTypeToString.at(toneControlTableType).c_str();
+                ImGui::PushItemWidth(-FLT_MIN);
+                if (ImGui::BeginCombo("##toneControlTypeCombo", preview, ImGuiComboFlags_HeightRegular)) {
+                    for (const auto &entry : Dac::ToneControlTableTypeToString) {
+                        if (ImGui::Selectable(entry.second.c_str(), false)) {
+                            toneControlTableType = entry.first;
+                            DLOG("selected tone control type %s\n", entry.second.c_str());
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                ImGui::PopItemWidth();
+                ImGui::PopStyleVar(2);
+
+                ImGui::EndTable();
+            }
+
+            if (ImGui::BeginTable("##ttcontent", 2, ImGuiTableFlags_None)) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+
+                if (toneControlValues[0][0].x == -FLT_MIN) {
+                    ImGui::NewLine();
+                    if (ImGui::Button("Load", ImVec2(512, 150))) {
+                        if (toneControl.FromFile(toneControlFiles->at(toneControlFileSelected).fullPath) != 0) {
+                            DLOG(
+                                "failed to load tone control table file %s\n",
+                                toneControlFiles->at(toneControlFileSelected).fullPath.c_str()
+                            );
+                            statusStringToneControl = "Failed";
+                        } else {
+                            ToneControlToImVec2();
+                            statusStringToneControl = "Loaded";
+                        }
+                    }
+                } else {
+                    CurveEditorSmall(nullptr, ImVec2(512, 305));
+
+                    ImGui::TableNextColumn();
+
+                    // not efficient at all
+                    if (toneControlFiles->at(toneControlFileSelected).name.rfind(systemMark, 0) == 0) {
+                        if (ImGui::Button("Copy and edit", ImVec2(246, 60))) {
+                            auto outDir = soundSettingsPathUser + "tone_control/";
+                            CopyTableEntry(&toneControl, toneControlFiles, &toneControlFileSelected, outDir);
+                            displayTab = TabCurveEditor;
+                        }
+                    } else {
+                        if (ImGui::Button("Edit", ImVec2(246, 60))) {
+                            displayTab = TabCurveEditor;
+                        }
+                    }
+
+                    if (toneControlFiles->at(toneControlFileSelected).name.rfind(systemMark, 0) == 0) {
+                        ImGui::BeginDisabled();
+                    }
+
+                    if (ImGui::Button("Save", ImVec2(246, 60))) {
+                        auto out = toneControlFiles->at(toneControlFileSelected).fullPath;
+                        DLOG("Saving to %s\n", out.c_str());
+                        ToneControlImVec2ToTable();
+                        if (toneControl.ToFile(out) == 0) {
+                            statusStringToneControl = "Saved";
+                        } else {
+                            statusStringToneControl = "Failed";
+                        }
+                    }
+
+                    if (toneControlFiles->at(toneControlFileSelected).name.rfind(systemMark, 0) == 0) {
+                        ImGui::EndDisabled();
+                    }
+
+                    if (ImGui::Button("Apply", ImVec2(246, 60))) {
+                        DLOG("Applying to %s\n", Dac::toneControlOutPath.c_str());
+                        ToneControlImVec2ToTable();
+                        if (toneControl.Apply(Dac::toneControlOutPath) == 0) {
+                            statusStringToneControl = "Applied";
+                        } else {
+                            statusStringToneControl = "Failed";
+                        }
+                    }
+
+                    if (ImGui::Button("Copy val", ImVec2(121, 60))) {
+                        memcpy(toneControlValueBuffer, toneControlValues[toneControlTableType], sizeof(toneControlValueBuffer));
+                        statusStringToneControl = "Copied";
+                    }
+                    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Paste val", ImVec2(121, 60))) {
+                        memcpy(toneControlValues[toneControlTableType], toneControlValueBuffer, sizeof(toneControlValueBuffer));
+                        statusStringToneControl = "Pasted";
+                    }
+                    ImGui::PopStyleVar();
+                }
+
+                ImGui::EndTable();
+            }
+            ImGui::EndTabItem();
+        }
+    }
+
+    void TabSoundStatus() {
+        if (ImGui::BeginTabItem("Status")) {
+            ImGui::NewLine();
+            if (ImGui::BeginTable("##soundstatustable", 2, ImGuiTableFlags_None)) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                if (ImGui::Button("Refresh", ImVec2(240, 60))) {
+                    statusMasterVTFile = Dac::getStatus(masterVolumeFiles, Dac::volumeTableOutPath);
+                    statusMasterVTDSDFile = Dac::getStatus(masterVolumeDSDFiles, Dac::volumeTableDSDOutPath);
+                    statusToneControlFile = Dac::getStatus(toneControlFiles, Dac::toneControlOutPath);
+                    deviceProduct = GetProduct();
+                    deviceModelID = GetModelID();
+                    deviceRegionID = GetRegionID();
+                    deviceRegionStr = GetRegionIDStr();
+                    deviceAudioInUse = AudioDeviceInUse();
+                    minCpuFreq = ReadFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq");
+                    rstrip(&minCpuFreq, '\n');
+                    curCpuFreq = ReadFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq");
+                    rstrip(&curCpuFreq, '\n');
+                    freqStr = minCpuFreq + " (" + curCpuFreq + ") Hz";
+
+                    refreshStatus = "Refreshed";
+                }
+
+                ImGui::TableNextColumn();
+
+                ImGui::Text(refreshStatus.c_str());
+                ImGui::SameLine(20);
+                if (ImGui::InvisibleButton("##refreshStatus", ImVec2(246, 30))) {
+                    refreshStatus = "";
+                }
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Model ID");
+                ImGui::TableNextColumn();
+                ImGui::Text(deviceModelID.c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Region ID");
+                ImGui::TableNextColumn();
+                if (!deviceRegionID.empty() && !deviceRegionStr.empty()) {
+                    ImGui::Text("%s (%s)", deviceRegionID.c_str(), deviceRegionStr.c_str());
+                }
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Device product");
+                ImGui::TableNextColumn();
+                ImGui::Text(deviceProduct.c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Master volume table");
+                ImGui::TableNextColumn();
+                ImGui::Text(statusMasterVTFile.c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Master volume table (DSD)");
+                ImGui::TableNextColumn();
+                ImGui::Text(statusMasterVTDSDFile.c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Tone control");
+                ImGui::TableNextColumn();
+                ImGui::Text(statusToneControlFile.c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Audio card");
+                ImGui::TableNextColumn();
+                ImGui::Text(deviceAudioInUse.first.c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Audio device");
+                ImGui::TableNextColumn();
+                ImGui::Text(deviceAudioInUse.second.c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("CPU frequency (min/cur)");
+                ImGui::TableNextColumn();
+                ImGui::Text(freqStr.c_str(), ImVec2(200, 100));
+
+                ImGui::EndTable();
+            }
+
+            ImGui::EndTabItem();
+        }
+    }
+
+    void TabLlusbdac() {
+        if (ImGui::BeginTabItem("llusbdac")) {
+            ImGui::Text(llusbdacStatus.c_str());
+
+            auto label = llusbdacLoaded ? "Disable" : "Enable";
+            if (ImGui::Button(label, ImVec2(756, 350))) {
+                if (llusbdacLoaded) {
+                    llusbdacLoaded = !DisableLLUSBDAC();
+                    llusbdacStatus = !llusbdacLoaded ? "Unloaded" : "Failure";
+                } else {
+                    llusbdacLoaded = EnableLLUSBDAC();
+                    llusbdacStatus = llusbdacLoaded ? "Loaded" : "Failure";
+                }
+            }
+
+            ImGui::EndTabItem();
+        }
+    }
+
+    void SoundSettings() {
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
+        ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+        if (ImGui::BeginTabBar("SoundSettingsTabBar", tab_bar_flags)) {
+            TabMasterVolume();
+            TabMasterDSDVolume();
+            TabToneControl();
+            TabSoundStatus();
+            TabLlusbdac();
+            ImGui::EndTabBar();
+        }
+    }
+
+    void CurveEditorSmall(const int *volume, ImVec2 size) {
+        int newCount;
+        int selected;
+        int hovered;
+
+        if (size.x == 0 || size.y == 0) {
+            size = ImVec2(512, 270);
+        }
+
+        if (ImGui::CurveEditor(
+                "##curvaSmall",
+                curveEditorTarget,
+                curveElementCount,
+                curveElementCount,
+                size,
+                (int)ImGui::CurveEditorFlags::NO_TANGENTS | (int)ImGui::CurveEditorFlags::SHOW_GRID | (int)ImGui::CurveEditorFlags::RESET,
+                &newCount,
+                &selected,
+                &hovered,
+                &zoomZero,
+                0,
+                false,
+                curveYLimit,
+                volume
+            )) {
+        }
+    }
+
+    void CurveEditor() {
+        int newCount;
+        int selected;
+        int hovered;
+
+        if (ImGui::Button("Zoom in")) {
+            zoomDirection = 1;
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Zoom out")) {
+            zoomDirection = -1;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Reset zoom")) {
+            zoomDirection = 2;
+        }
+
+        float offset = 15.0f;
+        auto closeSize = ImGui::CalcTextSize("Back").x + ImGui::GetStyle().FramePadding.x * 2.f;
+        auto resetSize = ImGui::CalcTextSize("Reset").x + ImGui::GetStyle().FramePadding.x * 2.f;
+        ImGui::SameLine(800.0f - closeSize - offset);
+        if (ImGui::Button("Back")) {
+            displayTab = TabSoundSettings;
+        }
+
+        ImGui::SameLine(800.0f - resetSize - closeSize - offset * 2);
+        if (ImGui::Button("Reset")) {
+            MasterVolumeTableToImVec2();
+        }
+
+        if (ImGui::CurveEditor(
+                "##curva",
+                curveEditorTarget,
+                curveElementCount,
+                curveElementCount,
+                ImVec2(780, 430),
+                (int)ImGui::CurveEditorFlags::NO_TANGENTS | (int)ImGui::CurveEditorFlags::SHOW_GRID,
+                &newCount,
+                &selected,
+                &hovered,
+                &zoomDirection,
+                10,
+                true,
+                curveYLimit
+            )) {
+        }
+
+        zoomDirection = 0;
     }
 
     void Draw() {
@@ -932,7 +1961,6 @@ struct Skin {
     }
 
     void KeyHandler() const {
-
         if (*hold_toggled) {
             *hold_toggled = false;
 
@@ -986,6 +2014,26 @@ struct Skin {
             //            connector->TestCommand();
             return;
         }
+    }
+
+    void GetLogsDirSize() {
+        std::vector<directoryEntry> files{};
+        listdir("/contents/wampy/log/", &files, "*");
+
+        int res = 0;
+        struct stat sb {};
+        for (const auto &e : files) {
+            if (stat(e.fullPath.c_str(), &sb) != 0) {
+                DLOG("cannot stat %s\n", e.fullPath.c_str());
+                continue;
+            }
+
+            res += (int)sb.st_size;
+        }
+
+        res = res / 1024 / 1024;
+
+        logCleanupButtonLabel = "Remove wampy logs (" + std::to_string(res) + " MB)";
     }
 };
 

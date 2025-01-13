@@ -38,7 +38,8 @@ struct Status {
     int Duration{};
     int Elapsed{}; // seconds
     int Bitrate{};
-    int Volume{}; // percentage
+    int Volume{};    // percentage
+    int VolumeRaw{}; // as is
     int Shuffle{};
     int Repeat{};
     int songID{};

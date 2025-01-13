@@ -54,7 +54,7 @@ push:
 	$(ADB) push base-2.91.wsz $(VENDOR)/usr/share/skins/winamp/base-2.91.wsz
 	$(MAKE) -C server push
 
-nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
+nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 	$(MAKE) -C nw-installer prepare
 	cp $(INSTALL)/bin/$(PRODUCT) installer/
 	bash -c "cp $(INSTALL)/lib/libMagick{++,Core,Wand}-7.Q8HDRI.so installer/"
@@ -70,9 +70,13 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 	cp cassette/cassette.tar.gz installer/
 	$(MAKE) -C digital_clock
 	cp digital_clock/digital_clock.tar.gz installer/
+	$(MAKE) -C tunings
+	cp tunings/tunings.tar.gz installer/
+	cp libs/llusbdac/llusbdac/llusbdac.ko installer/
 	cp LICENSE installer/
 	cp LICENSE_3rdparty installer/
 	cp qr.bmp installer/
+	cp qrDonate.bmp installer/
 	echo -n "$(PRODUCT), version " > installer/product_info
 	grep VERSION src/Version.h | cut -f 3,4,5 -d " " | sed 's/"//g' >> installer/product_info
 	tar -C installer -cf nw-installer/installer/userdata.tar.gz \
@@ -87,10 +91,13 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp
 		base-2.91.wsz \
 		cassette.tar.gz \
 		digital_clock.tar.gz \
+		tunings.tar.gz \
+		llusbdac.ko \
 		upgtool-linux-arm5 \
 		LICENSE \
 		LICENSE_3rdparty \
 		qr.bmp \
+		qrDonate.bmp \
 		product_info \
 		wampy || rm -f nw-installer/installer/userdata.tar.gz
 	cat LICENSE LICENSE_3rdparty > nw-installer/installer/windows/LICENSE.txt.user
@@ -170,10 +177,22 @@ LICENSE_3rdparty:
 	@$(ECHO) -e "\n***\nDear ImGui:\n" >> $@
 	@cat libs/imgui/LICENSE.txt >> $@
 
+	@$(ECHO) -e "\n***\nLumixEngine:\n" >> $@
+	@cat libs/LumixEngine_LICENSE.txt >> $@
+
+	@$(ECHO) -e "\n***\nLLUSBDAC:\n" >> $@
+	@cat libs/llusbdac/LICENSE >> $@
+
 # https://github.com/fukuchi/libqrencode
 qr.bmp:
 	@qrencode -o qr.png -m 1 -s 7 https://github.com/unknown321/$(PRODUCT)
 	@convert qr.png -type palette qr.bmp
 	@rm qr.png
+
+qrDonate.bmp:
+	@qrencode -o qrDonate.png -m 1 -s 7 https://boosty.to/unknown321/donate
+	@convert qrDonate.png -type palette qrDonate.bmp
+	@rm qrDonate.png
+
 
 .PHONY: build build-arm docker docker_digital_clock push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server userdata

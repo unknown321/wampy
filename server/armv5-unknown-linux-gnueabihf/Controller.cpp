@@ -322,6 +322,7 @@ void Controller::GetStatus(Command::Command *c) {
     s->set_elapsed(provider.curTime);
     s->set_hires(provider.hires);
     s->set_volume(provider.volume * 100 / maxVolume);
+    s->set_volumeraw(provider.volume);
 
     c->set_code(Command::OK);
 }

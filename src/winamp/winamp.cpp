@@ -355,15 +355,17 @@ namespace Winamp {
             }
         }
 
-        DLOG("found %zu numbers out of expected %d\n", pointList.size(), numPoints * 2);
-        if (pointList.size() % 2 != 0) {
-            DLOG("uneven point count, ignoring\n");
-            pointList.clear();
-        }
+        if (numPoints != 0) {
+            DLOG("found %zu numbers out of expected %d\n", pointList.size(), numPoints * 2);
+            if (pointList.size() % 2 != 0) {
+                DLOG("uneven point count, ignoring\n");
+                pointList.clear();
+            }
 
-        if (pointList.size() != (numPoints * 2)) {
-            DLOG("NumPoints and points found do not match, ignoring\n");
-            pointList.clear();
+            if (pointList.size() != (numPoints * 2)) {
+                DLOG("NumPoints and points found do not match, ignoring\n");
+                pointList.clear();
+            }
         }
     }
 
@@ -1503,6 +1505,9 @@ namespace Winamp {
         gr.clear();
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
         range.AddRanges(rangesPunctuation);
+        range.AddChar(ImWchar(0x266a));
+        range.AddChar(ImWchar(0x266b));
+        range.AddChar(ImWchar(0x24c8));
 
         if (fontRanges) {
             if (fontRanges->Japanese)

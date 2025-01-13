@@ -100,6 +100,15 @@ install() {
 
   log "installing qr code"
   cp qr.bmp ${VENDOR}/usr/share/${BINARY}/
+  cp qrDonate.bmp ${VENDOR}/usr/share/${BINARY}/
+
+  log "installing tunings"
+  mkdir -p ${VENDOR}/usr/share/${BINARY}/sound_settings/
+  busybox tar -C ${VENDOR}/usr/share/${BINARY}/sound_settings/ -xf tunings.tar.gz
+
+  log "installing llusbdac"
+  mkdir -p ${VENDOR}/modules/
+  cp llusbdac.ko ${VENDOR}/modules/
 }
 
 log "installing $(cat product_info)"

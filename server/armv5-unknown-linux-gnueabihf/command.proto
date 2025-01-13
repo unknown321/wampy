@@ -100,4 +100,5 @@ message Status {
   optional float SampleRate = 9;
   optional int32 BitDepth = 10;
   required Playlist Playlist = 11;
+  required int32 VolumeRaw = 12;
 }

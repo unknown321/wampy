@@ -167,7 +167,8 @@ PROTOBUF_CONSTEXPR Status::Status(
   , /*decltype(_impl_.volume_)*/0
   , /*decltype(_impl_.bitrate_)*/0
   , /*decltype(_impl_.samplerate_)*/0
-  , /*decltype(_impl_.bitdepth_)*/0} {}
+  , /*decltype(_impl_.bitdepth_)*/0
+  , /*decltype(_impl_.volumeraw_)*/0} {}
 struct StatusDefaultTypeInternal {
   PROTOBUF_CONSTEXPR StatusDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -296,6 +297,7 @@ const uint32_t TableStruct_command_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   PROTOBUF_FIELD_OFFSET(::Command::Status, _impl_.samplerate_),
   PROTOBUF_FIELD_OFFSET(::Command::Status, _impl_.bitdepth_),
   PROTOBUF_FIELD_OFFSET(::Command::Status, _impl_.playlist_),
+  PROTOBUF_FIELD_OFFSET(::Command::Status, _impl_.volumeraw_),
   0,
   2,
   3,
@@ -307,6 +309,7 @@ const uint32_t TableStruct_command_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   9,
   10,
   1,
+  11,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 16, -1, sizeof(::Command::Command)},
@@ -318,7 +321,7 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 65, 72, -1, sizeof(::Command::Seek)},
   { 73, 84, -1, sizeof(::Command::Track)},
   { 89, -1, -1, sizeof(::Command::Playlist)},
-  { 96, 113, -1, sizeof(::Command::Status)},
+  { 96, 114, -1, sizeof(::Command::Status)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -354,30 +357,30 @@ const char descriptor_table_protodef_command_2eproto[] PROTOBUF_SECTION_VARIABLE
   "\004Seek\022\r\n\005value\030\001 \002(\005\"W\n\005Track\022\r\n\005Track\030\001"
   " \002(\005\022\016\n\006Artist\030\002 \002(\t\022\r\n\005Title\030\003 \002(\t\022\020\n\010D"
   "uration\030\004 \002(\005\022\016\n\006Active\030\005 \002(\010\")\n\010Playlis"
-  "t\022\035\n\005Track\030\001 \003(\0132\016.Command.Track\"\327\001\n\006Sta"
+  "t\022\035\n\005Track\030\001 \003(\0132\016.Command.Track\"\352\001\n\006Sta"
   "tus\022\r\n\005Codec\030\001 \002(\t\022\017\n\007Elapsed\030\002 \002(\005\022\021\n\tP"
   "layState\030\003 \002(\005\022\r\n\005HiRes\030\004 \002(\010\022\017\n\007Shuffle"
   "\030\005 \002(\010\022\016\n\006Repeat\030\006 \002(\005\022\016\n\006Volume\030\007 \002(\005\022\017"
   "\n\007BitRate\030\010 \001(\005\022\022\n\nSampleRate\030\t \001(\002\022\020\n\010B"
   "itDepth\030\n \001(\005\022#\n\010Playlist\030\013 \002(\0132\021.Comman"
-  "d.Playlist*\212\003\n\004Type\022\017\n\013CMD_UNKNOWN\020\000\022\031\n\025"
-  "CMD_GET_WINDOW_STATUS\020\001\022\023\n\017CMD_HIDE_WIND"
-  "OW\020\002\022\023\n\017CMD_SHOW_WINDOW\020\003\022\022\n\016CMD_GET_STA"
-  "TUS\020\004\022\014\n\010CMD_TEST\020\005\022\022\n\016CMD_SET_VOLUME\020\006\022"
-  "\014\n\010CMD_SEEK\020\007\022\026\n\022CMD_TOGGLE_SHUFFLE\020\010\022\025\n"
-  "\021CMD_TOGGLE_REPEAT\020\t\022\022\n\016CMD_NEXT_TRACK\020\n"
-  "\022\022\n\016CMD_PREV_TRACK\020\013\022\014\n\010CMD_PLAY\020\014\022\r\n\tCM"
-  "D_PAUSE\020\r\022\014\n\010CMD_STOP\020\016\022\031\n\025CMD_FEATURE_B"
-  "IG_COVER\020\017\022\032\n\026CMD_FEATURE_SHOW_CLOCK\020\020\022\017"
-  "\n\013CMD_FAILURE\020\021\022\036\n\032CMD_FEATURE_SET_MAX_V"
-  "OLUME\020\022*-\n\014ResponseCode\022\013\n\007UNKNOWN\020\000\022\010\n\004"
-  "FAIL\020\001\022\006\n\002OK\020\002*N\n\rWindowVisible\022\026\n\022VISIB"
-  "ILITY_UNKNOWN\020\000\022\022\n\016VISIBILITY_YES\020\001\022\021\n\rV"
-  "ISIBILITY_NO\020\002"
+  "d.Playlist\022\021\n\tVolumeRaw\030\014 \002(\005*\212\003\n\004Type\022\017"
+  "\n\013CMD_UNKNOWN\020\000\022\031\n\025CMD_GET_WINDOW_STATUS"
+  "\020\001\022\023\n\017CMD_HIDE_WINDOW\020\002\022\023\n\017CMD_SHOW_WIND"
+  "OW\020\003\022\022\n\016CMD_GET_STATUS\020\004\022\014\n\010CMD_TEST\020\005\022\022"
+  "\n\016CMD_SET_VOLUME\020\006\022\014\n\010CMD_SEEK\020\007\022\026\n\022CMD_"
+  "TOGGLE_SHUFFLE\020\010\022\025\n\021CMD_TOGGLE_REPEAT\020\t\022"
+  "\022\n\016CMD_NEXT_TRACK\020\n\022\022\n\016CMD_PREV_TRACK\020\013\022"
+  "\014\n\010CMD_PLAY\020\014\022\r\n\tCMD_PAUSE\020\r\022\014\n\010CMD_STOP"
+  "\020\016\022\031\n\025CMD_FEATURE_BIG_COVER\020\017\022\032\n\026CMD_FEA"
+  "TURE_SHOW_CLOCK\020\020\022\017\n\013CMD_FAILURE\020\021\022\036\n\032CM"
+  "D_FEATURE_SET_MAX_VOLUME\020\022*-\n\014ResponseCo"
+  "de\022\013\n\007UNKNOWN\020\000\022\010\n\004FAIL\020\001\022\006\n\002OK\020\002*N\n\rWin"
+  "dowVisible\022\026\n\022VISIBILITY_UNKNOWN\020\000\022\022\n\016VI"
+  "SIBILITY_YES\020\001\022\021\n\rVISIBILITY_NO\020\002"
   ;
 static ::_pbi::once_flag descriptor_table_command_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_command_2eproto = {
-    false, false, 1534, descriptor_table_protodef_command_2eproto,
+    false, false, 1553, descriptor_table_protodef_command_2eproto,
     "command.proto",
     &descriptor_table_command_2eproto_once, nullptr, 0, 10,
     schemas, file_default_instances, TableStruct_command_2eproto::offsets,
@@ -3011,8 +3014,11 @@ class Status::_Internal {
   static void set_has_playlist(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
+  static void set_has_volumeraw(HasBits* has_bits) {
+    (*has_bits)[0] |= 2048u;
+  }
   static bool MissingRequiredFields(const HasBits& has_bits) {
-    return ((has_bits[0] & 0x000000ff) ^ 0x000000ff) != 0;
+    return ((has_bits[0] & 0x000008ff) ^ 0x000008ff) != 0;
   }
 };
 
@@ -3042,7 +3048,8 @@ Status::Status(const Status& from)
     , decltype(_impl_.volume_){}
     , decltype(_impl_.bitrate_){}
     , decltype(_impl_.samplerate_){}
-    , decltype(_impl_.bitdepth_){}};
+    , decltype(_impl_.bitdepth_){}
+    , decltype(_impl_.volumeraw_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   _impl_.codec_.InitDefault();
@@ -3057,8 +3064,8 @@ Status::Status(const Status& from)
     _this->_impl_.playlist_ = new ::Command::Playlist(*from._impl_.playlist_);
   }
   ::memcpy(&_impl_.elapsed_, &from._impl_.elapsed_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.bitdepth_) -
-    reinterpret_cast<char*>(&_impl_.elapsed_)) + sizeof(_impl_.bitdepth_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.volumeraw_) -
+    reinterpret_cast<char*>(&_impl_.elapsed_)) + sizeof(_impl_.volumeraw_));
   // @@protoc_insertion_point(copy_constructor:Command.Status)
 }
 
@@ -3080,6 +3087,7 @@ inline void Status::SharedCtor(
     , decltype(_impl_.bitrate_){0}
     , decltype(_impl_.samplerate_){0}
     , decltype(_impl_.bitdepth_){0}
+    , decltype(_impl_.volumeraw_){0}
   };
   _impl_.codec_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -3127,10 +3135,10 @@ void Status::Clear() {
         reinterpret_cast<char*>(&_impl_.volume_) -
         reinterpret_cast<char*>(&_impl_.elapsed_)) + sizeof(_impl_.volume_));
   }
-  if (cached_has_bits & 0x00000700u) {
+  if (cached_has_bits & 0x00000f00u) {
     ::memset(&_impl_.bitrate_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&_impl_.bitdepth_) -
-        reinterpret_cast<char*>(&_impl_.bitrate_)) + sizeof(_impl_.bitdepth_));
+        reinterpret_cast<char*>(&_impl_.volumeraw_) -
+        reinterpret_cast<char*>(&_impl_.bitrate_)) + sizeof(_impl_.volumeraw_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
@@ -3244,6 +3252,15 @@ const char* Status::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
         } else
           goto handle_unusual;
         continue;
+      // required int32 VolumeRaw = 12;
+      case 12:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 96)) {
+          _Internal::set_has_volumeraw(&has_bits);
+          _impl_.volumeraw_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -3346,6 +3363,12 @@ uint8_t* Status::_InternalSerialize(
         _Internal::playlist(this).GetCachedSize(), target, stream);
   }
 
+  // required int32 VolumeRaw = 12;
+  if (cached_has_bits & 0x00000800u) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(12, this->_internal_volumeraw(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -3402,13 +3425,18 @@ size_t Status::RequiredFieldsByteSizeFallback() const {
     total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_volume());
   }
 
+  if (_internal_has_volumeraw()) {
+    // required int32 VolumeRaw = 12;
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_volumeraw());
+  }
+
   return total_size;
 }
 size_t Status::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:Command.Status)
   size_t total_size = 0;
 
-  if (((_impl_._has_bits_[0] & 0x000000ff) ^ 0x000000ff) == 0) {  // All required fields are present.
+  if (((_impl_._has_bits_[0] & 0x000008ff) ^ 0x000008ff) == 0) {  // All required fields are present.
     // required string Codec = 1;
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -3436,6 +3464,9 @@ size_t Status::ByteSizeLong() const {
 
     // required int32 Volume = 7;
     total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_volume());
+
+    // required int32 VolumeRaw = 12;
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_volumeraw());
 
   } else {
     total_size += RequiredFieldsByteSizeFallback();
@@ -3509,7 +3540,7 @@ void Status::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBU
     }
     _this->_impl_._has_bits_[0] |= cached_has_bits;
   }
-  if (cached_has_bits & 0x00000700u) {
+  if (cached_has_bits & 0x00000f00u) {
     if (cached_has_bits & 0x00000100u) {
       _this->_impl_.bitrate_ = from._impl_.bitrate_;
     }
@@ -3518,6 +3549,9 @@ void Status::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBU
     }
     if (cached_has_bits & 0x00000400u) {
       _this->_impl_.bitdepth_ = from._impl_.bitdepth_;
+    }
+    if (cached_has_bits & 0x00000800u) {
+      _this->_impl_.volumeraw_ = from._impl_.volumeraw_;
     }
     _this->_impl_._has_bits_[0] |= cached_has_bits;
   }
@@ -3550,8 +3584,8 @@ void Status::InternalSwap(Status* other) {
       &other->_impl_.codec_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(Status, _impl_.bitdepth_)
-      + sizeof(Status::_impl_.bitdepth_)
+      PROTOBUF_FIELD_OFFSET(Status, _impl_.volumeraw_)
+      + sizeof(Status::_impl_.volumeraw_)
       - PROTOBUF_FIELD_OFFSET(Status, _impl_.playlist_)>(
           reinterpret_cast<char*>(&_impl_.playlist_),
           reinterpret_cast<char*>(&other->_impl_.playlist_));

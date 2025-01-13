@@ -353,6 +353,7 @@ namespace Hagoromo {
 
         if (updateVolume) {
             status.Volume = c.status().volume();
+            status.VolumeRaw = c.status().volumeraw();
         }
 
         status.Duration = playlist.at(0).Duration;

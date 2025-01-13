@@ -20,15 +20,22 @@ void listdir(const char *dirname, std::vector<directoryEntry> *list, const std::
                 continue;
             }
 
-            const char *ext = strrchr(dir->d_name, '.');
-            if ((!ext) || (ext == dir->d_name))
-                continue;
-            else {
-                if (strcmp(ext, extension.c_str()) == 0) {
-                    auto a = directoryEntry{};
-                    a.fullPath = std::string(dirname) + std::string(dir->d_name);
-                    a.name = std::string(dir->d_name);
-                    list->emplace_back(a);
+            if (extension.empty() || extension == "*") {
+                auto a = directoryEntry{};
+                a.fullPath = std::string(dirname) + std::string(dir->d_name);
+                a.name = std::string(dir->d_name);
+                list->emplace_back(a);
+            } else {
+                const char *ext = strrchr(dir->d_name, '.');
+                if ((!ext) || (ext == dir->d_name))
+                    continue;
+                else {
+                    if (strcmp(ext, extension.c_str()) == 0) {
+                        auto a = directoryEntry{};
+                        a.fullPath = std::string(dirname) + std::string(dir->d_name);
+                        a.name = std::string(dir->d_name);
+                        list->emplace_back(a);
+                    }
                 }
             }
         }
@@ -308,7 +315,6 @@ int mkpath(const char *path, mode_t mode) {
 }
 
 void recoverDumps(const std::string &outdir) {
-    struct stat sb {};
     std::string corePath = "/var/log/core......gz";
     std::string hdumpstatePath = "/var/log/hdumpstate......log";
     std::string out;
@@ -322,6 +328,7 @@ void recoverDumps(const std::string &outdir) {
     strftime(buffer, sizeof(buffer), ".%Y-%m-%d_%H.%M.%S", timeinfo);
     auto t = std::string(buffer);
 
+    struct stat sb {};
     if (stat(corePath.c_str(), &sb) == 0) {
         mkpath(outdir.c_str(), 0755);
         out = outdir + "/core......gz" + t;
@@ -373,16 +380,20 @@ void createDump() {
 
 void startADB() { system("/system/vendor/sony/bin/AdbEnabler"); }
 
+std::string ReadFile(const std::string &path) {
+    std::ifstream f(path, std::ios::binary | std::ios::in);
+    std::string m((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    f.close();
+    return m;
+}
+
 void getModel(std::string *model, bool *isWalkmanOne) {
 #ifdef DESKTOP
     *model = "desktop";
     return;
 #endif
-    std::ifstream f;
-    f.open("/dev/icx_nvp/033");
-    std::string m((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-    *model = m;
-    f.close();
+
+    *model = ReadFile("/dev/icx_nvp/033");
 
     struct stat info {};
 
@@ -609,4 +620,212 @@ Atlas LoadAtlas(const std::string &texturePath, const std::string &coordsPath) {
     a.images = coords;
 
     return a;
+}
+
+std::string RunWithOutput(const std::string &command) {
+    FILE *fp;
+    char buf[1035];
+
+    std::string res;
+
+    fp = popen(command.c_str(), "r");
+    if (fp == nullptr) {
+        printf("Failed to run command\n");
+        exit(1);
+    }
+
+    while (fgets(buf, sizeof(buf), fp) != nullptr) {
+        res.append(buf);
+    }
+
+    pclose(fp);
+
+    if (res.empty()) {
+        return "";
+    }
+
+    if (res[res.length() - 1] == '\n') {
+        res.erase(res.length() - 1);
+    }
+
+    return res;
+}
+
+std::string GetProduct() {
+#ifdef DESKTOP
+    return "Desktop";
+#endif
+    return RunWithOutput("getprop ro.product.device");
+}
+
+std::string GetModelID() {
+#ifdef DESKTOP
+    return "Desktop";
+#endif
+    return RunWithOutput("nvpflag -x mid");
+}
+
+std::string GetRegionID() {
+#ifdef DESKTOP
+    return "Desktop";
+#endif
+    auto full = RunWithOutput("nvpflag -x shp");
+    return split(full, " ")[0];
+}
+
+std::string GetRegionIDStr() {
+#ifdef DESKTOP
+    return "Desktop";
+#endif
+
+    auto r = GetRegionID();
+    if (RegionIDToString.find(r) == RegionIDToString.end()) {
+        return DefaultRegion;
+    }
+
+    return RegionIDToString.at(r);
+}
+
+std::string DefaultRegion = "MX3";
+std::map<std::string, std::string> RegionIDToString = {
+    {"0x00000000", "J"},
+    {"0x00000001", "U"}, // UC
+    {"0x00000101", "U2"},
+    {"0x00000201", "U3"},
+    {"0x00000301", "CA"},
+    {"0x00000002", "CEV"},
+    {"0x00000102", "CE7"},
+    {"0x00000003", "CEW"},
+    {"0x00000103", "CEW2"},
+    {"0x00000004", "CN"},
+    {"0x00000005", "KR"},
+    {"0x00000203", "KR3"},
+    {"0x00000006", "E"},
+    {"0x00000206", "E2"},
+    {"0x00000306", "MX3"}, // aka LA (load_sony_driver script)
+    {"0x00000007", "TW"},
+};
+
+// getting data directly from alsa is uncomfortable
+std::pair<std::string, std::string> AudioDeviceInUse() {
+#ifdef DESKTOP
+    return {"Desktop", "Desktop"};
+#endif
+
+    auto r = RunWithOutput("aplay -l");
+
+    std::string prevLine;
+    bool found;
+    for (const auto &line : split(r, "\n")) {
+        if (line == "  Subdevices: 0/1") {
+            found = true;
+            break;
+        }
+
+        prevLine = line;
+    }
+
+    if (!found) {
+        return {"No audio playing?", "No audio playing?"};
+    }
+
+    if (prevLine == "  Subdevice #0: subdevice #0") {
+        return {"No audio playing?", "No audio playing?"};
+    }
+
+    auto cardDev = split(prevLine, ",");
+    if (cardDev.size() != 2) {
+        DLOG("%s\n", prevLine.c_str());
+        return {"Malformed data?", "Malformed data?"};
+    }
+
+    auto words = split(cardDev[0], ":");
+    if (words.size() != 2) {
+        return {"Malformed card data", "Malformed card data"};
+    }
+    auto card = words[1];
+
+    words = split(cardDev[1], ":");
+    if (words.size() != 2) {
+        return {"Malformed dev data", "Malformed dev data"};
+    }
+    auto dev = words[1];
+
+    return {card, dev};
+}
+
+bool EnableLLUSBDAC() {
+    auto out = RunWithOutput("insmod /system/vendor/unknown321/modules/llusbdac.ko 2>&1");
+    DLOG("%s\n", out.c_str());
+    return out.empty();
+}
+
+bool DisableLLUSBDAC() {
+    auto out = RunWithOutput("rmmod llusbdac 2>&1");
+    DLOG("%s\n", out.c_str());
+    return out.empty();
+}
+
+void rstrip(std::string *s, const char &what) {
+    if (s->empty()) {
+        return;
+    }
+
+    if (s->at(s->length() - 1) == what) {
+        s->erase(s->length() - 1);
+    }
+}
+
+void ExportBookmarks() {
+#ifdef DESKTOP
+    return;
+#endif
+
+    std::vector<std::string> filenames = {
+        "/cache/bookmark01.json",
+        "/cache/bookmark02.json",
+        "/cache/bookmark03.json",
+        "/cache/bookmark04.json",
+        "/cache/bookmark05.json",
+        "/cache/bookmark06.json",
+        "/cache/bookmark07.json",
+        "/cache/bookmark08.json",
+        "/cache/bookmark09.json",
+        "/cache/bookmark10.json"};
+
+    std::string outdir = "/contents/wampy/bookmarks/";
+    struct stat sb {};
+    if (stat(outdir.c_str(), &sb) != 0) {
+        mkpath(outdir.c_str(), 0755);
+    }
+
+    for (const auto &f : filenames) {
+        //        Both dirname() and basename() may modify the contents of path,
+        //            so it may be desirable to pass a copy when calling one of these functions.
+        char bn[f.length() + 1];
+        memset(bn, 0, sizeof bn);
+        memcpy(bn, f.c_str(), f.length());
+        auto out = outdir + basename(bn);
+
+        DLOG("in: %s, out %s\n", f.c_str(), out.c_str());
+        std::ifstream src(f, std::ios::binary);
+        std::ofstream dst(out, std::ios::binary);
+
+        dst << src.rdbuf();
+        dst.close();
+        src.close();
+    }
+}
+
+void RemoveLogs() {
+#ifdef DESKTOP
+    return;
+#endif
+
+    std::vector<directoryEntry> files{};
+    listdir("/contents/wampy/log/", &files, "*");
+    for (const auto &e : files) {
+        DLOG("removing log %s\n", e.fullPath.c_str());
+        std::remove(e.fullPath.c_str());
+    }
 }

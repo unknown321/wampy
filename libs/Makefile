@@ -98,7 +98,10 @@ protobuf:
 		make -f Makefile.protobuf \
 "
 
-all: patch libEGL.so libGLESv2.so libjpeg magick protobuf
+llusbdac:
+	$(MAKE)	-f Makefile.llusbdac
+
+all: patch libEGL.so libGLESv2.so libjpeg magick protobuf llusbdac
 
 clean:
 	rm -rf libjpeg-turbo/build-*
@@ -110,4 +113,4 @@ clean:
 
 .DEFAULT_GOAL := all
 
-.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch
+.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch llusbdac

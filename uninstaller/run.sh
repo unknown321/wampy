@@ -60,8 +60,11 @@ uninstall() {
     log "no valid libqeglfs backup found, leaving as is"
   fi
 
-  log "removing skins, licenses, qr code"
+  log "removing skins, licenses, qr code, tunings"
   busybox rm -rf ${VENDOR}/usr/share/${BINARY}/
+
+  log "removing modules"
+  busybox rm -rf ${VENDOR}/modules/
 }
 
 log "uninstaller for $(cat product_info)"

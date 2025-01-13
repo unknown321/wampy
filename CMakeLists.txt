@@ -111,12 +111,14 @@ add_executable(${PROJECT_NAME}
         libs/zlib/contrib/minizip/ioapi.c
         libs/ImageMagick/Magick++/lib/Color.cpp
         ${PROTOBUF_SOURCE}
+        src/dac/cxd3778gf_table.cpp
         src/util/util.cpp
         src/wstring.cpp
         src/w1/w1.cpp
         src/cassette/tape.cpp
         src/digital_clock/digital_clock.cpp
         ${CONNECTOR_SOURCE}
+        src/imgui_curve.cpp
         src/imgui_widgets.cpp
         src/connector/song.cpp
         src/skinVariant.cpp
@@ -125,7 +127,14 @@ add_executable(${PROJECT_NAME}
         src/cassette/cassette.cpp
         src/config.cpp
         #        libs/imgui/imgui_demo.cpp
-        src/shader.cpp)
+        src/shader.cpp
+        src/dac/dac.cpp)
+
+#add_executable(dac
+#        src/dac/cxd3778gf_table.cpp
+#        src/dac/dac.cpp
+#        src/dac/main.cpp
+#        )
 
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install/${arch})

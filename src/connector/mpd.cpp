@@ -171,6 +171,7 @@ namespace MPD {
             } catch (...) {
                 status->Volume = 0;
             }
+            status->VolumeRaw = status->Volume;
 #endif
             break;
         case hash("audio"): {
