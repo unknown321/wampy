@@ -23,7 +23,7 @@ Wampy provides interface for manipulating those tables.
 
 ## Table types
 
-There are three table types supported by wampy.
+Supported:
 
 - master volume
 - master volume (dsd)
