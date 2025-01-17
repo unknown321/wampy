@@ -141,6 +141,10 @@ build: build/plugins/platforms/libqeglfs.so fast
 
 release: build push
 
+r: release
+	$(ADB) shell logcat -c
+	$(ADB) shell hagodaemons.sh restart
+
 libMali_linux.so:
 	test -f ../libs/libMali_linux.so
 
@@ -151,4 +155,4 @@ push:
 
 .DEFAULT_GOAL := build
 
-.PHONY: build
+.PHONY: build r push release fast clean veryclean prepare

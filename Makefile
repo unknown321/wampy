@@ -194,5 +194,12 @@ qrDonate.bmp:
 	@convert qrDonate.png -type palette qrDonate.bmp
 	@rm qrDonate.png
 
+fastinstall:
+	cd release/installer/
+	tar -C release/installer -xf release/installer/nw-a50.tar.gz
+	adb push release/installer/NW_WM_FW.UPG /contents
+	adb shell sync
+	adb shell nvpflag fup 0x70555766
+	adb shell reboot
 
-.PHONY: build build-arm docker docker_digital_clock push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server userdata
+.PHONY: build build-arm docker docker_digital_clock push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server userdata fastinstall
