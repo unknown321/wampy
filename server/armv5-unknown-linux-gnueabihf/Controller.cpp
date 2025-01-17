@@ -104,6 +104,8 @@ int Controller::Initialize() {
 
     if (setup() == 0) {
         initialized = true;
+    } else {
+        return -1;
     }
 
     return 0;
