@@ -36,9 +36,11 @@ void WampyServer::respond(QLocalSocket *socket, QByteArray data) {
 
 void WampyServer::Serve() {
     DLOG("serving\n");
-    if (controller.Initialize() != 0) {
-        DLOG("initialize failed\n");
-        return;
+
+    while (!controller.Ready()) {
+        if (controller.Initialize() != 0) {
+            DLOG("initialize failed\n");
+        }
     }
 
     auto t = controller.provider.thread();

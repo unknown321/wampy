@@ -123,6 +123,8 @@ class Controller : public QObject {
 
     int Initialize();
 
+    bool Ready();
+
     void Hide(Command::Command *c);
 
     void Show(Command::Command *c);

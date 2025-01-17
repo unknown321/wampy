@@ -73,6 +73,8 @@ bool Controller::goToPlayer() {
     return true;
 }
 
+bool Controller::Ready() { return initialized; }
+
 int Controller::Initialize() {
     if (initialized) {
         return 0;
