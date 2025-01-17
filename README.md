@@ -22,15 +22,15 @@ See [USAGE.md](./USAGE.md).
 
 ## Device support
 
-| Device          | Stock     | Walkman One | Notes                                  |
-|-----------------|-----------|-------------|----------------------------------------|
-| NW-A50          | ✅         | ✅           |                                        |
-| NW-A40          | ?         | ✅ (v1.3.2)  | help wanted for stock firmware [#1][2] |
-| └──[A50 mod][1] | ✅ (1.5.0) | ---         | confirmed by community                 |
-| NW-A30          | ❌         | ?           | looking for Walkman One tester [#1][2] |
-| NW-ZX300        | ?         | ?           | looking for tester [#12][3]            |
-| NW-WM1A/Z       | ?         | ?           | looking for tester [#13][4]            |
-| DMP-Z1          | ?         | ?           | looking for tester                     |
+| Device          | Stock     | Walkman One | Notes                                   |
+|-----------------|-----------|-------------|-----------------------------------------|
+| NW-A50          | ✅         | ✅           |                                         |
+| NW-A40          | ❌         | ✅ (v1.3.2)  | stock fw is broken, outdated GPU driver |
+| └──[A50 mod][1] | ✅ (1.5.0) | ---         | confirmed by community                  |
+| NW-A30          | ❌         | ?           | looking for Walkman One tester [#1][2]  |
+| NW-ZX300        | ?         | ?           | looking for tester [#12][3]             |
+| NW-WM1A/Z       | ?         | ?           | looking for tester [#13][4]             |
+| DMP-Z1          | ?         | ?           | looking for tester                      |
 
 [1]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
 
