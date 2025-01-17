@@ -135,6 +135,7 @@ struct Skin {
     std::string logCleanupStatus;
     std::string logCleanupButtonLabel;
     std::string refreshStatus;
+    std::string charactersInDB;
 
     void ReloadFont() {
         std::string filepath{};
@@ -471,7 +472,21 @@ struct Skin {
                     connector->FeatureShowTime(config->features.showTime);
                 }
             }
+
             ImGui::TableNextColumn();
+            ImGui::TableNextColumn();
+            if (ImGui::Button("DB char count")) {
+                std::vector<uint32_t> chars;
+                getCharRange(&chars);
+                charactersInDB = std::to_string(chars.size());
+            }
+
+            ImGui::TableNextColumn();
+            ImGui::Text(charactersInDB.c_str());
+            ImGui::SameLine(20);
+            if (ImGui::InvisibleButton("##charactersInDBCount", ImVec2(246, 30))) {
+                charactersInDB = "";
+            }
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
