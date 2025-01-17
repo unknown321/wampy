@@ -80,6 +80,22 @@ libjpeg-turbo/build-arm:
 		make && make install \
 "
 
+sqlite/build-arm:
+	mkdir -p $@
+	$(DOCKER) bash -c "\
+		cd $@ && \
+		../configure $(ARM_CC) $(ARM_CXX) --host arm-unknown-linux --prefix=`pwd`/$@/install  && \
+		 make && make install && patchelf --set-soname libsqlite3.so `pwd`/$@/install/lib/libsqlite3.so \
+	"
+
+sqlite/build-x86:
+	mkdir -p $@
+	$(DOCKER) bash -c "\
+		cd $@ && \
+		../configure --prefix=`pwd`/$@/install  && \
+		make && make install && patchelf --set-soname libsqlite3.so `pwd`/$@/install/lib/libsqlite3.so \
+	"
+
 libEGL.so: libMali_linux.so
 	ln -s libMali_linux.so libEGL.so
 
@@ -93,6 +109,8 @@ libjpeg: libjpeg-turbo/build-arm libjpeg-turbo/build-x86
 
 magick: ImageMagick/build-x86 ImageMagick/build-arm
 
+sqlite: sqlite/build-arm sqlite/build-x86
+
 protobuf:
 	$(DOCKER) bash -c "\
 		make -f Makefile.protobuf \
@@ -101,7 +119,7 @@ protobuf:
 llusbdac:
 	$(MAKE)	-f Makefile.llusbdac
 
-all: patch libEGL.so libGLESv2.so libjpeg magick protobuf llusbdac
+all: patch libEGL.so libGLESv2.so libjpeg magick protobuf llusbdac sqlite
 
 clean:
 	rm -rf libjpeg-turbo/build-*
@@ -109,8 +127,9 @@ clean:
 	rm -rf protobuf/build-*
 	-make -C protobuf clean
 	-make -C ImageMagick clean
+	rm -rf sqlite/build-*
 
 
 .DEFAULT_GOAL := all
 
-.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch llusbdac
+.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch llusbdac sqlite

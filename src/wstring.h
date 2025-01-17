@@ -27,4 +27,6 @@ void utfCharLen(const char *c, int *len);
 
 void utfFits(const char *c, int start, int len, bool *result, int *endWhenFits);
 
+uint32_t utfToPoint(const std::string &str, size_t &index);
+
 #endif

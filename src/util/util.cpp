@@ -4,6 +4,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "imgui_impl_glfw.h"
 #include "imgui_internal.h"
+#include "sqlite3.h"
 #include <algorithm>
 #include <fstream>
 #include <sys/stat.h>
@@ -827,5 +828,70 @@ void RemoveLogs() {
     for (const auto &e : files) {
         DLOG("removing log %s\n", e.fullPath.c_str());
         std::remove(e.fullPath.c_str());
+    }
+}
+
+const char *query = "WITH RECURSIVE split_chars AS (\n"
+                    "    SELECT\n"
+                    "        SUBSTR(value, 1, 1) AS char,\n"
+                    "        SUBSTR(value, 2) AS rest\n"
+                    "    FROM artists\n"
+                    "    UNION ALL\n"
+                    "    SELECT\n"
+                    "        SUBSTR(title, 1, 1) AS char,\n"
+                    "        SUBSTR(title, 2) AS rest\n"
+                    "    FROM object_body\n"
+                    "    UNION ALL\n"
+                    "    SELECT\n"
+                    "        SUBSTR(rest, 1, 1) AS char,\n"
+                    "        SUBSTR(rest, 2) AS rest\n"
+                    "    FROM split_chars\n"
+                    "    WHERE LENGTH(rest) > 0\n"
+                    ")\n"
+                    "-- Select distinct characters\n"
+                    "SELECT DISTINCT char\n"
+                    "FROM(\n"
+                    "SELECT char FROM split_chars\n"
+                    "UNION\n"
+                    "SELECT UPPER(char) AS char FROM split_chars\n"
+                    ")\n"
+                    "WHERE char != ''\n"
+                    "ORDER BY char";
+
+static int callback(void *output, int argc, char **argv, char **notUsed) {
+    auto res = (std::string *)output;
+    res->append(argv[0]);
+    return 0;
+}
+
+void getCharRange(std::vector<uint32_t> *points) {
+    sqlite3 *db;
+    char *zErrMsg = nullptr;
+    int rc;
+#ifdef DESKTOP
+    auto path = "../MTPDB.dat";
+#else
+    auto path = "/db/MTPDB.dat";
+#endif
+    rc = sqlite3_open_v2(path, &db, SQLITE_OPEN_READONLY, nullptr);
+    if (rc) {
+        DLOG("Can't open database: %s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+        return;
+    }
+
+    std::string res;
+    rc = sqlite3_exec(db, query, callback, &res, &zErrMsg);
+    if (rc != SQLITE_OK) {
+        DLOG("SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    }
+    sqlite3_close(db);
+
+    DLOG("%d characters found\n", utfLen(res));
+
+    size_t index = 0;
+    while (index < res.size()) {
+        points->push_back(utfToPoint(res, index));
     }
 }

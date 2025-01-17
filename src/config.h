@@ -3,7 +3,6 @@
 
 #include "cassette/cassette.h"
 #include "digital_clock/digital_clock.h"
-#include "fontranges.h"
 #include "mini/ini.h"
 #include "w1/w1.h"
 #include "winamp/winamp.h"
@@ -43,7 +42,6 @@ namespace AppConfig {
         Features features{};
         W1::W1Options w1Options{};
         bool debug{};
-        FontRanges fontRanges;
         int badBoots{};
         bool limitFPS = false;
         std::string forceConnector{};

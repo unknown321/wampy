@@ -199,3 +199,34 @@ void utfFits(const char *s, int start, int len, bool *result, int *endWhenFits) 
     *result = true;
     *endWhenFits = end;
 }
+
+uint32_t utfToPoint(const std::string &str, size_t &index) {
+    uint32_t code_point = 0;
+    unsigned char byte = str[index];
+
+    if (byte <= 0x7F) {
+        // 1-byte character (ASCII)
+        code_point = byte;
+        index += 1;
+    } else if ((byte & 0xE0) == 0xC0) {
+        // 2-byte character
+        code_point = byte & 0x1F;
+        code_point = (code_point << 6) | (str[index + 1] & 0x3F);
+        index += 2;
+    } else if ((byte & 0xF0) == 0xE0) {
+        // 3-byte character
+        code_point = byte & 0x0F;
+        code_point = (code_point << 12) | ((str[index + 1] & 0x3F) << 6) | (str[index + 2] & 0x3F);
+        index += 3;
+    } else if ((byte & 0xF8) == 0xF0) {
+        // 4-byte character
+        code_point = byte & 0x07;
+        code_point = (code_point << 18) | ((str[index + 1] & 0x3F) << 12) | ((str[index + 2] & 0x3F) << 6) | (str[index + 3] & 0x3F);
+        index += 4;
+    } else {
+        // Invalid UTF-8 byte
+        printf("Unrecognized lead byte (%02x)\n", byte);
+    }
+
+    return code_point;
+}

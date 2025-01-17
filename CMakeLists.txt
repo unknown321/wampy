@@ -38,6 +38,7 @@ include_directories(
         libs/glm
         libs/alsa-lib/src/include
         libs/mINI/src
+        libs/sqlite/build-${arch}/install/include
         libs
         server/armv5-unknown-linux-gnueabihf
         ${PROTOBUF_INCLUDE}
@@ -152,6 +153,10 @@ target_link_libraries(${PROJECT_NAME} ${ImageMagick_LIBRARIES})
 find_library(PROTOBUF protobuf REQUIRED PATHS libs/protobuf/build-${arch}/lib/ REQUIRED)
 target_link_libraries(${PROJECT_NAME} "${PROTOBUF}")
 
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/libs/sqlite/build-${arch}/install")
+find_package(SQLite3 REQUIRED)
+target_link_libraries(${PROJECT_NAME} "${SQLite3_LIBRARIES}")
+
 add_custom_target(version
         ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/src/Version.h.in
         -D DST=${CMAKE_SOURCE_DIR}/src/Version.h
@@ -163,7 +168,7 @@ add_dependencies(${PROJECT_NAME} version)
 
 if (DESKTOP EQUAL 1)
     find_library(GLES GLESv2 PATHS /usr/lib)
-    target_link_libraries(${PROJECT_NAME} "${GLES}")
+    target_link_libraries(${PROJECT_NAME} ${GLES})
     target_compile_definitions(${PROJECT_NAME} PRIVATE DESKTOP=1)
 else ()
     set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -173,7 +178,7 @@ else ()
 
     find_library(MALI Mali_linux PATHS libs)
     #    find_library(ASOUND asound PATHS libs)
-    target_link_libraries(${PROJECT_NAME} "${MALI}")
+    target_link_libraries(${PROJECT_NAME} ${MALI})
     #    target_link_libraries(${PROJECT_NAME} "${ASOUND}")
 endif ()
 

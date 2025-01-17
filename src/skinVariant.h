@@ -2,7 +2,6 @@
 #define WAMPY_SKINVARIANT_H
 
 #include "connector/connector.h"
-#include "fontranges.h"
 #include "imgui.h"
 #include "util/util.h"
 
@@ -27,8 +26,6 @@ class SkinVariant {
     void *skin{};
     std::string loadStatusStr{};
     bool debug = false;
-
-    FontRanges *fontRanges{};
 
     bool loading = false;
 

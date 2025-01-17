@@ -70,18 +70,6 @@ namespace AppConfig {
         ini["features"]["touchscreenStaysOFF"] = std::to_string(features.touchscreenStaysOFF);
         ini["mpd"]["socketPath"] = MPDSocketPath;
 
-#ifdef DESKTOP
-        ini["fonts"]["chineseFull"] = std::to_string(fontRanges.ChineseFull);
-#else
-        ini["fonts"]["chineseFull"] = std::to_string(false);
-#endif
-        ini["fonts"]["cyrillic"] = std::to_string(fontRanges.Cyrillic);
-        ini["fonts"]["greek"] = std::to_string(fontRanges.Greek);
-        ini["fonts"]["japanese"] = std::to_string(fontRanges.Japanese);
-        ini["fonts"]["korean"] = std::to_string(fontRanges.Korean);
-        ini["fonts"]["thai"] = std::to_string(fontRanges.Thai);
-        ini["fonts"]["vietnamese"] = std::to_string(fontRanges.Vietnamese);
-
         ini["w1"]["deviceColor"] = std::to_string(w1Options.deviceColor);
 
         ini["digitalClock"]["color"] = digitalClock.color;
@@ -90,7 +78,6 @@ namespace AppConfig {
     void AppConfig::Default() {
         cassette.Default();
         winamp.Default();
-        fontRanges = FontRanges{};
         digitalClock.Default();
 
         activeSkin = WINAMP;
@@ -169,19 +156,6 @@ namespace AppConfig {
         features.showTime = (bool)std::atoi(ini["features"]["showTime"].c_str());
         features.limitVolume = (bool)std::atoi(ini["features"]["limitVolume"].c_str());
         features.touchscreenStaysOFF = (bool)std::atoi(ini["features"]["touchscreenStaysOFF"].c_str());
-
-#ifdef DESKTOP
-        fontRanges.ChineseFull = (bool)std::atoi(ini["fonts"]["chineseFull"].c_str());
-#else
-        // device cannot handle full chinese range
-        fontRanges.ChineseFull = false;
-#endif
-        fontRanges.Cyrillic = (bool)std::atoi(ini["fonts"]["cyrillic"].c_str());
-        fontRanges.Greek = (bool)std::atoi(ini["fonts"]["greek"].c_str());
-        fontRanges.Japanese = (bool)std::atoi(ini["fonts"]["japanese"].c_str());
-        fontRanges.Korean = (bool)std::atoi(ini["fonts"]["korean"].c_str());
-        fontRanges.Thai = (bool)std::atoi(ini["fonts"]["thai"].c_str());
-        fontRanges.Vietnamese = (bool)std::atoi(ini["fonts"]["vietnamese"].c_str());
 
         w1Options.deviceColor = std::atoi(ini["w1"]["deviceColor"].c_str());
         if (W1::colorByValue.count(w1Options.deviceColor) == 0) {

@@ -761,7 +761,7 @@ supported at all, it's a guaranteed OOM.
 It could've been avoided by providing exact list of characters that will be used. Obtaining such list is relatively
 easy: query local song database for all artists and all titles, get unique characters. Most likely it will be your
 alphabet, some punctuation and 10-20 characters from foreign languages. The problem is the query - no idea how to do it
-quickly.
+quickly. After some time I successfully used this approach.
 
 Another workaround is to use another framework like Qt - how do they render all these characters without font atlas with
 such ease? But at that point it was too late to switch.

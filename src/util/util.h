@@ -152,4 +152,6 @@ void rstrip(std::string *s, const char &what);
 void ExportBookmarks();
 
 void RemoveLogs();
+
+void getCharRange(std::vector<uint32_t> *points);
 #endif // IMGUITEST_UTIL_H

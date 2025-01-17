@@ -17,7 +17,6 @@
 enum SettingsTab {
     SkinOpts = 0,
     Misc = 1,
-    TabFonts = 2,
     TabLicense3rd = 3,
     TabLicense = 4,
     TabWebsite = 5,
@@ -53,8 +52,6 @@ struct Skin {
     AppConfig::AppConfig *config{};
     bool onlyFont{};
 
-    std::string needRestartFontsText = "Changes will be applied on device restart";
-    bool needRestartFonts{};
     bool needRestartWalkmanOne{};
 
     std::string license{};
@@ -397,20 +394,13 @@ struct Skin {
             displayTab = SettingsTab::TabSoundSettings;
         }
 
-        auto fontsSize = ImGui::CalcTextSize("Fonts").x + ImGui::GetStyle().FramePadding.x * 2.f;
         auto miscSize = ImGui::CalcTextSize("Misc").x + ImGui::GetStyle().FramePadding.x * 2.f;
         auto skinSize = ImGui::CalcTextSize("Skin").x + ImGui::GetStyle().FramePadding.x * 2.f;
         auto closeSize = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.f;
-        ImGui::SameLine(800.0f - closeSize - miscSize - skinSize - fontsSize - offset * 4);
+        ImGui::SameLine(800.0f - closeSize - miscSize - skinSize - offset * 3);
         if (ImGui::Button("Skin")) {
             loadStatusStr = "";
             displayTab = SettingsTab::SkinOpts;
-        }
-
-        ImGui::SameLine(800.0f - closeSize - miscSize - fontsSize - offset * 3);
-        if (ImGui::Button("Fonts")) {
-            loadStatusStr = "";
-            displayTab = SettingsTab::TabFonts;
         }
 
         ImGui::SameLine(800.0f - closeSize - miscSize - offset * 2);
@@ -423,53 +413,6 @@ struct Skin {
         if (ImGui::Button("Close")) {
             loadStatusStr = "";
             ToggleDrawSettings(this, nullptr);
-        }
-    }
-
-    void Fonts() {
-        ImGui::NewLine();
-
-        ImGui::Text("Additional languages to display text:");
-
-        if (ImGui::Checkbox("Cyrillic", &config->fontRanges.Cyrillic)) {
-            config->Save();
-            needRestartFonts = true;
-        }
-        if (ImGui::Checkbox("Greek", &config->fontRanges.Greek)) {
-            config->Save();
-            needRestartFonts = true;
-        }
-        if (ImGui::Checkbox("Japanese", &config->fontRanges.Japanese)) {
-            config->Save();
-            needRestartFonts = true;
-        }
-        if (ImGui::Checkbox("Thai", &config->fontRanges.Thai)) {
-            config->Save();
-            needRestartFonts = true;
-        }
-        if (ImGui::Checkbox("Vietnamese", &config->fontRanges.Vietnamese)) {
-            config->Save();
-            needRestartFonts = true;
-        }
-        if (ImGui::Checkbox("Korean", &config->fontRanges.Korean)) {
-            config->Save();
-            needRestartFonts = true;
-        }
-
-#ifndef DESKTOP
-        ImGui::BeginDisabled(true);
-#endif
-        if (ImGui::Checkbox("Chinese (desktop only)", &config->fontRanges.ChineseFull)) {
-            config->Save();
-            needRestartFonts = true;
-        }
-#ifndef DESKTOP
-        ImGui::EndDisabled();
-#endif
-
-        ImGui::NewLine();
-        if (needRestartFonts) {
-            ImGui::Text("%s", needRestartFontsText.c_str());
         }
     }
 
@@ -1127,9 +1070,6 @@ struct Skin {
             break;
         case SettingsTab::Misc:
             Misc();
-            break;
-        case SettingsTab::TabFonts:
-            Fonts();
             break;
         case SettingsTab::TabLicense:
             License();

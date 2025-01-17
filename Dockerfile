@@ -15,3 +15,5 @@ RUN ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabi
 		ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-ld.bfd /usr/bin/arm-linux-gnueabihf-ld.bfd && \
 		ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc && \
 		ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-strip /usr/bin/arm-linux-gnueabihf-strip
+
+RUN apt-get install tclsh patchelf -y && apt-get clean

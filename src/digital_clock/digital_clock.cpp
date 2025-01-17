@@ -2,12 +2,6 @@
 #include "../skin.h"
 #include "imgui_impl_opengl3.h"
 
-const ImWchar rangesPunctuation[] = {
-    0x2000,
-    0x206F, // General Punctuation
-    0,
-};
-
 namespace DigitalClock {
 #ifdef DESKTOP
     const std::string FontPath = "../NotoSansKR-Regular.otf";
@@ -346,11 +340,13 @@ namespace DigitalClock {
         ImVector<ImWchar> gr;
         gr.clear();
 
+        // no need to pull chars from db, skin has no text
+        // ascii is enough for settings
+
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
-        range.AddRanges(rangesPunctuation);
-        range.AddChar(ImWchar(0x266a));
-        range.AddChar(ImWchar(0x266b));
-        range.AddChar(ImWchar(0x24c8));
+        range.AddChar(ImWchar(0x266a)); // ♪
+        range.AddChar(ImWchar(0x266b)); // ♫
+        range.AddChar(ImWchar(0x24c8)); // Ⓢ
 
         range.BuildRanges(&gr);
         *fontRegular = io.Fonts->AddFontFromFileTTF(FontPath.c_str(), fontSizeTTF, nullptr, gr.Data);

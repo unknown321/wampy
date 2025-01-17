@@ -5,12 +5,6 @@
 #include "imgui_impl_opengl3.h"
 #include <thread>
 
-const ImWchar rangesPunctuation[] = {
-    0x2000,
-    0x206F, // General Punctuation
-    0,
-};
-
 namespace Winamp {
     std::string const ColorBlack = "#000000";
     const float fontSizeBitmap = 17.0f;
@@ -1504,26 +1498,14 @@ namespace Winamp {
         ImVector<ImWchar> gr;
         gr.clear();
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
-        range.AddRanges(rangesPunctuation);
-        range.AddChar(ImWchar(0x266a));
-        range.AddChar(ImWchar(0x266b));
-        range.AddChar(ImWchar(0x24c8));
+        range.AddChar(ImWchar(0x266a)); // ♪
+        range.AddChar(ImWchar(0x266b)); // ♫
+        range.AddChar(ImWchar(0x24c8)); // Ⓢ
 
-        if (fontRanges) {
-            if (fontRanges->Japanese)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesJapanese());
-            if (fontRanges->ChineseFull)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
-            if (fontRanges->Cyrillic)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
-            if (fontRanges->Greek)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesGreek());
-            if (fontRanges->Korean)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesKorean());
-            if (fontRanges->Thai)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesThai());
-            if (fontRanges->Vietnamese)
-                range.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesVietnamese());
+        std::vector<uint32_t> allchars;
+        getCharRange(&allchars);
+        for (const auto c : allchars) {
+            range.AddChar(c);
         }
 
         range.BuildRanges(&gr);

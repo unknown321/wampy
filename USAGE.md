@@ -7,7 +7,6 @@
   * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
   * [There is no song info](#there-is-no-song-info)
   * [Notes on ugly settings](#notes-on-ugly-settings)
-  * [Fonts](#fonts)
   * [There is a "detailed info" popup after turning screen off and on instead of Wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
   * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
 * [Using Wampy](#using-wampy)
@@ -49,7 +48,7 @@ points in default player terms).
 ### ⚠️What to do if device crashes / Wampy doesn't start?⚠️
 
 If Wampy failed to start 3 times (read: device rebooted trice), it stops starting until you edit `wampy/config.ini`.
-Remove config file or set `[wampy][badboots]` to 0 (along with device-breaking settings you changed such as fonts) and
+Remove config file or set `[wampy][badboots]` to 0 (along with possible device-breaking settings) and
 reboot the device. If you cannot access config file (device stuck in boot loop and won't connect to pc, very unlikely
 situation), restore it from backup that you made beforehand (see [BACKUP.md](./BACKUP.md)).
 
@@ -73,23 +72,6 @@ default music player, not SensMe or Language Study.
 
 Due to unfortunate combination of font and framework quirks, all text in settings is placed slightly lower than
 expected.
-
-### Fonts
-
-By default, basic latin characters plus various punctuation are used. If your songs have non-latin glyphs in their
-artist/title fields, you'll have to toggle on needed character set.
-
-⚠️**WARNING**⚠️
-
-Due to gui framework limitations all characters are loaded into huge texture (font atlas) which is then uploaded to GPU
-memory. GPU memory is shared with main memory and usually there is not much left. If you turn on all character sets,
-this **will** cause crashes. Generally it is fine to turn on one or two of these. Chinese characters are guaranteed to
-crash your device, so they are explicitly disabled.
-
-If crashes occur,
-see [What to do if device crashes / Wampy doesn't start?](#what-to-do-if-device-crashes--Wampy-doesnt-start) section.
-
-<img src="images/fonts.png" alt="fonts settings">
 
 ### There is a "detailed info" popup after turning screen off and on instead of Wampy
 
