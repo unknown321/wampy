@@ -6,6 +6,7 @@
 #include <QThread>
 #include <QtNetwork/QLocalSocket>
 #include <stdio.h>
+#include <thread>
 
 #include "command.pb.h"
 
@@ -35,6 +36,7 @@ void WampyServer::respond(QLocalSocket *socket, QByteArray data) {
 }
 
 void WampyServer::Serve() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
     DLOG("serving\n");
 
     while (!controller.Ready()) {
