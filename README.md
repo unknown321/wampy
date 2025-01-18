@@ -67,7 +67,7 @@ See [BUILD.md](./BUILD.md)
 
 [Making of sound settings](./MAKING_OF_SOUND_SETTINGS.md)
 
-[scrobbler](https://github.com/unknown321/scrobbler)
+[Scrobbler](https://github.com/unknown321/scrobbler)
 
 ## Support me
 

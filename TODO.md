@@ -2,6 +2,7 @@
 
 - [ ] make llusbdac build everywhere, not just on my machine
 - [ ] apply tunings on boot
+- [ ] mtk backup is broken on nw-a40, update docs
 - [x] export bookmarks
 - [x] current volume on volume table graphs
 - [x] <s>read skins from sd card</s> a lot of code for like what, 10 mb of skins on sd card? just use internal storage
@@ -81,12 +82,13 @@
 
 # hard to solve
 
-- [x] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
-- [x] <s>winamp playlist flicker sometimes (or is it?)</s> not anymore
 - [ ] time/cover features are not applied on device boot, only after first toggle
-- [ ] font atlases are too big
 - [ ] blink/marquee timers are not precise
 - [ ] fps limit works after application restart, because you need to reset `lasttime`; don't want to pass it through
   everything.
 - [ ] first clock update is not visible because it is immediately wiped by volume change (which is needed to get first
   volume reading)
+- [x] font atlases are too big
+- [x] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)
+- [x] <s>winamp playlist flicker sometimes (or is it?)</s> not anymore
+
