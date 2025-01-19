@@ -15,6 +15,18 @@ log()
         IFS=$oldIFS
 }
 
+clearBadBoots() {
+  if ! test -f /contents/wampy/config.ini; then
+    log "no previous config found"
+    return
+  fi
+
+  log "badboots = $(busybox grep badboots /contents/wampy/config.ini)"
+  log "resetting badboots to 0"
+  busybox sed -i 's/badboots.*/badboots = 0/g' /contents/wampy/config.ini
+  log "badboots = $(busybox grep badboots /contents/wampy/config.ini)"
+}
+
 install() {
   log "installing ${BINARY}"
   mkdir -p ${VENDOR}/bin/
@@ -109,6 +121,8 @@ install() {
   log "installing llusbdac"
   mkdir -p ${VENDOR}/modules/
   cp llusbdac.ko ${VENDOR}/modules/
+
+  clearBadBoots
 }
 
 log "installing $(cat product_info)"

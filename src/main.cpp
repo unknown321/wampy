@@ -423,6 +423,7 @@ int main(int, char **) {
         exit(1);
     }
 
+    auto now = std::time(nullptr);
     while (true) {
         struct stat st {};
         if (stat(socket.c_str(), &st) == 0) {
@@ -430,6 +431,12 @@ int main(int, char **) {
         } else {
             nanosleep(&tw, nullptr);
             DLOG("waiting for socket %s\n", socket.c_str());
+        }
+
+        if (std::time(nullptr) - now > 120) {
+            DLOG("wampy socket timeout, %s\n", socket.c_str());
+            createDump();
+            exit(1);
         }
     }
 
