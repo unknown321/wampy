@@ -3,7 +3,9 @@
 
 #include "../INotifiable.h"
 #include "../playlist.h"
+#include "../sound_settings/sound_settings.h"
 #include "../util/util.h"
+#include "hagoromoStatus.h"
 #include "song.h"
 #include <cmath>
 #include <mutex>
@@ -46,16 +48,30 @@ struct Status {
     int Bits{};
     int Channels{};
     int SampleRate{};
-    std::string Codec;
+    std::string Codec{};
     int PositionPercent{};
     std::string SampleRateString;
     std::string BitrateString;
-    std::string State;
-    int PlaylistUpdateTimestamp{};
+    std::string Filename;
+    PlayStateE State{};
 
     statusFields sf{};
 
     int Balance{};
+};
+
+struct SongInfo {
+    std::string Filename;
+    std::string Title;
+    std::string Artist;
+    std::string Album;
+    int TrackNumber;
+    int Duration;
+    int SampleRate;
+    int BitDepth;
+    int Bitrate;
+    int TotalTracks;
+    int Codec;
 };
 
 struct Connector {
@@ -73,6 +89,8 @@ struct Connector {
     std::string stateString;
 
     std::vector<INotifiable *> clients;
+
+    SoundSettings soundSettings{};
 
     Connector() {
         for (int i = 0; i < PLAYLIST_SIZE; i++) {
@@ -174,6 +192,38 @@ struct Connector {
     virtual void FeatureShowTime(bool enable) = 0;
 
     virtual void FeatureSetMaxVolume(bool enable) = 0;
+
+    virtual void SetClearAudio(bool enable) = 0;
+
+    virtual void SetEqBands(std::vector<double>) = 0;
+
+    virtual void SetEqPreset(int preset) = 0;
+
+    virtual void SetVPT(bool enable) = 0;
+
+    virtual void SetVPTPreset(int preset) = 0;
+
+    virtual void SetDsee(bool enable) = 0;
+
+    virtual void SetDCPhase(bool enable) = 0;
+
+    virtual void SetDCPhasePreset(int preset) = 0;
+
+    virtual void SetVinyl(bool enable) = 0;
+
+    virtual void SetDirectSource(bool enable) = 0;
+
+    virtual void SetToneControlValues(const std::vector<int> &v) = 0;
+
+    virtual void SetToneControlOrEQ(int eqType) = 0;
+
+    virtual void SetDseeCust(bool enable) = 0;
+
+    virtual void SetDseeCustMode(int mode) = 0;
+
+    virtual void SetVinylMode(int mode) = 0;
+
+    virtual void getSongData(int entryId, SongInfo *s) = 0;
 
     virtual void Start() {
         Connect();

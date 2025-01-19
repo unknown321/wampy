@@ -6,223 +6,156 @@
 #include <QJSValue>
 #include <QQmlExpression>
 #include <QQuickItem>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
 
-enum detailIndex {
-    TITLE = 0,
-    ARTIST,
-    ALBUM_ARTIST,
-    ALBUM,
-    GENRE,
-    YEAR,
-    COMPOSER,
-    TRACK,
-    DISC,
-    LENGTH,
-    SENSME_STATUS,
-    STORAGE_LOCATION,
-    FILE_NAME,
-    CODEC,
-    BIT_RATE,
-    SAMPLE_RATE,
-    BIT_DEPTH,
-    LYRICS_DATA,
+#include "../qt/qtbase/src/corelib/kernel/qobject_p.h"
+
+class QObjectConnectionListVector : public QVector<QObjectPrivate::ConnectionList> {
+  public:
+    bool orphaned; // the QObject owner of this vector has been destroyed while the vector was inUse
+    bool dirty;    // some Connection have been disconnected (their receiver is 0) but not removed from the list yet
+    int inUse;     // number of functions that are currently accessing this object or its connections
+    QObjectPrivate::ConnectionList allsignals;
+
+    QObjectConnectionListVector() : QVector<QObjectPrivate::ConnectionList>(), orphaned(false), dirty(false), inUse(0) {}
+
+    QObjectPrivate::ConnectionList &operator[](int at) {
+        if (at < 0)
+            return allsignals;
+        return QVector<QObjectPrivate::ConnectionList>::operator[](at);
+    }
 };
 
-Provider::Provider() {}
+Provider::Provider() = default;
+
+void Provider::Start() {
+    int fd;
+
+    shm_unlink(HAGOROMO_STATUS_SHM_PATH);
+
+    fd = shm_open(HAGOROMO_STATUS_SHM_PATH, O_CREAT | O_EXCL | O_RDWR, 0600);
+    if (fd == -1) {
+        DLOG("shm_open: %s\n", strerror(errno));
+        return;
+    }
+
+    if (ftruncate(fd, sizeof(struct HagoromoStatus)) == -1) {
+        DLOG("ftruncate: %s\n", strerror(errno));
+        return;
+    }
+
+    /* Map the object into the caller's address space. */
+
+    status = static_cast<HagoromoStatus *>(mmap(nullptr, sizeof(*status), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
+    if (status == MAP_FAILED) {
+        DLOG("mmap: %s\n", strerror(errno));
+        return;
+    }
+
+    if (sem_init(&status->sem1, 1, 0) == -1) {
+        DLOG("sem_init-sem1: %s\n", strerror(errno));
+        return;
+    }
+}
+
+void Provider::notifyUpdate() const {
+    if (sem_post(&status->sem1) == -1) {
+        DLOG("sem_post: %s\n", strerror(errno));
+        return;
+    }
+}
 
 // mounted
 void Provider::FromMSC(QObject *msc) {
+    if (msc == nullptr) {
+        DLOG("msc is nullpo\n");
+        return;
+    }
     usbMounted = msc->property("unmountExported").toBool();
     DLOG("Mounted: %d\n", usbMounted);
 }
 
 void Provider::MSCSlot() { FromMSC(sender()); }
 
-// curTime, time, artist, album, title
-void Provider::FromMusicPlayer(QObject *o) {
-    DLOG("player: %s\n", o->metaObject()->className());
+void Provider::UpdateEntryID() {
+    if (sender() == nullptr) {
+        DLOG("nullpo\n");
+        return;
+    }
 
-    auto m = o->property("meta_data");
-    auto map = m.toMap();
-    album = map["album_name"].toString();
-    artist = map["artist_name"].toString();
-    title = map["play_title"].toString();
-    hires = (int)o->property("is_high_resolution").toBool();
-    DLOG("%s %s (%s), hires %d\n", artist.toUtf8().constData(), title.toUtf8().constData(), album.toUtf8().constData(), hires);
+    if (MusicPlayerDefaultModel == nullptr) {
+        MusicPlayerDefaultModel = sender();
+    }
 
-    time = (int)o->property("total_playback_time").toDouble(nullptr);
-    curTime = (int)o->property("currently_playing_time").toDouble(nullptr);
-    DLOG("%d / %d\n", curTime, time);
-    GetPlaylist();
+    status->entryId = (int)sender()->property("entry_id").toInt(nullptr);
+    // application is shutting down
+    if (status->entryId == 0) {
+        return;
+    }
+
+    if (status->prevEntryId == 0) {
+        GetPlaylist();
+        status->prevEntryId = status->entryId;
+    }
+
+    if (status->entryId != status->prevEntryId) {
+        GetPlaylist();
+        status->prevEntryId = status->entryId;
+    }
+
+    notifyUpdate();
 }
-
-void Provider::MusicPlayerSlot() { FromMusicPlayer(sender()); }
 
 void Provider::UpdateElapsed() {
-    bool ok;
-    curTime = (int)sender()->property("currently_playing_time").toDouble(&ok);
+    if (sender() == nullptr) {
+        DLOG("nullpo\n");
+        return;
+    }
+
+    if (MusicPlayerDefaultModel == nullptr) {
+        MusicPlayerDefaultModel = sender();
+    }
+
+    status->elapsed = (int)sender()->property("currently_playing_time").toInt(nullptr);
+
+    notifyUpdate();
 }
 
-void Provider::FromDAC(QObject *o) {
-    bool ok;
-    volume = o->property("volume").toInt(&ok);
-    //    DLOG("volume %d\n", volume);
+void Provider::UpdateBasicControls() {
+    if (MusicPlayerDefaultModel == nullptr) {
+        DLOG("nullpo\n");
+        return;
+    }
+
+    status->shuffleOn = (int)MusicPlayerDefaultModel->property("is_shuffle").toInt(nullptr);
+    status->repeatMode = (int)MusicPlayerDefaultModel->property("repeat_mode").toInt(nullptr);
+
+    notifyUpdate();
+}
+
+void Provider::FromDAC(QObject *o) const {
+    if (o == nullptr) {
+        DLOG("nullpo\n");
+        return;
+    }
+
+    auto p = o->property("volume");
+    if (!p.isValid()) {
+        DLOG("invalid\n");
+        return;
+    }
+    status->volumeRaw = p.toInt(nullptr);
+    status->volume = status->volumeRaw * 100 / maxVolume;
+
+    DLOG("volume %d%%, raw %d\n", status->volume, status->volumeRaw);
+    notifyUpdate();
 }
 
 void Provider::VolumeSlot() { FromDAC(sender()); }
 
-// playState, repeat, shuffle
-void Provider::FromMusicWindow(QObject *o) {
-    auto m = o->property("basicPlayerControls");
-    if (!m.isValid()) {
-        DLOG("failed to get basicPlayerControls\n");
-        return;
-    }
-
-    auto map = m.toMap();
-    auto keys = {"playState", "repeatModeState", "shuffleState"};
-    for (auto k : keys) {
-        if (map.count(k) == 0) {
-            DLOG("missing key %s\n", k);
-            return;
-        }
-    }
-
-    isPlaying = map["playState"].toBool();
-    shuffle = map["shuffleState"].toBool();
-    bool ok;
-    repeat = map["repeatModeState"].toInt(&ok);
-
-    DLOG("is playing %d, shuffle %d, repeat %d\n", isPlaying, shuffle, repeat);
-}
-
-void Provider::MusicWindowSlot() { FromMusicWindow(sender()); }
-
-// TODO: popupParent is already present in Connector
-void Provider::FromDetailsPopup() {
-    auto window = getWindow();
-    if (!window) {
-        DLOG("no window\n");
-        return;
-    }
-
-    auto context = qmlContext(window);
-    if (!context) {
-        DLOG("no context\n");
-        return;
-    }
-
-    auto res = jsExpr("popupParent", context, window);
-    if (!res.isValid()) {
-        DLOG("popup parent invalid\n");
-        return;
-    }
-
-    auto popupParent = qvariant_cast<QQuickItem *>(res);
-    if (!popupParent) {
-        DLOG("cast failed\n");
-        return;
-    }
-
-    QQuickItem *popupView = nullptr;
-    for (auto c : popupParent->childItems()) {
-        auto prop = c->property("popupID");
-        if (!prop.isValid()) {
-            continue;
-        }
-
-        if (prop.toString() == "NowPlayingContentDetailedInfoPopup") {
-            popupView = c;
-            break;
-        }
-    }
-
-    if (!popupView) {
-        DLOG("no details popup found\n");
-        return;
-    }
-
-    if (popupView->childItems().count() < 1) {
-        DLOG("missing popup data\n");
-        return;
-    }
-
-    auto pop = popupView->childItems().at(0);
-    if (pop->childItems().size() < 4) {
-        DLOG("not enough children\n");
-        return;
-    }
-
-    auto flickableDetailedInfo = pop->childItems().at(3);
-
-    if (!flickableDetailedInfo) {
-        DLOG("flickable is null\n");
-        return;
-    }
-
-    auto detailedInfoDelegate = flickableDetailedInfo->childItems().at(0)->childItems().at(0);
-
-    if (detailedInfoDelegate->childItems().size() < 18) {
-        DLOG("unexpected list size %d\n", detailedInfoDelegate->childItems().size());
-        return;
-    }
-
-    for (int i = 0; i < detailedInfoDelegate->childItems().size(); i++) {
-        auto entry = detailedInfoDelegate->childItems().at(i);
-        if (!entry) {
-            DLOG("cast failed\n");
-            continue;
-        }
-
-        parseDetailsPopupEntry(entry, i);
-    }
-}
-
-void Provider::UpdateDetails() { FromDetailsPopup(); }
-
-void Provider::parseDetailsPopupEntry(QQuickItem *o, int index) {
-    if (o->childItems().size() < 2) {
-        //        DLOG("unexpected element count %d\n", o->childItems().size());
-        return;
-    }
-
-    auto v = o->childItems().at(1)->property("text");
-    if (!v.isValid()) {
-        DLOG("no text prop\n");
-        return;
-    }
-
-    auto value = v.toString();
-
-    QString sampleUnit = "";
-    //    DLOG("entry %d\n", index);
-    switch (index) {
-    case CODEC:
-        codec = value.split(" ").at(0);
-        DLOG("codec %s\n", codec.toUtf8().constData());
-        break;
-    case BIT_DEPTH:
-        bitDepth = value.split(" ").at(0).toInt();
-        DLOG("bitdepth %d\n", bitDepth);
-        break;
-    case BIT_RATE:
-        bitRate = value.split(" ").at(0).toInt();
-        DLOG("bitrate %d\n", bitRate);
-        break;
-    case SAMPLE_RATE:
-        sampleUnit = value.split(" ").at(1);
-        sampleRate = value.split(" ").at(0).toFloat();
-        if (sampleUnit == "MHz") {
-            sampleRate = sampleRate * 1000;
-        }
-        DLOG("sample rate %d\n", sampleRate);
-        break;
-    default:
-        break;
-    }
-}
-
-int DurationToInt(QString duration) {
+int DurationToInt(const QString &duration) {
     auto parts = duration.split(":");
     if (parts.length() != 2) {
         DLOG("failed to parse duration %s\n", qPrintable(duration));
@@ -273,7 +206,7 @@ int parseTrack(QQuickItem *trackItem, Track *track) {
     }
 
     bool ok = false;
-    track->Track = indexN.toInt(&ok);
+    track->TrackNumber = indexN.toInt(&ok);
     if (!ok) {
         DLOG("cannot convert track number '%s' to int\n", indexN.toString().toUtf8().constData());
         return -1;
@@ -284,7 +217,7 @@ int parseTrack(QQuickItem *trackItem, Track *track) {
         DLOG("invalid artist\n");
         return -1;
     }
-    track->Artist = Artist.toString();
+    strncpy(track->Artist, Artist.toString().toUtf8().constData(), sizeof track->Artist);
 
     auto Title = contents->property("item_text");
     if (!Title.isValid()) {
@@ -295,7 +228,7 @@ int parseTrack(QQuickItem *trackItem, Track *track) {
     if (Title.toString().length() == 0) {
         return 0;
     }
-    track->Title = Title.toString();
+    strncpy(track->Title, Title.toString().toUtf8().constData(), sizeof track->Title);
 
     auto IsPlaying = contents->property("is_play_status_visible");
     if (!IsPlaying.isValid()) {
@@ -321,7 +254,7 @@ int parseTrack(QQuickItem *trackItem, Track *track) {
     track->Duration = dur;
     DLOG(
         "track: %d. %s ::: %s ::: %d secs, active: %d\n",
-        track->Track,
+        track->TrackNumber,
         qPrintable(track->Artist),
         qPrintable(track->Title),
         track->Duration,
@@ -376,8 +309,16 @@ void Provider::GetPlaylist() {
         }
     }
 
+    if (gridArea == nullptr) {
+        DLOG("no grid area\n");
+        return;
+    }
+
     QQuickItem *TrackSequenceView = nullptr;
     for (auto l : gridArea->childItems()) {
+        if (l == nullptr) {
+            continue;
+        }
         for (auto kid : l->childItems()) {
             if (QString(kid->metaObject()->className()).startsWith("TrackSequenceView_QMLTYPE_")) {
                 if (QString(kid->objectName()) == "TrackSequence") {
@@ -396,6 +337,9 @@ void Provider::GetPlaylist() {
     updatePlaylist(TrackSequenceView);
 
     QQuickItem *listView = nullptr;
+    if (TrackSequenceView == nullptr) {
+        return;
+    }
     for (auto v : TrackSequenceView->childItems()) {
         if (QString(v->metaObject()->className()).startsWith("EdgeDetectListView_QMLTYPE_")) {
             listView = v;
@@ -413,18 +357,21 @@ void Provider::GetPlaylist() {
         return;
     }
 
-    auto tracks = listView->childItems().at(0)->childItems();
+    auto vv = listView->childItems().at(0);
+    if (vv == nullptr) {
+        return;
+    }
+    auto tracks = vv->childItems();
     DLOG("%d tracks in track list\n", tracks.length());
 
     for (int g = 0; g < PLAYLIST_LENGTH; g++) {
-        playlist[g].Track = 0;
-        playlist[g].Title = "";
-        playlist[g].Artist = "";
-        playlist[g].Duration = 0;
-        playlist[g].Active = false;
+        status->playlist[g].TrackNumber = 0;
+        memset(status->playlist[g].Title, 0, PLAYLIST_TRACK_FIELD_SIZE);
+        memset(status->playlist[g].Artist, 0, PLAYLIST_TRACK_FIELD_SIZE);
+        status->playlist[g].Duration = 0;
+        status->playlist[g].Active = false;
     }
 
-    playlistActiveFound = false;
     int i = 0;
     for (auto trackItem : tracks) {
         if (i >= PLAYLIST_LENGTH) {
@@ -432,11 +379,14 @@ void Provider::GetPlaylist() {
             break;
         }
 
-        if (parseTrack(trackItem, &playlist[i]) == 0) {
-            if (playlist[i].Active) {
-                playlistActiveFound = true;
-            }
+        if (parseTrack(trackItem, &status->playlist[i]) == 0) {
             i++;
         }
     }
+}
+
+void Provider::CurrentPlayState(PlayState play_state) const {
+    DLOG("new state is %d\n", play_state);
+    status->playState = static_cast<PlayStateE>(play_state);
+    notifyUpdate();
 }

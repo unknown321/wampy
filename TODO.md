@@ -1,8 +1,20 @@
+# release
+
+- [x] доки
+- [ ] вычитка
+- [x] пожать скрины
+- [ ] чейнджлог
+- [ ] тестирование
+  - [ ] устанавливается на чистое
+    - [ ] stock
+    - [ ] w1
+  - [ ] работает час и не течёт
+
 #general
 
-- [ ] make llusbdac build everywhere, not just on my machine
 - [ ] apply tunings on boot
 - [ ] mtk backup is broken on nw-a40, update docs
+- [x] make llusbdac build everywhere, not just on my machine
 - [x] export bookmarks
 - [x] current volume on volume table graphs
 - [x] <s>read skins from sd card</s> a lot of code for like what, 10 mb of skins on sd card? just use internal storage
@@ -67,12 +79,13 @@
 
 # want
 
+- [ ] mgsv tapes
 - [ ] compressed winamp (increased loading time (bad), better memory usage (good), reduced quality(maybe?))
-- [ ] winamp: reduce texture amount (but increase memory usage?)
+- [ ] winamp: reduce texture amount by atlassing (but increase memory usage?)
 - [ ] visualization from NW-WM1Z spectrum analyzer
-- [ ] eq button custom action - too small?
 - [ ] single connection over socket?
 - [ ] enqueue?
+- [x] eq button custom action - too small?
 - [x] walkman One settings in wampy settings
 - [x] simple clock skin
 - [x] region.txt (winamp)
@@ -86,7 +99,7 @@
 - [ ] blink/marquee timers are not precise
 - [ ] fps limit works after application restart, because you need to reset `lasttime`; don't want to pass it through
   everything.
-- [ ] first clock update is not visible because it is immediately wiped by volume change (which is needed to get first
+- [x] first clock update is not visible because it is immediately wiped by volume change (which is needed to get first
   volume reading)
 - [x] font atlases are too big
 - [x] cassette tape combo is hidden by screen edge on hagoromo (culling and rotation)

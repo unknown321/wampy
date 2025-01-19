@@ -273,6 +273,7 @@ namespace Cassette {
             Tapes[path].skin = skin;
             Tapes[path].artist = artist;
             Tapes[path].title = title;
+            Tapes[path].album = album;
             Tapes[path].connector = connector;
 
             if (Tapes[path].Load(e.fullPath) == Tape::ERR_NO_FILES) {
@@ -577,30 +578,74 @@ namespace Cassette {
         auto sizeBackup = font->FontSize;
         auto song = connector->playlist.at(0);
 
-        char tempArtist[FIELD_SIZE];
-        strncpy(tempArtist, song.Artist.c_str(), FIELD_SIZE);
-        if (tempArtist[0] != '\0') {
-            for (auto &c : tempArtist) {
-                c = std::toupper(c);
+        std::string tempAlbum = song.Album;
+        std::string tempTitle = song.Title;
+        std::string tempArtist = song.Artist;
+        std::string upperAlbum = song.Album;
+        std::string upperTitle = song.Title;
+        std::string upperArtist = song.Artist;
+        toUpper(upperAlbum);
+        toUpper(upperTitle);
+        toUpper(upperArtist);
+        char croppedArtist[FIELD_SIZE];
+        char croppedTitle[FIELD_SIZE];
+        char croppedAlbum[FIELD_SIZE];
+
+        auto tapeConfig = Tapes[config->Get(tapeType)->tape];
+        if (tapeConfig.artistCoords.x > 0) {
+            auto formatArtist = tapeConfig.formatArtist;
+            replace(formatArtist, "$artist", song.Artist);
+            replace(formatArtist, "$title", song.Title);
+            replace(formatArtist, "$album", song.Album);
+            replace(formatArtist, "$ARTIST", upperArtist);
+            replace(formatArtist, "$TITLE", upperTitle);
+            replace(formatArtist, "$ALBUM", upperAlbum);
+
+            strncpy(croppedArtist, formatArtist.c_str(), FIELD_SIZE);
+            if (croppedArtist[0] != '\0') {
+                font->FontSize = fontSizeTTF;
+                CropTextToWidth(croppedArtist, font, fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+                font->FontSize = sizeBackup;
             }
-            font->FontSize = fontSizeTTF;
-            CropTextToWidth(tempArtist, font, fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
-            font->FontSize = sizeBackup;
         }
 
-        char tempTitle[FIELD_SIZE];
-        strncpy(tempTitle, song.Title.c_str(), FIELD_SIZE);
-        if (tempTitle[0] != '\0') {
-            for (auto &c : tempTitle) {
-                c = std::toupper(c);
+        if (tapeConfig.titleCoords.x > 0) {
+            auto formatTitle = Tapes[config->Get(tapeType)->tape].formatTitle;
+            replace(formatTitle, "$artist", song.Artist);
+            replace(formatTitle, "$title", song.Title);
+            replace(formatTitle, "$album", song.Album);
+            replace(formatTitle, "$ARTIST", upperArtist);
+            replace(formatTitle, "$TITLE", upperTitle);
+            replace(formatTitle, "$ALBUM", upperAlbum);
+
+            strncpy(croppedTitle, formatTitle.c_str(), FIELD_SIZE);
+            if (tempTitle[0] != '\0') {
+                font->FontSize = fontSizeTTF;
+                CropTextToWidth(croppedTitle, ImGui::GetFont(), fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+                font->FontSize = sizeBackup;
             }
-            font->FontSize = fontSizeTTF;
-            CropTextToWidth(tempTitle, ImGui::GetFont(), fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
-            font->FontSize = sizeBackup;
         }
 
-        strncpy(title, tempTitle, FIELD_SIZE);
-        strncpy(artist, tempArtist, FIELD_SIZE);
+        if (tapeConfig.albumCoords.x > 0) {
+            auto formatAlbum = Tapes[config->Get(tapeType)->tape].formatAlbum;
+            replace(formatAlbum, "$artist", song.Artist);
+            replace(formatAlbum, "$title", song.Title);
+            replace(formatAlbum, "$album", song.Album);
+            replace(formatAlbum, "$ARTIST", upperArtist);
+            replace(formatAlbum, "$TITLE", upperTitle);
+            replace(formatAlbum, "$ALBUM", upperAlbum);
+
+            strncpy(croppedAlbum, formatAlbum.c_str(), FIELD_SIZE);
+            if (tempAlbum[0] != '\0') {
+                font->FontSize = fontSizeTTF;
+                CropTextToWidth(croppedAlbum, ImGui::GetFont(), fontSizeTTF, Tapes[config->Get(tapeType)->tape].titleWidth);
+                font->FontSize = sizeBackup;
+            }
+        }
+
+        strncpy(title, croppedTitle, FIELD_SIZE);
+        strncpy(artist, croppedArtist, FIELD_SIZE);
+        strncpy(album, croppedAlbum, FIELD_SIZE);
     }
 
     void Cassette::SelectTape() {
@@ -693,6 +738,7 @@ namespace Cassette {
 
         if (ReelsAtlas.find(config->Get(tapeType)->reel) != ReelsAtlas.end()) {
             ActiveAtlas = &ReelsAtlas.at(config->Get(tapeType)->reel);
+            ActiveReel = nullptr;
         } else {
             ActiveAtlas = nullptr;
         }
@@ -765,6 +811,7 @@ namespace Cassette {
     }
 
     void Cassette::ReelLoop() {
+        DLOG("start reel loop\n");
         reelThreadRunning = true;
 
         int delay = REEL_DELAY_MS;
@@ -778,7 +825,7 @@ namespace Cassette {
                 break;
             }
 
-            if (connector->status.State != "play") {
+            if (connector->status.State != PlayStateE::PLAYING) {
                 continue;
             }
 
@@ -796,6 +843,7 @@ namespace Cassette {
                 } else {
                     this->reelIndex++;
                 }
+                continue;
             }
 
             if (ActiveAtlas) {

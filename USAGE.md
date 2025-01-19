@@ -7,8 +7,8 @@
   * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
   * [There is no song info](#there-is-no-song-info)
   * [Notes on ugly settings](#notes-on-ugly-settings)
-  * [There is a "detailed info" popup after turning screen off and on instead of Wampy](#there-is-a-detailed-info-popup-after-turning-screen-off-and-on-instead-of-wampy)
   * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
+  * [Buttons are not pressed after a single tap](#buttons-are-not-pressed-after-a-single-tap)
 * [Using Wampy](#using-wampy)
   * [Winamp](#winamp)
     * [UI Buttons](#ui-buttons)
@@ -28,6 +28,7 @@
 * [Walkman One](#walkman-one)
   * [Stock firmware](#stock-firmware)
 * [Sound settings, Low-latency USB DAC (♪♫ button)](#sound-settings-low-latency-usb-dac--button)
+* [Equalizer settings](#equalizer-settings)
 * [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
@@ -73,17 +74,13 @@ default music player, not SensMe or Language Study.
 Due to unfortunate combination of font and framework quirks, all text in settings is placed slightly lower than
 expected.
 
-### There is a "detailed info" popup after turning screen off and on instead of Wampy
-
-This is the place where current track info is coming from. Toggle Wampy on and off to close it automatically or just
-close it by hand.
-
-Why does it happen? Default player restores itself on power on and there is no indication of it being ready to be hidden
-again. Hiding default player as soon as possible caused crashes, so... Sorry about that.
-
 ### Everything lags after changing skins/tapes too much
 
 Reboot the device. I suppose that happens because of opengl texture unloading (or a memory leak:).
+
+### Buttons are not pressed after a single tap
+
+Tap that button twice. This is a bug.
 
 ## Using Wampy
 
@@ -111,7 +108,7 @@ Not implemented:
 
 #### UI Buttons
 
-EQ button does nothing because mapping EQ window to default player EQ is not an easy task.
+EQ button sends you to Equalizer settings page.
 
 Repeat button has 3 states: on, repeat 1 and off. Winamp doesn't have "repeat 1" sprite, so "on" sprite is reused.
 
@@ -261,20 +258,27 @@ Reel sprite changes every 55 ms. Default reels have 57 images each.
 `config.txt` contents:
 
 ```yaml
-reel: other           # default reel
-artistx: 83.0         # track artist coordinates
+reel: other             # default reel
+artistx: 83.0           # track artist coordinates
 artisty: 82.0
-titlex: 83.0          # track title coordinates
+artistformat: $ARTIST   # artist format string
+titlex: 83.0            # track title coordinates
 titley: 117.0
-reelx: 134.0          # reel upper left coordinate
+titleformat: $TITLE     # track format string
+albumx: -1.0            # album coordinates, hidden
+albumy: -1.0
+albumformat: $ALBUM     # album format string
+reelx: 134.0            # reel upper left coordinate
 reely: 160.0
-titlewidth: 600.0     # max title width in pixels, title will be cut after that value
-textcolor: #000000    # text color, RGB
+titlewidth: 600.0       # max title width in pixels, title will be cut after that value
+textcolor: #000000      # text color, RGB
 ```
 
 Remember, `(0,0)` is top left corner.
 
-Set `artistx`/`titlex` to negative value to hide artist/title labels.
+Set `artistx`/`titlex`/`albumx` to negative value to hide artist/title/album labels.
+
+Format variables: `$title, $artist, $album` for regular text and `$TITLE, $ARTIST, $ALBUM` for uppercase.
 
 Config file is not required; default one (with values above) will be used instead.
 
@@ -374,6 +378,8 @@ Walkman One due to interface clutter.
 
 `Limit max volume` limits max volume to 63 in Wampy, so you can use whole Winamp volume slider without going deaf.
 
+`Enable EQ per song` toggles dynamic equalizer option. You can read more about it [here](./EQUALIZER_SETTINGS.md).
+
 `Disable touchscreen` disables touchscreen on next Wampy toggle. To temporarily enable touchscreen in Wampy while in
 this mode, set volume to 120 in default player app and toggle Wampy on.
 
@@ -381,11 +387,15 @@ this mode, set volume to 120 in default player app and toggle Wampy on.
 
 `Remove wampy logs` button removes logs from `wampy/log/` directory.
 
+`DB char count` shows amount of unique characters in your database, which impacts loading time.
+
 `Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is
 cassette.
 
 `Limit fps`, target fps = 24. Does it really help to save battery/improve performance? Don't know, off by default.
 Applied after restart.
+
+`Website / Donate` is the most important button with links to GitHub and donation page.
 
 <figure>
 <img src="./images/hagoromo-fix.png" alt="time and cover">
@@ -421,6 +431,10 @@ On stock firmware there is only one option: UI color change.
 ## Sound settings, Low-latency USB DAC (♪♫ button)
 
 See [SOUND_SETTINGS.md](./SOUND_SETTINGS.md)
+
+## Equalizer settings
+
+See [EQUALIZER_SETTINGS.md](./EQUALIZER_SETTINGS.md)
 
 ## Providing debug information
 

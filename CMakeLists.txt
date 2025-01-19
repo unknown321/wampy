@@ -54,6 +54,8 @@ include_directories(
         server/qt/qtdeclarative/include/
         server/qt/qtdeclarative/include/QtQml
         server/qt/qtdeclarative/include/QtQuick
+
+        pstserver/
 )
 
 set(GLFW_BUILD_WAYLAND false)
@@ -119,6 +121,7 @@ add_executable(${PROJECT_NAME}
         src/cassette/tape.cpp
         src/digital_clock/digital_clock.cpp
         ${CONNECTOR_SOURCE}
+        src/connector/hagoromoToString.cpp
         src/imgui_curve.cpp
         src/imgui_widgets.cpp
         src/connector/song.cpp
@@ -129,6 +132,7 @@ add_executable(${PROJECT_NAME}
         src/config.cpp
         #        libs/imgui/imgui_demo.cpp
         src/shader.cpp
+        src/sound_settings/sound_settings.cpp
         src/dac/dac.cpp)
 
 #add_executable(dac
@@ -176,7 +180,7 @@ else ()
             INSTALL_RPATH_USE_LINK_PATH FALSE
             INSTALL_RPATH "./;../lib/;/system/lib;/system/vendor/unknown321/lib;/lib;/system/vendor/sony/lib")
 
-    find_library(MALI Mali_linux PATHS libs)
+    find_library(MALI Mali_linux PATHS libs/sysroot/lib/)
     #    find_library(ASOUND asound PATHS libs)
     target_link_libraries(${PROJECT_NAME} ${MALI})
     #    target_link_libraries(${PROJECT_NAME} "${ASOUND}")

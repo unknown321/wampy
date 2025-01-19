@@ -83,7 +83,7 @@ QByteArray WampyServer::handle(QByteArray data) {
         controller.Show(&command);
         break;
     case Command::Type::CMD_GET_STATUS:
-        controller.GetStatus(&command);
+        //        controller.GetStatus(&command);
         break;
     case Command::Type::CMD_TEST:
         controller.TestCommand(&command);
@@ -123,6 +123,51 @@ QByteArray WampyServer::handle(QByteArray data) {
         break;
     case Command::Type::CMD_FEATURE_SET_MAX_VOLUME:
         controller.FeatureSetMaxVolume(&command);
+        break;
+    case Command::Type::CMD_SET_CLEAR_AUDIO:
+        controller.SetClearAudio(&command);
+        break;
+    case Command::Type::CMD_SET_EQ_BANDS:
+        controller.SetEqBands(&command);
+        break;
+    case Command::Type::CMD_SET_EQ_PRESET:
+        controller.SetEqPreset(&command);
+        break;
+    case Command::Type::CMD_SET_VPT:
+        controller.SetVPT(&command);
+        break;
+    case Command::Type::CMD_SET_VPT_PRESET:
+        controller.SetVPTPreset(&command);
+        break;
+    case Command::Type::CMD_SET_DSEE:
+        controller.SetDsee(&command);
+        break;
+    case Command::Type::CMD_SET_DCPHASE:
+        controller.SetDCPhase(&command);
+        break;
+    case Command::Type::CMD_SET_DCPHASE_PRESET:
+        controller.SetDCPhasePreset(&command);
+        break;
+    case Command::Type::CMD_SET_VINYL:
+        controller.SetVinyl(&command);
+        break;
+    case Command::Type::CMD_SET_DIRECT_SOURCE:
+        controller.SetDirectSource(&command);
+        break;
+    case Command::Type::CMD_SET_TONE_CONTROL_OR_EQ:
+        controller.SetToneControlOrEq(&command);
+        break;
+    case Command::Type::CMD_SET_TONE_CONTROL_VALUES:
+        controller.SetToneControlValues(&command);
+        break;
+    case Command::Type::CMD_SET_DSEE_CUST:
+        controller.SetDseeCust(&command);
+        break;
+    case Command::Type::CMD_SET_DSEE_CUST_MODE:
+        controller.SetDseeCustMode(&command);
+        break;
+    case Command::Type::CMD_SET_VINYL_MODE:
+        controller.SetVinylMode(&command);
         break;
     case Command::Type::CMD_UNKNOWN:
     default:

@@ -4,6 +4,7 @@
 #include <QWindow>
 
 #include "Provider.moc"
+#include "QTimer"
 #include "command.pb.h"
 
 #define DETAILS_POPUP_MENU_ID 3
@@ -24,13 +25,7 @@ class Controller : public QObject {
     Q_OBJECT
 
   private:
-    int setup();
-
-    void setupConnects();
-
     void getVolumeInHeader();
-
-    void getVolumeInHeaderWalkmanOne();
 
     void findViewModels(QQuickItem *swipeItem);
 
@@ -38,19 +33,9 @@ class Controller : public QObject {
 
     void initNavBar();
 
-    void initScreenTransitionController();
-
     void jsFromFile();
 
     bool goToPlayer();
-
-    bool isOnPlayerScreen();
-
-    QQuickItem *getDetailPopup();
-
-    void connectDetailInfoProvider();
-
-    bool detailsAfterTransition();
 
     void getModel();
 
@@ -58,26 +43,53 @@ class Controller : public QObject {
 
     QObject *getActivePlayer();
 
-    QObject *getActiveQMLPlayer();
-
     QVariant jsExpression(const char *text);
+
+    void getFromModelManager();
+    void connectFromModelManager();
+    void getMusicWindow();
+    void getAudioSourceMgr();
+    void connectVolumeSlot();
+    int toggleClearAudio();
+    int toggleDirectSource();
+    int toggleVpt(bool enable);
+    int setVptPreset(int);
+    int setEqBands(QList<double> &bandValues);
+    int setEqPreset(int);
+    int toggleDsee(bool enable);
+    int toggleDCPhase(bool enable);
+    int setDCPhasePreset(int);
+    int toggleVinyl(bool enable);
+    int setToneControlLow(int);
+    int setToneControlMiddle(int);
+    int setToneControlHigh(int);
+    int setToneControlOrEQ(int);
+    int setDseeCust(bool enable);
+    int setDseeCustMode(int);
+    int setVinylMode(int);
+    void initializeVolumeValue();
 
     QWindow *window = nullptr;
     QQmlContext *context = nullptr;
     QObject *FrameWork = nullptr;
-    QObject *MSC = nullptr;
     QObject *DAC = nullptr;
-    QObject *PopupParent = nullptr;
-    QObject *MusicPlayer = nullptr;                // MusicPlayerDefault_QMLTYPE_
-    QObject *MusicWindow = nullptr;                // PlayerWindow_QMLTYPE_
-    QObject *BasicPlayerControls = nullptr;        // dmpapp::BasicPlayerControls
-    QObject *ContentDetailedInfo = nullptr;        // dmpapp::ContentDetailedInfo
-    QObject *NavBar = nullptr;                     // dmpapp::NavigationBarForSettings
-    QObject *ScreenTransitionController = nullptr; // dmpapp::ScreenTransitionController
-    QObject *DACViewModel = nullptr;               // dmpapp::DACViewModel
-    QObject *StandardPlayer = nullptr;             // dmpapp::StandardPlayer
-    QObject *MusicPlayerModel = nullptr;           // dmpapp::MusicPlayerDefaultViewModel
-                                                   //    QObject *MusicWindowViewModel = nullptr; // dmpapp::MusicWindowViewModel
+    QObject *MSCViewModel = nullptr;           // dmpapp::MSCViewModel
+    QObject *MusicPlayer = nullptr;            // MusicPlayerDefault_QMLTYPE_
+    QObject *MusicWindow = nullptr;            // PlayerWindow_QMLTYPE_
+    QObject *BasicPlayerControls = nullptr;    // dmpapp::BasicPlayerControls
+    QObject *NavBar = nullptr;                 // dmpapp::NavigationBarForSettings
+    QObject *DACViewModel = nullptr;           // dmpapp::DACViewModel
+    QObject *MusicPlayerModel = nullptr;       // dmpapp::MusicPlayerDefaultViewModel
+    QObject *SettingTopViewModel = nullptr;    // dmpapp::SettingTopViewModel
+    QObject *EqualizerViewModel = nullptr;     // dmpapp::EqualizerViewModel
+    QObject *VptViewModel = nullptr;           // dmpapp::VptViewModel
+    QObject *DseeAiViewModel = nullptr;        // dmpapp::DseeAiViewModel, no mode change, nw-a50
+    QObject *DcPhaseLinearizerModel = nullptr; // dmpapp::DcPhaseLinearizerViewModel
+    QObject *VinylProcessorModel = nullptr;    // dmpapp::VinylProcessorViewModel
+    QObject *AudioSourceMgr = nullptr;         // dmpapp::AudioSourceMgr
+    QObject *ToneControlViewModel = nullptr;   // dmpapp::ToneControlViewModel
+    QObject *DseeHxViewModel = nullptr;        // dmpapp::DseeHxViewModel, this one allows changing mode, wm1a/z+?
+    QTimer *bpcTimer = nullptr;
 
     QObject *MusicPlayerDigitalLevelMeterModel = nullptr; // dmpapp::MusicPlayerDigitalLevelMeterViewModel
     QObject *MusicPlayerLevelMeterModel = nullptr;        // dmpapp::MusicPlayerLevelMeterViewModel
@@ -95,23 +107,13 @@ class Controller : public QObject {
     QTimer *timer = nullptr;
     QString regularTitle{}; // title without artist, used to restore title on disabling huge cover
 
-    // if details popup is not ready but window is already
-    //  hidden, there will be no data in popup until window is visible
-    //  Therefore window must be hidden only after popup is ready
-    bool waitingForHide = false;
-
     // DAC is unaware of volume value until it's changed
     bool volumeFirstPull = false;
 
-    // trigger first detailed info update
-    bool detailsFirstPull = false;
-
     bool initialized = false;
-    bool ready = false;
 
     bool featureShowClockEnabled = false;
     bool featureBigCoverEnabled = false;
-    bool featureSetMaxVolume = false;
     bool isWalkmanOne = false;
 
     int maxVolume = HAGOROMO_DEFAULT_VOLUME_MAX;
@@ -123,7 +125,7 @@ class Controller : public QObject {
 
     int Initialize();
 
-    bool Ready();
+    bool Ready() const;
 
     void Hide(Command::Command *c);
 
@@ -135,8 +137,6 @@ class Controller : public QObject {
 
     // seconds * 1000
     void Seek(Command::Command *c);
-
-    void GetStatus(Command::Command *c);
 
     void Repeat(Command::Command *c);
 
@@ -160,17 +160,44 @@ class Controller : public QObject {
 
     void FeatureSetMaxVolume(Command::Command *c);
 
+    void SetClearAudio(Command::Command *c);
+
+    void SetEqBands(Command::Command *c);
+
+    void SetEqPreset(Command::Command *c);
+
+    void SetVPT(Command::Command *c);
+
+    void SetVPTPreset(Command::Command *c);
+
+    void SetDsee(Command::Command *c);
+
+    void SetDCPhase(Command::Command *c);
+
+    void SetDCPhasePreset(Command::Command *c);
+
+    void SetVinyl(Command::Command *c);
+
+    void SetDirectSource(Command::Command *c);
+
+    void SetToneControlValues(Command::Command *c);
+
+    void SetToneControlOrEq(Command::Command *c);
+
+    void SetDseeCust(Command::Command *c);
+
+    void SetDseeCustMode(Command::Command *c);
+
+    void SetVinylMode(Command::Command *c);
+
   public slots:
-
-    void invokeDetailsPopup();
-
-    void popupAdded();
-
-    void popupReady();
-
     void SeekToZero();
 
     void UpdateTitleWithArtist();
 
     void UpdateTime(bool with_time = true);
+
+    void WaitForAudioSource();
+
+    void StopRunning();
 };

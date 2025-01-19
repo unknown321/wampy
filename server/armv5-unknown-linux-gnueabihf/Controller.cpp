@@ -53,16 +53,9 @@ bool Controller::goToPlayer() {
         return false;
     }
 
-    if (isOnPlayerScreen()) {
-        return true;
-    }
-
     if (NavBar == nullptr) {
-        setup();
-        if (NavBar == nullptr) {
-            DLOG("no navbar\n");
-            return false;
-        }
+        DLOG("no navbar\n");
+        return false;
     }
 
     if (!QMetaObject::invokeMethod(NavBar, "GoToPlayer", Qt::DirectConnection)) {
@@ -73,7 +66,7 @@ bool Controller::goToPlayer() {
     return true;
 }
 
-bool Controller::Ready() { return initialized; }
+bool Controller::Ready() const { return initialized; }
 
 int Controller::Initialize() {
     if (initialized) {
@@ -104,150 +97,141 @@ int Controller::Initialize() {
 
     FrameWork = swipeItem->parent();
 
-    if (setup() == 0) {
-        initialized = true;
-    } else {
-        return -1;
+    auto gridArea = swipeItem->childItems()[0]->childItems()[0];
+    int s = gridArea->childItems().size();
+    for (int i = 0; i < s; i++) {
+        auto loader = gridArea->childItems()[i];
+        for (auto kid : loader->childItems()) {
+            if (QString(kid->metaObject()->className()).startsWith("DAC_QMLTYPE_")) {
+                DAC = kid;
+
+                auto dacLoader = DAC->parent();
+                if (dacLoader == nullptr) {
+                    continue;
+                }
+            }
+
+            if (QString(kid->metaObject()->className()).startsWith("MusicPlayerDefault_QMLTYPE_")) {
+                MusicPlayer = kid;
+
+                auto mLoader = MusicPlayer->parent();
+                if (mLoader == nullptr) {
+                    continue;
+                }
+
+                auto proxy = mLoader->property("viewModel");
+                if (!proxy.isValid()) {
+                    DLOG("cannot get music Player model proxy\n");
+                    continue;
+                }
+
+                auto proxyObj = qvariant_cast<QObject *>(proxy);
+                if (!proxyObj) {
+                    DLOG("no proxy object for music player\n");
+                    continue;
+                }
+
+                MusicPlayerModel = proxyObj->parent();
+            }
+        }
+
+        if (MusicPlayerModel != nullptr && DAC != nullptr) {
+            break;
+        }
     }
+
+    if (MusicPlayerModel != nullptr) {
+        getFromModelManager();
+        connectFromModelManager();
+        initializeVolumeValue();
+        getMusicWindow();
+        initBasicPlayerControls();
+        getAudioSourceMgr();
+        connectVolumeSlot();
+    }
+
+    if (AudioSourceMgr == nullptr) {
+        bpcTimer = new QTimer();
+        bpcTimer->setInterval(1000);
+        QObject::connect(bpcTimer, SIGNAL(timeout()), this, SLOT(WaitForAudioSource()), Qt::DirectConnection);
+        bpcTimer->moveToThread(MusicPlayerModel->thread());
+        bpcTimer->start();
+        DLOG("started timer\n");
+    }
+
+    initialized = true;
+
+    provider.Start();
+
+    provider.FromDAC(DACViewModel); // first volume pull
 
     return 0;
 }
 
-bool Controller::detailsAfterTransition() {
-    DLOG("\n");
-    if ((bool)transitionToDetailsPopup) {
-        DLOG("connection exists\n");
-        return true;
+void Controller::WaitForAudioSource() {
+    initBasicPlayerControls();
+    getAudioSourceMgr();
+    initNavBar();
+    if (AudioSourceMgr != nullptr && NavBar != nullptr) {
+        bpcTimer->stop();
+        DLOG("stopped timer\n");
     }
-
-    if (ScreenTransitionController == nullptr) {
-        setup();
-    }
-
-    if (ScreenTransitionController == nullptr) {
-        DLOG("no transition controller\n");
-        return false;
-    }
-
-    transitionToDetailsPopup =
-        QObject::connect(ScreenTransitionController, SIGNAL(finishedTransition()), this, SLOT(invokeDetailsPopup()), Qt::DirectConnection);
-
-    return (bool)transitionToDetailsPopup;
 }
 
-bool Controller::isOnPlayerScreen() {
-    DLOG("\n");
-    auto player = getActivePlayer();
-    if (player == nullptr) {
-        DLOG("no active player found\n");
-        return false;
-    }
-
-    auto v = player->property("is_activated");
-    if (!v.isValid()) {
-        DLOG("invalid prop\n");
-        return false;
-    }
-    DLOG("is activated = %s\n", v.toString().toUtf8().constData());
-
-    return v.toBool();
-}
-
-// - hides qWindow
-// - navigates to music player screen
-// - invokes song detailed info popup
-// Window might be hidden by popupReady slot in case when details popup is not ready.
-void Controller::Hide(Command::Command *c) {
-    for (auto conn : popupReadyConnections) {
-        disconnect(conn);
-    }
-
-    popupReadyConnections.clear();
-
-    if (provider.usbMounted) {
-        DLOG("usb on, just hide\n");
-        if (!QMetaObject::invokeMethod(FrameWork, "hide", Qt::QueuedConnection)) {
-            DLOG("failed to hide framework\n");
-            c->set_code(Command::FAIL);
-        }
-
-        c->set_code(Command::OK);
-
+void Controller::getMusicWindow() {
+    if (MusicWindow != nullptr) {
+        DLOG("already found\n");
         return;
     }
 
-    waitingForHide = true;
-
-    auto activePlayer = getActiveQMLPlayer();
-    if (activePlayer != provider.qmlPlayer) {
-        DLOG("setting up connects\n");
-        setupConnects();
-    }
-
-    auto popup = getDetailPopup();
-    if (popup) {
-        DLOG("details popup exists\n");
-        disconnect(transitionToDetailsPopup);
-        if (!QMetaObject::invokeMethod(FrameWork, "hide", Qt::QueuedConnection)) {
-            DLOG("failed to hide framework\n");
-            c->set_code(Command::FAIL);
-        }
-
-        c->set_code(Command::OK);
-
+    auto res = jsExpression("swipeItem");
+    if (!res.isValid()) {
+        DLOG("cannot get swipeItem\n");
         return;
-    } else {
-        DLOG("no details popup\n");
     }
 
-    if (isOnPlayerScreen()) {
-        DLOG("on player screen, creating details popup\n");
-        invokeDetailsPopup();
-    } else {
-        DLOG("not on player screen, connecting invocation after screen transition\n");
-        if (detailsAfterTransition() == false) {
-            DLOG("cannot connect transition to popup invocation\n");
-            c->set_code(Command::FAIL);
-            return;
-        }
+    auto pp = jsExpression("popupParent");
+    if (!pp.isValid()) {
+        DLOG("popupParent invalid\n");
+        return;
+    }
+    auto swipeItem = qvariant_cast<QQuickItem *>(res);
 
-        DLOG("connected transition\n");
-        if (isOnPlayerScreen()) {
-            DLOG("already on player screen, invoking popup\n");
-            invokeDetailsPopup();
-        } else {
-            DLOG("going to player screen\n");
-            if (!goToPlayer()) {
-                DLOG("cannot go to player screen\n");
-                disconnect(transitionToDetailsPopup);
-                c->set_code(Command::FAIL);
-                return;
+    for (int i = 0; i < swipeItem->childItems().size(); i++) {
+        auto loader = swipeItem->childItems().at(i);
+        for (auto kid : loader->childItems()) {
+            if (QString(kid->metaObject()->className()).startsWith("PlayerWindow_QMLTYPE_")) {
+                MusicWindow = kid;
+                break;
             }
         }
+    }
+
+    if (MusicWindow != nullptr) {
+        auto h = QObject::connect(MusicWindow, SIGNAL(destroyed()), this, SLOT(StopRunning()), Qt::DirectConnection);
+        if (!bool(h)) {
+            DLOG("connect failed\n");
+        }
+    }
+}
+
+void Controller::StopRunning() {
+    DLOG("MusicWindow is destroyed, stopping\n");
+    disconnect(timeInHeader);
+}
+
+void Controller::Hide(Command::Command *c) {
+    goToPlayer();
+
+    if (!QMetaObject::invokeMethod(FrameWork, "hide", Qt::QueuedConnection)) {
+        DLOG("failed to hide framework\n");
+        c->set_code(Command::FAIL);
     }
 
     c->set_code(Command::OK);
 }
 
-// - disconnects all temporary connections
-// - shows qWindow
 void Controller::Show(Command::Command *c) {
-    disconnect(popupParentChildrenChanged);
-    disconnect(transitionToDetailsPopup);
-    disconnect(detailInfoPopupPositionReset);
-
-    for (auto conn : popupReadyConnections) {
-        disconnect(conn);
-    }
-    popupReadyConnections.clear();
-
-    auto dpop = getDetailPopup();
-    if (dpop) {
-        if (!QMetaObject::invokeMethod(qobject_cast<QObject *>(dpop->childItems().at(0)), "closeDetailedInfoPopup", Qt::DirectConnection)) {
-            DLOG("failed to invoke\n");
-        }
-    }
-
     if (!QMetaObject::invokeMethod(FrameWork, "show", Qt::QueuedConnection)) {
         DLOG("failed to show framework\n");
         c->set_code(Command::FAIL);
@@ -260,108 +244,31 @@ void Controller::Show(Command::Command *c) {
 void Controller::GetWindowStatus(Command::Command *s) {
     s->mutable_windowstatus()->set_visible(Command::VISIBILITY_YES);
     if (window->isVisible() == false) {
-        waitingForHide = false;
         s->mutable_windowstatus()->set_visible(Command::VISIBILITY_NO);
     }
 
     s->set_code(Command::OK);
 }
 
-void Controller::GetStatus(Command::Command *c) {
-    if (!initialized) {
-        DLOG("not initialized\n");
-        c->set_code(Command::FAIL);
+void Controller::SetVolume(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (DACViewModel == nullptr) {
+        DLOG("no DACViewModel\n");
         return;
     }
 
-    if (DACViewModel == nullptr) {
-        setup();
-    }
-
-    if (!detailInfoPopupPositionReset) {
-        connectDetailInfoProvider();
-        provider.FromDetailsPopup();
-    } else {
-        if (!detailsFirstPull) {
-            detailsFirstPull = QMetaObject::invokeMethod(ContentDetailedInfo, "listPositionReset", Qt::QueuedConnection);
-        }
-    }
-
-    if (DACViewModel && !volumeFirstPull) {
-        if (QMetaObject::invokeMethod(DACViewModel, "OnDownButtonClicked", Qt::QueuedConnection) &&
-            QMetaObject::invokeMethod(DACViewModel, "OnUpButtonClicked", Qt::QueuedConnection)) {
-            volumeFirstPull = true;
-            DLOG("clicked volume\n");
-            DLOG("volume is %d\n", provider.volume);
-        } else {
-            DLOG("click volume fail\n");
-        }
-    }
-
-    if (!provider.playlistActiveFound) {
-        DLOG("active not found\n");
-        provider.GetPlaylist();
-    }
-
-    auto s = c->mutable_status();
-
-    s->set_shuffle(provider.shuffle);
-    s->set_repeat(provider.repeat);
-    s->set_playstate(provider.isPlaying);
-
-    auto pl = s->mutable_playlist();
-    for (const auto &track : provider.playlist) {
-        auto t = pl->add_track();
-        t->set_active(track.Active);
-        t->set_artist(track.Artist.toUtf8().constData());
-        t->set_title(track.Title.toUtf8().constData());
-        t->set_duration(track.Duration);
-        t->set_track(track.Track);
-    }
-
-    s->set_codec(provider.codec.toUtf8().constData());
-    s->set_bitrate(provider.bitRate);
-    s->set_samplerate(provider.sampleRate);
-    s->set_bitdepth(provider.bitDepth);
-    s->set_elapsed(provider.curTime);
-    s->set_hires(provider.hires);
-    s->set_volume(provider.volume * 100 / maxVolume);
-    s->set_volumeraw(provider.volume);
-
-    c->set_code(Command::OK);
-}
-
-void Controller::SetVolume(Command::Command *c) {
-    if (DACViewModel == nullptr) {
-        setup();
-        if (DACViewModel == nullptr) {
-            c->set_code(Command::FAIL);
-            return;
-        }
-    }
-
-    int newVal = c->setvolume().valuepercent() * maxVolume / 100;
-
-    int oldVal = provider.volume;
-    int oldPercent = provider.volume * 100 / maxVolume;
-
-    DLOG("set to %d (%d%%), was %d (%d%%)\n", newVal, c->setvolume().valuepercent(), oldVal, oldPercent);
-
-    // this is a sad case of rounding int and refusing to work with raw volume values
-    if (newVal == oldVal) {
+    int newVal;
+    if (c->setvolume().relative()) {
+        int oldVal = DACViewModel->property("volume").toInt(nullptr);
+        DLOG("oldval is %d\n", oldVal);
         int one = maxVolume / 100;
         if (one < 1) {
             one = 1;
         }
 
-        if (oldPercent > c->setvolume().valuepercent()) {
-            // decrease
-            newVal -= one;
-        } else {
-            newVal += one;
-        }
-
-        DLOG("fixed to %d (%d%%), was %d (%d%%)\n", newVal, c->setvolume().valuepercent(), oldVal, oldPercent);
+        newVal = oldVal + (one * c->setvolume().relativevalue());
+    } else {
+        newVal = c->setvolume().valuepercent() * maxVolume / 100;
     }
 
     if (newVal > maxVolume) {
@@ -376,7 +283,6 @@ void Controller::SetVolume(Command::Command *c) {
 
     if (!QMetaObject::invokeMethod(DACViewModel, "OnVolumeDialChanged", Q_ARG(int, newVal))) {
         DLOG("failed to change volume\n");
-        c->set_code(Command::FAIL);
         return;
     }
 
@@ -404,12 +310,9 @@ void Controller::Seek(Command::Command *c) {
 
 void Controller::Prev(Command::Command *c) {
     if (BasicPlayerControls == nullptr) {
-        setup();
-        if (BasicPlayerControls == nullptr) {
-            DLOG("no basic player controls\n");
-            c->set_code(Command::FAIL);
-            return;
-        }
+        DLOG("no basic player controls\n");
+        c->set_code(Command::FAIL);
+        return;
     }
 
     if (!QMetaObject::invokeMethod(BasicPlayerControls, "OnPrevButtonClicked", Qt::QueuedConnection)) {
@@ -423,12 +326,9 @@ void Controller::Prev(Command::Command *c) {
 
 void Controller::Next(Command::Command *c) {
     if (BasicPlayerControls == nullptr) {
-        setup();
-        if (BasicPlayerControls == nullptr) {
-            DLOG("no basic player controls\n");
-            c->set_code(Command::FAIL);
-            return;
-        }
+        DLOG("no basic player controls\n");
+        c->set_code(Command::FAIL);
+        return;
     }
 
     if (!QMetaObject::invokeMethod(BasicPlayerControls, "OnNextButtonClicked", Qt::QueuedConnection)) {
@@ -442,12 +342,9 @@ void Controller::Next(Command::Command *c) {
 
 void Controller::Play(Command::Command *c) {
     if (BasicPlayerControls == nullptr) {
-        setup();
-        if (BasicPlayerControls == nullptr) {
-            DLOG("no basic player controls\n");
-            c->set_code(Command::FAIL);
-            return;
-        }
+        DLOG("no basic player controls\n");
+        c->set_code(Command::FAIL);
+        return;
     }
 
     if (!QMetaObject::invokeMethod(BasicPlayerControls, "OnPlayButtonClicked", Qt::QueuedConnection)) {
@@ -461,12 +358,9 @@ void Controller::Play(Command::Command *c) {
 
 void Controller::Pause(Command::Command *c) {
     if (BasicPlayerControls == nullptr) {
-        setup();
-        if (BasicPlayerControls == nullptr) {
-            DLOG("no basic player controls\n");
-            c->set_code(Command::FAIL);
-            return;
-        }
+        DLOG("no basic player controls\n");
+        c->set_code(Command::FAIL);
+        return;
     }
 
     if (!QMetaObject::invokeMethod(BasicPlayerControls, "OnPlayButtonClicked", Qt::DirectConnection)) {
@@ -486,7 +380,7 @@ void Controller::SeekToZero() {
 }
 
 void Controller::Stop(Command::Command *c) {
-    if (provider.isPlaying) {
+    if (provider.status->playState == PlayStateE::PLAYING) {
         auto player = getActivePlayer();
         if (player == nullptr) {
             DLOG("no active player found\n");
@@ -519,11 +413,8 @@ void Controller::Stop(Command::Command *c) {
 
 void Controller::Repeat(Command::Command *c) {
     if (MusicPlayerModel == nullptr) {
-        setup();
-        if (MusicPlayerModel == nullptr) {
-            c->set_code(Command::FAIL);
-            return;
-        }
+        c->set_code(Command::FAIL);
+        return;
     }
 
     auto player = getActivePlayer();
@@ -543,11 +434,8 @@ void Controller::Repeat(Command::Command *c) {
 
 void Controller::Shuffle(Command::Command *c) {
     if (MusicPlayerModel == nullptr) {
-        setup();
-        if (MusicPlayerModel == nullptr) {
-            c->set_code(Command::FAIL);
-            return;
-        }
+        c->set_code(Command::FAIL);
+        return;
     }
 
     auto player = getActivePlayer();
@@ -565,128 +453,502 @@ void Controller::Shuffle(Command::Command *c) {
     c->set_code(Command::OK);
 }
 
-void Controller::TestCommand(Command::Command *c) {
-    DLOG("test command\n");
-    provider.GetPlaylist();
-    //        setup();
-    //        jsFromFile();
-}
-
-// from gridArea: DAC, DACViewModel, MusicPlayer, MusicPlayerModel, MSC
-// from swipeItem: MusicWindow
-void Controller::findViewModels(QQuickItem *swipeItem) {
-    auto gridArea = swipeItem->childItems()[0]->childItems()[0];
-    int s = gridArea->childItems().size();
-    for (int i = 0; i < s; i++) {
-        auto loader = gridArea->childItems()[i];
-        for (auto kid : loader->childItems()) {
-            //            DLOG("%d %s\n", i, kid->metaObject()->className());
-            if (QString(kid->metaObject()->className()).startsWith("DAC_QMLTYPE_")) {
-                DAC = kid;
-
-                auto dacLoader = DAC->parent();
-                if (dacLoader == nullptr) {
-                    continue;
-                }
-
-                auto proxy = dacLoader->property("viewModel");
-                if (!proxy.isValid()) {
-                    DLOG("cannot get DAC view model proxy\n");
-                    continue;
-                }
-
-                auto proxyObj = qvariant_cast<QObject *>(proxy);
-                if (!proxyObj) {
-                    DLOG("no proxy object for dac\n");
-                    continue;
-                }
-
-                DACViewModel = proxyObj->parent();
-            }
-
-            if (QString(kid->metaObject()->className()).startsWith("MusicPlayerDefault_QMLTYPE_")) {
-                MusicPlayer = kid;
-
-                auto mLoader = MusicPlayer->parent();
-                if (mLoader == nullptr) {
-                    continue;
-                }
-
-                auto proxy = mLoader->property("viewModel");
-                if (!proxy.isValid()) {
-                    DLOG("cannot get music Player model proxy\n");
-                    continue;
-                }
-
-                auto proxyObj = qvariant_cast<QObject *>(proxy);
-                if (!proxyObj) {
-                    DLOG("no proxy object for music player\n");
-                    continue;
-                }
-
-                MusicPlayerModel = proxyObj->parent();
-            }
-
-            if (QString(kid->metaObject()->className()).startsWith("MSC_QMLTYPE_")) {
-                MSC = kid;
-            }
-        }
+void Controller::getFromModelManager() {
+    auto w = qobject_cast<QObject *>(MusicPlayerModel);
+    auto rs = QObjectPrivate::get(w)->receiverList("playMusicChanged()");
+    if (rs.empty()) {
+        DLOG("no receivers found\n");
+        return;
     }
 
-    for (int i = 0; i < swipeItem->childItems().size(); i++) {
-        auto loader = swipeItem->childItems().at(i);
-        for (auto kid : loader->childItems()) {
-            if (QString(kid->metaObject()->className()).startsWith("PlayerWindow_QMLTYPE_")) {
-                MusicWindow = kid;
+    auto pun = rs.at(0); // proxyUpdateNotifier
+
+    auto ModelManager = pun->parent();
+    DLOG("ModelManager children: %d\n", ModelManager->children().size());
+
+    for (const auto &kid : ModelManager->children()) {
+        auto k = qobject_cast<QObject *>(kid);
+        auto receivers = QObjectPrivate::get(k)->senderList();
+        if (receivers.empty()) {
+            continue;
+        }
+
+        for (const auto receiver : receivers) {
+            //            DLOG(
+            //                "0x%x %s %s\n",
+            //                &receiver,
+            //                QString(receiver->metaObject()->className()).toUtf8().constData(),
+            //                QString(receiver->objectName()).toUtf8().constData()
+            //            );
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::SettingTopViewModel") && SettingTopViewModel == nullptr) {
+                DLOG("found settingTopView\n");
+                SettingTopViewModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::EqualizerViewModel") && EqualizerViewModel == nullptr) {
+                DLOG("found Equalizer\n");
+                EqualizerViewModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::VptViewModel") && VptViewModel == nullptr) {
+                DLOG("found Vpt\n");
+                VptViewModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::DseeAiViewModel") && DseeAiViewModel == nullptr) {
+                DLOG("found Dsee\n");
+                DseeAiViewModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::DcPhaseLinearizerViewModel") &&
+                DcPhaseLinearizerModel == nullptr) {
+                DLOG("found DC phase\n");
+                DcPhaseLinearizerModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::VinylProcessorViewModel") &&
+                VinylProcessorModel == nullptr) {
+                DLOG("found vinyl\n");
+                VinylProcessorModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::DACViewModel") && DACViewModel == nullptr) {
+                DLOG("found DACViewModel\n");
+                DACViewModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::ToneControlViewModel") &&
+                ToneControlViewModel == nullptr) {
+                DLOG("found ToneControlModel\n");
+                ToneControlViewModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::DseeHxViewModel") && DseeHxViewModel == nullptr) {
+                DLOG("found dmpapp::DseeHxViewModel\n");
+                DseeHxViewModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::MSCViewModel") && MSCViewModel == nullptr) {
+                DLOG("found dmpapp::MSCViewModel\n");
+                MSCViewModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::MusicPlayerDigitalLevelMeterViewModel") &&
+                MusicPlayerDigitalLevelMeterModel == nullptr) {
+                DLOG("found dmpapp::MusicPlayerDigitalLevelMeterViewModel\n");
+                MusicPlayerDigitalLevelMeterModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::MusicPlayerLevelMeterViewModel") &&
+                MusicPlayerLevelMeterModel == nullptr) {
+                DLOG("found dmpapp::MusicPlayerLevelMeterViewModel\n");
+                MusicPlayerLevelMeterModel = receiver;
+                break;
+            }
+
+            if (QString(receiver->metaObject()->className()).startsWith("dmpapp::MusicPlayerSpectrumViewModel") &&
+                MusicPlayerSpectrumModel == nullptr) {
+                DLOG("found dmpapp::MusicPlayerSpectrumViewModel\n");
+                MusicPlayerSpectrumModel = receiver;
                 break;
             }
         }
     }
+}
 
+void Controller::initializeVolumeValue() {
+    if (DACViewModel == nullptr) {
+        DLOG("no dac view model\n");
+        return;
+    }
+    if (volumeFirstPull) {
+        DLOG("already initialized\n");
+        return;
+    }
+
+    if (QMetaObject::invokeMethod(DACViewModel, "OnDownButtonClicked", Qt::QueuedConnection) &&
+        QMetaObject::invokeMethod(DACViewModel, "OnUpButtonClicked", Qt::QueuedConnection)) {
+        volumeFirstPull = true;
+        DLOG("clicked volume\n");
+    } else {
+        DLOG("click volume fail\n");
+    }
+}
+
+void Controller::connectFromModelManager() {
+    QMetaObject::Connection h;
     if (MusicPlayerModel != nullptr) {
-        auto senders = QObjectPrivate::get(MusicPlayerModel)->senders;
-        if (senders == nullptr) {
-            DLOG("senders null\n");
-            return;
+        h = QObject::connect(MusicPlayerModel, SIGNAL(modifyEntryId()), &provider, SLOT(UpdateEntryID()), Qt::DirectConnection);
+        if (!(bool)h) {
+            DLOG("failed to connect modifyEntryId\n");
         }
 
-        while (senders) {
-            if (senders->sender != nullptr) {
-                //                DLOG("MusicPlayerDefaultModel sender %s\n", senders->sender->metaObject()->className());
-                if (QString(senders->sender->metaObject()->className()) == "dmpapp::StandardPlayer") {
-                    StandardPlayer = senders->sender;
-                    DLOG("found StandardPlayer\n");
-                    break;
-                }
-            }
+        h = QObject::connect(MusicPlayerModel, SIGNAL(playingChanged()), &provider, SLOT(UpdateElapsed()), Qt::DirectConnection);
+        if (!(bool)h) {
+            DLOG("failed to connect playingChanged (currently_playing_time)\n");
+        }
 
-            senders = senders->next;
+        DLOG("connected music player model\n");
+
+        provider.moveToThread(MusicPlayerModel->thread());
+
+        provider.UpdateEntryID();
+    }
+
+    if (MSCViewModel != nullptr) {
+        h = QObject::connect(MSCViewModel, SIGNAL(UnmountExportedStatusChanged()), &provider, SLOT(MSCSlot()), Qt::QueuedConnection);
+        if (!(bool)h) {
+            DLOG("failed to connect msc\n");
+        }
+
+        provider.FromMSC(MSCViewModel);
+    }
+}
+
+int Controller::toggleVpt(bool enable) {
+    if (VptViewModel == nullptr) {
+        DLOG("VptViewModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(VptViewModel, "VptChanged", Qt::DirectConnection, Q_ARG(bool, enable))) {
+        DLOG("invoke failed\n");
+    }
+
+    return 0;
+}
+
+void Controller::SetVPT(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (VptViewModel == nullptr) {
+        DLOG("VptViewModel is null\n");
+        return;
+    }
+
+    if (toggleVpt(c->vpt().enabled()) == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+int Controller::setVptPreset(int p) {
+    if (VptViewModel == nullptr) {
+        DLOG("VptViewModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(VptViewModel, "VptModeNameChanged", Qt::DirectConnection, Q_ARG(int, p))) {
+        DLOG("invoke failed\n");
+    }
+}
+
+void Controller::SetVPTPreset(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (VptViewModel == nullptr) {
+        DLOG("VptViewModel is null\n");
+        return;
+    }
+
+    if (setVptPreset(c->vptpreset().preset()) == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+int Controller::toggleDsee(bool enable) {
+    if (DseeAiViewModel == nullptr) {
+        DLOG("DseeViewModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(DseeAiViewModel, "OnDseeAiChanged", Qt::DirectConnection, Q_ARG(bool, enable))) {
+        DLOG("invoke failed\n");
+    }
+
+    return 0;
+}
+
+void Controller::SetDsee(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (DseeAiViewModel == nullptr) {
+        DLOG("DseeViewModel is null\n");
+        return;
+    }
+
+    if (toggleDsee(c->dsee().enabled()) == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+int Controller::toggleDCPhase(bool enable) {
+    if (DcPhaseLinearizerModel == nullptr) {
+        DLOG("DcPhaseLinearizerModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(DcPhaseLinearizerModel, "DcPhaseLinearizerChanged", Qt::DirectConnection, Q_ARG(bool, enable))) {
+        DLOG("invoke failed\n");
+    }
+
+    return 0;
+}
+
+void Controller::SetDCPhase(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (DcPhaseLinearizerModel == nullptr) {
+        DLOG("DCPhaseViewModel is null\n");
+        return;
+    }
+
+    if (toggleDCPhase(c->dcphase().enabled()) == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+int Controller::setDCPhasePreset(int p) {
+    if (DcPhaseLinearizerModel == nullptr) {
+        DLOG("DcPhaseLinearizerModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(DcPhaseLinearizerModel, "DcPhaseLinearizerTypeNameChanged", Qt::DirectConnection, Q_ARG(int, p))) {
+        DLOG("invoke failed\n");
+    }
+}
+
+void Controller::SetDCPhasePreset(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (DcPhaseLinearizerModel == nullptr) {
+        DLOG("DcPhaseLinearizerModel is null\n");
+        return;
+    }
+
+    if (setDCPhasePreset(c->dcphasepreset().preset()) == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+int Controller::toggleVinyl(bool enable) {
+    if (VinylProcessorModel == nullptr) {
+        DLOG("VinylProcessorModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(VinylProcessorModel, "IsVinylProcessorChanged", Qt::DirectConnection, Q_ARG(bool, enable))) {
+        DLOG("invoke failed\n");
+    }
+
+    return 0;
+}
+
+void Controller::SetVinyl(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (VinylProcessorModel == nullptr) {
+        DLOG("VinylProcessorModel is null\n");
+        return;
+    }
+
+    if (toggleVinyl(c->vinyl().enabled()) == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+void Controller::SetDirectSource(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (SettingTopViewModel == nullptr) {
+        DLOG("SettingTopViewModel is null\n");
+        return;
+    }
+
+    auto v = SettingTopViewModel->property("isSourceDirectOn");
+    if (!v.isValid()) {
+        DLOG("invalid prop\n");
+        return;
+    }
+
+    if (v.toBool() == c->directsource().enabled()) {
+        DLOG("no change needed\n");
+        c->set_code(Command::OK);
+        return;
+    }
+
+    if (toggleDirectSource() == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+int Controller::toggleClearAudio() {
+    if (SettingTopViewModel == nullptr) {
+        DLOG("SettingTopViewModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(SettingTopViewModel, "OnClearAudioOnOffToggled", Qt::DirectConnection)) {
+        DLOG("invoke failed\n");
+    }
+
+    return 0;
+}
+
+int Controller::toggleDirectSource() {
+    if (SettingTopViewModel == nullptr) {
+        DLOG("SettingTopViewModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(SettingTopViewModel, "OnSourceDirectOnOffToggled", Qt::DirectConnection)) {
+        DLOG("invoke failed\n");
+    }
+
+    return 0;
+}
+
+int Controller::setEqPreset(int p) {
+    if (EqualizerViewModel == nullptr) {
+        DLOG("no equalizer model\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(EqualizerViewModel, "EqualizerPresetNameChanged", Qt::DirectConnection, Q_ARG(int, p))) {
+        DLOG("invoke void EqualizerPresetNameChanged(int index) failed, index %d\n", p);
+        return -1;
+    }
+
+    return 0;
+}
+
+void Controller::SetEqPreset(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (EqualizerViewModel == nullptr) {
+        DLOG("EqualizerViewModel is null\n");
+        return;
+    }
+
+    if (setEqPreset(c->eqpreset().preset()) == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+int Controller::setEqBands(QList<double> &bandValues) {
+    if (EqualizerViewModel == nullptr) {
+        DLOG("no equalizer model\n");
+        return -1;
+    }
+
+    auto isEq6 = EqualizerViewModel->property("is_available_effect_eq6");
+    if (!isEq6.isValid()) {
+        DLOG("invalid prop\n");
+        return -1;
+    }
+
+    for (int i = 0; i < bandValues.size(); i++) {
+        if (bandValues.at(i) < -10 || bandValues.at(i) > 10) {
+            DLOG("invalid band value %d: %d\n", i, bandValues.at(i));
+            bandValues[i] = 0;
         }
     }
 
-    if (StandardPlayer != nullptr) {
-        auto senders = QObjectPrivate::get(StandardPlayer)->senderList();
-        DLOG("senders %d\n", senders.size());
-        for (const auto &r : senders) {
-            if (QString(r->metaObject()->className()) == "dmpapp::MusicPlayerDigitalLevelMeterViewModel") {
-                MusicPlayerDigitalLevelMeterModel = r;
-                DLOG("found MusicPlayerDigitalLevelMeterModel\n");
-                continue;
-            }
+    QList<QString> mems;
 
-            if (QString(r->metaObject()->className()) == "dmpapp::MusicPlayerLevelMeterViewModel") {
-                MusicPlayerLevelMeterModel = r;
-                DLOG("found MusicPlayerLevelMeterViewModel\n");
-                continue;
-            }
+    if (isEq6.toBool()) {
+        if (bandValues.size() != 6) {
+            DLOG("band values is not 6, it's %d\n", bandValues.size());
+            return -1;
+        }
 
-            if (QString(r->metaObject()->className()) == "dmpapp::MusicPlayerSpectrumViewModel") {
-                MusicPlayerSpectrumModel = r;
-                DLOG("found MusicPlayerSpectrumModel\n");
-                continue;
-            }
+        mems = {
+            "Equalizer6bandValue100hzChanged",
+            "Equalizer6bandValue400hzChanged",
+            "Equalizer6bandValue1KhzChanged",
+            "Equalizer6bandValue2500hzChanged",
+            "Equalizer6bandValue6300hzChanged",
+            "Equalizer6bandValue16KhzChanged",
+        };
+    } else {
+        if (bandValues.size() != 10) {
+            DLOG("band values is not 10, it's %d\n", bandValues.size());
+            return -1;
+        }
+
+        mems = {
+            "Equalizer10bandValue31hzChanged",
+            "Equalizer10bandValue62hzChanged",
+            "Equalizer10bandValue125hzChanged",
+            "Equalizer10bandValue250hzChanged",
+            "Equalizer10bandValue500hzChanged",
+            "Equalizer10bandValue1KhzChanged",
+            "Equalizer10bandValue2KhzChanged",
+            "Equalizer10bandValue4KhzChanged",
+            "Equalizer10bandValue8KhzChanged",
+            "Equalizer10bandValue16KhzChanged",
+        };
+    }
+
+    for (int i = 0; i < mems.size(); i++) {
+        if (!QMetaObject::invokeMethod(EqualizerViewModel, mems.at(i).toUtf8(), Qt::DirectConnection, Q_ARG(double, bandValues.at(i)))) {
+            DLOG("invoke %s failed\n", mems.at(i).toUtf8().constData());
+            return -1;
         }
     }
+
+    return 0;
+}
+
+void Controller::SetEqBands(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (EqualizerViewModel == nullptr) {
+        DLOG("EqualizerViewModel is null\n");
+        return;
+    }
+
+    QList<double> bands;
+    for (auto v : c->eqbands().bandvalue()) {
+        bands.push_back(v);
+    }
+
+    if (setEqBands(bands) == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+void Controller::SetClearAudio(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (SettingTopViewModel == nullptr) {
+        DLOG("SettingTopViewModel is null\n");
+        return;
+    }
+
+    auto v = SettingTopViewModel->property("isClearAudioOn");
+    if (!v.isValid()) {
+        DLOG("invalid prop\n");
+        return;
+    }
+
+    if (v.toBool() == c->clearaudio().enabled()) {
+        DLOG("no change needed\n");
+        c->set_code(Command::OK);
+        return;
+    }
+
+    if (toggleClearAudio() == 0) {
+        c->set_code(Command::OK);
+    }
+}
+
+void Controller::TestCommand(Command::Command *c) {
+    DLOG("test command\n");
+
+    //    provider.GetPlaylist();
+    //        jsFromFile();
 }
 
 QObject *Controller::getActivePlayer() {
@@ -712,56 +974,115 @@ QObject *Controller::getActivePlayer() {
     return nullptr;
 }
 
-QObject *Controller::getActiveQMLPlayer() {
-    auto player = getActivePlayer();
-    if (player == nullptr) {
-        DLOG("no active player found\n");
-        return nullptr;
-    }
-
-    auto qmlReceivers = QObjectPrivate::get(player)->receiverList("notifySeekError()");
-    if (qmlReceivers.empty()) {
-        DLOG("no receivers found\n");
-        return nullptr;
-    }
-
-    DLOG("receivers: %d\n", qmlReceivers.size());
-    auto qmlPlayer = qmlReceivers.at(0);
-    DLOG("current player is %s\n", qmlPlayer->metaObject()->className());
-
-    return qmlPlayer;
-}
-
 // finds BasicPlayerControls from MusicWindow
 void Controller::initBasicPlayerControls() {
-    if (MusicWindow != nullptr) {
-        QQuickItem *bpcQ = nullptr;
-        auto mq = qobject_cast<QQuickItem *>(MusicWindow);
-        for (auto v : mq->childItems()) {
-            if (QString(v->metaObject()->className()).startsWith("BasicPlayerControls_QMLTYPE_")) {
-                bpcQ = v;
+    if (BasicPlayerControls != nullptr) {
+        return;
+    }
+
+    if (MusicWindow == nullptr) {
+        DLOG("no music window\n");
+        return;
+    }
+
+    QQuickItem *bpcQ = nullptr;
+    auto mq = qobject_cast<QQuickItem *>(MusicWindow);
+    for (auto v : mq->childItems()) {
+        if (QString(v->metaObject()->className()).startsWith("BasicPlayerControls_QMLTYPE_")) {
+            bpcQ = v;
+            break;
+        }
+    }
+
+    if (bpcQ == nullptr) {
+        DLOG("cannot find bpc qml\n");
+        return;
+    }
+
+    auto w = qobject_cast<QObject *>(bpcQ);
+    auto connectionLists = QObjectPrivate::get(w)->connectionLists;
+    if (connectionLists == nullptr) {
+        DLOG("bpcq no connections\n");
+        return;
+    }
+
+    for (auto vv : *connectionLists) {
+        auto f = vv.first;
+        if (f == nullptr) {
+            continue;
+        }
+
+        if (f->receiver == nullptr) {
+            continue;
+        }
+
+        if (QString(f->receiver->metaObject()->className()) == "dmpapp::BasicPlayerControls") {
+            BasicPlayerControls = f->receiver;
+            DLOG("found basic player controls\n");
+            break;
+        }
+    }
+
+    if (BasicPlayerControls == nullptr) {
+        DLOG("failed to find basic player controls\n");
+        return;
+    }
+
+    auto h = QObject::connect(BasicPlayerControls, SIGNAL(updated()), &provider, SLOT(UpdateBasicControls()), Qt::DirectConnection);
+    if (!(bool)h) {
+        DLOG("failed to connect updated\n");
+    }
+
+    //    h = QObject::connect(MusicPlayerModel, SIGNAL(repeatModeChanged()), &provider, SLOT(UpdateRepeat()), Qt::DirectConnection);
+    //    if (!(bool)h) {
+    //        DLOG("failed to connect repeatModeChanged\n");
+    //    }
+}
+
+void Controller::connectVolumeSlot() {
+    if (DAC == nullptr) {
+        DLOG("no dac\n");
+    }
+
+    auto h = QObject::connect(DAC, SIGNAL(volumeChanged()), &provider, SLOT(VolumeSlot()), Qt::DirectConnection);
+    DLOG("dac connected: %d\n", (bool)h);
+    //    provider.moveToThread(DAC->thread());
+}
+
+void Controller::getAudioSourceMgr() {
+    if (BasicPlayerControls == nullptr) {
+        DLOG("no basic player controls\n");
+        return;
+    }
+
+    auto senders = QObjectPrivate::get(BasicPlayerControls)->senders;
+    if (senders == nullptr) {
+        DLOG("senders null\n");
+        return;
+    }
+
+    while (senders) {
+        if (senders->sender != nullptr) {
+            //            DLOG("sender %s\n", senders->sender->metaObject()->className());
+            if (QString(senders->sender->metaObject()->className()) == "dmpapp::AudioSourceMgr") {
+                AudioSourceMgr = senders->sender;
+                auto h = QObject::connect(
+                    AudioSourceMgr,
+                    SIGNAL(notifyCurrentPlayState(dmpapp::PlayState)),
+                    &provider,
+                    SLOT(CurrentPlayState(PlayState)),
+                    Qt::DirectConnection
+                );
+                DLOG("AudioSourceMgr connected: %d\n", (bool)h);
                 break;
             }
         }
 
-        if (bpcQ != nullptr) {
-            auto w = qobject_cast<QObject *>(bpcQ);
-            auto connectionLists = QObjectPrivate::get(w)->connectionLists;
-            if (connectionLists != nullptr) {
-                for (auto vv : *connectionLists) {
-                    auto f = vv.first;
-                    if (f != nullptr) {
-                        if (f->receiver == nullptr) {
-                            continue;
-                        }
-                        if (QString(f->receiver->metaObject()->className()) == "dmpapp::BasicPlayerControls") {
-                            BasicPlayerControls = f->receiver;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        senders = senders->next;
+    }
+
+    if (AudioSourceMgr == nullptr) {
+        DLOG("failed to find AudioSourceMgr\n");
     }
 }
 
@@ -779,313 +1100,6 @@ void Controller::initNavBar() {
     }
 }
 
-void Controller::initScreenTransitionController() {
-    if (NavBar == nullptr) {
-        return;
-    }
-
-    auto connectionLists = QObjectPrivate::get(NavBar)->connectionLists;
-    if (connectionLists != nullptr) {
-        for (auto vv : *connectionLists) {
-            auto f = vv.first;
-            if (f != nullptr) {
-                if (f->receiver == nullptr) {
-                    continue;
-                }
-
-                if (QString(f->receiver->metaObject()->className()) == "dmpapp::ScreenTransitionController") {
-                    ScreenTransitionController = f->receiver;
-                    break;
-                }
-            }
-        }
-    }
-}
-
-void Controller::setupConnects() {
-    if (MSC != nullptr && !provider.MSCHandle) {
-        provider.MSCHandle = QObject::connect(MSC, SIGNAL(unmountExportedChanged()), &provider, SLOT(MSCSlot()), Qt::QueuedConnection);
-        provider.FromMSC(MSC);
-        DLOG("MSC connect: %d\n", (bool)provider.MSCHandle);
-    } else {
-        ready &= false;
-    }
-
-    //    auto qmlPlayer = getActivePlayer();
-    auto qmlPlayer = getActiveQMLPlayer();
-    if (qmlPlayer == nullptr) {
-        DLOG("no active qml player found\n");
-        ready &= false;
-    } else {
-        if (qmlPlayer != provider.qmlPlayer) {
-            disconnect(provider.MusicPlayerHandle);
-            disconnect(provider.MusicPlayerElapsedHandle);
-
-            provider.MusicPlayerHandle =
-                QObject::connect(qmlPlayer, SIGNAL(meta_dataChanged()), &provider, SLOT(MusicPlayerSlot()), Qt::QueuedConnection);
-            DLOG("MusicPlayer: %s, connect: %d\n", qmlPlayer->metaObject()->className(), (bool)provider.MusicPlayerHandle);
-
-            provider.MusicPlayerElapsedHandle = QObject::connect(
-                qmlPlayer, SIGNAL(currently_playing_timeChanged()), &provider, SLOT(UpdateElapsed()), Qt::QueuedConnection
-            );
-            DLOG("MusicPlayerElapsed: %s, connect: %d\n", qmlPlayer->metaObject()->className(), (bool)provider.MusicPlayerElapsedHandle);
-
-            provider.FromMusicPlayer(qmlPlayer);
-
-            provider.qmlPlayer = qmlPlayer;
-        }
-    }
-
-    if (DAC != nullptr && !provider.DACHandle) {
-        provider.DACHandle = QObject::connect(DAC, SIGNAL(volumeChanged()), &provider, SLOT(VolumeSlot()), Qt::QueuedConnection);
-        provider.FromDAC(DAC);
-        DLOG("DAC connect: %d\n", (bool)provider.DACHandle);
-    } else {
-        ready &= false;
-    }
-
-    if (MusicWindow != nullptr && !provider.MusicWindowHandle) {
-        provider.MusicWindowHandle =
-            QObject::connect(MusicWindow, SIGNAL(basicPlayerControlsChanged()), &provider, SLOT(MusicWindowSlot()), Qt::QueuedConnection);
-        provider.FromMusicWindow(MusicWindow);
-        DLOG("MusicWindow connect: %d\n", (bool)provider.MusicWindowHandle);
-    } else {
-        ready &= false;
-    }
-
-    if (!DACViewModel) {
-        ready &= false;
-    }
-
-    if (!(bool)detailInfoPopupPositionReset) {
-        connectDetailInfoProvider();
-    }
-}
-
-int Controller::setup() {
-    if (ready) {
-        DLOG("setup already done\n");
-        return 0;
-    }
-
-    auto res = jsExpression("swipeItem");
-    if (!res.isValid()) {
-        DLOG("cannot get swipeItem\n");
-        return -1;
-    }
-
-    auto pp = jsExpression("popupParent");
-    if (!pp.isValid()) {
-        DLOG("popupParent invalid\n");
-        return -1;
-    }
-    PopupParent = qvariant_cast<QObject *>(pp);
-
-    auto swipeItem = qvariant_cast<QQuickItem *>(res);
-    findViewModels(swipeItem);
-
-    initBasicPlayerControls();
-
-    ready = true;
-
-    if (MusicWindow == nullptr || BasicPlayerControls == nullptr) {
-        ready &= false;
-    }
-
-    initNavBar();
-    initScreenTransitionController();
-
-    if (NavBar == nullptr || ScreenTransitionController == nullptr) {
-        ready &= false;
-    }
-
-    if (provider.thread() != swipeItem->thread()) {
-        provider.moveToThread(swipeItem->thread());
-    }
-
-    setupConnects();
-
-    return 0;
-}
-
-// track details are provided by details popup
-// info in that popup is updated by dmpapp::ContentDetailedInfo object
-// there is a scrollable area in that popup that gets updated with new values on track change
-void Controller::connectDetailInfoProvider() {
-    auto pop = getDetailPopup();
-    if (!pop) {
-        DLOG("no pop\n");
-        return;
-    }
-
-    auto pop0 = pop->childItems().at(0);
-    auto w = qobject_cast<QObject *>(pop0);
-    auto senders = QObjectPrivate::get(w)->senders;
-    if (senders == nullptr) {
-        DLOG("senders null\n");
-        return;
-    }
-
-    while (senders) {
-        if (senders->sender != nullptr) {
-            //            DLOG("sender %s\n", senders->sender->metaObject()->className());
-            if (QString(senders->sender->metaObject()->className()) == "dmpapp::ContentDetailedInfo") {
-                ContentDetailedInfo = senders->sender;
-                detailInfoPopupPositionReset = QObject::connect(
-                    ContentDetailedInfo, SIGNAL(listPositionReset()), &provider, SLOT(UpdateDetails()), Qt::DirectConnection
-                );
-                DLOG("detailInfoPopup connected: %d\n", (bool)detailInfoPopupPositionReset);
-                break;
-            }
-        }
-
-        senders = senders->next;
-    }
-}
-
-QQuickItem *Controller::getDetailPopup() {
-    auto popupParent = qobject_cast<QQuickItem *>(PopupParent);
-    if (!popupParent) {
-        DLOG("cast failed\n");
-        return nullptr;
-    }
-
-    DLOG("popups %d\n", popupParent->childItems().count());
-    for (auto c : popupParent->childItems()) {
-        if (QString(c->metaObject()->className()).startsWith("QQuickRepeater_QML_")) {
-            DLOG("skip repeater\n");
-            continue;
-        }
-
-        //        DLOG("class %s\n", c->metaObject()->className());
-
-        auto popStatus = c->property("status");
-        if (!popStatus.isValid()) {
-            continue;
-        }
-
-        if (popStatus.toString() == "1") {
-            auto pidV = c->property("popupID");
-            if (!pidV.isValid()) {
-                continue;
-            }
-
-            //                DLOG("popup name: %s\n", pidV.toString().toUtf8().constData());
-            if (pidV.toString() == "NowPlayingContentDetailedInfoPopup") {
-                return c;
-            }
-        } else {
-            DLOG("popup not ready: %s\n", popStatus.toString().toUtf8().constData());
-            auto conn = QObject::connect(c, SIGNAL(statusChanged()), this, SLOT(popupReady()), Qt::DirectConnection);
-            if (conn) {
-                popupReadyConnections.append(conn);
-            }
-        }
-    }
-
-    return nullptr;
-}
-
-// sender() is _always_ nullptr, don't try to access it
-void Controller::popupReady() {
-    DLOG("popup ready\n");
-
-    if (waitingForHide) {
-        DLOG("hiding\n");
-
-        if (!QMetaObject::invokeMethod(FrameWork, "hide", Qt::DirectConnection)) {
-            DLOG("failed to hide framework\n");
-        }
-
-        disconnect(transitionToDetailsPopup);
-        disconnect(popupParentChildrenChanged);
-        for (auto conn : popupReadyConnections) {
-            disconnect(conn);
-        }
-
-        popupReadyConnections.clear();
-    }
-}
-
-void Controller::invokeDetailsPopup() {
-    DLOG("invoking details popup\n");
-    if (!isOnPlayerScreen()) {
-        DLOG("not on player screen, do nothing\n");
-        return;
-    }
-
-    if (provider.usbMounted) {
-        DLOG("usb on, not invoking\n");
-        return;
-    }
-
-    if (!goToPlayer()) {
-        DLOG("not on player screen, not invoking\n");
-        return;
-    }
-
-    if (NavBar == nullptr) {
-        setup();
-        if (NavBar == nullptr) {
-            DLOG("no navbar\n");
-            return;
-        }
-    }
-
-    if (!popupParentChildrenChanged) {
-        popupParentChildrenChanged =
-            QObject::connect(PopupParent, SIGNAL(childrenChanged()), this, SLOT(popupAdded()), Qt::DirectConnection);
-    }
-
-    if (!popupParentChildrenChanged) {
-        DLOG("failed to connect popupParent childrenChanged signal\n");
-        return;
-    }
-
-    auto menuID = DETAILS_POPUP_MENU_ID;
-    if (isWalkmanOne) {
-        menuID = DETAILS_POPUP_MENU_ID_WALKMAN_ONE;
-    }
-
-    if (!QMetaObject::invokeMethod(NavBar, "OpenOptionMenu", Qt::DirectConnection, Q_ARG(int, menuID))) {
-        DLOG("cannot invoke OpenOptionMenu\n");
-        return;
-    }
-}
-
-/*
-optimistic scenario:
-popup is added and instantly ready
-
-in practice this never happens and this function fails
-*/
-void Controller::popupAdded() {
-    DLOG("popup added\n");
-    auto pop = getDetailPopup();
-    if (!pop) {
-        DLOG("pop added, but no details found\n");
-        return;
-    }
-
-    if (waitingForHide) {
-        DLOG("hiding\n");
-
-        if (!QMetaObject::invokeMethod(FrameWork, "hide", Qt::DirectConnection)) {
-            DLOG("failed to hide framework\n");
-        }
-
-        disconnect(transitionToDetailsPopup);
-        disconnect(popupParentChildrenChanged);
-
-        for (auto conn : popupReadyConnections) {
-            disconnect(conn);
-        }
-
-        popupReadyConnections.clear();
-    }
-}
-
-// TODO: On disable: remove artist from title
 void Controller::FeatureBigCover(Command::Command *c) {
     double height = 400;
     double imgHeight = 408;
@@ -1106,7 +1120,7 @@ void Controller::FeatureBigCover(Command::Command *c) {
         return;
     }
 
-    QQuickItem *mp = qobject_cast<QQuickItem *>(MusicPlayer);
+    auto *mp = qobject_cast<QQuickItem *>(MusicPlayer);
     if (mp->childItems().length() < 4) {
         DLOG("not enough children, got %d\n", mp->childItems().length());
         return;
@@ -1169,7 +1183,7 @@ void Controller::UpdateTitleWithArtist() {
         return;
     }
 
-    QQuickItem *mp = qobject_cast<QQuickItem *>(MusicPlayer);
+    auto *mp = qobject_cast<QQuickItem *>(MusicPlayer);
     if (mp->childItems().length() < 3) {
         DLOG("not enough children\n");
         return;
@@ -1216,7 +1230,7 @@ void Controller::restoreTitle() {
         return;
     }
 
-    QQuickItem *mp = qobject_cast<QQuickItem *>(MusicPlayer);
+    auto *mp = qobject_cast<QQuickItem *>(MusicPlayer);
     if (mp->childItems().length() < 3) {
         DLOG("not enough children\n");
         return;
@@ -1227,52 +1241,6 @@ void Controller::restoreTitle() {
     meta->setProperty("playTitle", regularTitle);
 }
 
-// works poorly, text doesn't update and other elements must be moved so text would be visible
-void Controller::getVolumeInHeaderWalkmanOne() {
-    if (MusicWindow == nullptr) {
-        DLOG("no music window\n");
-        return;
-    }
-
-    QQuickItem *mw = qobject_cast<QQuickItem *>(MusicWindow);
-    if (mw->childItems().length() < 2) {
-        DLOG("not enough children, got %d\n", mw->childItems().length());
-        return;
-    }
-
-    auto headerArea = mw->childItems().at(1);
-    if (headerArea->childItems().length() < 3) {
-        DLOG("not enough children, got %d\n", headerArea->childItems().length());
-        return;
-    }
-
-    auto voluemeArea = headerArea->childItems().at(1);
-    if (voluemeArea->childItems().length() < 1) {
-        DLOG("not enough children, got zero\n");
-        return;
-    }
-
-    auto volumeAreaLoader = voluemeArea->childItems().at(0);
-    if (volumeAreaLoader->childItems().length() < 2) {
-        DLOG("not enough children, got %d\n", volumeAreaLoader->childItems().length());
-        return;
-    }
-
-    auto quickRectangle = volumeAreaLoader->childItems().at(1);
-    if (quickRectangle->childItems().length() < 3) {
-        DLOG("not enough children, got zero\n");
-        return;
-    }
-
-    auto quickItem = quickRectangle->childItems().at(1);
-    if (quickItem->childItems().length() < 6) {
-        DLOG("not enough children, got zero\n");
-        return;
-    }
-
-    volumeValueInHeader = quickItem->childItems().at(5);
-}
-
 // volume in header is usually destroyed on some screen transitions
 void Controller::getVolumeInHeader() {
     if (MusicWindow == nullptr) {
@@ -1280,49 +1248,85 @@ void Controller::getVolumeInHeader() {
         return;
     }
 
-    QQuickItem *mw = qobject_cast<QQuickItem *>(MusicWindow);
+    if (provider.status->entryId == 0) {
+        return;
+    }
+
+    auto *mw = qobject_cast<QQuickItem *>(MusicWindow);
+    if (mw == nullptr) {
+        DLOG("MusicWindow is null\n");
+        return;
+    }
     if (mw->childItems().length() < 2) {
         DLOG("not enough children, got %d\n", mw->childItems().length());
         return;
     }
 
     auto headerArea = mw->childItems().at(1);
+    if (headerArea == nullptr) {
+        DLOG("headerArea is null\n");
+        return;
+    }
     if (headerArea->childItems().length() < 3) {
         DLOG("not enough children, got %d\n", headerArea->childItems().length());
         return;
     }
 
     auto status = headerArea->childItems().at(2);
+    if (status == nullptr) {
+        DLOG("status is null\n");
+        return;
+    }
     if (status->childItems().length() < 1) {
         DLOG("not enough children, got zero\n");
         return;
     }
 
     auto row = status->childItems().at(0);
+    if (row == nullptr) {
+        DLOG("row is null\n");
+        return;
+    }
     if (row->childItems().length() < 3) {
         DLOG("not enough children, got %d\n", row->childItems().length());
         return;
     }
 
     auto loader = row->childItems().at(2);
+    if (loader == nullptr) {
+        DLOG("loader is null\n");
+        return;
+    }
     if (loader->childItems().empty()) {
         DLOG("not enough children, got zero\n");
         return;
     }
 
     auto VolumeIcon = loader->childItems().at(0);
+    if (VolumeIcon == nullptr) {
+        DLOG("VolumeIcon is null\n");
+        return;
+    }
     if (VolumeIcon->childItems().empty()) {
         DLOG("not enough children, got zero\n");
         return;
     }
 
     auto area = VolumeIcon->childItems().at(0);
+    if (area == nullptr) {
+        DLOG("area is null\n");
+        return;
+    }
     if (area->childItems().length() < 2) {
         DLOG("not enough children, got %d\n", area->childItems().length());
         return;
     }
 
     auto volumeNum = area->childItems().at(1);
+    if (volumeNum == nullptr) {
+        DLOG("area is null\n");
+        return;
+    }
     if (volumeNum->childItems().empty()) {
         DLOG("not enough children, got zero\n");
         return;
@@ -1387,9 +1391,9 @@ void Controller::UpdateTime(bool with_time) {
     QString v = "";
     if (with_time) {
         QDateTime date = QDateTime::currentDateTime();
-        v = QString("%1  %2").arg(provider.volume, 3, 10, QChar('0')).arg(date.toString("hh:mm"));
+        v = QString("%1  %2").arg(provider.status->volumeRaw, 3, 10, QChar('0')).arg(date.toString("hh:mm"));
     } else {
-        v = QString("%1").arg(provider.volume, 3, 10, QChar('0'));
+        v = QString("%1").arg(provider.status->volumeRaw, 3, 10, QChar('0'));
     }
 
     if (!volumeValueInHeader->setProperty("text", v)) {
@@ -1418,10 +1422,208 @@ void Controller::FeatureSetMaxVolume(Command::Command *c) {
     } else {
         maxVolume = HAGOROMO_DEFAULT_VOLUME_MAX;
     }
+    provider.maxVolume = maxVolume;
+    provider.FromDAC(DACViewModel);
 
     c->set_code(Command::OK);
-
-    featureSetMaxVolume = c->featuresetmaxvolume().enabled();
 }
 
-// void SearchContentData(ContentsDBEntryId entry_id) -> trackID + 0x10000000
+int Controller::setToneControlLow(int v) {
+    if (ToneControlViewModel == nullptr) {
+        DLOG("ToneControlViewModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(ToneControlViewModel, "ToneValueLowChanged", Q_ARG(double, v))) {
+        DLOG("failed to change low tone control\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+int Controller::setToneControlMiddle(int v) {
+    if (ToneControlViewModel == nullptr) {
+        DLOG("ToneControlViewModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(ToneControlViewModel, "ToneValueMiddleChanged", Q_ARG(double, v))) {
+        DLOG("failed to change middle tone control\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+int Controller::setToneControlHigh(int v) {
+    if (ToneControlViewModel == nullptr) {
+        DLOG("ToneControlViewModel is null\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(ToneControlViewModel, "ToneValueHighChanged", Q_ARG(double, v))) {
+        DLOG("failed to change high tone control\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+void Controller::SetToneControlValues(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (ToneControlViewModel == nullptr) {
+        DLOG("ToneControlViewModel is null\n");
+        return;
+    }
+
+    if (setToneControlLow(c->tonecontrolvalues().low()) != 0) {
+        DLOG("failed to set low tone control\n");
+        return;
+    }
+
+    if (setToneControlMiddle(c->tonecontrolvalues().middle()) != 0) {
+        DLOG("failed to set middle tone control\n");
+        return;
+    }
+
+    if (setToneControlHigh(c->tonecontrolvalues().high()) != 0) {
+        DLOG("failed to set high tone control\n");
+        return;
+    }
+
+    c->set_code(Command::OK);
+}
+
+void Controller::SetToneControlOrEq(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (ToneControlViewModel == nullptr || EqualizerViewModel == nullptr) {
+        DLOG("ToneControlViewModel or EqualizerViewModel is nullptr\n");
+        return;
+    }
+
+    if (setToneControlOrEQ(c->tonecontroloreq().eqid()) != 0) {
+        DLOG("failed to set tone control or eq with value %d\n", c->tonecontroloreq().eqid());
+        return;
+    }
+
+    c->set_code(Command::OK);
+}
+
+int Controller::setToneControlOrEQ(int v) {
+    if (ToneControlViewModel == nullptr || EqualizerViewModel == nullptr) {
+        DLOG("ToneControlViewModel or EqualizerViewModel is nullptr\n");
+        return -1;
+    }
+    DLOG("setting eq in use to %d\n", v);
+
+    // set to 10 band
+    if (v == 2) {
+        if (!QMetaObject::invokeMethod(ToneControlViewModel, "OptionMenuSelected", Q_ARG(int, 2))) {
+            DLOG("failed to change to 10 band eq\n");
+            return -1;
+        }
+        return 0;
+    }
+
+    // tone control
+    if (v == 3) {
+        if (!QMetaObject::invokeMethod(EqualizerViewModel, "OptionMenuSelected", Q_ARG(int, 1))) {
+            DLOG("failed to change to tone control\n");
+            return -1;
+        }
+
+        return 0;
+    }
+
+    DLOG("unexpected eq value %d\n", v);
+
+    return 0;
+}
+
+void Controller::SetDseeCust(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (DseeHxViewModel == nullptr) {
+        DLOG("DseeHxViewModel is nullpo\n");
+        return;
+    }
+
+    if (setDseeCust(c->dseecust().enabled()) != 0) {
+        DLOG("cannot set dsee ai\n");
+        return;
+    }
+
+    c->set_code(Command::OK);
+}
+
+void Controller::SetDseeCustMode(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (DseeHxViewModel == nullptr) {
+        DLOG("DseeHxViewModel is nullpo\n");
+        return;
+    }
+
+    if (setDseeCustMode(c->dseecustmode().mode()) != 0) {
+        DLOG("cannot set dsee cust mode\n");
+        return;
+    }
+
+    c->set_code(Command::OK);
+}
+
+int Controller::setDseeCust(bool enable) {
+    if (DseeHxViewModel == nullptr) {
+        DLOG("DseeHxViewModel is nullpo\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(DseeHxViewModel, "DseeHxChanged", Q_ARG(bool, enable))) {
+        DLOG("failed to toggle dsee hx cust \n");
+        return -1;
+    }
+
+    return 0;
+}
+
+int Controller::setDseeCustMode(int v) {
+    if (DseeHxViewModel == nullptr) {
+        DLOG("DseeHxViewModel is nullpo\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(DseeHxViewModel, "DseeHxTypeNameChanged", Q_ARG(int, v))) {
+        DLOG("failed to toggle dsee hx cust\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+void Controller::SetVinylMode(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (VinylProcessorModel == nullptr) {
+        DLOG("VinylProcessorModel is nullpo\n");
+        return;
+    }
+
+    if (setVinylMode(c->vinylmode().mode()) != 0) {
+        DLOG("cannot set vinyl mode\n");
+        return;
+    }
+
+    c->set_code(Command::OK);
+}
+
+int Controller::setVinylMode(int v) {
+    if (VinylProcessorModel == nullptr) {
+        DLOG("VinylProcessorModel is nullpo\n");
+        return -1;
+    }
+
+    if (!QMetaObject::invokeMethod(VinylProcessorModel, "OnVinylProcessorTypeChanged", Q_ARG(int, v))) {
+        DLOG("failed to change vinyl mode\n");
+        return -1;
+    }
+
+    return 0;
+}

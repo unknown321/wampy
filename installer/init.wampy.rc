@@ -1,7 +1,13 @@
 on boot
+  start pstserver
   start wampy
 
 service wampy /bin/logwrapper /system/vendor/unknown321/bin/wampy
+  user root
+  group root
+  oneshot
+
+service pstserver /bin/logwrapper /system/vendor/unknown321/bin/pstserver 10
   user root
   group root
   oneshot

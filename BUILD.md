@@ -3,36 +3,27 @@
 ### Prerequisites
 
 - Linux with Docker
-- `libMali_linux.so`
+- stock firmware file for NW-A50, `NW_WM_FW.UPG`
+- [abootimg](https://github.com/ggrandou/abootimg)
+- [guestmount](https://libguestfs.org/)
+- ImageMagick
 
-#### libMali_linux.so
+On Debian/Ubuntu: `sudo apt-get install guestmount abootimg --no-install-recommends && sudo apt-get install imagemagick`
 
-You can get `libMali_linux.so` from firmware file or device with adb on.
+#### Getting NW_WM_FW.UPG
 
-##### adb:
+Download [installer](https://walkman.update.sony.net/fw/pc/A50/J/NW-A50_V1_02.exe), launch it. Use your os' find utility
+looking for `.UPG` files.
 
-```shell
-adb pull /system/lib/libMali_linux.so .
-```
-
-##### Firmware upgrade file:
-
-You'll need [upgtool](https://www.rockbox.org/wiki/SonyNWUPGTool#Getting_the_tool), firmware upgrade
-file (`NW_WM_FW.UPG`) and be able to mount ext4 filesystem.
-
-Linux, NW-A50:
+Linux, Wine:
 
 ```shell
-$ mkdir fw
-$ upgtool_64-v3 -m nw-a50 -e -o ./fw/ ./NW_WM_FW.UPG -z 6
-$ mkdir tmpmount
-$ sudo mount -t ext4 -o loop ./fw/6.bin tmpmount
-$ cp tmpmount/lib/libMali_linux.so ./libs
-$ sudo umount tmpmount
-$ rm -rf tmpmount fw
+find ~/.wine -name "*.UPG"
 ```
 
 ### Build
+
+Put `NW_WM_FW.UPG` into `libs` directory.
 
 Preparing:
 
@@ -47,10 +38,21 @@ Building:
 make release
 ```
 
-It takes 97 minutes on i3-7100U to build project from scratch (without downloading Qt and firmware).
+It takes more than two hours on i3-7100U to build project from scratch.
 
 See [server/README.md](./server/README.md) for server rebuild instructions.
 
 ### Debugging
+
+Look for arm32 gdb builds online; use gdb-multiarch on desktop. Valgrind must be compiled by you with `armv7`
+compiler (`wampy-builder` docker image uses `armv5`, won't compile). You'll also need `ld-2.23.so` with debug symbols,
+which is built during `armv7` toolchain compilation. Afterwards you can drop ld to `/lib/` on device, it will be
+replaced with stock version from initrd after reboot. Crosstool `armv7` config is [here](./crosstool.armv7.config).
+
+Fast way to confirm memory leaks is to check `/var/log/memmon1.csv`. Values update every 5 minutes.
+
+Check dmesg and logcat, increase log levels with PST_LOG_* variables. `getprop` shows nothing in tmux, use plain bash.
+
+#### Debugging OpenGL
 
 Modern RenderDoc fail on desktop; 1.2 works sometimes.

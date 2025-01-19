@@ -165,6 +165,15 @@ std::string join(const std::vector<std::string> &v, int start) {
     return res;
 }
 
+std::string join(const std::vector<std::string> &v, int start, std::string sep) {
+    std::string res;
+    for (int i = start; i < v.size(); i++) {
+        res += v[i] + sep;
+    }
+
+    return res;
+}
+
 void printFPS() {
     auto io = ImGui::GetIO();
     ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
@@ -868,6 +877,7 @@ void getCharRange(std::vector<uint32_t> *points) {
     sqlite3 *db;
     char *zErrMsg = nullptr;
     int rc;
+    DLOG("getting char range\n");
 #ifdef DESKTOP
     auto path = "../MTPDB.dat";
 #else
@@ -893,5 +903,19 @@ void getCharRange(std::vector<uint32_t> *points) {
     size_t index = 0;
     while (index < res.size()) {
         points->push_back(utfToPoint(res, index));
+    }
+}
+
+bool replace(std::string &str, const std::string &from, const std::string &to) {
+    size_t start_pos = str.find(from);
+    if (start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
+void toUpper(std::string &s) {
+    for (auto &c : s) {
+        c = std::toupper(c);
     }
 }

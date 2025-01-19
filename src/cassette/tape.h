@@ -39,11 +39,16 @@ namespace Tape {
         Connector *connector;
         char *artist;
         char *title;
+        char *album;
         ImVec2 titleCoords{83.0f, 117.0f};
         ImVec2 artistCoords{83.0f, 82.0f};
         ImVec2 reelCoords{134.0f, 160.0f};
+        ImVec2 albumCoords{-1.0f, -1.0f};
         std::string reel = "other";
         std::string name{};
+        std::string formatArtist = "$ARTIST";
+        std::string formatTitle = "$TITLE";
+        std::string formatAlbum = "$ALBUM";
         float titleWidth = 600.0f;
         ImU32 textColor = IM_COL32_BLACK;
         bool valid{};

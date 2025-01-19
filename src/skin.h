@@ -4,10 +4,12 @@
 #include "Version.h"
 #include "cassette/cassette.h"
 #include "config.h"
+#include "connector/hagoromoToString.h"
 #include "dac/dac.h"
 #include "digital_clock/digital_clock.h"
 #include "imgui_curve.h"
 #include "skinVariant.h"
+#include "sound_settings/sound_settings.h"
 #include "w1/w1.h"
 #include "winamp/winamp.h"
 #include <thread>
@@ -23,7 +25,13 @@ enum SettingsTab {
     TabWalkmanOne = 6,
     TabSoundSettings = 7,
     TabCurveEditor = 8,
+    TabEQ = 9,
 };
+
+#define PLEASANT_GREEN ImVec4(0.26f, 0.98f, 0.37f, 0.4f)     // #42fa5f
+#define GOLD_HIRES_WALKMAN ImVec4(0.75f, 0.64f, 0.39f, 1.0f) // #c0a565
+#define BUTTON_RED ImVec4(0.98f, 0.27f, 0.26f, 0.4f)
+#define GOLD_DONATE ImVec4(0.91f, 0.72f, 0.25f, 1.0f) // #ebb943
 
 struct Skin {
     bool *render{};
@@ -137,6 +145,13 @@ struct Skin {
     std::string refreshStatus;
     std::string charactersInDB;
 
+    std::string prevSong{};
+    std::string eqStatus{};
+    bool eqSongExists{};
+    bool eqSongDirExists{};
+
+    bool alwaysFalse{};
+
     void ReloadFont() {
         std::string filepath{};
         switch (activeSkinVariant) {
@@ -181,6 +196,13 @@ struct Skin {
     }
 
     void Load() {
+        if (config->activeSkin == EMPTY) {
+            DLOG("empty skin\n");
+            createDump();
+            exit(1);
+        }
+
+        DLOG("loading %d\n", config->activeSkin);
         if (onlyFont && activeSkinVariant == CASSETTE) {
             DLOG("reloading font for cassette\n");
             ReloadFont();
@@ -244,6 +266,8 @@ struct Skin {
 
         activeSkinVariant = config->activeSkin;
         activeSettingsTab = activeSkinVariant;
+
+        GetSoundSettings();
     }
 
     void LoadUpdatedSkin() {
@@ -361,6 +385,17 @@ struct Skin {
         }
     }
 
+    static void ToggleDrawEQTab(void *skin, void *) {
+        auto s = (Skin *)skin;
+        assert(s);
+        if (s->displaySettings == 0) {
+            s->displaySettings = 1;
+            s->displayTab = SettingsTab::TabEQ;
+        } else {
+            s->displaySettings = 0;
+        }
+    }
+
     static void RandomizeTape(void *skin, void *) {
         auto s = (Skin *)skin;
         assert(s);
@@ -393,6 +428,18 @@ struct Skin {
         if (ImGui::Button("♪♫")) {
             loadStatusStr = "";
             displayTab = SettingsTab::TabSoundSettings;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("EQ")) {
+            loadStatusStr = "";
+            displayTab = SettingsTab::TabEQ;
+            if (config->features.eqPerSong) {
+                connector->soundSettings.Update();
+                eqSongExists = SoundSettings::Exists(connector->status.Filename);
+                eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
+                prevSong = connector->status.Filename;
+                eqStatus = "Refreshed";
+            }
         }
 
         auto miscSize = ImGui::CalcTextSize("Misc").x + ImGui::GetStyle().FramePadding.x * 2.f;
@@ -430,7 +477,7 @@ struct Skin {
             ImGui::Text("     "); // padding
 
             ImGui::TableNextColumn();
-            if (ImGui::Button("Export bookmarks")) {
+            if (ImGui::Button("Export Walkman bookmarks")) {
                 ExportBookmarks();
                 bookmarkExportStatus = "Exported";
             }
@@ -466,7 +513,11 @@ struct Skin {
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            if (isWalkmanOne == false) {
+            if (isWalkmanOne) {
+                ImGui::BeginDisabled();
+                ImGui::Checkbox("Show time", &alwaysFalse);
+                ImGui::EndDisabled();
+            } else {
                 if (ImGui::Checkbox("Show time", &config->features.showTime)) {
                     config->Save();
                     connector->FeatureShowTime(config->features.showTime);
@@ -494,7 +545,12 @@ struct Skin {
                 config->Save();
                 connector->FeatureSetMaxVolume(config->features.limitVolume);
             }
+
+            ImGui::TableNextRow();
             ImGui::TableNextColumn();
+            if (ImGui::Checkbox("Enable EQ per song", &config->features.eqPerSong)) {
+                config->Save();
+            }
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
@@ -502,7 +558,6 @@ struct Skin {
                 config->Save();
             }
             ImGui::TableNextColumn();
-            // #endif
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
@@ -551,12 +606,15 @@ struct Skin {
         ImGui::SetCursorPosY(480 - verSize.y - ImGui::GetStyle().FramePadding.y);
         printFPS();
 
-        ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 3 - ImGui::GetStyle().FramePadding.y * 2 - offset * 2);
-        ImGui::SetCursorPosX(800 - website.x - ImGui::GetStyle().FramePadding.x - offset);
-        if (ImGui::Button("Website / Donate")) {
+        ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 3 - ImGui::GetStyle().FramePadding.y * 2 - offset * 2 - 30);
+        ImGui::SetCursorPosX(800 - website.x - ImGui::GetStyle().FramePadding.x - offset - 9);
+        ImGui::PushStyleColor(ImGuiCol_Button, GOLD_DONATE);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1.0f));
+        if (ImGui::Button("Website / Donate", ImVec2(200, 60))) {
             displayTab = SettingsTab::TabWebsite;
             loadStatusStr = "";
         }
+        ImGui::PopStyleColor(2);
 
         ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 2 - ImGui::GetStyle().FramePadding.y * 2 - offset);
         ImGui::SetCursorPosX(800 - licenseSize.x - ImGui::GetStyle().FramePadding.x - offset);
@@ -589,7 +647,7 @@ struct Skin {
             ImGui::Text("Github");
             ImGui::TableNextColumn();
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth / 2 - ImGui::CalcTextSize("Donate").x / 2);
-            ImGui::Text("Donate");
+            ImGui::TextColored(GOLD_DONATE, "Donate");
 
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
 
@@ -611,7 +669,7 @@ struct Skin {
 
             ImGui::TableNextColumn();
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth / 2 - ImGui::CalcTextSize("boosty.to/unknown321/donate").x / 2);
-            ImGui::Text("boosty.to/unknown321/donate");
+            ImGui::TextColored(GOLD_DONATE, "boosty.to/unknown321/donate");
 
             ImGui::EndTable();
         }
@@ -756,7 +814,7 @@ struct Skin {
 
         ImGui::NewLine();
         if (needRestartWalkmanOne) {
-            if (ImGui::Button("Reboot device")) {
+            if (ImGui::Button("Reboot device", ImVec2(200, 60))) {
                 DLOG("rebooting\n");
 #ifndef DESKTOP
                 walkmanOneOptions.Reboot();
@@ -797,7 +855,7 @@ struct Skin {
 
         if (needRestartWalkmanOne) {
             ImGui::NewLine();
-            if (ImGui::Button("Reboot device")) {
+            if (ImGui::Button("Reboot device", ImVec2(200, 60))) {
                 DLOG("rebooting\n");
 #ifndef DESKTOP
                 system("sync");
@@ -845,8 +903,9 @@ struct Skin {
     }
 
     void DrawSkin() {
-        ImGui::NewLine();
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10.0f, 15.0f));
         ImGui::SeparatorText("Skin:");
+        ImGui::PopStyleVar();
 
         ImGui::RadioButton("Winamp", &activeSettingsTab, WINAMP);
         ImGui::SameLine();
@@ -860,7 +919,9 @@ struct Skin {
 
         if (activeSkinVariant != activeSettingsTab) {
             ImGui::SameLine();
-            if (ImGui::Button("Set as active")) {
+            ImGui::SetNextItemAllowOverlap();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 10);
+            if (ImGui::Button("Set as active", ImVec2(186, 50))) {
                 switch (activeSettingsTab) {
                 case WINAMP:
                     config->activeSkin = WINAMP;
@@ -910,7 +971,8 @@ struct Skin {
 
         ImGui::SameLine();
         if (activeSkinVariant == WINAMP) {
-            if (ImGui::Button("Load skin")) {
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 11);
+            if (ImGui::Button("Load skin", ImVec2(186, 50))) {
                 loadStatusStr = "Loading " + skinList->at(selectedSkinIdx).name;
                 winamp.changeSkin(skinList->at(selectedSkinIdx).fullPath);
                 needLoad = true;
@@ -1022,7 +1084,7 @@ struct Skin {
         }
         ImGui::PopStyleVar(2);
 
-        if (ImGui::Button("Reset")) {
+        if (ImGui::Button("Reset", ImVec2(186, 60))) {
             DLOG("resetting cassette config\n");
             cassette.config->Default();
             config->Save();
@@ -1099,7 +1161,10 @@ struct Skin {
             WalkmanOneTab();
             break;
         case SettingsTab::TabSoundSettings:
-            SoundSettings();
+            SoundSettingsTab();
+            break;
+        case SettingsTab::TabEQ:
+            TabEQ();
             break;
         default:
             break;
@@ -1795,7 +1860,7 @@ struct Skin {
         }
     }
 
-    void SoundSettings() {
+    void SoundSettingsTab() {
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
         if (ImGui::BeginTabBar("SoundSettingsTabBar", tab_bar_flags)) {
@@ -1989,6 +2054,355 @@ struct Skin {
         res = res / 1024 / 1024;
 
         logCleanupButtonLabel = "Remove wampy logs (" + std::to_string(res) + " MB)";
+    }
+
+    void GetSoundSettings() const {
+#ifdef DESKTOP
+        return;
+#endif
+        connector->soundSettings.Update();
+    }
+
+    void TabEQ() {
+        ImGui::NewLine();
+
+        if (!config->features.eqPerSong) {
+            ImGui::Text("Feature disabled. Toggle it on 'Misc' tab or use button below.");
+            ImGui::NewLine();
+            if (ImGui::Button("Enable", ImVec2(186, 60))) {
+                config->features.eqPerSong = true;
+                config->Save();
+            }
+            return;
+        }
+
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        ImGui::BeginChild("##textwrap", ImVec2(800 - 20 - 10, ImGui::GetTextLineHeight() * 2 + 10), ImGuiWindowFlags_NoResize);
+
+        ImGui::PushTextWrapPos(800 - 20 - 40 - 20);
+        ImGui::Text("File: %s\n", connector->status.Filename.c_str());
+        ImGui::PopTextWrapPos();
+        ImGui::EndChild();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
+
+        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
+                                       ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
+
+        ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 7);
+
+        if (ImGui::BeginTable("##eqtable", 2, flags, outer_size)) {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("ClearAudio+");
+            ImGui::TableNextColumn();
+            ImGui::Text(
+                "%s (%s)",
+                connector->soundSettings.s->clearAudioOn == 1 ? "On" : "Off",
+                connector->soundSettings.s->clearAudioAvailable == 1 ? "available" : "unavailable"
+            );
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Direct Source");
+            ImGui::TableNextColumn();
+            ImGui::Text(
+                "%s (%s)",
+                connector->soundSettings.s->directSourceOn == 1 ? "On" : "Off",
+                connector->soundSettings.s->directSourceAvailable == 1 ? "available" : "unavailable"
+            );
+
+            if ((connector->soundSettings.s->clearAudioOn == 1 && connector->soundSettings.s->clearAudioAvailable) ||
+                (connector->soundSettings.s->directSourceOn == 1 && connector->soundSettings.s->directSourceAvailable)) {
+                ImGui::BeginDisabled(true);
+            }
+            //
+            //            ImGui::TableNextRow();
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("EQ6");
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("%s", connector->soundSettings.s->eq6On == 1 ? "On" : "Off");
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("EQ6 Preset");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", eq6PresetToString.at(connector->soundSettings.s->eq6Preset).c_str());
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("EQ6 Bands");
+            ImGui::TableNextColumn();
+
+            ImGui::Text(
+                "%d, %d, %d, %d, %d, %d",
+                connector->soundSettings.s->eq6Bands[0],
+                connector->soundSettings.s->eq6Bands[1],
+                connector->soundSettings.s->eq6Bands[2],
+                connector->soundSettings.s->eq6Bands[3],
+                connector->soundSettings.s->eq6Bands[4],
+                connector->soundSettings.s->eq6Bands[5]
+            );
+            //
+            //            ImGui::TableNextRow();
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("EQ10");
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("%s", connector->soundSettings.s->eq10On == 1 ? "On" : "Off");
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("EQ10 Preset");
+            ImGui::TableNextColumn();
+            ImGui::Text("%d", connector->soundSettings.s->eq10Preset);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("EQ10 Bands");
+            ImGui::TableNextColumn();
+            ImGui::Text(
+                "%.1f, %.1f, %.1f, %.1f, %.1f,\n%.1f, %.1f, %.1f, %.1f, %.1f",
+                float(connector->soundSettings.s->eq10Bands[0]) / 2,
+                float(connector->soundSettings.s->eq10Bands[1]) / 2,
+                float(connector->soundSettings.s->eq10Bands[2]) / 2,
+                float(connector->soundSettings.s->eq10Bands[3]) / 2,
+                float(connector->soundSettings.s->eq10Bands[4]) / 2,
+                float(connector->soundSettings.s->eq10Bands[5]) / 2,
+                float(connector->soundSettings.s->eq10Bands[6]) / 2,
+                float(connector->soundSettings.s->eq10Bands[7]) / 2,
+                float(connector->soundSettings.s->eq10Bands[8]) / 2,
+                float(connector->soundSettings.s->eq10Bands[9]) / 2
+            );
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("DSEE HX");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", connector->soundSettings.s->dseeHXOn == 1 ? "On" : "Off");
+
+            //            ImGui::TableNextRow();
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("DSEE");
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("%s", connector->soundSettings.s->dseeOn == 1 ? "On" : "Off");
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("DSEE custom");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", connector->soundSettings.s->dseeCustOn == 1 ? "On" : "Off");
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("DSEE custom mode");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", dseeModeToString.at(connector->soundSettings.s->dseeCustMode).c_str());
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("DC Phase");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", connector->soundSettings.s->dcLinearOn == 1 ? "On" : "Off");
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("DC Phase Filter");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", dcFilterToString.at(connector->soundSettings.s->dcLinearFilter).c_str());
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("VPT");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", connector->soundSettings.s->vptOn == 1 ? "On" : "Off");
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("VPT Mode");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", vptA50SmallToString.at(connector->soundSettings.s->vptMode).c_str());
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Tone Control or 10 band EQ?");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", connector->soundSettings.s->eqUse == 2 ? "10 band EQ" : "Tone Control");
+            //
+            //            ImGui::TableNextRow();
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("Tone Control");
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("%s", connector->soundSettings.s->toneControlOn == 1 ? "On" : "Off");
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Tone Control Low");
+            ImGui::TableNextColumn();
+            ImGui::Text("%d", connector->soundSettings.s->toneControlLow / 2);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Tone Control Mid");
+            ImGui::TableNextColumn();
+            ImGui::Text("%d", connector->soundSettings.s->toneControlMid / 2);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Tone Control High");
+            ImGui::TableNextColumn();
+            ImGui::Text("%d", connector->soundSettings.s->toneControlHigh / 2);
+            //
+            //            ImGui::TableNextRow();
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("Tone Control LowFreq");
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("%d", connector->soundSettings.s->toneControlLowFreq);
+            //
+            //            ImGui::TableNextRow();
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("Tone Control MidFreq");
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("%d", connector->soundSettings.s->toneControlMidFreq);
+            //
+            //            ImGui::TableNextRow();
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("Tone Control HighFreq");
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("%d", connector->soundSettings.s->toneControlHighFreq);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Vinyl Processor");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", connector->soundSettings.s->vinylOn == 1 ? "On" : "Off");
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Vinyl Type");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", vinylTypeToString.at(connector->soundSettings.s->vinylType).c_str());
+
+            //            ImGui::TableNextRow();
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("Master Volume");
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("%d", connector->soundSettings.s->masterVolume);
+
+            //            ImGui::TableNextRow();
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("Clear Phase");
+            //            ImGui::TableNextColumn();
+            //            ImGui::Text("%s", connector->soundSettings.s->clearPhaseOn == 1 ? "On" : "Off");
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("DN (?)");
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", connector->soundSettings.s->DNOn == 1 ? "On" : "Off");
+
+            if ((connector->soundSettings.s->clearAudioOn == 1 && connector->soundSettings.s->clearAudioAvailable) ||
+                (connector->soundSettings.s->directSourceOn == 1 && connector->soundSettings.s->directSourceAvailable)) {
+                ImGui::EndDisabled();
+            }
+
+            ImGui::EndTable();
+        }
+        ImGui::PopStyleVar(2);
+
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+        if (prevSong == connector->status.Filename) {
+            ImGui::PushStyleColor(ImGuiCol_Button, BUTTON_RED);
+            if (eqSongExists) {
+                if (ImGui::Button("Remove", ImVec2(186, 60))) {
+                    if (SoundSettings::Remove(connector->status.Filename) == 0) {
+                        eqStatus = "Removed";
+                    } else {
+                        eqStatus = "Remove failed";
+                    }
+
+                    eqSongExists = SoundSettings::Exists(connector->status.Filename);
+                }
+            } else {
+                ImGui::BeginDisabled();
+                ImGui::Button("Remove", ImVec2(186, 60));
+                ImGui::EndDisabled();
+            }
+
+            ImGui::PopStyleColor();
+
+            ImGui::SameLine();
+        } else {
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 186 + ImGui::GetStyle().ItemSpacing.x);
+        }
+
+        if (prevSong != connector->status.Filename) {
+            connector->soundSettings.Update();
+            eqSongExists = SoundSettings::Exists(connector->status.Filename);
+            eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
+            prevSong = connector->status.Filename;
+            eqStatus = "Refreshed";
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Set as default", ImVec2(187, 60))) {
+            if (connector->soundSettings.Save("default") == 0) {
+                eqStatus = "Default EQ set";
+            } else {
+                eqStatus = "Set EQ as default failed";
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Save", ImVec2(186, 60))) {
+            if (connector->soundSettings.Save(connector->status.Filename) == 0) {
+                eqStatus = "Saved";
+            } else {
+                eqStatus = "Save failed";
+            }
+            eqSongExists = SoundSettings::Exists(connector->status.Filename);
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Save dir", ImVec2(186, 60))) {
+            if (connector->soundSettings.SaveDir(connector->status.Filename) == 0) {
+                eqStatus = "Saved dir";
+            } else {
+                eqStatus = "Save dir failed";
+            }
+            eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
+        }
+
+        ImGui::PushStyleColor(ImGuiCol_Button, BUTTON_RED);
+        if (eqSongDirExists) {
+            if (ImGui::Button("Remove dir", ImVec2(186, 60))) {
+                if (SoundSettings::RemoveDir(connector->status.Filename) == 0) {
+                    eqStatus = "Dir removed";
+                } else {
+                    eqStatus = "Dir remove failed";
+                }
+                eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
+            }
+        } else {
+            ImGui::BeginDisabled();
+            ImGui::Button("Remove dir", ImVec2(186, 60));
+            ImGui::EndDisabled();
+        }
+
+        ImGui::PopStyleColor();
+
+        ImGui::SameLine();
+        auto curpos = ImGui::GetCursorPos();
+        ImGui::SetCursorPosY(curpos.y + 8);
+        ImGui::Text(eqStatus.c_str());
+        ImGui::SetCursorPosY(curpos.y - 8);
+
+        ImGui::SameLine();
+        ImGui::SetCursorPos(curpos);
+        if (ImGui::InvisibleButton("##removeEqStatus", ImVec2(186 * 3 + ImGui::GetStyle().ItemSpacing.x + 3, 60))) {
+            eqStatus = "";
+        }
     }
 };
 

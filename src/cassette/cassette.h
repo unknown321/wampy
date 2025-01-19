@@ -89,7 +89,7 @@ namespace Cassette {
 
         int LoadReelAtlas(const std::string &path);
 
-        AtlasConfig LoadReelAtlasConfig(const std::string &path);
+        static AtlasConfig LoadReelAtlasConfig(const std::string &path);
 
         int LoadTape(const std::string &path);
 
@@ -115,6 +115,7 @@ namespace Cassette {
 
         char artist[FIELD_SIZE]{};
         char title[FIELD_SIZE]{};
+        char album[FIELD_SIZE]{};
 
         bool childThreadsStop{};
         bool reelThreadRunning{};

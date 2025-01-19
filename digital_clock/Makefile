@@ -30,6 +30,7 @@ digital_clock.tar.gz: yellow/0_big.jpg
 		purple \
 		pink \
 		blue
+	tar --list -f digital_clock.tar.gz blue/5_medium.jpg
 
 run: digital_clock.tar.gz
 

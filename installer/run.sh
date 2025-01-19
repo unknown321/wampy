@@ -47,12 +47,16 @@ install() {
   ${CP} upgtool-linux-arm5 ${VENDOR}/bin/
   ${CHMOD} 0755 ${VENDOR}/bin/upgtool-linux-arm5
 
+  log "installing pstserver"
+  ${CP} pstserver ${VENDOR}/bin/
+  ${CHMOD} 0755 ${VENDOR}/bin/pstserver
+
   log "installing ${BINARY} service"
   ${CP} "init.${BINARY}.rc" ${INITRD_UNPACKED}/
   ${CHMOD} 0600 "${INITRD_UNPACKED}/init.${BINARY}.rc"
   ${GREP} -q "init.${BINARY}.rc" "${INITRD_UNPACKED}/init.rc"
   if test $? -ne 0; then
-    log "adding service"
+    log "adding service to init.rc"
     echo -e "import init.${BINARY}.rc\n$(cat ${INITRD_UNPACKED}/init.rc)" > "${INITRD_UNPACKED}/init.rc"
   fi
 

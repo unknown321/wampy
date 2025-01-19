@@ -47,6 +47,8 @@ std::vector<std::string> split(const std::string &s, const std::string &delimite
 
 std::string join(const std::vector<std::string> &v, int start);
 
+std::string join(const std::vector<std::string> &v, int start, std::string sep);
+
 void printFPS();
 
 void CropTextToWidth(char *text, ImFont *font, float fontSize, float maxWidth);
@@ -154,4 +156,9 @@ void ExportBookmarks();
 void RemoveLogs();
 
 void getCharRange(std::vector<uint32_t> *points);
+
+bool replace(std::string &str, const std::string &from, const std::string &to);
+
+void toUpper(std::string &s);
+
 #endif // IMGUITEST_UTIL_H

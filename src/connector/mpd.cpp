@@ -125,6 +125,8 @@ namespace MPD {
     }
 
     void MPDConnector::parseStatus(Status *status, const std::vector<std::string> &words) {
+        std::string tempState;
+
         switch (hash(words[0].c_str())) {
         case hash("bitrate"): {
             auto brWord = join(words, 1);
@@ -161,7 +163,7 @@ namespace MPD {
             }
             break;
         case hash("state"):
-            status->State = join(words, 1);
+            tempState = join(words, 1);
             break;
         case hash("volume"):
             status->sf.Volume = true;
@@ -227,10 +229,26 @@ namespace MPD {
         }
         case hash("file"): {
             status->Codec = split(join(words, 1), ".").back();
+            status->Filename = join(words, 1);
             break;
         }
         default:
             break;
+        }
+
+        if (!tempState.empty()) {
+            switch (hash(tempState.c_str())) {
+            case hash("play"):
+                status->State = PlayStateE::PLAYING;
+                break;
+            case hash("pause"):
+                status->State = PlayStateE::PAUSED;
+                break;
+            case hash("stop"):
+            default:
+                status->State = PlayStateE::STOPPED;
+                break;
+            }
         }
     }
 
@@ -465,21 +483,21 @@ namespace MPD {
     }
 
     void MPDConnector::Play() {
-        if (status.State == "pause") {
+        if (status.State == PlayStateE::PAUSED) {
             Send(commandNoIdle);
             Send("pause 0\n");
             Send(commandIdle);
             return;
         }
 
-        if (status.State == "play") {
+        if (status.State == PlayStateE::PLAYING) {
             Send(commandNoIdle);
             Send("seekcur 0\n");
             Send(commandIdle);
             return;
         }
 
-        if (status.State == "stop") {
+        if (status.State == PlayStateE::STOPPED) {
             Send(commandNoIdle);
             Send("play\n");
             Send(commandIdle);
@@ -488,14 +506,14 @@ namespace MPD {
     }
 
     void MPDConnector::Pause() {
-        if (status.State == "pause") {
+        if (status.State == PlayStateE::PAUSED) {
             Send(commandNoIdle);
             Send("pause 0\n");
             Send(commandIdle);
             return;
         }
 
-        if (status.State == "play") {
+        if (status.State == PlayStateE::PLAYING) {
             Send(commandNoIdle);
             Send("pause 1\n");
             Send(commandIdle);

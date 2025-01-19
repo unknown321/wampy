@@ -1,17 +1,15 @@
+#include "QAbstractItemModel"
 #include <QObject>
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QWindow>
 
-#define PLAYLIST_LENGTH 20
+#include "hagoromoStatus.h"
 
-struct Track {
-    QString Artist = "";
-    QString Title = "";
-    int Track = 0;
-    int Duration = 0;
-    bool Active = false;
-};
+#define HAGOROMO_DEFAULT_VOLUME_MAX 120
+#define HAGOROMO_AVLS_VOLUME_MAX 63
+
+typedef int PlayState;
 
 // Provider updates and keeps following data:
 // play status, volume, playlist, current track details, usb mass storage status
@@ -22,65 +20,38 @@ class Provider : public QObject {
   private:
     QQuickItem *gridArea = nullptr;
 
-    void updatePlaylist(QObject *trackSequenceView);
+    static void updatePlaylist(QObject *trackSequenceView);
+
+    void notifyUpdate() const;
 
   public:
     Provider();
 
-    int bitRate{}; // kbps
-    int bitDepth{};
-    int sampleRate{}; // kHz
-    Track playlist[PLAYLIST_LENGTH]{};
-
-    int volume = 0; // raw value up to 120
-    int curTime = 0;
-    int time = 0;
-    QString artist{};
-    QString album{};
-    QString title{};
-    bool isPlaying{};
-    QString codec{};
-    int repeat{};
-    bool shuffle{};
-    //    int playState{};
+    HagoromoStatus *status = nullptr;
+    int maxVolume = HAGOROMO_DEFAULT_VOLUME_MAX;
     bool usbMounted{};
-    bool hires{};
 
-    // playlist might be at wrong position so that active track is not in visible part of playlist
-    bool playlistActiveFound = false;
+    QObject *MusicPlayerDefaultModel{};
 
-    QMetaObject::Connection MSCHandle{};
-    QMetaObject::Connection MusicPlayerHandle{};
-    QMetaObject::Connection MusicPlayerElapsedHandle{};
-    QMetaObject::Connection DACHandle{};
-    QMetaObject::Connection MusicWindowHandle{};
-    QObject *qmlPlayer{};
+    void Start();
 
     void GetPlaylist();
 
     void FromMSC(QObject *MSC);
 
-    void FromMusicPlayer(QObject *o);
-
-    void FromDAC(QObject *o);
-
-    void FromMusicWindow(QObject *o);
-
-    void FromDetailsPopup();
-
-    void parseDetailsPopupEntry(QQuickItem *o, int index);
+    void FromDAC(QObject *o) const;
 
   public slots:
 
     void VolumeSlot();
 
-    void MusicPlayerSlot();
+    void CurrentPlayState(PlayState play_state) const;
 
     void MSCSlot();
 
-    void MusicWindowSlot();
-
     void UpdateElapsed();
 
-    void UpdateDetails();
+    void UpdateBasicControls();
+
+    void UpdateEntryID();
 };

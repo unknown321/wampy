@@ -420,7 +420,7 @@ namespace Winamp {
         w->MarqueeRunning = true;
         w->connector->status.Elapsed = w->connector->status.Duration * val / 100;
 #ifndef DESKTOP
-        w->connector->updateElapsedCounter = 2;
+        w->connector->updateElapsedCounter = 1;
 #endif
     }
 
@@ -510,19 +510,19 @@ namespace Winamp {
             Elements.ClutterBar.Draw();
         }
 
-        switch (hash(connector->status.State.c_str())) {
-        case hash("play"):
+        switch (connector->status.State) {
+        case PlayStateE::PLAYING:
             Elements.PlayIndicator.Draw();
             Elements.BufferingIndicator.Draw();
             break;
-        case hash("pause"):
+        case PlayStateE::PAUSED:
             if (stopped) {
                 Elements.StopIndicator.Draw();
             } else {
                 Elements.PauseIndicator.Draw();
             }
             break;
-        case hash("stop"):
+        case PlayStateE::STOPPED:
         default:
             Elements.StopIndicator.Draw();
             break;
@@ -543,7 +543,7 @@ namespace Winamp {
 
         Elements.ShuffleButton.Draw(connector->status.Shuffle);
         Elements.RepeatButton.Draw(connector->status.Repeat);
-        Elements.EQButton.Draw();
+        Elements.EQButton.Draw(*eqEnabled);
         Elements.PlaylistButton.Draw();
         Elements.PrevButton.Draw();
         Elements.PlayButton.Draw();
@@ -647,7 +647,7 @@ namespace Winamp {
                 }
             }
 
-            auto s = playlist[activePlaylistID][i];
+            auto s = playlist[i];
 
             if (i == 0) {
                 ImGui::PushStyleColor(ImGuiCol_Text, colors.PlaylistCurrentTextU32);
@@ -810,7 +810,10 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 46, 73})->WithScale({67, 35}, false)->Load();
         bts[1] = bt;
-        Elements.EQButton.WithPosition(637.0f, 168.0f)->WithTextures(bts)->WithCallback(notImplemented, this, nullptr)->WithID("eq");
+        Elements.EQButton.WithPosition(637.0f, 168.0f)
+            ->WithTextures(bts)
+            ->WithCallback(Skin::Skin::ToggleDrawEQTab, skin, nullptr)
+            ->WithID("eq");
 
         //=========
         bts.clear();
@@ -1052,7 +1055,7 @@ namespace Winamp {
     }
 
     void Winamp::drawTime() {
-        auto s = playlist[activePlaylistID][0];
+        auto s = playlist[0];
         if (connector->status.Duration < 1) {
             return;
         }
@@ -1088,7 +1091,7 @@ namespace Winamp {
     }
 
     void Winamp::blinkTrackTime() {
-        if (connector->status.State == "pause") {
+        if (connector->status.State == PlayStateE::PAUSED) {
             if (!stopwatch.Running()) {
                 stopwatch.Start();
                 drawTime();
@@ -1186,8 +1189,8 @@ namespace Winamp {
     void Winamp::Play(void *winamp, void *) {
         auto w = (Winamp *)winamp;
         w->stopped = false;
-        DLOG("state %s\n", w->connector->status.State.c_str());
-        if (w->connector->status.State == "play") {
+        DLOG("state %d\n", w->connector->status.State);
+        if (w->connector->status.State == PlayStateE::PLAYING) {
             Connector::SetPosition(w->connector, 0);
             Connector::Play(w->connector, nullptr);
             return;
@@ -1214,13 +1217,13 @@ namespace Winamp {
 
         w->stopped = false;
 
-        if (w->connector->status.State == "pause") {
+        if (w->connector->status.State == PlayStateE::PAUSED) {
             Connector::SetPosition(w->connector, 0);
             Connector::Prev(w->connector, nullptr);
             return;
         }
 
-        if (w->connector->status.State == "play") {
+        if (w->connector->status.State == PlayStateE::PLAYING) {
             Connector::Pause(w->connector, nullptr);
             Connector::SetPosition(w->connector, 0);
             Connector::Prev(w->connector, nullptr);
@@ -1351,24 +1354,22 @@ namespace Winamp {
     }
 
     void Winamp::formatPlaylist() {
-        int stagingPlaylistID = 0;
-        if (activePlaylistID == 0) {
-            stagingPlaylistID = 1;
-        }
+        DLOG("formatting\n");
 
         // playlist songs, crop to playlist width
         int i;
         for (i = 0; i < PLAYLIST_SIZE; i++) {
             auto song = connector->playlist.at(i);
+            //            DLOG("%s %s\n", song.Title.c_str(), song.Artist.c_str());
             if (song.Duration < 1) {
-                auto d = &playlist[stagingPlaylistID][i];
+                auto d = &playlist[i];
                 memset(d->text, 0, PLAYLIST_SONG_SIZE);
                 memset(d->duration, 0, PLAYLIST_DURATION_SIZE);
                 d->durationSize = 0;
                 continue;
             }
 
-            auto d = &playlist[stagingPlaylistID][i];
+            auto d = &playlist[i];
             memset(d->text, 0, PLAYLIST_SONG_SIZE);
             snprintf(d->text, PLAYLIST_SONG_SIZE, "%s. %s - %s", song.Track.c_str(), song.Artist.c_str(), song.Title.c_str());
 
@@ -1383,7 +1384,7 @@ namespace Winamp {
         }
 
         for (; i < PLAYLIST_SIZE; i++) {
-            auto d = &playlist[stagingPlaylistID][i];
+            auto d = &playlist[i];
             memset(d->text, 0, PLAYLIST_SONG_SIZE);
             memset(d->duration, 0, PLAYLIST_DURATION_SIZE);
             d->durationSize = 0;
@@ -1480,14 +1481,31 @@ namespace Winamp {
         strcpy(mStaging.title, currentSongTitleTemp);
 
         prepareForMarquee();
-
-        // swap staging playlist with active
-        if (activePlaylistID == 1) {
-            activePlaylistID = 0;
-        } else {
-            activePlaylistID = 1;
-        }
     }
+
+    // File: '/tmp/font/Untitled1.ttf' (1516 bytes)
+    // Exported using binary_to_compressed_c.cpp
+    static const char empty_compressed_data_base85[1295 + 1] =
+        "7])#######kBglo'/###[),##1xL$#Q6>##e@;*>5Rlv1_RUV$cf>11fY;99)M7%#<PUV$@;Bk0'Tx-3lR$$/"
+        "7+:GD=RopAqV,-GuS05ST;%2heC3_5<gXG-%eU`N6qF/(D6@?$%J%/G"
+        "T_Ae?LUC;Z:6jW%,5LsCqTAM6V@A&,1;('>b';9CBi]EWi^]ooU2cD4?8;X-B4e'&koTS.P-2X.;h^`Iigrr-B:o:d>Z+q&o6Q<BLDhx=oXiJ):6jW%0iR/"
+        "GNR4>5-$D2:ReK?-qmnUC"
+        "h:jg3e=c'G;K6)*@C=GHco?D3U.xfLK&kB-N#JjLD3+5CmMxs'alVP&4[Rq.q3i@a<QQb%O<p$Db$P(./oUxL]em##0lA,MH:-##.:)=-3>iT.VH0)3:_Y-M?x/"
+        ",MYF?##Zc_@-7n7Y-"
+        "f:&:)_/"
+        "_f14[q'#s)rFreXZV$jA#2T06CX(`5LF%5[)<#8JFgL`bVV$PSltQXl)oCM-m.L&lpWhX8M`38-i3OQT)YLk7?>#hfor-ZTmA#xM,W-XjJe$;A@&,'>6d3_Du'&hF;"
+        ";$.qLk+"
+        "I;YY#B^i&#R(FcM`=?>#*N2A.&)###?IG&#2&v:rgI`v%3l:^#rQ@m-'C<L#?-39'f0@##`$At[:^/@66RG##Pui/"
+        "%Iq8;]`>(C&Okk2$7U$Z$AGs8].#KxtA:u+M^8oO(ZeGH3%duA#"
+        "gLrie$&Mu>0)@qLYbKM'/c&EG.(2t-R1`.NS@-##qRj3N((^fLeQW6NUL?##P@S?NVRH##oBH*NWXQ##I@r.N,@,gLjx&-#+MC;$xm,D-erfcMS@-##f/"
+        "_1N4(^fL_Fq4NUL?##)wI7N"
+        "*4pfL?1YCNWXQ##8*N+Ng3[##+:p*#+mk.#cSq/#TH4.#*,f'0c:F&#Y#S-#S@Rm/"
+        "0E-(#5dZ(#V4`T.]gb.#6H5s-750sLT<DP8DX=gG&>.FHMeZ<0-K*.3p6cYH0A2iF_q&##<@f>-"
+        "<I7u/YZO.#B*]-#eq*7/"
+        "9l7FH1I1qLx`5oLkL#.#Vr.>-Q@sY0BvZ6D.gcdGAbrmL=#d.#CT#<-ok*J-Y4%I-$Ln*.UoYlLE8QlM;i@(#av8kLV,:kL5=Av2GxtLFkG6fGB0E,31-s]5"
+        "Hi<@K]8g,3<kUO1I4<nXot0kX+7auGR+p`Fa#`>-(0fJ2Yb-j1ecGL24gCSC7;ZhFhXHL28-IL2<_2;VC7JFIq3n0#v(+GMQDX1^E%i1THCHuug(to7Es''#CQCG)+"
+        "#q<1OWf;-b@B[%"
+        "I####gtl)mj2_20[G$##q3i@a_C@AtqTU(1";
 
     Fonts Winamp::addFont(const std::string &ttfFontPath, TextureMapEntry fontNumbers, TextureMapEntry fontRegular) const {
         auto io = ImGui::GetIO();
@@ -1497,7 +1515,8 @@ namespace Winamp {
         range.Clear();
         ImVector<ImWchar> gr;
         gr.clear();
-        range.AddRanges(io.Fonts->GetGlyphRangesDefault());
+        static const ImWchar rr[] = {0x0020, 0x007F, 0};
+        range.AddRanges(rr);
         range.AddChar(ImWchar(0x266a)); // ♪
         range.AddChar(ImWchar(0x266b)); // ♫
         range.AddChar(ImWchar(0x24c8)); // Ⓢ
@@ -1511,7 +1530,7 @@ namespace Winamp {
         range.BuildRanges(&gr);
 
         ImFont *a = io.Fonts->AddFontFromFileTTF(ttfFontPath.c_str(), fontSizeTTF, nullptr, gr.Data);
-        ImFont *font = io.Fonts->AddFontDefault();
+        ImFont *font = io.Fonts->AddFontFromMemoryCompressedBase85TTF(empty_compressed_data_base85, 13.0f);
 
         char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\"@   0123456789..:()-'!_+\\/[]^&%,=$#\x0\x0\x0?*";
         char lowercase[] = "abcdefghijklmnopqrstuvwxyz";
@@ -1568,7 +1587,8 @@ namespace Winamp {
         //    };
 
         font_cfg.GlyphRanges = glyph_ranges;
-        ImFont *fontGen = io.Fonts->AddFontDefault(&font_cfg_gen);
+
+        ImFont *fontGen = io.Fonts->AddFontFromMemoryCompressedBase85TTF(empty_compressed_data_base85, 12.0f, &font_cfg_gen);
 
         iNum = 0;
         for (char c : alphabetGen) {

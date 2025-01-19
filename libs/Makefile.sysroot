@@ -1,0 +1,34 @@
+ARCH ?= amd64
+UPGTOOL=`pwd`/../nw-installer/tools/upgtool/upgtool-$(ARCH)
+UPG=NW_WM_FW.UPG
+
+sysroot/fw/6.bin:
+	mkdir -p sysroot/fw
+	$(UPGTOOL) -m nw-a50 -e -o sysroot/fw/ -z 6 $(UPG)
+
+sysroot/lib/libpstcore.so:
+	mkdir -p sysroot/lib
+	mkdir -p sysroot/tempmount
+	guestmount -a sysroot/fw/6.bin -r -m /dev/sda:/ sysroot/tempmount
+	find sysroot/tempmount/lib/ -maxdepth 1 \( -type f -o -type l \) -exec cp -P {} sysroot/lib/ \;
+	find sysroot/tempmount/vendor/sony/lib/ -maxdepth 1 \( -type f -o -type l \) -exec cp -P {} sysroot/lib/ \;
+	guestunmount sysroot/tempmount
+	cd sysroot/fw && abootimg -x 2.bin
+	dd if=sysroot/fw/initrd.img of=sysroot/fw/initrd.gz bs=512 skip=1
+	cd sysroot/fw && gunzip -f initrd.gz && mv initrd initrd.cpio
+	mkdir -p sysroot/fw/initrd_unpacked/
+	cpio --quiet --unconditional -D sysroot/fw/initrd_unpacked/ -idm --no-absolute-filenames --file sysroot/fw/initrd.cpio
+	find sysroot/fw/initrd_unpacked/lib/ -maxdepth 1 \( -type f -o -type l \) -exec cp -P {} sysroot/lib/ \;
+	cd sysroot/lib/ && unlink libfuse.so && ln -s libfuse.so.2.9.7 libfuse.so && \
+	    unlink libfuse.so.2 && ln -s libfuse.so.2.9.7 libfuse.so.2 && \
+	    unlink libl10n.so && ln -s libl10n.so.7.0 libl10n.so && \
+	    unlink libl10n.so.7 && ln -s libl10n.so.7.0 libl10n.so.7
+
+build:  sysroot/fw/6.bin sysroot/lib/libpstcore.so
+
+clean:
+	rm -rf sysroot
+
+.PHONY: build clean
+
+.DEFAULT_GOAL=build

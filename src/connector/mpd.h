@@ -62,6 +62,38 @@ namespace MPD {
         void FeatureShowTime(bool enable) override{};
 
         void FeatureSetMaxVolume(bool enable) override{};
+
+        void SetClearAudio(bool enable) override{};
+
+        void SetEqBands(std::vector<double>) override{};
+
+        void SetEqPreset(int preset) override{};
+
+        void SetVPT(bool enable) override{};
+
+        void SetVPTPreset(int preset) override{};
+
+        void SetDsee(bool enable) override{};
+
+        void SetDCPhase(bool enable) override{};
+
+        void SetDCPhasePreset(int preset) override{};
+
+        void SetVinyl(bool enable) override{};
+
+        void SetDirectSource(bool enable) override{};
+
+        void SetToneControlValues(const std::vector<int> &v) override{};
+
+        void SetToneControlOrEQ(int eqType) override{};
+
+        void SetDseeCust(bool enable) override{};
+
+        void SetDseeCustMode(int mode) override{};
+
+        void SetVinylMode(int mode) override{};
+
+        void getSongData(int entryId, SongInfo *s) override{};
     };
 } // namespace MPD
 

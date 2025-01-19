@@ -22,6 +22,21 @@ enum Type {
   CMD_FEATURE_SHOW_CLOCK = 16;
   CMD_FAILURE = 17;
   CMD_FEATURE_SET_MAX_VOLUME = 18;
+  CMD_SET_CLEAR_AUDIO = 19;
+  CMD_SET_EQ_BANDS = 20;
+  CMD_SET_EQ_PRESET = 21;
+  CMD_SET_VPT = 22;
+  CMD_SET_VPT_PRESET = 23;
+  CMD_SET_DSEE = 24;
+  CMD_SET_DCPHASE = 25;
+  CMD_SET_DCPHASE_PRESET = 26;
+  CMD_SET_VINYL = 27;
+  CMD_SET_DIRECT_SOURCE = 28;
+  CMD_SET_TONE_CONTROL_OR_EQ = 29;
+  CMD_SET_TONE_CONTROL_VALUES = 30;
+  CMD_SET_DSEE_CUST = 31;
+  CMD_SET_DSEE_CUST_MODE = 32;
+  CMD_SET_VINYL_MODE = 33;
 }
 
 enum ResponseCode {
@@ -48,6 +63,21 @@ message Command {
     FeatureBigCover FeatureBigCover = 7;
     FeatureShowClock FeatureShowClock = 8;
     FeatureSetMaxVolume FeatureSetMaxVolume = 9;
+    ClearAudio ClearAudio = 10;
+    EqBands EqBands = 11;
+    EqPreset EqPreset = 12;
+    Vpt VPT = 13;
+    VptPreset VPTPreset = 14;
+    Dsee DSEE = 15;
+    DCPhase DCPHASE = 16;
+    DCPhasePreset DCPHASEPreset = 17;
+    Vinyl Vinyl = 18;
+    DirectSource DirectSource = 19;
+    ToneControlValues ToneControlValues = 20;
+    ToneControlOrEq ToneControlOrEq = 21;
+    DseeCust DseeCust = 22;
+    DseeCustMode DseeCustMode = 23;
+    VinylMode VinylMode = 24;
   }
 }
 
@@ -69,6 +99,8 @@ message WindowStatus {
 
 message SetVolume {
   required int32 valuePercent = 1;
+  required bool relative = 2;
+  required int32 relativeValue = 3;
 }
 
 message Seek {
@@ -101,4 +133,67 @@ message Status {
   optional int32 BitDepth = 10;
   required Playlist Playlist = 11;
   required int32 VolumeRaw = 12;
+  required uint32 EntryID = 13;
+}
+
+message ClearAudio {
+  required bool enabled = 1;
+}
+
+message EqBands {
+  repeated double BandValue = 1;
+}
+
+message EqPreset {
+  required int32 preset = 1;
+}
+
+message Vpt {
+  required bool enabled = 1;
+}
+
+message VptPreset {
+  required int32 preset = 1;
+}
+
+message Dsee {
+  required bool enabled = 1;
+}
+
+message DCPhase {
+  required bool enabled = 1;
+}
+
+message DCPhasePreset {
+  required int32 preset = 1;
+}
+
+message Vinyl {
+  required bool enabled = 1;
+}
+
+message DirectSource{
+  required bool enabled = 1;
+}
+
+message ToneControlValues {
+  required int32 low = 1;
+  required int32 middle = 2;
+  required int32 high = 3;
+}
+
+message ToneControlOrEq {
+  required int32 eqId = 1;
+}
+
+message DseeCust {
+  required bool enabled = 1;
+}
+
+message DseeCustMode {
+  required int32 mode = 1;
+}
+
+message VinylMode {
+  required int32 mode = 1;
 }

@@ -96,15 +96,6 @@ sqlite/build-x86:
 		make && make install && patchelf --set-soname libsqlite3.so `pwd`/$@/install/lib/libsqlite3.so \
 	"
 
-libEGL.so: libMali_linux.so
-	ln -s libMali_linux.so libEGL.so
-
-libGLESv2.so: libMali_linux.so
-	ln -s libMali_linux.so libGLESv2.so
-
-libMali_linux.so:
-	test -f $@
-
 libjpeg: libjpeg-turbo/build-arm libjpeg-turbo/build-x86
 
 magick: ImageMagick/build-x86 ImageMagick/build-arm
@@ -119,7 +110,11 @@ protobuf:
 llusbdac:
 	$(MAKE)	-f Makefile.llusbdac
 
-all: patch libEGL.so libGLESv2.so libjpeg magick protobuf llusbdac sqlite
+sysroot:
+	cd ../ && make -C nw-installer prepare
+	$(MAKE) -f Makefile.sysroot
+
+all: patch libjpeg magick protobuf llusbdac sqlite sysroot
 
 clean:
 	rm -rf libjpeg-turbo/build-*
@@ -128,8 +123,10 @@ clean:
 	-make -C protobuf clean
 	-make -C ImageMagick clean
 	rm -rf sqlite/build-*
+	$(MAKE) -f Makefile.sysroot clean
+	$(MAKE) -f Makefile.llusbdac clean
 
 
 .DEFAULT_GOAL := all
 
-.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch llusbdac sqlite
+.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch llusbdac sqlite sysroot

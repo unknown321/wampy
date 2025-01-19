@@ -1,3 +1,5 @@
 moc_*.cpp
 /build
 *.swp
+command.pb.cc
+command.pb.h

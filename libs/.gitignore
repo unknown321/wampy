@@ -1,1 +1,4 @@
 *.so
+*.UPG
+sysroot/
+*.tar.gz

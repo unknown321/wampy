@@ -3,9 +3,28 @@
 
 #include "command.pb.h"
 #include "connector.h"
+#include "hagoromoStatus.h"
 
 namespace Hagoromo {
+    // lconvert HgrmMediaPlayerApp_en_US.qm
+    // FUN_001611a0 hgrm
+    extern std::map<int, std::string> codecToStr;
+    extern std::map<int, int> eq6PresetToHgrmIndex;
+    extern std::map<int, int> vptA50SmallToHgrmIndex;
+    extern std::map<int, int> dcFilterToHgrmIndex;
+    extern std::map<int, int> vinylTypeToHgrmIndex;
+    extern std::map<int, int> dseeModeToHgrmIndex;
+
     class HagoromoConnector : public Connector {
+      private:
+        std::mutex *m{}; // locks playlist while filtering to prevent double write on duplicate events
+
+        void updateSoundSettings();
+
+        void pauseIfNeeded();
+
+        void restorePlayState();
+
       public:
         const char *touchscreenPath = "/sys/devices/platform/mt-i2c.1/i2c-1/1-0048/sleep";
         const char *brightnessPath = "/sys/class/leds/lcd-backlight/brightness";
@@ -15,6 +34,13 @@ namespace Hagoromo {
         bool *featureBigCover{};
         bool *featureShowTime{};
         bool *featureLimitVolume{};
+        bool *featureEqPerSong{};
+        int prevEntryID{};
+        std::string prevFilename{};
+
+        HagoromoStatus *hagoromoStatus = nullptr;
+
+        PlayStateE playStateBeforeSoundSettingsUpdate = UNKNOWN;
 
         static void sendData(char *data, size_t len, std::string *res);
 
@@ -32,7 +58,7 @@ namespace Hagoromo {
 
         void Connect() override;
 
-        [[noreturn]] void ReadLoop() override;
+        void ReadLoop() override;
 
         void PollStatus() override;
 
@@ -68,7 +94,39 @@ namespace Hagoromo {
 
         void FeatureSetMaxVolume(bool enable) override;
 
+        void SetClearAudio(bool enable) override;
+
+        void SetEqBands(std::vector<double> bandValueList) override;
+
+        void SetEqPreset(int index) override;
+
+        void SetVPT(bool enable) override;
+
+        void SetVPTPreset(int preset) override;
+
+        void SetDsee(bool enable) override;
+
+        void SetDCPhase(bool enable) override;
+
+        void SetDCPhasePreset(int preset) override;
+
+        void SetVinyl(bool enable) override;
+
+        void SetDirectSource(bool enable) override;
+
+        void SetToneControlValues(const std::vector<int> &v) override;
+
+        void SetToneControlOrEQ(int eqType) override;
+
+        void SetDseeCust(bool enable) override;
+
+        void SetDseeCustMode(int mode) override;
+
+        void SetVinylMode(int mode) override;
+
         void Start() override;
+
+        void getSongData(int entryid, SongInfo *s) override;
     };
 } // namespace Hagoromo
 

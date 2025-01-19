@@ -84,12 +84,32 @@ namespace Tape {
                 this->artistCoords.y = std::stof(parts[1]);
                 break;
             }
+            case hash("artistformat"): {
+                this->formatArtist = parts[1];
+                break;
+            }
             case hash("titlex"): {
                 this->titleCoords.x = std::stof(parts[1]);
                 break;
             }
             case hash("titley"): {
                 this->titleCoords.y = std::stof(parts[1]);
+                break;
+            }
+            case hash("titleformat"): {
+                this->formatTitle = parts[1];
+                break;
+            }
+            case hash("albumx"): {
+                this->albumCoords.x = std::stof(parts[1]);
+                break;
+            }
+            case hash("albumy"): {
+                this->albumCoords.y = std::stof(parts[1]);
+                break;
+            }
+            case hash("albumformat"): {
+                this->formatAlbum = parts[1];
                 break;
             }
             case hash("titlewidth"): {
@@ -149,6 +169,11 @@ namespace Tape {
         if (artistCoords.x > 0) {
             ImGui::SetCursorPos(artistCoords);
             ImGui::Text("%s", artist);
+        }
+
+        if (albumCoords.x > 0) {
+            ImGui::SetCursorPos(albumCoords);
+            ImGui::Text("%s", album);
         }
 
         ImGui::PopStyleColor();

@@ -28,13 +28,16 @@ clean:
 veryclean: clean
 	rm $(GZ)
 
-build/plugins/platforms/libqeglfs.so: prepare
+protobuf:
+	$(MAKE) -C $(PLATFORM)
+
+build/plugins/platforms/libqeglfs.so: prepare protobuf
 	sed -i 's/SECOND_PASS 1/SECOND_PASS 0/g' $(PLATFORM)/wampy.h
 	docker run -it --rm \
 		-v $(QT_DIR):/qt \
 		-v ./$(PLATFORM):/qt/qtbase/mkspecs/devices/$(PLATFORM) \
-		-v $(PWD)/../libs/libMali_linux.so:$(SYSROOT)/lib/libEGL.so \
-		-v $(PWD)/../libs/libMali_linux.so:$(SYSROOT)/lib/libGLESv2.so \
+		-v $(PWD)/../libs/sysroot/lib/libMali_linux.so:$(SYSROOT)/lib/libEGL.so \
+		-v $(PWD)/../libs/sysroot/lib/libMali_linux.so:$(SYSROOT)/lib/libGLESv2.so \
 		-v $(BUILD_DIR):/build \
 		-v $(PWD)/../libs:/libs/ \
 		-v $(PWD)/../libs/glad/include/KHR:/libs/KHR \
@@ -75,7 +78,6 @@ build/plugins/platforms/libqeglfs.so: prepare
 				 -skip qtandroidextras \
 				 -skip qtmultimedia \
 				 -skip qtactiveqt \
-				 -skip qttools \
 				 -skip qtwebsockets \
 				 -skip qtlocation \
 				 -skip qtimageformats \
@@ -112,13 +114,13 @@ build/plugins/platforms/libqeglfs.so: prepare
 
 #/qt/qtbase/bin/qmake -o /qt/qtbase/src/plugins/platforms/eglfs/Makefile /qt/qtbase/src/plugins/platforms/eglfs/eglfs.pro
 
-fast: libMali_linux.so
+fast: libMali_linux.so protobuf
 	sed -i 's/SECOND_PASS 0/SECOND_PASS 1/g' $(PLATFORM)/wampy.h
 	docker run -it --rm \
 		-v $(QT_DIR):/qt \
 		-v ./$(PLATFORM):/qt/qtbase/mkspecs/devices/$(PLATFORM) \
-		-v $(PWD)/../libs/libMali_linux.so:$(SYSROOT)/lib/libEGL.so \
-		-v $(PWD)/../libs/libMali_linux.so:$(SYSROOT)/lib/libGLESv2.so \
+		-v $(PWD)/../libs/sysroot/lib/libMali_linux.so:$(SYSROOT)/lib/libEGL.so \
+		-v $(PWD)/../libs/sysroot/lib/libMali_linux.so:$(SYSROOT)/lib/libGLESv2.so \
 		-v $(PWD)/../libs:/libs/ \
 		-v $(PWD)/../libs/glad/include/KHR:/libs/KHR \
 		-v $(BUILD_DIR):/build \
@@ -146,13 +148,14 @@ r: release
 	$(ADB) shell hagodaemons.sh restart
 
 libMali_linux.so:
-	test -f ../libs/libMali_linux.so
+	test -f ../libs/sysroot/lib/libMali_linux.so
 
 push:
+	$(ADB) shell mount -o remount,rw /system
 	$(ADB) push $(PWD)/qt/qtbase/plugins/platforms/libqeglfs.so /system/vendor/sony/plugins/platforms/libqeglfs.so
 	$(ADB) shell chown root:shell /system/vendor/sony/plugins/platforms/libqeglfs.so
 	$(ADB) shell chmod 0755 /system/vendor/sony/plugins/platforms/libqeglfs.so
 
 .DEFAULT_GOAL := build
 
-.PHONY: build r push release fast clean veryclean prepare
+.PHONY: build r push release fast clean veryclean prepare protobuf

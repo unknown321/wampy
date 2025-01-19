@@ -24,6 +24,9 @@ uninstall() {
   log "removing ${BINARY}"
   ${RM} -f ${VENDOR}/bin/${BINARY}
 
+  log "removing pstserver"
+  ${RM} -f ${VENDOR}/bin/pstserver
+
   log "removing upgtool"
   ${RM} -f ${VENDOR}/bin/upgtool-linux-arm5
 

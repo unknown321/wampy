@@ -68,6 +68,7 @@ namespace AppConfig {
         ini["features"]["showTime"] = std::to_string(features.showTime);
         ini["features"]["limitVolume"] = std::to_string(features.limitVolume);
         ini["features"]["touchscreenStaysOFF"] = std::to_string(features.touchscreenStaysOFF);
+        ini["features"]["eqPerSong"] = std::to_string(features.eqPerSong);
         ini["mpd"]["socketPath"] = MPDSocketPath;
 
         ini["w1"]["deviceColor"] = std::to_string(w1Options.deviceColor);
@@ -156,6 +157,7 @@ namespace AppConfig {
         features.showTime = (bool)std::atoi(ini["features"]["showTime"].c_str());
         features.limitVolume = (bool)std::atoi(ini["features"]["limitVolume"].c_str());
         features.touchscreenStaysOFF = (bool)std::atoi(ini["features"]["touchscreenStaysOFF"].c_str());
+        features.eqPerSong = (bool)std::atoi(ini["features"]["eqPerSong"].c_str());
 
         w1Options.deviceColor = std::atoi(ini["w1"]["deviceColor"].c_str());
         if (W1::colorByValue.count(w1Options.deviceColor) == 0) {

@@ -130,7 +130,7 @@ At that time there was only one device from respectable manufacturer: Walkman NW
 ## Walkman
 
 <figure>
-<img src="images/nw-a50-promo.png" alt="nw-a50 promo">
+<img src="images/nw-a50-promo.jpg" alt="nw-a50 promo">
 <figcaption>Source: SONY</figcaption>
 </figure>
 
@@ -549,7 +549,7 @@ also usually an unhealthy amount of gloss which puts me off.
 ##### Adafruit PyPortal Winamp
 
 <figure>
-<img src="images/winamp-adafruit.jpg" alt="Adafruit Winamp">
+<img src="images/winamp-adafruit.png" alt="Adafruit Winamp">
 <figcaption>Source: <a href="https://hackaday.com/2022/02/20/winamp-reborn-with-the-adafruit-pyportal/">Hackaday.com</a></figcaption>
 </figure>
 

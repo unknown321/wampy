@@ -14,11 +14,14 @@ ECHO=/usr/bin/echo
 prepare:
 	$(MAKE) -C nw-installer/crosstool
 
-docker: docker_digital_clock
+docker: docker_digital_clock docker_pstserver
 	cat Dockerfile | docker image build -t $(IMAGE) -
 
 docker_digital_clock:
 	$(MAKE) -C digital_clock docker
+
+docker_pstserver:
+	$(MAKE) -C pstserver docker
 
 build:
 	mkdir -p build && \
@@ -29,6 +32,7 @@ build:
 	./$(PRODUCT)
 
 build-arm:
+	make -C server/armv5-unknown-linux-gnueabihf/
 	docker run -it --rm \
 		-v `pwd`:`pwd` -w `pwd` \
 		$(IMAGE) bash -c " \
@@ -72,6 +76,9 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 	cp digital_clock/digital_clock.tar.gz installer/
 	$(MAKE) -C tunings
 	cp tunings/tunings.tar.gz installer/
+	$(MAKE) -C pstserver
+	cp pstserver/pstserver installer/
+	$(UPX) -qqq --best installer/pstserver
 	cp libs/llusbdac/llusbdac/llusbdac.ko installer/
 	cp LICENSE installer/
 	cp LICENSE_3rdparty installer/
@@ -93,6 +100,7 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 		digital_clock.tar.gz \
 		tunings.tar.gz \
 		llusbdac.ko \
+		pstserver \
 		upgtool-linux-arm5 \
 		LICENSE \
 		LICENSE_3rdparty \
@@ -154,7 +162,8 @@ profile-arm:
 	firefox output.svg
 
 valgrind:
-	cd build && valgrind --leak-check=full --read-var-info=yes --read-inline-info=yes --gen-suppressions=yes --suppressions=../suppressions.valgrind -s  ./$(PRODUCT)
+	#cd cmake-build-default  && valgrind --leak-check=full --read-var-info=yes --read-inline-info=yes --fair-sched=yes --gen-suppressions=yes --suppressions=../suppressions.valgrind -s  ./$(PRODUCT)
+	cd cmake-build-default  && valgrind --leak-check=full --read-var-info=yes --read-inline-info=yes --fair-sched=yes -s  ./$(PRODUCT)
 
 LICENSE_3rdparty:
 	@$(ECHO) -e "\n***\nprotobuf:\n" > $@
@@ -192,16 +201,16 @@ qr.bmp:
 	@rm qr.png
 
 qrDonate.bmp:
-	@qrencode -o qrDonate.png -m 1 -s 7 https://boosty.to/unknown321/donate
+	@qrencode --background=ebb943 -o qrDonate.png -m 1 -s 7 https://boosty.to/unknown321/donate
 	@convert qrDonate.png -type palette qrDonate.bmp
 	@rm qrDonate.png
 
 fastinstall:
 	cd release/installer/
 	tar -C release/installer -xf release/installer/nw-a50.tar.gz
-	adb push release/installer/NW_WM_FW.UPG /contents
-	adb shell sync
-	adb shell nvpflag fup 0x70555766
-	adb shell reboot
+	$(ADB) push release/installer/NW_WM_FW.UPG /contents
+	$(ADB) shell sync
+	$(ADB) shell nvpflag fup 0x70555766
+	$(ADB) shell reboot
 
-.PHONY: build build-arm docker docker_digital_clock push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server userdata fastinstall
+.PHONY: build build-arm docker docker_digital_clock push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server userdata fastinstall docker_pstserver

@@ -127,6 +127,7 @@ namespace Winamp {
     class Winamp : public SkinVariant, public INotifiable {
       public:
         Config *config{};
+        bool *eqEnabled{};
 
         Winamp();
         Winamp(Winamp const &other);
@@ -204,10 +205,9 @@ namespace Winamp {
                                  // does not reset current value
         const char *remainingTimeSign{};
         bool stopped{};
-        int activePlaylistID{}; // used to swap currently updated playlist with displayed playlist
         Stopwatch::Stopwatch<> stopwatch;
 
-        PlaylistSong playlist[2][PLAYLIST_SIZE]{};
+        PlaylistSong playlist[PLAYLIST_SIZE]{};
         bool titleIsMarquee{};
         char systemMessage[256]{};
         int minute1{};

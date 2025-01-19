@@ -285,6 +285,7 @@ int main(int, char **) {
         v->featureBigCover = &config.features.bigCover;
         v->featureShowTime = &config.features.showTime;
         v->featureLimitVolume = &config.features.limitVolume;
+        v->featureEqPerSong = &config.features.eqPerSong;
     } else {
         connector = new MPD::MPDConnector();
         connector->address = config.MPDSocketPath.c_str();
@@ -308,6 +309,7 @@ int main(int, char **) {
     v->featureBigCover = &config.features.bigCover;
     v->featureShowTime = &config.features.showTime;
     v->featureLimitVolume = &config.features.limitVolume;
+    v->featureEqPerSong = &config.features.eqPerSong;
 
     socket = WAMPY_SOCKET;
     listdir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/", &skinList, ".wsz");
@@ -399,6 +401,7 @@ int main(int, char **) {
     skin.cassette.connector = connector;
 
     skin.winamp.WithConfig(&config.winamp);
+    skin.winamp.eqEnabled = &config.features.eqPerSong;
     skin.cassette.WithConfig(&config.cassette);
     skin.digitalClock.WithConfig(&config.digitalClock);
 
@@ -416,6 +419,7 @@ int main(int, char **) {
     skin.ReadQR();
     skin.PreprocessTableFilenames();
     skin.GetLogsDirSize();
+    connector->soundSettings.Start();
     skin.Load();
 
     if (socket.empty()) {

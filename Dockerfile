@@ -16,4 +16,4 @@ RUN ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabi
 		ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc && \
 		ln -s /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-strip /usr/bin/arm-linux-gnueabihf-strip
 
-RUN apt-get install tclsh patchelf -y && apt-get clean
+RUN apt-get install tclsh patchelf bc vim libncurses-dev bison flex libssl-dev -y && apt-get clean

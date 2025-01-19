@@ -25,6 +25,7 @@ namespace AppConfig {
         bool showTime = false;
         bool limitVolume = false;
         bool touchscreenStaysOFF = false;
+        bool eqPerSong = false;
     };
 
     class AppConfig {
