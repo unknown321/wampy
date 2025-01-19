@@ -454,6 +454,14 @@ int main(int, char **) {
     auto events = []() { glfwPollEvents(); };
     std::thread f(events);
     f.detach();
+
+    mkpath("/contents/wampy/skins/cassette", 0777);
+    mkpath("/contents/wampy/skins/winamp/", 0777);
+    mkpath("/contents/wampy/skins/cassette/reel/", 0777);
+    mkpath("/contents/wampy/skins/cassette/tape/", 0777);
+    mkpath("/contents/wampy/sound_settings/master_volume_dsd/", 0777);
+    mkpath("/contents/wampy/sound_settings/master_volume/", 0777);
+    mkpath("/contents/wampy/sound_settings/tone_control/", 0777);
 #endif
 
     int display_w, display_h;
