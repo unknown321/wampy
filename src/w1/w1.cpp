@@ -44,7 +44,7 @@ namespace W1 {
             return;
         }
 
-        snprintf(command, 23, "nvpflag -x clv 0x%.8x", color);
+        snprintf(command, 30, "nvpflag -x clv 0x%.8x", color);
         DLOG("command %s\n", command);
         auto code = system(command);
         if (code != 0) {
