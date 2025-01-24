@@ -4,6 +4,16 @@ BINARY=wampy
 user=system
 group=system
 
+CP="/xbin/busybox cp"
+RM="/xbin/busybox rm"
+MKDIR="/xbin/busybox mkdir"
+CHMOD="/xbin/busybox chmod"
+CHOWN="/xbin/busybox chown"
+LN="/xbin/busybox ln"
+GREP="/xbin/busybox grep"
+TAR="/xbin/busybox tar"
+SED="/xbin/busybox sed"
+
 log()
 {
         oldIFS=$IFS
@@ -21,61 +31,61 @@ clearBadBoots() {
     return
   fi
 
-  log "badboots = $(busybox grep badboots /contents/wampy/config.ini)"
+  log "badboots = $(${GREP} badboots /contents/wampy/config.ini)"
   log "resetting badboots to 0"
-  busybox sed -i 's/badboots.*/badboots = 0/g' /contents/wampy/config.ini
-  log "badboots = $(busybox grep badboots /contents/wampy/config.ini)"
+  ${SED} -i 's/badboots.*/badboots = 0/g' /contents/wampy/config.ini
+  log "badboots = $(${GREP} badboots /contents/wampy/config.ini)"
 }
 
 install() {
   log "installing ${BINARY}"
-  mkdir -p ${VENDOR}/bin/
-  cp ${BINARY} ${VENDOR}/bin/
-  chmod 0755 ${VENDOR}/bin/${BINARY}
+  ${MKDIR} -p ${VENDOR}/bin/
+  ${CP} ${BINARY} ${VENDOR}/bin/
+  ${CHMOD} 0755 ${VENDOR}/bin/${BINARY}
 
   log "installing upgtool"
-  cp upgtool-linux-arm5 ${VENDOR}/bin/
-  chmod 0755 ${VENDOR}/bin/upgtool-linux-arm5
+  ${CP} upgtool-linux-arm5 ${VENDOR}/bin/
+  ${CHMOD} 0755 ${VENDOR}/bin/upgtool-linux-arm5
 
   log "installing ${BINARY} service"
-  cp "init.${BINARY}.rc" ${INITRD_UNPACKED}/
-  chmod 0600 "${INITRD_UNPACKED}/init.${BINARY}.rc"
-  grep -q "init.${BINARY}.rc" "${INITRD_UNPACKED}/init.rc"
+  ${CP} "init.${BINARY}.rc" ${INITRD_UNPACKED}/
+  ${CHMOD} 0600 "${INITRD_UNPACKED}/init.${BINARY}.rc"
+  ${GREP} -q "init.${BINARY}.rc" "${INITRD_UNPACKED}/init.rc"
   if test $? -ne 0; then
     log "adding service"
     echo -e "import init.${BINARY}.rc\n$(cat ${INITRD_UNPACKED}/init.rc)" > "${INITRD_UNPACKED}/init.rc"
   fi
 
   log "installing libraries"
-  mkdir -p ${VENDOR}/lib/
-  cp libMagick++-7.Q8HDRI.so ${VENDOR}/lib/
-  cp libMagickCore-7.Q8HDRI.so ${VENDOR}/lib/
-  cp libMagickWand-7.Q8HDRI.so ${VENDOR}/lib/
-  chmod 0700 ${VENDOR}/lib/libMagick*-7.Q8HDRI.so
-  chown ${user}:${group} ${VENDOR}/lib/libMagick*-7.Q8HDRI.so
+  ${MKDIR} -p ${VENDOR}/lib/
+  ${CP} libMagick++-7.Q8HDRI.so ${VENDOR}/lib/
+  ${CP} libMagickCore-7.Q8HDRI.so ${VENDOR}/lib/
+  ${CP} libMagickWand-7.Q8HDRI.so ${VENDOR}/lib/
+  ${CHMOD} 0700 ${VENDOR}/lib/libMagick*-7.Q8HDRI.so
+  ${CHOWN} ${user}:${group} ${VENDOR}/lib/libMagick*-7.Q8HDRI.so
 
-  cp libjpeg.so.62.4.0 ${VENDOR}/lib/
-  chmod 0700 ${VENDOR}/lib/libjpeg.so.62.4.0
-  chown ${user}:${group} ${VENDOR}/lib/libjpeg.so.62.4.0
-  ln -s ${VENDOR}/lib/libjpeg.so.62.4.0 ${VENDOR}/lib/libjpeg.so.62
-  busybox chown -h ${user}:${group} ${VENDOR}/lib/libjpeg.so.62
+  ${CP} libjpeg.so.62.4.0 ${VENDOR}/lib/
+  ${CHMOD} 0700 ${VENDOR}/lib/libjpeg.so.62.4.0
+  ${CHOWN} ${user}:${group} ${VENDOR}/lib/libjpeg.so.62.4.0
+  ${LN} -s ${VENDOR}/lib/libjpeg.so.62.4.0 ${VENDOR}/lib/libjpeg.so.62
+  ${CHOWN} -h ${user}:${group} ${VENDOR}/lib/libjpeg.so.62
 
-  cp libprotobuf.so.32.0.12 ${VENDOR}/lib/
-  chmod 0700 ${VENDOR}/lib/libprotobuf.so.32.0.12
-  chown ${user}:${group} ${VENDOR}/lib/libprotobuf.so.32.0.12
-  ln -s ${VENDOR}/lib/libprotobuf.so.32.0.12 ${VENDOR}/lib/libprotobuf.so.32
-  ln -s ${VENDOR}/lib/libprotobuf.so.32.0.12 /system/vendor/sony/lib/libprotobuf.so.32
-  busybox chown -h ${user}:${group} ${VENDOR}/lib/libprotobuf.so.32
-  busybox chown -h ${user}:${group} /system/vendor/sony/lib/libprotobuf.so.32
+  ${CP} libprotobuf.so.32.0.12 ${VENDOR}/lib/
+  ${CHMOD} 0700 ${VENDOR}/lib/libprotobuf.so.32.0.12
+  ${CHOWN} ${user}:${group} ${VENDOR}/lib/libprotobuf.so.32.0.12
+  ${LN} -s ${VENDOR}/lib/libprotobuf.so.32.0.12 ${VENDOR}/lib/libprotobuf.so.32
+  ${LN} -s ${VENDOR}/lib/libprotobuf.so.32.0.12 /system/vendor/sony/lib/libprotobuf.so.32
+  ${CHOWN} -h ${user}:${group} ${VENDOR}/lib/libprotobuf.so.32
+  ${CHOWN} -h ${user}:${group} /system/vendor/sony/lib/libprotobuf.so.32
 
   log "installing server"
   test -f /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
   if test $? -ne 0; then
     # make sure this file is from SONY (not linked to libprotobuf)
-    busybox grep -q protobuf /system/vendor/sony/plugins/platforms/libqeglfs.so
+    ${GREP} -q protobuf /system/vendor/sony/plugins/platforms/libqeglfs.so
     if test $? -eq 1; then
       log "backing up libqeglfs"
-      busybox cp -p /system/vendor/sony/plugins/platforms/libqeglfs.so /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
+      ${CP} -p /system/vendor/sony/plugins/platforms/libqeglfs.so /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
     else
       log "libqeglfs is linked to libprotobuf, not backing up"
     fi
@@ -83,44 +93,44 @@ install() {
     log "libqeglfs backup already exists"
   fi
 
-  cp libqeglfs.so /system/vendor/sony/plugins/platforms/
-  chown root:shell /system/vendor/sony/plugins/platforms/libqeglfs.so
-  chmod 0755 /system/vendor/sony/plugins/platforms/libqeglfs.so
+  ${CP} libqeglfs.so /system/vendor/sony/plugins/platforms/
+  ${CHOWN} root:shell /system/vendor/sony/plugins/platforms/libqeglfs.so
+  ${CHMOD} 0755 /system/vendor/sony/plugins/platforms/libqeglfs.so
 
   log "installing winamp skin"
-  mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/winamp/
-  cp "base-2.91.wsz" ${VENDOR}/usr/share/${BINARY}/skins/winamp/
+  ${MKDIR} -p ${VENDOR}/usr/share/${BINARY}/skins/winamp/
+  ${CP} "base-2.91.wsz" ${VENDOR}/usr/share/${BINARY}/skins/winamp/
 
   log "wiping old cassettes"
-  rm -r ${VENDOR}/usr/share/${BINARY}/skins/cassette/
+  ${RM} -r ${VENDOR}/usr/share/${BINARY}/skins/cassette/
 
   log "installing cassettes"
-  mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/cassette/
-  busybox tar -C ${VENDOR}/usr/share/${BINARY}/skins/cassette/ -xf cassette.tar.gz
+  ${MKDIR} -p ${VENDOR}/usr/share/${BINARY}/skins/cassette/
+  ${TAR} -C ${VENDOR}/usr/share/${BINARY}/skins/cassette/ -xf cassette.tar.gz
 
   log "wiping old digital clock"
-  rm -r ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/
+  ${RM} -r ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/
 
   log "installing digital clock"
-  mkdir -p ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/
-  busybox tar -C ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/ -xf digital_clock.tar.gz
+  ${MKDIR} -p ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/
+  ${TAR} -C ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/ -xf digital_clock.tar.gz
 
   log "installing licenses"
-  mkdir -p ${VENDOR}/usr/share/${BINARY}/doc/
-  cp LICENSE ${VENDOR}/usr/share/${BINARY}/doc/
-  cp LICENSE_3rdparty ${VENDOR}/usr/share/${BINARY}/doc/
+  ${MKDIR} -p ${VENDOR}/usr/share/${BINARY}/doc/
+  ${CP} LICENSE ${VENDOR}/usr/share/${BINARY}/doc/
+  ${CP} LICENSE_3rdparty ${VENDOR}/usr/share/${BINARY}/doc/
 
   log "installing qr code"
-  cp qr.bmp ${VENDOR}/usr/share/${BINARY}/
-  cp qrDonate.bmp ${VENDOR}/usr/share/${BINARY}/
+  ${CP} qr.bmp ${VENDOR}/usr/share/${BINARY}/
+  ${CP} qrDonate.bmp ${VENDOR}/usr/share/${BINARY}/
 
   log "installing tunings"
-  mkdir -p ${VENDOR}/usr/share/${BINARY}/sound_settings/
-  busybox tar -C ${VENDOR}/usr/share/${BINARY}/sound_settings/ -xf tunings.tar.gz
+  ${MKDIR} -p ${VENDOR}/usr/share/${BINARY}/sound_settings/
+  ${TAR} -C ${VENDOR}/usr/share/${BINARY}/sound_settings/ -xf tunings.tar.gz
 
   log "installing llusbdac"
-  mkdir -p ${VENDOR}/modules/
-  cp llusbdac.ko ${VENDOR}/modules/
+  ${MKDIR} -p ${VENDOR}/modules/
+  ${CP} llusbdac.ko ${VENDOR}/modules/
 
   clearBadBoots
 }
