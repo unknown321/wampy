@@ -4,6 +4,11 @@ BINARY=wampy
 user=system
 group=system
 
+RM="/xbin/busybox rm"
+GREP="/xbin/busybox grep"
+CP="/xbin/busybox cp"
+SED="/xbin/busybox sed"
+
 log()
 {
         oldIFS=$IFS
@@ -17,42 +22,42 @@ log()
 
 uninstall() {
   log "removing ${BINARY}"
-  busybox rm -f ${VENDOR}/bin/${BINARY}
+  ${RM} -f ${VENDOR}/bin/${BINARY}
 
   log "removing upgtool"
-  busybox rm -f ${VENDOR}/bin/upgtool-linux-arm5
+  ${RM} -f ${VENDOR}/bin/upgtool-linux-arm5
 
   log "uninstalling ${BINARY} service"
-  grep -q "init.${BINARY}.rc" "${INITRD_UNPACKED}/init.rc"
+  ${GREP} -q "init.${BINARY}.rc" "${INITRD_UNPACKED}/init.rc"
   if test $? -eq 0; then
     log "removing service"
-    busybox sed -i "/import init.${BINARY}.rc/d" ${INITRD_UNPACKED}/init.rc
+    ${SED} -i "/import init.${BINARY}.rc/d" ${INITRD_UNPACKED}/init.rc
   fi
-  busybox rm -f ${INITRD_UNPACKED}/init.${BINARY}.rc
+  ${RM} -f ${INITRD_UNPACKED}/init.${BINARY}.rc
 
   log "removing libraries"
-  busybox rm -f ${VENDOR}/lib/libMagick++-7.Q8HDRI.so
-  busybox rm -f ${VENDOR}/lib/libMagickCore-7.Q8HDRI.so
-  busybox rm -f ${VENDOR}/lib/libMagickWand-7.Q8HDRI.so
+  ${RM} -f ${VENDOR}/lib/libMagick++-7.Q8HDRI.so
+  ${RM} -f ${VENDOR}/lib/libMagickCore-7.Q8HDRI.so
+  ${RM} -f ${VENDOR}/lib/libMagickWand-7.Q8HDRI.so
 
-  busybox rm -f ${VENDOR}/lib/libjpeg.so.62.4.0
-  busybox rm -f ${VENDOR}/lib/libjpeg.so.62
+  ${RM} -f ${VENDOR}/lib/libjpeg.so.62.4.0
+  ${RM} -f ${VENDOR}/lib/libjpeg.so.62
 
   log "uninstalling server"
   busybox test -f /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
   if busybox test $? -eq 0; then
     # make sure backup is from SONY (not linked to libprotobuf)
-    busybox grep -q protobuf /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
+    ${GREP} -q protobuf /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
     if busybox test $? -eq 1; then
       log "restoring libqeglfs from backup"
-      busybox cp -f /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor /system/vendor/sony/plugins/platforms/libqeglfs.so
+      ${CP} -f /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor /system/vendor/sony/plugins/platforms/libqeglfs.so
       chown root:shell /system/vendor/sony/plugins/platforms/libqeglfs.so
       chmod 0755 /system/vendor/sony/plugins/platforms/libqeglfs.so
 
       log "removing protobuf lib"
-      busybox rm -f ${VENDOR}/lib/libprotobuf.so.32.0.12
-      busybox rm -f ${VENDOR}/lib/libprotobuf.so.32
-      busybox rm -f /system/vendor/sony/lib/libprotobuf.so.32
+      ${RM} -f ${VENDOR}/lib/libprotobuf.so.32.0.12
+      ${RM} -f ${VENDOR}/lib/libprotobuf.so.32
+      ${RM} -f /system/vendor/sony/lib/libprotobuf.so.32
     else
       log "backup file is linked to libprotobuf, not restoring"
     fi
@@ -61,10 +66,10 @@ uninstall() {
   fi
 
   log "removing skins, licenses, qr code, tunings"
-  busybox rm -rf ${VENDOR}/usr/share/${BINARY}/
+  ${RM} -rf ${VENDOR}/usr/share/${BINARY}/
 
   log "removing modules"
-  busybox rm -rf ${VENDOR}/modules/
+  ${RM} -rf ${VENDOR}/modules/
 }
 
 log "uninstaller for $(cat product_info)"
