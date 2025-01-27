@@ -71,7 +71,7 @@ install() {
   ${CHOWN} -h ${user}:${group} ${VENDOR}/lib/libjpeg.so.62
 
   ${CP} libprotobuf.so.32.0.12 ${VENDOR}/lib/
-  ${CHMOD} 0700 ${VENDOR}/lib/libprotobuf.so.32.0.12
+  ${CHMOD} 0755 ${VENDOR}/lib/libprotobuf.so.32.0.12
   ${CHOWN} ${user}:${group} ${VENDOR}/lib/libprotobuf.so.32.0.12
   ${LN} -s ${VENDOR}/lib/libprotobuf.so.32.0.12 ${VENDOR}/lib/libprotobuf.so.32
   ${LN} -s ${VENDOR}/lib/libprotobuf.so.32.0.12 /system/vendor/sony/lib/libprotobuf.so.32
