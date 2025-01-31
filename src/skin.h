@@ -1843,8 +1843,18 @@ struct Skin {
 
     void TabLlusbdac() {
         if (ImGui::BeginTabItem("llusbdac")) {
-            ImGui::Text(llusbdacStatus.c_str());
+            if (connector->status.State == PlayStateE::PLAYING) {
+                ImGui::NewLine();
+                ImGui::Text("Stop music first.");
+                ImGui::NewLine();
+                if (ImGui::Button("Stop music", ImVec2(186, 60))) {
+                    connector->Pause();
+                }
+                ImGui::EndTabItem();
+                return;
+            }
 
+            ImGui::Text(llusbdacStatus.c_str());
             auto label = llusbdacLoaded ? "Disable" : "Enable";
             if (ImGui::Button(label, ImVec2(756, 350))) {
                 if (llusbdacLoaded) {
