@@ -13,7 +13,7 @@ Perform factory reset on device, take SD card out.
 
 Turn device off. Hold `volume down` + `play` buttons and insert USB cable.
 
-Dump whole device to file (~20 minutes):
+Dump whole device to file (~20 minutes for 16Gb model):
 
 ```shell
 mtk rf <path to backup file>
@@ -22,12 +22,17 @@ mtk rf <path to backup file>
 Output file will be as big as your device's capacity (16 GB). You can compress it to about 800 MB using zip/rar/whatever
 and decompress when needed.
 
-Factory reset is needed because your songs won't compress as good as empty space. You may skip it if you don't care about hard drive space.
+Factory reset is needed because your songs won't compress as good as empty space. You may skip it if you don't care
+about hard drive space.
 
 ### Restoring
 
-Make sure you use **w**f, which writes to device.
+Make sure you use **w**f command, which writes to device.
 
 ```shell
 mtk wf <path to backup file>
 ```
+
+### Issues
+
+There are reports on this method not working for NW-A40.

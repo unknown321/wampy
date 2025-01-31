@@ -51,7 +51,7 @@ service framework to grab info about current song. There even was a working prot
 During [master volume tables development](./MAKING_OF_SOUND_SETTINGS.md) another prototype was developed for
 dumping all settings to figure out differences between Walkman One and stock firmware (there were none). That code (with
 some modifications) now lives in [./pstserver](https://github.com/unknown321/wampy/tree/master/pstserver) directory. It
-dumps all relevant application (`DMP_CONFIG_`) settings on incoming requests.
+dumps all relevant application settings (`DMP_CONFIG_`) on incoming requests.
 
 Why separate application instead of just including it into Wampy? Main reason is that system libraries were compiled
 with LLVM (clang) compiler, while Wampy is built by GCC (for an important reason I forgot). You can't mix those,
@@ -89,7 +89,7 @@ All right, info about audio settings is here, file path is here. Both are saved 
 Most straightforward solution is to use `pstserver` to write desired configuration back. This is a non-working one.
 Standard player is unaware that settings were changed by something else; there is no way to force it to reread full
 configuration aside from restarting. That means that there will be no changes in standard player GUI and I see no reason
-to make same GUI in Wampy. So... back to that tree with broken branches? Yea, but before `pstserver` I
+to make same GUI in Wampy. So... back to that tree with broken branches? Yea, but before making `pstserver` I
 discovered a shortcut in standard player which opened access to all objects needed to update (only update, these don't
 provide values) sound effect settings. Now that code is more or less straightforward and resembles tree on the left.
 Fewer branches = faster code.

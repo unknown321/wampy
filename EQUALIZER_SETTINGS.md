@@ -44,9 +44,9 @@ database, these will be used instead. Default record is automatically created on
 `Save` button saves currently used settings for this file (`12. If You Dare.mp3`)
 
 `Save dir` saves settings for directory (that would be `1990 - The Razors Edge` directory). Settings will be applied to
-any files in it.
+all files in it.
 
-`Remove` and `Remove dir` buttons remove settings for file and directory.
+`Remove` and `Remove dir` buttons remove settings for file and directory respectively.
 
 Equalizer settings are refreshed on song change and after toggling Wampy.
 
@@ -56,10 +56,9 @@ Tap on status text to clear it.
 
 <img src="images/settings-eq-example.png">
 
-This screenshot was taken from NW-A50 stock firmware without DSEE custom mode and DC Phase filters. Even though these
-options are shown, they are not applied because firmware does not support them.
+This screenshot was taken from NW-A50 stock firmware (DSEE custom mode and DC Phase filters are not supported).
 
-Directory with Jon Lajoie's album `2010 - I Kill People` is using following settings:
+Directory with Jon Lajoie's album `2010 - I Kill People` on internal storage is using following settings:
 
 - DSEE HX: On
 - DC Phase: On, B Standard (default on NW-A50, cannot change)

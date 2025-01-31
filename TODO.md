@@ -1,19 +1,7 @@
-# release
-
-- [x] доки
-- [ ] вычитка
-- [x] пожать скрины
-- [ ] чейнджлог
-- [ ] тестирование
-  - [ ] устанавливается на чистое
-    - [ ] stock
-    - [ ] w1
-  - [ ] работает час и не течёт
-
 #general
 
 - [ ] apply tunings on boot
-- [ ] mtk backup is broken on nw-a40, update docs
+- [x] mtk backup is broken on nw-a40, update docs
 - [x] make llusbdac build everywhere, not just on my machine
 - [x] export bookmarks
 - [x] current volume on volume table graphs

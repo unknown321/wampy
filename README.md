@@ -3,7 +3,13 @@ wampy
 
 Interface addon for NW-A50 series Walkman player.
 
-Also works on [Walkman One (NW-A50)](https://www.mrwalkman.com/p/sony-nw-a50series-custom-firmware.html).
+Also works on Walkman One [NW-A50][1]/[A40][2]/[A30][3].
+
+[1]: https://www.mrwalkman.com/p/sony-nw-a50series-custom-firmware.html
+
+[2]: https://www.mrwalkman.com/p/walkman-one-for-nw-a40series.html
+
+[3]: https://www.mrwalkman.com/p/walkman-one-nw-a30series.html
 
 <img src="images/winamp.png" alt="winamp" width="49%">&nbsp;<img src="images/cassette.png" alt="cassette" width="49%">
 <img src="images/promo-cassette-skin.png" width="20%"> <img src="images/promo-mvt.png" width="55%"> <img src="images/promo-digiclock.png" width="20%">
@@ -22,29 +28,27 @@ See [USAGE.md](./USAGE.md).
 
 ## Device support
 
-| Device          | Stock | Walkman One | Notes                                   |
-|-----------------|-------|-------------|-----------------------------------------|
-| NW-A50          | ✅     | ✅           |                                         |
-| NW-A40          | ❌     | ✅           | stock fw is broken, outdated GPU driver |
-| └──[A50 mod][1] | ✅     | ---         | confirmed by community                  |
-| NW-A30          | ❌     | ✅           | confirmed by community                  |
-| NW-ZX300        | ?     | ?           | looking for tester [#12][3]             |
-| NW-WM1A/Z       | ?     | ?           | looking for tester [#13][4]             |
-| DMP-Z1          | ?     | ?           | looking for tester                      |
+| Device          | Stock | Walkman One | Notes                                                    |
+|-----------------|-------|-------------|----------------------------------------------------------|
+| NW-A50          | ✅     | ✅           |                                                          |
+| NW-A40          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
+| └──[A50 mod][4] | ✅     | ---         | confirmed by community                                   |
+| NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
+| NW-ZX300        | ?     | ?           | looking for tester [#12][5]                              |
+| NW-WM1A/Z       | ?     | ?           | looking for tester [#13][6]                              |
+| DMP-Z1          | ?     | ?           | looking for tester                                       |
 
-[1]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
+[4]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
 
-[2]: https://github.com/unknown321/wampy/issues/1
+[5]: https://github.com/unknown321/wampy/issues/1
 
-[3]: https://github.com/unknown321/wampy/issues/12
-
-[4]: https://github.com/unknown321/wampy/issues/13
+[6]: https://github.com/unknown321/wampy/issues/12
 
 ## Install
 
 ### Pre-install
 
-It is strongly recommended to make a backup. See [BACKUP.md](./BACKUP.md).
+It is recommended to make a backup. See [BACKUP.md](./BACKUP.md).
 You should also read [USAGE.md](./USAGE.md) beforehand to get acquainted with quirks and bugs.
 
 ### Windows

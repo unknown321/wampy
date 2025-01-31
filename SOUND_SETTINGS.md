@@ -13,6 +13,7 @@
     * [Usage](#usage)
     * [Issues](#issues)
   * [Other issues](#other-issues)
+  * [See also](#see-also)
 
 <!-- TOC -->
 
@@ -30,8 +31,9 @@ Supported:
 - tone control
 
 Wampy comes with 6 master, 4 master dsd and 2 tone control tables. All of these are taken from stock firmwares of:
-NW-A40, NW-A50, WM1A, WM1Z, ZX-300. DMP-Z1 does not have these at all (different SOC). NW-A30 uses incompatible tables.
-These devices share tables, and sometimes they have different names, but same content.
+NW-A40, NW-A50, WM1A, WM1Z, ZX-300. These devices share tables, and sometimes they have different names, but same
+content. DMP-Z1 does not have these at all (different SOC). NW-A30 uses tables which are incompatible with other
+devices.
 
 Here is the table with default tables for each device:
 
@@ -111,8 +113,8 @@ Master volume table structure:
 </tr>
 <tr>
 <td>Table type</td>
-<td colspan="3">Headphone</td> <td colspan="3">Bluetooth</td> <td colspan="3">Others</td>
-<td colspan="3">Headphone</td> <td colspan="3">Bluetooth</td> <td colspan="3">Others</td>
+<td colspan="3">Headphone</td> <td colspan="3">Balanced output</td> <td colspan="3">Others</td>
+<td colspan="3">Headphone</td> <td colspan="3">Balanced output</td> <td colspan="3">Others</td>
 </tr>
 
 <tr>
@@ -187,9 +189,7 @@ Source code is available on https://github.com/zhangboyang/llusbdac.
 
 ### Issues
 
-Random crashes during module startup, especially when music is playing.
-
-Module cannot be unloaded after USB DAC function was enabled (overlay stays on); reboot required;
+Random crashes/slowdowns after turning module off. Reboot if needed.
 
 ## Other issues
 

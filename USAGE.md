@@ -62,7 +62,8 @@ Reboot device by holding power button.
 If that happens right after device boots, Wampy might be still loading (see [Cassette quirks](#issues-and-quirks)). Wait
 for a minute.
 
-Otherwise, it might've crashed.
+Otherwise, it might've crashed. Check for logs in `wampy/logs` directory on internal storage; [report the
+issue](https://github.com/unknown321/wampy/issues).
 
 ### There is no song info
 
@@ -99,11 +100,10 @@ All buttons and sliders work just like you expect them to (except EQ, repeat, pl
 Not implemented:
 
 - Visualization: technical reasons. See [ALSA.md](./ALSA.md).
-- Title scrolling by touching: framework limitations/lack of knowledge
+- Title scrolling by dragging it with cursor/finger: framework limitations/lack of knowledge
 - Scrolling playlist (backend doesn't provide enough data)
 - Editing playlist, not possible with current default player integration level
 - Playlist bottom buttons (which do nothing, because playlist is not editable)
-- `regions.txt`, which allows making parts of skin transparent. Some skins may look bad (ex. Dremples.wsz).
 - Easter eggs (not important)
 
 #### UI Buttons
@@ -125,8 +125,8 @@ Press `Eject` button to open settings.
 
 <img src="images/settings-winamp.png" alt="winamp settings">
 
-Use dropdown and "Load skin" button to change skin. Upload new skins to `wampy/skins/winamp/` directory on your device.
-You can get skins from [Winamp Skin Museum](https://skins.webamp.org/).
+Use dropdown and "Load skin" button to change skin. Upload new skins to `wampy/skins/winamp/` directory on your device
+(internal storage only). You can get skins from [Winamp Skin Museum](https://skins.webamp.org/).
 
 `Bitmap font in playlist` sometimes looks cool, consider this a feature.
 
@@ -176,7 +176,7 @@ You can combine any tape with any reel. Default tapes and reels are taken from A
 also: [cassette-to-format.png](./images/cassette-to-format.png).
 
 You can provide your own tapes and reels. Put them into `wampy/skins/cassette/tape` and `wampy/skins/cassette/reel`
-respectfully (see [Custom skins](#custom-skins) for `test_reel` and `test_tape`).
+respectfully (see [Custom skins](#custom-skins) for `test_reel` and `test_tape`) (internal storage only).
 
 Use `Randomize?` checkbox to choose random codec on track change instead of strict matching. *Note*: this will NOT mix
 tapes with reels. Your FLAC song may get `ahf+other` combination (MP3 256), but not `cc_gelb+chf` combination (not
@@ -185,7 +185,7 @@ present in table).
 After changing tape/reel to some new entry not used before, selected entry will be loaded which takes some time. There
 is no visual indication.
 
-Tap middle of the screen while in `Randomize?` mode to re-roll current tape/reel.
+Tap middle of the screen while in `Randomize?` mode to change current tape/reel.
 
 #### Issues and quirks
 
@@ -236,8 +236,8 @@ wampy/
 
 Winamp has 3 custom skins, cassette has one custom reel with 2 frames and two tapes. Tape `ccc` uses default config.
 
-You can put `wampy` directory on device (*not* SD card). As for now, skin list is updated after device
-restart.
+`wampy` directory is automatically created on internal storage (*not* SD card). As for now, skin list is updated after
+device restart.
 
 #### Winamp skins
 
@@ -278,7 +278,8 @@ Remember, `(0,0)` is top left corner.
 
 Set `artistx`/`titlex`/`albumx` to negative value to hide artist/title/album labels.
 
-Format variables: `$title, $artist, $album` for regular text and `$TITLE, $ARTIST, $ALBUM` for uppercase.
+Format variables: `$title, $artist, $album` for regular text and `$TITLE, $ARTIST, $ALBUM` for uppercase. Format options
+may be omitted.
 
 Config file is not required; default one (with values above) will be used instead.
 
@@ -432,14 +433,15 @@ On stock firmware there is only one option: UI color change.
 
 See [SOUND_SETTINGS.md](./SOUND_SETTINGS.md)
 
-## Equalizer settings
+## Equalizer settings (EQ button)
 
 See [EQUALIZER_SETTINGS.md](./EQUALIZER_SETTINGS.md)
 
 ## Providing debug information
 
 Wampy automatically collects crash dumps and logs on start. These are located in `wampy/log/` directory. Feel free to
-delete them if you need space. Usually these indicate that *something* crashed (might be some system service).
+delete them if you need space using "Misc->Remove wampy logs" button. Usually these indicate that *something* crashed (
+might be some system service).
 
 You can generate a log when Wampy is running. Enable `Settings->Misc->Debug`, tap "Create log file" at the bottom.
 Log will be placed in `wampy/log/log.user.<date>`.
