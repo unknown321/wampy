@@ -411,11 +411,12 @@ namespace Hagoromo {
                 pauseIfNeeded();
                 SetClearAudio(ss.clearAudioOn);
                 DLOG("ca: %d\n", ss.clearAudioOn);
-                if (ss.clearAudioOn == 1) {
-                    // ignore everything else
-                    restorePlayState();
-                    return;
-                }
+            }
+
+            if (ss.clearAudioOn == 1) {
+                // ignore everything else
+                restorePlayState();
+                return;
             }
         }
 
@@ -424,11 +425,12 @@ namespace Hagoromo {
                 pauseIfNeeded();
                 SetDirectSource(ss.directSourceOn);
                 DLOG("Direct Source: %d\n", ss.directSourceOn);
-                if (ss.directSourceOn == 1) {
-                    // ignore everything else
-                    restorePlayState();
-                    return;
-                }
+            }
+
+            if (ss.directSourceOn == 1) {
+                // ignore everything else
+                restorePlayState();
+                return;
             }
         }
 
