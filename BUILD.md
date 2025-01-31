@@ -49,7 +49,8 @@ compiler (`wampy-builder` docker image uses `armv5`, won't compile). You'll also
 which is built during `armv7` toolchain compilation. Afterwards you can drop ld to `/lib/` on device, it will be
 replaced with stock version from initrd after reboot. Crosstool `armv7` config is [here](./crosstool.armv7.config).
 
-Fast way to confirm memory leaks is to check `/var/log/memmon1.csv`. Values update every 5 minutes.
+Fast way to confirm memory leaks is to check `/var/log/memmon1.csv`. Values update every 5 minutes, file is flushed to
+storage every 15 minutes.
 
 Check dmesg and logcat, increase log levels with PST_LOG_* variables. `getprop` shows nothing in tmux, use plain bash.
 
