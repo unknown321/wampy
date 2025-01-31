@@ -776,7 +776,7 @@ void Controller::SetDirectSource(Command::Command *c) {
     }
 
     if (v.toBool() == c->directsource().enabled()) {
-        DLOG("no change needed\n");
+        DLOG("no change needed, %d\n", c->directsource().enabled());
         c->set_code(Command::OK);
         return;
     }

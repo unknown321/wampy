@@ -981,7 +981,7 @@ namespace Hagoromo {
     void HagoromoConnector::SetDirectSource(bool enable) {
         auto c = Command::Command();
         c.set_type(Command::Type::CMD_SET_DIRECT_SOURCE);
-        c.mutable_vinyl()->set_enabled(enable);
+        c.mutable_directsource()->set_enabled(enable);
         sendCMD(&c);
     }
 
