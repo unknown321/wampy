@@ -128,15 +128,15 @@ namespace Winamp {
             return 0;
         }
 
-        if (textures["volume.bmp"].len == 0) {
-            return -1;
+        if (textures["volume.bmp"].len > 0) {
+            DLOG("balance.bmp is missing, using volume.bmp as replacement\n");
+
+            textures["balance.bmp"].data = (char *)malloc(textures["volume.bmp"].len);
+            memcpy((void *)textures["balance.bmp"].data, (void *)textures["volume.bmp"].data, textures["volume.bmp"].len);
+            textures["balance.bmp"].len = textures["volume.bmp"].len;
         }
 
-        DLOG("balance.bmp is missing, using volume.bmp as replacement\n");
-
-        textures["balance.bmp"].data = (char *)malloc(textures["volume.bmp"].len);
-        memcpy((void *)textures["balance.bmp"].data, (void *)textures["volume.bmp"].data, textures["volume.bmp"].len);
-        textures["balance.bmp"].len = textures["volume.bmp"].len;
+        DLOG("balance.bmp and volume.bmp are missing\n");
 
         return 0;
     }
@@ -165,6 +165,7 @@ namespace Winamp {
 
         if (unzip(filename, &textures, &loadStatusStr) < 0) {
             loading = false;
+            DLOG("failed to unzip\n");
             return -1;
         }
 
@@ -242,9 +243,23 @@ namespace Winamp {
             return -1;
         }
 
+        std::vector<std::string> optional = {
+            "nums_ex.bmp",
+            "numbers.bmp",
+            "balance.bmp",
+            "region.txt",
+            "monoster.bmp",
+            "playpaus.bmp",
+            "titlebar.bmp",
+            "volume.bmp",
+            "viscolor.txt",
+            "numbers.bmp",
+            "nums_ex.bmp",
+        };
+
         // are all files present?
         for (auto const &k : *textures) {
-            if (k.first == "nums_ex.bmp" || k.first == "numbers.bmp" || k.first == "balance.bmp" || k.first == "region.txt") {
+            if (std::find(optional.begin(), optional.end(), k.first) != optional.end()) {
                 continue;
             }
 
@@ -253,18 +268,6 @@ namespace Winamp {
                 DLOG("%s\n", status->c_str());
                 return -1;
             }
-        }
-
-        if (textures->at("nums_ex.bmp").len == 0 && textures->at("numbers.bmp").len == 0) {
-            *status = "numbers.bmp and nums_ex.bmp are missing\n";
-            DLOG("%s\n", status->c_str());
-            return -1;
-        }
-
-        if (textures->at("balance.bmp").len == 0 && textures->at("volume.bmp").len == 0) {
-            *status = "balance.bmp and volume.bmp are missing\n";
-            DLOG("%s\n", status->c_str());
-            return -1;
         }
 
         return 0;
@@ -341,6 +344,11 @@ namespace Winamp {
                                 pointList.push_back(std::atoi(curchar.c_str()));
                                 curchar.clear();
                             }
+                        }
+
+                        if (!curchar.empty()) {
+                            pointList.push_back(std::atoi(curchar.c_str()));
+                            curchar.clear();
                         }
 
                         break;
@@ -607,9 +615,7 @@ namespace Winamp {
         Elements.TrackTimeToggle.Draw();
 
         if (config->skinTransparency) {
-            if (Elements.RegionMask.textureID > 0) {
-                Elements.RegionMask.Draw();
-            }
+            Elements.RegionMask.Draw();
         }
     }
 
@@ -676,40 +682,49 @@ namespace Winamp {
             ->WithCrop(Magick::RectangleInfo{275, 116, 0, 0})
             ->WithFilledRectangle({770, 96, 323, 78}, colors.trackTitleBackground)
             ->Load();
-        Elements.Title.FromPair(textures["titlebar.bmp"])->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})->Load();
         Elements.RegionMask.FromPointList(pointList);
-        Elements.ClutterBar.FromPair(textures["titlebar.bmp"])
-            ->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})
-            ->WithPosition(ImVec2(29.0f, 64.0f))
-            ->Load();
-        Elements.MonoOffIndicator.FromPair(textures["monoster.bmp"])
-            ->WithCrop({0, 12, 29, 12})
-            ->WithPosition(ImVec2(615.0f, 119.0f))
-            ->WithScale({86, 35}, true)
-            ->Load();
-        Elements.MonoOnIndicator.FromPair(textures["monoster.bmp"])
-            ->WithCrop({0, 12, 29, 0}) // width should be 29, but some skins have less width
-            ->WithPosition(ImVec2(615.0f, 119.0f))
-            ->WithScale({86, 35}, true)
-            ->Load();
-        Elements.StereoOnIndicator.FromPair(textures["monoster.bmp"])
-            ->WithCrop({29, 12, 0, 0})
-            ->WithPosition(ImVec2(695.0f, 119.0f))
-            ->WithScale({85, 35}, false)
-            ->Load();
-        Elements.StereoOffIndicator.FromPair(textures["monoster.bmp"])
-            ->WithCrop({29, 12, 0, 12})
-            ->WithPosition(ImVec2(695.0f, 119.0f))
-            ->WithScale({85, 35}, false)
-            ->Load();
-        Elements.StopIndicator.FromPair(textures["playpaus.bmp"])->WithCrop({9, 9, 18, 0})->WithPosition(ImVec2(79.0f, 81.0f))->Load();
-        Elements.PlayIndicator.FromPair(textures["playpaus.bmp"])->WithCrop({9, 9, 0, 0})->WithPosition(ImVec2(79.0f, 81.0f))->Load();
-        Elements.PauseIndicator.FromPair(textures["playpaus.bmp"])->WithCrop({9, 9, 9, 0})->WithPosition(ImVec2(79.0f, 81.0f))->Load();
-        Elements.BufferingIndicator.FromPair(textures["playpaus.bmp"])
-            ->WithCrop({3, 9, 36, 0})
-            ->WithPosition(ImVec2(70.0f, 81.0f))
-            ->WithScale({8, 24}, false)
-            ->Load();
+
+        if (textures["titlebar.bmp"].len > 0) {
+            Elements.Title.FromPair(textures["titlebar.bmp"])->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})->Load();
+            Elements.ClutterBar.FromPair(textures["titlebar.bmp"])
+                ->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})
+                ->WithPosition(ImVec2(29.0f, 64.0f))
+                ->Load();
+        }
+
+        if (textures["monoster.bmp"].len > 0) {
+            Elements.MonoOffIndicator.FromPair(textures["monoster.bmp"])
+                ->WithCrop({0, 12, 29, 12})
+                ->WithPosition(ImVec2(615.0f, 119.0f))
+                ->WithScale({86, 35}, true)
+                ->Load();
+            Elements.MonoOnIndicator.FromPair(textures["monoster.bmp"])
+                ->WithCrop({0, 12, 29, 0}) // width should be 29, but some skins have less width
+                ->WithPosition(ImVec2(615.0f, 119.0f))
+                ->WithScale({86, 35}, true)
+                ->Load();
+            Elements.StereoOnIndicator.FromPair(textures["monoster.bmp"])
+                ->WithCrop({29, 12, 0, 0})
+                ->WithPosition(ImVec2(695.0f, 119.0f))
+                ->WithScale({85, 35}, false)
+                ->Load();
+            Elements.StereoOffIndicator.FromPair(textures["monoster.bmp"])
+                ->WithCrop({29, 12, 0, 12})
+                ->WithPosition(ImVec2(695.0f, 119.0f))
+                ->WithScale({85, 35}, false)
+                ->Load();
+        }
+
+        if (textures["playpaus.bmp"].len > 0) {
+            Elements.StopIndicator.FromPair(textures["playpaus.bmp"])->WithCrop({9, 9, 18, 0})->WithPosition(ImVec2(79.0f, 81.0f))->Load();
+            Elements.PlayIndicator.FromPair(textures["playpaus.bmp"])->WithCrop({9, 9, 0, 0})->WithPosition(ImVec2(79.0f, 81.0f))->Load();
+            Elements.PauseIndicator.FromPair(textures["playpaus.bmp"])->WithCrop({9, 9, 9, 0})->WithPosition(ImVec2(79.0f, 81.0f))->Load();
+            Elements.BufferingIndicator.FromPair(textures["playpaus.bmp"])
+                ->WithCrop({3, 9, 36, 0})
+                ->WithPosition(ImVec2(70.0f, 81.0f))
+                ->WithScale({8, 24}, false)
+                ->Load();
+        }
 
         this->initializeButtons();
         this->initializePlaylist();
@@ -996,16 +1011,30 @@ namespace Winamp {
         barTs.clear();
         ft.Reset();
 
-        butT.active = ft.FromPair(textures["volume.bmp"])->WithCrop({14, 11, 15, 422})->WithScale({40, 31}, false)->Load();
+        if (textures["volume.bmp"].len == 0) {
+            butT.active = ft.FromColor({40, 31}, {255.0f, 0.0f, 0.0f, 0.0f});
+        } else {
+            butT.active = ft.FromPair(textures["volume.bmp"])->WithCrop({14, 11, 15, 422})->WithScale({40, 31}, false)->Load();
+        }
 
         ft.Reset();
-        butT.pressed = ft.FromPair(textures["volume.bmp"])->WithCrop({14, 11, 0, 422})->WithScale({40, 31}, false)->Load();
+        if (textures["volume.bmp"].len == 0) {
+            butT.pressed = ft.FromColor({40, 31}, {255.0f, 0.0f, 0.0f, 0.0f});
+        } else {
+            butT.pressed = ft.FromPair(textures["volume.bmp"])->WithCrop({14, 11, 0, 422})->WithScale({40, 31}, false)->Load();
+        }
         butT.size = ft.GetSize();
         butTs[0] = butT;
 
         for (int i = 0; i < VolumeBarCount; i++) {
             ft.Reset();
-            barT.textureId = ft.FromPair(textures["volume.bmp"])->WithCrop({68, 13, 0, i * 15})->WithScale({198, 37}, true)->Load();
+
+            butT.pressed = ft.FromColor({40, 31}, {255.0f, 0.0f, 0.0f, 0.0f});
+            if (textures["volume.bmp"].len == 0) {
+                barT.textureId = ft.FromColor({198, 37}, {255.0f, 0.0f, 0.0f, 0.0f});
+            } else {
+                barT.textureId = ft.FromPair(textures["volume.bmp"])->WithCrop({68, 13, 0, i * 15})->WithScale({198, 37}, true)->Load();
+            }
             barT.size = ft.GetSize();
             barTs[i] = barT;
         }
@@ -1023,16 +1052,28 @@ namespace Winamp {
         butTs.clear();
 
         ft.Reset();
-        butT.active = ft.FromPair(textures["balance.bmp"])->WithCrop({14, 11, 15, 422})->WithScale({40, 31}, false)->Load();
+        if (textures["balance.bmp"].len > 0) {
+            butT.active = ft.FromPair(textures["balance.bmp"])->WithCrop({14, 11, 15, 422})->WithScale({40, 31}, false)->Load();
+        } else {
+            butT.active = ft.FromColor({40, 31}, {255.0f, 0.0f, 0.0f, 0.0f});
+        }
         ft.Reset();
-        butT.pressed = ft.FromPair(textures["balance.bmp"])->WithCrop({14, 11, 0, 422})->WithScale({40, 31}, false)->Load();
+        if (textures["balance.bmp"].len > 0) {
+            butT.pressed = ft.FromPair(textures["balance.bmp"])->WithCrop({14, 11, 0, 422})->WithScale({40, 31}, false)->Load();
+        } else {
+            butT.pressed = ft.FromColor({40, 31}, {255.0f, 0.0f, 0.0f, 0.0f});
+        }
         butT.size = ft.GetSize();
         butTs[0] = butT;
         ft.Reset();
 
         for (int i = 0; i < BalanceBarCount; i++) {
             ft.Reset();
-            barT.textureId = ft.FromPair(textures["balance.bmp"])->WithCrop({38, 13, 9, i * 14 + i})->Load();
+            if (textures["balance.bmp"].len > 0) {
+                barT.textureId = ft.FromPair(textures["balance.bmp"])->WithCrop({38, 13, 9, i * 14 + i})->Load();
+            } else {
+                barT.textureId = ft.FromColor({38, 13}, {255.0f, 0.0f, 0.0f, 0.0f});
+            }
             barT.size = ft.GetSize();
             barTs[i] = barT;
             if (i != 0) {
@@ -1597,20 +1638,24 @@ namespace Winamp {
         }
 
         // read font bmps
-        Magick::Blob rawblobNum(fontNumbers.data, fontNumbers.len);
         Magick::Image sourceNum;
-        try {
-            sourceNum.read(rawblobNum);
-        } catch (...) {
-            DLOG("failed to read numbers.bmp\n");
+        if (fontNumbers.len > 0) {
+            Magick::Blob rawblobNum(fontNumbers.data, fontNumbers.len);
+            try {
+                sourceNum.read(rawblobNum);
+            } catch (...) {
+                DLOG("failed to read numbers.bmp\n");
+            }
         }
 
-        Magick::Blob rawblob(fontRegular.data, fontRegular.len);
         Magick::Image source;
-        try {
-            source.read(rawblob);
-        } catch (...) {
-            DLOG("failed to read text.bmp\n");
+        if (fontRegular.len > 0) {
+            Magick::Blob rawblob(fontRegular.data, fontRegular.len);
+            try {
+                source.read(rawblob);
+            } catch (...) {
+                DLOG("failed to read text.bmp\n");
+            }
         }
 
         unsigned char *tex_pixels = nullptr;
@@ -1635,6 +1680,9 @@ namespace Winamp {
                 rowIndex = 0;
             }
 
+            if (!source.isValid()) {
+                continue;
+            }
             Magick::Image glyph = source;
             glyph.depth(8);
             glyph.magick("RGBA");
@@ -1658,20 +1706,25 @@ namespace Winamp {
             rowIndex++;
         }
 
-        // insert number font glyphs
         int rowIndexNum = 0;
-        if (!isEx) {
-            auto withMinus = Magick::Image();
-            auto newWidth = sourceNum.size().width() + 5;
-            auto oldWidth = sourceNum.size().width();
-            withMinus.size({newWidth, sourceNum.size().height()});
-            withMinus.copyPixels(sourceNum, sourceNum.size(), {0, 0});
-            withMinus.copyPixels(sourceNum, {5, 13, 90, 0}, {(ssize_t)oldWidth, 0});
-            withMinus.copyPixels(sourceNum, {5, 1, 20, 6}, {(ssize_t)oldWidth, 6});
-            sourceNum = withMinus;
+        if (sourceNum.isValid()) {
+            // insert number font glyphs
+            if (!isEx) {
+                auto withMinus = Magick::Image();
+                auto newWidth = sourceNum.size().width() + 5;
+                auto oldWidth = sourceNum.size().width();
+                withMinus.size({newWidth, sourceNum.size().height()});
+                withMinus.copyPixels(sourceNum, sourceNum.size(), {0, 0});
+                withMinus.copyPixels(sourceNum, {5, 13, 90, 0}, {(ssize_t)oldWidth, 0});
+                withMinus.copyPixels(sourceNum, {5, 1, 20, 6}, {(ssize_t)oldWidth, 6});
+                sourceNum = withMinus;
+            }
         }
 
         for (int rect_n = 0; rect_n < IM_ARRAYSIZE(rect_ids_num); rect_n++) {
+            if (!sourceNum.isValid()) {
+                continue;
+            }
             int rect_id = rect_ids_num[rect_n];
 
             Magick::Image glyph = sourceNum;

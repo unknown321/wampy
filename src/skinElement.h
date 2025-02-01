@@ -115,6 +115,15 @@ struct FlatTexture {
         for (int i = 0; i < pl.size(); i = i + 2) {
             Magick::Coordinate c;
             c.x((double)pl.at(i));
+            // dirty fix for masks starting at 0
+            if (c.x() == 0) {
+                c.x(-1);
+            }
+
+            if (c.x() == 275) {
+                c.x(276);
+            }
+
             c.y((double)pl.at(i + 1));
             coords.push_back(c);
         }
@@ -266,7 +275,6 @@ struct FlatTexture {
     // breaks in thread
     void LoadTexture() {
         if (textureID != 0) {
-            DLOG("delete text\n");
             glDeleteTextures(1, &textureID);
         }
 
@@ -307,11 +315,17 @@ struct FlatTexture {
     ImVec2 GetSize() const { return {(float)upscaled.width, (float)upscaled.height}; }
 
     void Draw() const {
+        if (textureID == 0) {
+            return;
+        }
         ImGui::SetCursorPos(position);
         ImGui::Image((ImTextureID)(intptr_t)textureID, ImVec2(float(upscaled.width), float(upscaled.height)));
     }
 
     void DrawAt(float x, float y) const {
+        if (textureID == 0) {
+            return;
+        }
         ImGui::SetCursorPos(ImVec2(x, y));
         auto size = ImVec2(float(upscaled.width), float(upscaled.height));
         ImGui::Image((void *)(intptr_t)textureID, size);
