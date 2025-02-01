@@ -20,6 +20,7 @@ Also works on Walkman One [NW-A50][1]/[A40][2]/[A30][3].
 - Custom cassette skins
 - On-the-fly skin change
 - Volume table editor
+- Per-song audio options
 - Default player enhancements (add clock and increase cover art size)
 - Digital clock skin (pretty!)
 - [Low latency USB DAC module](https://github.com/zhangboyang/llusbdac)
@@ -40,9 +41,9 @@ See [USAGE.md](./USAGE.md).
 
 [4]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
 
-[5]: https://github.com/unknown321/wampy/issues/1
+[5]: https://github.com/unknown321/wampy/issues/12
 
-[6]: https://github.com/unknown321/wampy/issues/12
+[6]: https://github.com/unknown321/wampy/issues/13
 
 ## Install
 
