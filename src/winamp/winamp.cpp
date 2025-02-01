@@ -254,7 +254,6 @@ namespace Winamp {
             "volume.bmp",
             "viscolor.txt",
             "numbers.bmp",
-            "nums_ex.bmp",
         };
 
         // are all files present?
@@ -1622,10 +1621,6 @@ namespace Winamp {
         ImFontConfig font_cfg_gen = ImFontConfig();
 
         font_cfg_gen.MergeMode = false;
-        //    const ImWchar glyph_ranges_gen[] = {
-        //            0x002D, 0x0039, // alphabetEx
-        //            0,
-        //    };
 
         font_cfg.GlyphRanges = glyph_ranges;
 
@@ -1721,7 +1716,23 @@ namespace Winamp {
             }
         }
 
-        for (int rect_n = 0; rect_n < IM_ARRAYSIZE(rect_ids_num); rect_n++) {
+        auto glyphsNum = IM_ARRAYSIZE(rect_ids_num);
+        if (isEx) {
+            if (sourceNum.isValid()) {
+                auto really = (sourceNum.size().width() / 9);
+                if (really < glyphsNum) {
+                    glyphsNum = (int)really;
+                    DLOG(
+                        "nums_ex is smaller than expected, %d px, can fit %d glyphs, but want %d\n",
+                        sourceNum.size().width(),
+                        really,
+                        IM_ARRAYSIZE(rect_ids_num)
+                    );
+                }
+            }
+        }
+
+        for (int rect_n = 0; rect_n < glyphsNum; rect_n++) {
             if (!sourceNum.isValid()) {
                 continue;
             }
