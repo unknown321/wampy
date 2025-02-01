@@ -32,6 +32,7 @@ See [USAGE.md](./USAGE.md).
 | Device          | Stock | Walkman One | Notes                                                    |
 |-----------------|-------|-------------|----------------------------------------------------------|
 | NW-A50          | ✅     | ✅           |                                                          |
+| └──A50Z mod     | ✅     | ---         | mod is unavailable                                       |
 | NW-A40          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
 | └──[A50 mod][4] | ✅     | ---         | confirmed by community                                   |
 | NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
