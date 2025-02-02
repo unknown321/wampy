@@ -48,7 +48,7 @@ points in default player terms).
 
 ### ⚠️What to do if device crashes / Wampy doesn't start?⚠️
 
-If Wampy failed to start 3 times (read: device rebooted trice), it stops starting until you edit `wampy/config.ini`.
+If Wampy failed to start 3 times in a row, it stops starting until you edit `wampy/config.ini`.
 Remove config file or set `[wampy][badboots]` to 0 (along with possible device-breaking settings) and
 reboot the device. If you cannot access config file (device stuck in boot loop and won't connect to pc, very unlikely
 situation), restore it from backup that you made beforehand (see [BACKUP.md](./BACKUP.md)).
@@ -236,13 +236,11 @@ wampy/
 
 Winamp has 3 custom skins, cassette has one custom reel with 2 frames and two tapes. Tape `ccc` uses default config.
 
-`wampy` directory is automatically created on internal storage (*not* SD card). As for now, skin list is updated after
-device restart.
+`wampy` directory is automatically created on internal storage (*not* SD card).
 
 #### Winamp skins
 
-Get skins with `.wsz` extension, drop into folder, restart device to refresh list. Grab skins
-from [Winamp Skin Museum](https://skins.webamp.org/)
+Get skins with `.wsz` extension, drop into folder. Grab skins from [Winamp Skin Museum](https://skins.webamp.org/)
 or [make one yourself](https://github.com/WACUP/Winamp-Skinning-Archive/tree/master/Classic%20Skins).
 
 #### Cassette skins
