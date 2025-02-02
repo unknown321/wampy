@@ -36,9 +36,13 @@ enum SettingsTab {
 struct Skin {
     bool *render{};
     ImFont *FontRegular{};
-    SkinList *skinList{};
-    SkinList *reelList{};
-    SkinList *tapeList{};
+    SkinList skinListWinamp{};
+    SkinList reelListCassette{};
+    SkinList tapeListCassette{};
+    std::vector<std::string> winampSkinDirectories{};
+    std::vector<std::string> cassetteTapeDirectories{};
+    std::vector<std::string> cassetteReelDirectories{};
+
     W1::W1Options w1Options{};
     W1::WalkmanOneOptions walkmanOneOptions{};
     int selectedSkinIdx{};       // winamp skin idx
@@ -152,6 +156,42 @@ struct Skin {
 
     bool alwaysFalse{};
 
+    void WithWinampSkinDir(const std::string &d) { winampSkinDirectories.push_back(d); }
+
+    void RefreshWinampSkinList() {
+        DLOG("\n");
+        assert(config);
+        skinListWinamp.clear();
+        for (const auto &d : winampSkinDirectories) {
+            listdir(d.c_str(), &skinListWinamp, ".wsz");
+        }
+
+        for (int i = 0; i < skinListWinamp.size(); i++) {
+            if (skinListWinamp.at(i).name == config->winamp.filename) {
+                selectedSkinIdx = i;
+                break;
+            }
+        }
+    }
+
+    void WithCassetteTapeDir(const std::string &d) { cassetteTapeDirectories.push_back(d); }
+
+    void WithCassetteReelDir(const std::string &d) { cassetteReelDirectories.push_back(d); }
+
+    void RefreshCassetteTapeReelLists() {
+        DLOG("\n");
+        assert(config);
+        reelListCassette.clear();
+        for (const auto &d : cassetteReelDirectories) {
+            listdirs(d.c_str(), &reelListCassette);
+        }
+
+        tapeListCassette.clear();
+        for (const auto &d : cassetteTapeDirectories) {
+            listdirs(d.c_str(), &tapeListCassette);
+        }
+    }
+
     void ReloadFont() {
         std::string filepath{};
         switch (activeSkinVariant) {
@@ -161,7 +201,7 @@ struct Skin {
         case WINAMP:
             winamp.Unload();
 
-            if (!SkinExists(config->winamp.filename, skinList, &filepath)) {
+            if (!SkinExists(config->winamp.filename, &skinListWinamp, &filepath)) {
                 DLOG("no skin %s found in skinlist\n", config->winamp.filename.c_str());
                 exit(1);
             }
@@ -221,7 +261,7 @@ struct Skin {
             digitalClock.Unload();
 
             std::string filepath{};
-            if (!SkinExists(config->winamp.filename, skinList, &filepath)) {
+            if (!SkinExists(config->winamp.filename, &skinListWinamp, &filepath)) {
                 DLOG("no skin %s found in skin list\n", config->winamp.filename.c_str());
             }
 
@@ -240,8 +280,8 @@ struct Skin {
             winamp.active = false;
             digitalClock.Unload();
 
-            cassette.reelList = reelList;
-            cassette.tapeList = tapeList;
+            cassette.reelList = &reelListCassette;
+            cassette.tapeList = &tapeListCassette;
             cassette.render = render;
             cassette.skin = (void *)this;
             cassette.WithConfig(&config->cassette);
@@ -267,7 +307,7 @@ struct Skin {
         activeSkinVariant = config->activeSkin;
         activeSettingsTab = activeSkinVariant;
 
-        GetSoundSettings();
+        connector->soundSettings.Update();
     }
 
     void LoadUpdatedSkin() {
@@ -285,9 +325,9 @@ struct Skin {
         if (config->activeSkin == WINAMP) {
             winamp.loadNewSkin();
             FontRegular = winamp.GetFont();
-            loadStatusStr = "Loaded " + std::string(basename(winamp.GetCurrentSkin().c_str()));
+            loadStatusStr = "✓ Loaded " + std::string(basename(winamp.GetCurrentSkin().c_str()));
 
-            for (const auto &v : *skinList) {
+            for (const auto &v : skinListWinamp) {
                 if (winamp.GetCurrentSkin() == v.fullPath) {
                     config->winamp.filename = v.name;
                     config->Save();
@@ -380,6 +420,8 @@ struct Skin {
         assert(s);
         if (s->displaySettings == 0) {
             s->displaySettings = 1;
+            s->RefreshWinampSkinList();
+            s->RefreshCassetteTapeReelLists();
         } else {
             s->displaySettings = 0;
         }
@@ -449,6 +491,17 @@ struct Skin {
         if (ImGui::Button("Skin")) {
             loadStatusStr = "";
             displayTab = SettingsTab::SkinOpts;
+            switch (activeSettingsTab) {
+            case WINAMP:
+                RefreshWinampSkinList();
+                break;
+            case CASSETTE:
+                RefreshCassetteTapeReelLists();
+                break;
+            default:
+            case DIGITAL_CLOCK:
+                break;
+            }
         }
 
         ImGui::SameLine(800.0f - closeSize - miscSize - offset * 2);
@@ -956,12 +1009,13 @@ struct Skin {
     }
 
     void Winamp() {
+
         ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-        if (ImGui::BeginCombo("##", skinList->at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightRegular)) {
-            for (int n = 0; n < skinList->size(); n++) {
+        if (ImGui::BeginCombo("##", skinListWinamp.at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightRegular)) {
+            for (int n = 0; n < skinListWinamp.size(); n++) {
                 const bool is_selected = (selectedSkinIdx == n);
-                if (ImGui::Selectable(skinList->at(n).name.c_str(), is_selected)) {
+                if (ImGui::Selectable(skinListWinamp.at(n).name.c_str(), is_selected)) {
                     selectedSkinIdx = n;
                 }
             }
@@ -973,17 +1027,15 @@ struct Skin {
         if (activeSkinVariant == WINAMP) {
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 11);
             if (ImGui::Button("Load skin", ImVec2(186, 50))) {
-                loadStatusStr = "Loading " + skinList->at(selectedSkinIdx).name;
-                winamp.changeSkin(skinList->at(selectedSkinIdx).fullPath);
+                loadStatusStr = "Loading " + skinListWinamp.at(selectedSkinIdx).name;
+                winamp.changeSkin(skinListWinamp.at(selectedSkinIdx).fullPath);
                 needLoad = true;
             }
         }
 
-        if (!loadStatusStr.empty()) {
-            ImGui::Text("%s", loadStatusStr.c_str());
-        }
-
-        ImGui::NewLine();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 8);
+        ImGui::Text("%s", loadStatusStr.c_str());
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8);
 
         if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
             config->Save();
@@ -1038,7 +1090,7 @@ struct Skin {
 
                 ImGui::TableNextColumn();
                 if (ImGui::BeginCombo(("##" + tt.second.name + "tape").c_str(), tt.second.tape.c_str(), ImGuiComboFlags_HeightSmall)) {
-                    for (auto &n : *tapeList) {
+                    for (auto &n : tapeListCassette) {
                         if (!n.valid) {
                             continue;
                         }
@@ -1060,7 +1112,7 @@ struct Skin {
 
                 ImGui::TableNextColumn();
                 if (ImGui::BeginCombo(("##" + tt.second.name + "reel").c_str(), tt.second.reel.c_str(), ImGuiComboFlags_HeightSmall)) {
-                    for (auto &n : *reelList) {
+                    for (auto &n : reelListCassette) {
                         if (!n.valid) {
                             continue;
                         }
@@ -1990,7 +2042,7 @@ struct Skin {
         }
     }
 
-    void KeyHandler() const {
+    void KeyHandler() {
         if (*hold_toggled) {
             *hold_toggled = false;
 
@@ -2001,6 +2053,16 @@ struct Skin {
 
             DLOG("hold toggled, value %d, render %d, action %d\n", *hold_value, *render, action);
             connector->ToggleHgrm(action, render);
+
+            if (action == Hide) {
+                RefreshWinampSkinList();
+                RefreshCassetteTapeReelLists();
+            }
+
+            connector->soundSettings.Update();
+            eqStatus = "Refreshed";
+
+            ImGui::GetIO().AddMousePosEvent(0.0f, 0.0f);
         }
 
         if (*power_pressed) {
@@ -2064,13 +2126,6 @@ struct Skin {
         res = res / 1024 / 1024;
 
         logCleanupButtonLabel = "Remove wampy logs (" + std::to_string(res) + " MB)";
-    }
-
-    void GetSoundSettings() const {
-#ifdef DESKTOP
-        return;
-#endif
-        connector->soundSettings.Update();
     }
 
     void TabEQ() {

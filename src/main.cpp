@@ -240,9 +240,6 @@ void setupProfiling() {
     DLOG("pid: %d\n", getpid());
 }
 
-SkinList skinList{};
-SkinList reelList{};
-SkinList tapeList{};
 std::vector<directoryEntry> masterVolumeTableDSDFiles{};
 std::vector<directoryEntry> masterVolumeTableFiles{};
 std::vector<directoryEntry> toneControlFiles{};
@@ -292,9 +289,6 @@ int main(int, char **) {
         socket = config.MPDSocketPath;
     }
 
-    listdir("../skins/", &skinList, ".wsz");
-    listdirs("../cassette/cassetteunpacker/res/reel/", &reelList);
-    listdirs("../cassette/cassetteunpacker/res/tape/", &tapeList);
     listdir("../ss/system/master_volume_dsd/", &masterVolumeTableDSDFiles, ".tbl");
     listdir("../ss/system/master_volume/", &masterVolumeTableFiles, ".tbl");
     listdir("../ss/system/tone_control/", &toneControlFiles, ".tbl");
@@ -312,14 +306,6 @@ int main(int, char **) {
     v->featureEqPerSong = &config.features.eqPerSong;
 
     socket = WAMPY_SOCKET;
-    listdir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/", &skinList, ".wsz");
-    listdir("/contents/wampy/skins/winamp/", &skinList, ".wsz");
-
-    listdirs("/system/vendor/unknown321/usr/share/wampy/skins/cassette/reel/", &reelList);
-    listdirs("/contents/wampy/skins/cassette/reel/", &reelList);
-
-    listdirs("/system/vendor/unknown321/usr/share/wampy/skins/cassette/tape/", &tapeList);
-    listdirs("/contents/wampy/skins/cassette/tape/", &tapeList);
 
     listdir("/system/vendor/unknown321/usr/share/wampy/sound_settings/master_volume_dsd/", &masterVolumeTableDSDFiles, ".tbl");
     listdir("/contents/wampy/sound_settings/master_volume_dsd/", &masterVolumeTableDSDFiles, ".tbl");
@@ -381,9 +367,21 @@ int main(int, char **) {
     auto skin = Skin();
     skin.isWalkmanOne = isWalkmanOne;
     skin.render = &render;
-    skin.skinList = &skinList;
-    skin.reelList = &reelList;
-    skin.tapeList = &tapeList;
+#ifdef DESKTOP
+    skin.WithWinampSkinDir("../skins/");
+    skin.WithCassetteReelDir("../cassette/cassetteunpacker/res/reel/");
+    skin.WithCassetteTapeDir("../cassette/cassetteunpacker/res/tape/");
+#else
+    skin.WithWinampSkinDir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/");
+    skin.WithWinampSkinDir("/contents/wampy/skins/winamp/");
+
+    skin.WithCassetteReelDir("/system/vendor/unknown321/usr/share/wampy/skins/cassette/reel/");
+    skin.WithCassetteReelDir("/contents/wampy/skins/cassette/reel/");
+
+    skin.WithCassetteTapeDir("/system/vendor/unknown321/usr/share/wampy/skins/cassette/tape/");
+    skin.WithCassetteTapeDir("/contents/wampy/skins/cassette/tape/");
+#endif
+
     skin.masterVolumeDSDFiles = &masterVolumeTableDSDFiles;
     skin.masterVolumeFiles = &masterVolumeTableFiles;
     skin.toneControlFiles = &toneControlFiles;
@@ -408,13 +406,8 @@ int main(int, char **) {
     connector->clients.push_back(&skin.winamp);
     connector->clients.push_back(&skin.cassette);
 
-    for (int i = 0; i < skinList.size(); i++) {
-        if (skinList.at(i).name == config.winamp.filename) {
-            skin.selectedSkinIdx = i;
-            break;
-        }
-    }
-
+    skin.RefreshWinampSkinList();
+    skin.RefreshCassetteTapeReelLists();
     skin.ReadLicense();
     skin.ReadQR();
     skin.PreprocessTableFilenames();

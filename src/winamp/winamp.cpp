@@ -1560,6 +1560,7 @@ namespace Winamp {
         range.AddChar(ImWchar(0x266a)); // ♪
         range.AddChar(ImWchar(0x266b)); // ♫
         range.AddChar(ImWchar(0x24c8)); // Ⓢ
+        range.AddChar(ImWchar(0x2713)); // ✓
 
         std::vector<uint32_t> allchars;
         getCharRange(&allchars);
