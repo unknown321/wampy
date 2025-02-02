@@ -578,10 +578,10 @@ namespace Cassette {
         auto sizeBackup = font->FontSize;
         auto song = connector->playlist.at(0);
 
-        std::string tempAlbum = song.Album;
+        std::string tempAlbum = song.Album.empty() ? connector->status.Album : song.Album;
         std::string tempTitle = song.Title;
         std::string tempArtist = song.Artist;
-        std::string upperAlbum = song.Album;
+        std::string upperAlbum = song.Album.empty() ? connector->status.Album : song.Album;
         std::string upperTitle = song.Title;
         std::string upperArtist = song.Artist;
         toUpper(upperAlbum);
@@ -596,7 +596,7 @@ namespace Cassette {
             auto formatArtist = tapeConfig.formatArtist;
             replace(formatArtist, "$artist", song.Artist);
             replace(formatArtist, "$title", song.Title);
-            replace(formatArtist, "$album", song.Album);
+            replace(formatArtist, "$album", tempAlbum);
             replace(formatArtist, "$ARTIST", upperArtist);
             replace(formatArtist, "$TITLE", upperTitle);
             replace(formatArtist, "$ALBUM", upperAlbum);
@@ -613,7 +613,7 @@ namespace Cassette {
             auto formatTitle = Tapes[config->Get(tapeType)->tape].formatTitle;
             replace(formatTitle, "$artist", song.Artist);
             replace(formatTitle, "$title", song.Title);
-            replace(formatTitle, "$album", song.Album);
+            replace(formatTitle, "$album", tempAlbum);
             replace(formatTitle, "$ARTIST", upperArtist);
             replace(formatTitle, "$TITLE", upperTitle);
             replace(formatTitle, "$ALBUM", upperAlbum);
@@ -630,7 +630,7 @@ namespace Cassette {
             auto formatAlbum = Tapes[config->Get(tapeType)->tape].formatAlbum;
             replace(formatAlbum, "$artist", song.Artist);
             replace(formatAlbum, "$title", song.Title);
-            replace(formatAlbum, "$album", song.Album);
+            replace(formatAlbum, "$album", tempAlbum);
             replace(formatAlbum, "$ARTIST", upperArtist);
             replace(formatAlbum, "$TITLE", upperTitle);
             replace(formatAlbum, "$ALBUM", upperAlbum);

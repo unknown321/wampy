@@ -632,6 +632,7 @@ namespace Hagoromo {
             }
 
             status.Filename = si.Filename;
+            status.Album = si.Album;
         }
 
         if (m == nullptr) {

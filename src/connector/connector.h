@@ -53,6 +53,7 @@ struct Status {
     std::string SampleRateString;
     std::string BitrateString;
     std::string Filename;
+    std::string Album;
     PlayStateE State{};
 
     statusFields sf{};
