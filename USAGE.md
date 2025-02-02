@@ -79,9 +79,9 @@ expected.
 
 Reboot the device. I suppose that happens because of opengl texture unloading (or a memory leak:).
 
-### Buttons are not pressed after a single tap
+### Some buttons are not pressed after a single tap
 
-Tap that button twice. This is a bug.
+Tap that button twice. This is a rarely encountered bug, please report if you encounter it frequently.
 
 ## Using Wampy
 

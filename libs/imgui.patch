@@ -52,7 +52,7 @@ index bbe96c42..1f939b22 100644
                  // Bind texture, Draw
                  GL_CALL(glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->GetTexID()));
 diff --git a/imgui.cpp b/imgui.cpp
-index 31220bdf..b014fa5f 100644
+index 31220bdf..556bdc86 100644
 --- a/imgui.cpp
 +++ b/imgui.cpp
 @@ -8479,6 +8479,7 @@ static const char* const GKeyNames[] =
@@ -63,6 +63,15 @@ index 31220bdf..b014fa5f 100644
      "GamepadStart", "GamepadBack",
      "GamepadFaceLeft", "GamepadFaceRight", "GamepadFaceUp", "GamepadFaceDown",
      "GamepadDpadLeft", "GamepadDpadRight", "GamepadDpadUp", "GamepadDpadDown",
+@@ -8946,7 +8947,7 @@ bool ImGui::IsMouseClicked(ImGuiMouseButton button, ImGuiInputFlags flags, ImGui
+     IM_ASSERT((flags & ~ImGuiInputFlags_SupportedByIsMouseClicked) == 0); // Passing flags not supported by this function! // FIXME: Could support RepeatRate and RepeatUntil flags here.
+ 
+     const bool repeat = (flags & ImGuiInputFlags_Repeat) != 0;
+-    const bool pressed = (t == 0.0f) || (repeat && t > g.IO.KeyRepeatDelay && CalcTypematicRepeatAmount(t - g.IO.DeltaTime, t, g.IO.KeyRepeatDelay, g.IO.KeyRepeatRate) > 0);
++    const bool pressed = (t == 0.0f) || (t < 0.2f) || (repeat && t > g.IO.KeyRepeatDelay && CalcTypematicRepeatAmount(t - g.IO.DeltaTime, t, g.IO.KeyRepeatDelay, g.IO.KeyRepeatRate) > 0);
+     if (!pressed)
+         return false;
+ 
 diff --git a/imgui.h b/imgui.h
 index a22e7ae9..651ec16b 100644
 --- a/imgui.h

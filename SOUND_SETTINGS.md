@@ -193,7 +193,7 @@ Random crashes/slowdowns after turning module off. Reboot if needed.
 
 ## Other issues
 
-Sound setting tabs require double taps for reasons I wasn't able to understand. This is a bug, not a feature.
+Switching sound setting tabs may fail if you tap too quickly and very unlucky. Just tap again to switch.
 
 ## See also
 
