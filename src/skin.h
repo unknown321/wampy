@@ -43,6 +43,10 @@ struct Skin {
     std::vector<std::string> cassetteTapeDirectories{};
     std::vector<std::string> cassetteReelDirectories{};
 
+    std::vector<std::string> masterVolumeTableDirectories{};
+    std::vector<std::string> masterVolumeTableDSDDirectories{};
+    std::vector<std::string> toneControlTableDirectories{};
+
     W1::W1Options w1Options{};
     W1::WalkmanOneOptions walkmanOneOptions{};
     int selectedSkinIdx{};       // winamp skin idx
@@ -97,7 +101,7 @@ struct Skin {
     std::string systemMark = "Ⓢ ";
     std::string systemMarkHagoromo = "Ⓗ ";
 
-    std::vector<directoryEntry> *masterVolumeFiles;
+    std::vector<directoryEntry> masterVolumeFiles;
     int masterVolumeFileSelected = 0;
     bool soundEffectOn = true;
     int MasterVolumeTableType = MASTER_VOLUME_TABLE_SMASTER_SE_HG;
@@ -108,7 +112,7 @@ struct Skin {
     ImVec2 masterVolumeValueBuffer[MASTER_VOLUME_MAX + 1 + 1] = {{0, 0}};
     std::string statusStringMasterVolume;
 
-    std::vector<directoryEntry> *masterVolumeDSDFiles;
+    std::vector<directoryEntry> masterVolumeDSDFiles;
     int masterVolumeDSDFileSelected;
     master_volume_dsd masterVolumeDSD{};
     ImVec2 masterVolumeDSDValues[MASTER_VOLUME_TABLE_MAX + 1][MASTER_VOLUME_MAX + 1] = {{{-FLT_MIN, -FLT_MIN}}};
@@ -116,7 +120,7 @@ struct Skin {
     int MasterVolumeDSDTableType = MASTER_VOLUME_TABLE_SMASTER_SE_DSD64_HG;
     std::string statusStringMasterVolumeDSD;
 
-    std::vector<directoryEntry> *toneControlFiles;
+    std::vector<directoryEntry> toneControlFiles;
     int toneControlFileSelected;
     tone_control toneControl{};
     ImVec2 toneControlValues[TONE_CONTROL_TABLE_MAX + 1][CODEC_RAM_SIZE] = {{{-FLT_MIN, -FLT_MIN}}};
@@ -189,6 +193,45 @@ struct Skin {
         tapeListCassette.clear();
         for (const auto &d : cassetteTapeDirectories) {
             listdirs(d.c_str(), &tapeListCassette);
+        }
+    }
+
+    void WithMasterVolumeTableDirs(const std::string &d) { masterVolumeTableDirectories.push_back(d); };
+    void RefreshMasterVolumeTableFiles() {
+        DLOG("\n");
+        masterVolumeFiles.clear();
+        for (const auto &d : masterVolumeTableDirectories) {
+            listdir(d.c_str(), &masterVolumeFiles, ".tbl");
+        }
+
+        if (masterVolumeFiles.empty()) {
+            listdir("/system/usr/share/audio_dac/", &masterVolumeFiles, ".tbl");
+        }
+    }
+
+    void WithMasterVolumeTableDSDDirs(const std::string &d) { masterVolumeTableDSDDirectories.push_back(d); };
+    void RefreshMasterVolumeTableDSDFiles() {
+        DLOG("\n");
+        masterVolumeDSDFiles.clear();
+        for (const auto &d : masterVolumeTableDSDDirectories) {
+            listdir(d.c_str(), &masterVolumeDSDFiles, ".tbl");
+        }
+
+        if (masterVolumeDSDFiles.empty()) {
+            listdir("/system/usr/share/audio_dac/", &masterVolumeDSDFiles, ".tbl");
+        }
+    }
+
+    void WithToneControlTableDirs(const std::string &d) { toneControlTableDirectories.push_back(d); };
+    void RefreshToneControlFiles() {
+        DLOG("\n");
+        toneControlFiles.clear();
+        for (const auto &d : toneControlTableDirectories) {
+            listdir(d.c_str(), &toneControlFiles, ".tbl");
+        }
+
+        if (toneControlFiles.empty()) {
+            listdir("/system/usr/share/audio_dac/", &toneControlFiles, ".tbl");
         }
     }
 
@@ -466,11 +509,17 @@ struct Skin {
             loadStatusStr = "";
             displayTab = SettingsTab::TabWalkmanOne;
         }
+
         ImGui::SameLine();
         if (ImGui::Button("♪♫")) {
             loadStatusStr = "";
             displayTab = SettingsTab::TabSoundSettings;
+            RefreshMasterVolumeTableFiles();
+            RefreshMasterVolumeTableDSDFiles();
+            RefreshToneControlFiles();
+            PreprocessTableFilenames();
         }
+
         ImGui::SameLine();
         if (ImGui::Button("EQ")) {
             loadStatusStr = "";
@@ -1226,7 +1275,7 @@ struct Skin {
     }
 
     void PreprocessTableFilenames() {
-        std::vector<std::vector<directoryEntry> *> tables = {masterVolumeFiles, masterVolumeDSDFiles, toneControlFiles};
+        std::vector<std::vector<directoryEntry> *> tables = {&masterVolumeFiles, &masterVolumeDSDFiles, &toneControlFiles};
         for (auto &table : tables) {
             for (int i = 0; i < table->size(); i++) {
                 auto entry = table->at(i);
@@ -1289,11 +1338,11 @@ struct Skin {
                 ImGui::PushItemWidth(-FLT_MIN);
                 if (ImGui::BeginCombo(
                         "##masterVolumeFileCombo",
-                        masterVolumeFiles->at(masterVolumeFileSelected).name.c_str(),
+                        masterVolumeFiles.at(masterVolumeFileSelected).name.c_str(),
                         ImGuiComboFlags_HeightRegular
                     )) {
-                    for (int idx = 0; idx < masterVolumeFiles->size(); idx++) {
-                        auto entry = masterVolumeFiles->at(idx);
+                    for (int idx = 0; idx < masterVolumeFiles.size(); idx++) {
+                        auto entry = masterVolumeFiles.at(idx);
                         if (ImGui::Selectable(entry.name.c_str(), false)) {
                             masterVolumeFileSelected = idx;
                             DLOG("selected file %s\n", entry.name.c_str());
@@ -1381,10 +1430,10 @@ struct Skin {
                 if (masterVolumeValues[0][0][0][0].x == -FLT_MIN) {
                     ImGui::NewLine();
                     if (ImGui::Button("Load", ImVec2(512, 150))) {
-                        if (masterVolume.FromFile(masterVolumeFiles->at(masterVolumeFileSelected).fullPath) != 0) {
+                        if (masterVolume.FromFile(masterVolumeFiles.at(masterVolumeFileSelected).fullPath) != 0) {
                             DLOG(
                                 "failed to load master volume table file %s\n",
-                                masterVolumeFiles->at(masterVolumeFileSelected).fullPath.c_str()
+                                masterVolumeFiles.at(masterVolumeFileSelected).fullPath.c_str()
                             );
                             statusStringMasterVolume = "Failed";
                         } else {
@@ -1398,10 +1447,10 @@ struct Skin {
                     ImGui::TableNextColumn();
 
                     // not efficient at all
-                    if (masterVolumeFiles->at(masterVolumeFileSelected).name.rfind(systemMark, 0) == 0) {
+                    if (masterVolumeFiles.at(masterVolumeFileSelected).name.rfind(systemMark, 0) == 0) {
                         if (ImGui::Button("Copy and edit", ImVec2(246, 60))) {
                             auto outDir = soundSettingsPathUser + "master_volume/";
-                            CopyTableEntry(&masterVolume, masterVolumeFiles, &masterVolumeFileSelected, outDir);
+                            CopyTableEntry(&masterVolume, &masterVolumeFiles, &masterVolumeFileSelected, outDir);
                             displayTab = TabCurveEditor;
                         }
                     } else {
@@ -1410,12 +1459,12 @@ struct Skin {
                         }
                     }
 
-                    if (masterVolumeFiles->at(masterVolumeFileSelected).name.rfind(systemMark, 0) == 0) {
+                    if (masterVolumeFiles.at(masterVolumeFileSelected).name.rfind(systemMark, 0) == 0) {
                         ImGui::BeginDisabled();
                     }
 
                     if (ImGui::Button("Save", ImVec2(246, 60))) {
-                        auto out = masterVolumeFiles->at(masterVolumeFileSelected).fullPath;
+                        auto out = masterVolumeFiles.at(masterVolumeFileSelected).fullPath;
                         DLOG("Saving to %s\n", out.c_str());
                         MasterVolumeImVec2ToTable();
                         if (masterVolume.ToFile(out) == 0) {
@@ -1425,7 +1474,7 @@ struct Skin {
                         }
                     }
 
-                    if (masterVolumeFiles->at(masterVolumeFileSelected).name.rfind(systemMark, 0) == 0) {
+                    if (masterVolumeFiles.at(masterVolumeFileSelected).name.rfind(systemMark, 0) == 0) {
                         ImGui::EndDisabled();
                     }
 
@@ -1487,11 +1536,11 @@ struct Skin {
                 ImGui::PushItemWidth(-FLT_MIN);
                 if (ImGui::BeginCombo(
                         "##masterVolumeDSDFileCombo",
-                        masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).name.c_str(),
+                        masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).name.c_str(),
                         ImGuiComboFlags_HeightRegular
                     )) {
-                    for (int idx = 0; idx < masterVolumeDSDFiles->size(); idx++) {
-                        auto entry = masterVolumeDSDFiles->at(idx);
+                    for (int idx = 0; idx < masterVolumeDSDFiles.size(); idx++) {
+                        auto entry = masterVolumeDSDFiles.at(idx);
                         if (ImGui::Selectable(entry.name.c_str(), false)) {
                             DLOG("selected dsd file %s\n", entry.fullPath.c_str());
                             masterVolumeDSDFileSelected = idx;
@@ -1553,10 +1602,10 @@ struct Skin {
                 if (masterVolumeDSDValues[0][0].x == -FLT_MIN) {
                     ImGui::NewLine();
                     if (ImGui::Button("Load", ImVec2(512, 150))) {
-                        if (masterVolumeDSD.FromFile(masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).fullPath) != 0) {
+                        if (masterVolumeDSD.FromFile(masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath) != 0) {
                             DLOG(
                                 "failed to load master volume DSD table file %s\n",
-                                masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).fullPath.c_str()
+                                masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath.c_str()
                             );
                             statusStringMasterVolumeDSD = "Failed";
                         } else {
@@ -1570,10 +1619,10 @@ struct Skin {
                     ImGui::TableNextColumn();
 
                     // not efficient at all
-                    if (masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
+                    if (masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
                         if (ImGui::Button("Copy and edit", ImVec2(246, 60))) {
                             auto outDir = soundSettingsPathUser + "master_volume_dsd/";
-                            CopyTableEntry(&masterVolumeDSD, masterVolumeDSDFiles, &masterVolumeDSDFileSelected, outDir);
+                            CopyTableEntry(&masterVolumeDSD, &masterVolumeDSDFiles, &masterVolumeDSDFileSelected, outDir);
                             displayTab = TabCurveEditor;
                         }
                     } else {
@@ -1582,12 +1631,12 @@ struct Skin {
                         }
                     }
 
-                    if (masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
+                    if (masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
                         ImGui::BeginDisabled();
                     }
 
                     if (ImGui::Button("Save", ImVec2(246, 60))) {
-                        auto out = masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).fullPath;
+                        auto out = masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath;
                         DLOG("Saving to %s\n", out.c_str());
                         MasterVolumeDSDImVec2ToTable();
                         if (masterVolumeDSD.ToFile(out) == 0) {
@@ -1597,7 +1646,7 @@ struct Skin {
                         }
                     }
 
-                    if (masterVolumeDSDFiles->at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
+                    if (masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
                         ImGui::EndDisabled();
                     }
 
@@ -1655,10 +1704,10 @@ struct Skin {
                 ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
                 ImGui::PushItemWidth(-FLT_MIN);
                 if (ImGui::BeginCombo(
-                        "##toneControlFileCombo", toneControlFiles->at(toneControlFileSelected).name.c_str(), ImGuiComboFlags_HeightRegular
+                        "##toneControlFileCombo", toneControlFiles.at(toneControlFileSelected).name.c_str(), ImGuiComboFlags_HeightRegular
                     )) {
-                    for (int idx = 0; idx < toneControlFiles->size(); idx++) {
-                        auto entry = toneControlFiles->at(idx);
+                    for (int idx = 0; idx < toneControlFiles.size(); idx++) {
+                        auto entry = toneControlFiles.at(idx);
                         if (ImGui::Selectable(entry.name.c_str(), false)) {
                             DLOG("selected tone control file %s\n", entry.fullPath.c_str());
                             toneControlFileSelected = idx;
@@ -1720,10 +1769,9 @@ struct Skin {
                 if (toneControlValues[0][0].x == -FLT_MIN) {
                     ImGui::NewLine();
                     if (ImGui::Button("Load", ImVec2(512, 150))) {
-                        if (toneControl.FromFile(toneControlFiles->at(toneControlFileSelected).fullPath) != 0) {
+                        if (toneControl.FromFile(toneControlFiles.at(toneControlFileSelected).fullPath) != 0) {
                             DLOG(
-                                "failed to load tone control table file %s\n",
-                                toneControlFiles->at(toneControlFileSelected).fullPath.c_str()
+                                "failed to load tone control table file %s\n", toneControlFiles.at(toneControlFileSelected).fullPath.c_str()
                             );
                             statusStringToneControl = "Failed";
                         } else {
@@ -1737,10 +1785,10 @@ struct Skin {
                     ImGui::TableNextColumn();
 
                     // not efficient at all
-                    if (toneControlFiles->at(toneControlFileSelected).name.rfind(systemMark, 0) == 0) {
+                    if (toneControlFiles.at(toneControlFileSelected).name.rfind(systemMark, 0) == 0) {
                         if (ImGui::Button("Copy and edit", ImVec2(246, 60))) {
                             auto outDir = soundSettingsPathUser + "tone_control/";
-                            CopyTableEntry(&toneControl, toneControlFiles, &toneControlFileSelected, outDir);
+                            CopyTableEntry(&toneControl, &toneControlFiles, &toneControlFileSelected, outDir);
                             displayTab = TabCurveEditor;
                         }
                     } else {
@@ -1749,12 +1797,12 @@ struct Skin {
                         }
                     }
 
-                    if (toneControlFiles->at(toneControlFileSelected).name.rfind(systemMark, 0) == 0) {
+                    if (toneControlFiles.at(toneControlFileSelected).name.rfind(systemMark, 0) == 0) {
                         ImGui::BeginDisabled();
                     }
 
                     if (ImGui::Button("Save", ImVec2(246, 60))) {
-                        auto out = toneControlFiles->at(toneControlFileSelected).fullPath;
+                        auto out = toneControlFiles.at(toneControlFileSelected).fullPath;
                         DLOG("Saving to %s\n", out.c_str());
                         ToneControlImVec2ToTable();
                         if (toneControl.ToFile(out) == 0) {
@@ -1764,7 +1812,7 @@ struct Skin {
                         }
                     }
 
-                    if (toneControlFiles->at(toneControlFileSelected).name.rfind(systemMark, 0) == 0) {
+                    if (toneControlFiles.at(toneControlFileSelected).name.rfind(systemMark, 0) == 0) {
                         ImGui::EndDisabled();
                     }
 
@@ -1805,9 +1853,9 @@ struct Skin {
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
                 if (ImGui::Button("Refresh", ImVec2(240, 60))) {
-                    statusMasterVTFile = Dac::getStatus(masterVolumeFiles, Dac::volumeTableOutPath);
-                    statusMasterVTDSDFile = Dac::getStatus(masterVolumeDSDFiles, Dac::volumeTableDSDOutPath);
-                    statusToneControlFile = Dac::getStatus(toneControlFiles, Dac::toneControlOutPath);
+                    statusMasterVTFile = Dac::getStatus(&masterVolumeFiles, Dac::volumeTableOutPath);
+                    statusMasterVTDSDFile = Dac::getStatus(&masterVolumeDSDFiles, Dac::volumeTableDSDOutPath);
+                    statusToneControlFile = Dac::getStatus(&toneControlFiles, Dac::toneControlOutPath);
                     deviceProduct = GetProduct();
                     deviceModelID = GetModelID();
                     deviceRegionID = GetRegionID();
@@ -2057,6 +2105,10 @@ struct Skin {
             if (action == Hide) {
                 RefreshWinampSkinList();
                 RefreshCassetteTapeReelLists();
+                RefreshMasterVolumeTableFiles();
+                RefreshMasterVolumeTableDSDFiles();
+                RefreshToneControlFiles();
+                PreprocessTableFilenames();
             }
 
             connector->soundSettings.Update();

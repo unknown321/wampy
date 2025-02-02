@@ -35,7 +35,7 @@ NW-A40, NW-A50, WM1A, WM1Z, ZX-300. These devices share tables, and sometimes th
 content. DMP-Z1 does not have these at all (different SOC). NW-A30 uses tables which are incompatible with other
 devices.
 
-Here is the table with default tables for each device:
+Here are default tables for each device:
 
 <table>
   <tr align="center">
@@ -134,7 +134,7 @@ is, the louder is output.
 
 Use buttons `Copy val` and `Paste val` to copy and paste values from/to currently selected value type (everything on
 graph). Press `Edit` to edit values. `Apply` immediately applies changes. Press `Save` to save file
-to `wampy/sound_settings/master_volume/` directory.
+to `internal storage/wampy/sound_settings/master_volume/` directory.
 
 There are 26 table types and 13 value types specified by codec; you usually want to change `Play` and `Headphones` types
 for `Headphones, high gain` table. Feel free to experiment.
@@ -165,6 +165,11 @@ tables. X-axis: 120 values. Value range: 0-32768.
 
 This table is **NOT** related to tone control settings in Walkman application. You are interested in `SAMP_GENERAL_HP`
 table (maybe `NAMP_GENERAL_HP`?), others are for NW500/700 headphones. X-axis: 320 values. Value range: 0-256.
+
+### User-provided tables
+
+You can put tables modified by someone else to `internal storage/wampy/sound_settings/<table type>/` directory. File
+list is automatically refreshed after toggling Wampy interface; you can manually refresh it by tapping on "♪♫" button.
 
 ### Status
 
