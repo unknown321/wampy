@@ -342,9 +342,6 @@ struct Skin {
             digitalClock.skin = (void *)this;
             digitalClock.render = render;
             digitalClock.Load(config->digitalClock.color, &FontRegular);
-            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-        } else {
-            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.06f, 0.06f, 0.06f, 0.94f));
         }
 
         activeSkinVariant = config->activeSkin;
