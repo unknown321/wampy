@@ -256,21 +256,32 @@ Reel sprite changes every 55 ms. Default reels have 57 images each.
 `config.txt` contents:
 
 ```yaml
-reel: other                   # default reel
-artistx: 83.0                 # track artist coordinates
+# default reel
+reel: other
+# track artist coordinates
+artistx: 83.0
 artisty: 82.0
-artistformat: $ARTIST         # artist format string
-titlex: 83.0                  # track title coordinates
+# artist format string
+artistformat: $ARTIST
+# track title coordinates
+titlex: 83.0
 titley: 117.0
-titleformat: $TITLE           # track format string
-albumx: -1.0                  # album coordinates, hidden
+# track format string
+titleformat: $TITLE
+# album coordinates, hidden
+albumx: -1.0
 albumy: -1.0
-albumformat: $ALBUM           # album format string
-reelx: 134.0                  # reel upper left coordinate
+# album format string
+albumformat: $ALBUM
+# reel upper left coordinate
+reelx: 134.0
 reely: 160.0
-titlewidth: 600.0             # max title width in pixels, title will be cut after that value
-durationformat: %1$02d:%2$02d # zero-padded minutes and zero-padded seconds separated by colon
-textcolor: #000000            # text color, RGB
+# max line width in pixels, title, album and artist will be cut after that value
+titlewidth: 600.0
+# zero-padded minutes and zero-padded seconds separated by colon
+durationformat: %1$02d:%2$02d
+# text color, RGB
+textcolor: #000000
 ```
 
 Remember, `(0,0)` is top left corner.
