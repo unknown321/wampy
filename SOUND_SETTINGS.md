@@ -47,9 +47,9 @@ Here are default tables for each device:
   <tr align="center">
     <td>Model ID</td>
     <td colspan="2">0x250000 (A50)</td>
-    <td colspan="2">0x230000 (ZX300?)</td>
+    <td colspan="2">0x230000 (ZX300)</td>
     <td colspan="2">0x240000 (A40)</td>
-    <td colspan="2">0x200000, 0x210000 (WM1A/Z?)</td>
+    <td colspan="2">0x200000, 0x210000 (WM1A/Z)</td>
     <td colspan="2">0x220000 (A30)</td>
   </tr>
   <tr align="center">
