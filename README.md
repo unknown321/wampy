@@ -1,9 +1,9 @@
-wampy
+Wampy
 =====
 
-Interface addon for NW-A50/ZX300/WM1A/WM1Z series Walkman players.
+Interface addon for NW-A50 / ZX300 / WM1A / WM1Z series WALKMAN® players.
 
-Also works on Walkman One [NW-A50][1]/[A40][2]/[A30][3]/[ZX300][4]/[WM1A/Z][5].
+Also works on Walkman One [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [WM1A/Z][5].
 
 [1]: https://www.mrwalkman.com/p/sony-nw-a50series-custom-firmware.html
 
@@ -15,8 +15,7 @@ Also works on Walkman One [NW-A50][1]/[A40][2]/[A30][3]/[ZX300][4]/[WM1A/Z][5].
 
 [5]: https://www.mrwalkman.com/p/walkman-one-for-wm1az.html
 
-<p align="center"><img src="images/promo-a50.png" alt="winamp">&nbsp;<img src="images/promo-a40.png" alt="cassette"></p>
-<p align="center"><img src="images/promo-a30.png">&nbsp;<img src="images/promo-zx300.png">&nbsp;<img src="images/promo-wm1z.png"></p>
+<img src="images/promo.png">
 
 ## Features:
 
@@ -42,7 +41,7 @@ See [USAGE.md](./USAGE.md).
 | NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
 | NW-ZX300        | ?     | ✅           | looking for tester [#12][7]                              |
 | NW-WM1A/Z       | ?     | ?           | looking for tester [#13][8]                              |
-| DMP-Z1          | ?     | ?           | looking for tester                                       |
+| DMP-Z1          | ?     | ?           | looking for the bravest tester of them all               |
 
 [6]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
 
@@ -71,15 +70,18 @@ See [INSTALL.md](./INSTALL.md)
 
 See [BUILD.md](./BUILD.md)
 
-## See also
+## Other projects for these DAPs
+
+[Scrobbler](https://github.com/unknown321/scrobbler) - keeps tracks of played songs in .scrobbler.log for further
+submission to Last.fm.
+
+## Development stories
 
 [Making of](./MAKING_OF.md)
 
 [Making of sound settings](./MAKING_OF_SOUND_SETTINGS.md)
 
 [Making of equalizer](./MAKING_OF_EQUALIZER.md)
-
-[Scrobbler](https://github.com/unknown321/scrobbler)
 
 ## Support me
 
