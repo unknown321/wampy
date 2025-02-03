@@ -12,7 +12,7 @@ Also works on Walkman One [NW-A50][1]/[A40][2]/[A30][3].
 [3]: https://www.mrwalkman.com/p/walkman-one-nw-a30series.html
 
 <img src="images/winamp.png" alt="winamp" width="49%">&nbsp;<img src="images/cassette.png" alt="cassette" width="49%">
-<img src="images/promo-cassette-skin.png" width="20%"> <img src="images/promo-mvt.png" width="55%"> <img src="images/promo-digiclock.png" width="20%">
+<img src="images/promo-a30.png" width="20%"> <img src="images/promo-mvt.png" width="55%"> <img src="images/promo-digiclock.png" width="20%">
 
 ## Features:
 
