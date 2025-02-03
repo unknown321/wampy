@@ -49,6 +49,7 @@ namespace Tape {
         std::string formatArtist = "$ARTIST";
         std::string formatTitle = "$TITLE";
         std::string formatAlbum = "$ALBUM";
+        std::string formatDuration = "%1$02d:%2$02d";
         float titleWidth = 600.0f;
         ImU32 textColor = IM_COL32_BLACK;
         bool valid{};

@@ -50,10 +50,12 @@ struct Status {
     int SampleRate{};
     std::string Codec{};
     int PositionPercent{};
-    std::string SampleRateString;
-    std::string BitrateString;
-    std::string Filename;
-    std::string Album;
+    std::string SampleRateString{};
+    std::string BitrateString{};
+    std::string Filename{};
+    std::string Album{};
+    std::string TrackNumber{};
+    std::string Date{};
     PlayStateE State{};
 
     statusFields sf{};
@@ -66,6 +68,7 @@ struct SongInfo {
     std::string Title;
     std::string Artist;
     std::string Album;
+    int Year;
     int TrackNumber;
     int Duration;
     int SampleRate;

@@ -592,6 +592,17 @@ namespace Cassette {
         char croppedAlbum[FIELD_SIZE];
 
         auto tapeConfig = Tapes[config->Get(tapeType)->tape];
+
+        char duration[20];
+        snprintf(
+            duration,
+            19,
+            tapeConfig.formatDuration.c_str(),
+            connector->status.Duration / 60,
+            connector->status.Duration % 60,
+            connector->status.Duration / 3600
+        );
+
         if (tapeConfig.artistCoords.x > 0) {
             auto formatArtist = tapeConfig.formatArtist;
             replace(formatArtist, "$artist", song.Artist);
@@ -600,6 +611,9 @@ namespace Cassette {
             replace(formatArtist, "$ARTIST", upperArtist);
             replace(formatArtist, "$TITLE", upperTitle);
             replace(formatArtist, "$ALBUM", upperAlbum);
+            replace(formatArtist, "$track", connector->status.TrackNumber);
+            replace(formatArtist, "$year", connector->status.Date);
+            replace(formatArtist, "$duration", duration);
 
             strncpy(croppedArtist, formatArtist.c_str(), FIELD_SIZE);
             if (croppedArtist[0] != '\0') {
@@ -617,6 +631,9 @@ namespace Cassette {
             replace(formatTitle, "$ARTIST", upperArtist);
             replace(formatTitle, "$TITLE", upperTitle);
             replace(formatTitle, "$ALBUM", upperAlbum);
+            replace(formatTitle, "$track", connector->status.TrackNumber);
+            replace(formatTitle, "$year", connector->status.Date);
+            replace(formatTitle, "$duration", duration);
 
             strncpy(croppedTitle, formatTitle.c_str(), FIELD_SIZE);
             if (tempTitle[0] != '\0') {
@@ -634,6 +651,9 @@ namespace Cassette {
             replace(formatAlbum, "$ARTIST", upperArtist);
             replace(formatAlbum, "$TITLE", upperTitle);
             replace(formatAlbum, "$ALBUM", upperAlbum);
+            replace(formatAlbum, "$track", connector->status.TrackNumber);
+            replace(formatAlbum, "$year", connector->status.Date);
+            replace(formatAlbum, "$duration", duration);
 
             strncpy(croppedAlbum, formatAlbum.c_str(), FIELD_SIZE);
             if (tempAlbum[0] != '\0') {

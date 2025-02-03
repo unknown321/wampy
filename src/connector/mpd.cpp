@@ -266,6 +266,9 @@ namespace MPD {
         case hash("Track"):
             song->Track = join(words, 1);
             break;
+        case hash("Date"):
+            song->Date = join(words, 1);
+            break;
         case hash("file"):
             song->File = join(words, 1);
             break;
@@ -418,6 +421,8 @@ namespace MPD {
 
             if (numbytes > 0) {
                 parsePlaylist(buf, RESP_BUF_SIZE, &playlist);
+                status.Date = playlist.at(0).Date;
+                status.TrackNumber = playlist.at(0).Track;
             }
 
             for (const auto &client : clients) {

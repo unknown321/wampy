@@ -116,6 +116,10 @@ namespace Tape {
                 this->titleWidth = std::stof(parts[1]);
                 break;
             }
+            case hash("durationformat"): {
+                this->formatDuration = parts[1];
+                break;
+            }
             case hash("textcolor"): {
                 this->textColor = colorToImCol32(parts[1]);
                 break;

@@ -256,28 +256,42 @@ Reel sprite changes every 55 ms. Default reels have 57 images each.
 `config.txt` contents:
 
 ```yaml
-reel: other             # default reel
-artistx: 83.0           # track artist coordinates
+reel: other                   # default reel
+artistx: 83.0                 # track artist coordinates
 artisty: 82.0
-artistformat: $ARTIST   # artist format string
-titlex: 83.0            # track title coordinates
+artistformat: $ARTIST         # artist format string
+titlex: 83.0                  # track title coordinates
 titley: 117.0
-titleformat: $TITLE     # track format string
-albumx: -1.0            # album coordinates, hidden
+titleformat: $TITLE           # track format string
+albumx: -1.0                  # album coordinates, hidden
 albumy: -1.0
-albumformat: $ALBUM     # album format string
-reelx: 134.0            # reel upper left coordinate
+albumformat: $ALBUM           # album format string
+reelx: 134.0                  # reel upper left coordinate
 reely: 160.0
-titlewidth: 600.0       # max title width in pixels, title will be cut after that value
-textcolor: #000000      # text color, RGB
+titlewidth: 600.0             # max title width in pixels, title will be cut after that value
+durationformat: %1$02d:%2$02d # zero-padded minutes and zero-padded seconds separated by colon
+textcolor: #000000            # text color, RGB
 ```
 
 Remember, `(0,0)` is top left corner.
 
 Set `artistx`/`titlex`/`albumx` to negative value to hide artist/title/album labels.
 
-Format variables: `$title, $artist, $album` for regular text and `$TITLE, $ARTIST, $ALBUM` for uppercase. Format options
-may be omitted.
+Format variables:
+
+- `$title` / `$TITLE`
+- `$artist` / `$ARTIST`
+- `$album` / `$ALBUM`
+- `$year`
+- `$track`
+- `$duration`
+
+Format options may be omitted; default values will take their place instead.
+
+Duration format
+follows [printf syntax](https://man7.org/linux/man-pages/man3/fprintf.3.html), `Format of the format string` section.
+Default value `%1$02d:%2$02d` prints duration in `mm:ss` format. Arguments: minute, second, hour.
+Example: `%3$01d:%1$02d:%2$02d` will print `2:06:37` for track 2 hours, 06 minutes, 37 seconds long.
 
 Config file is not required; default one (with values above) will be used instead.
 
