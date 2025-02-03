@@ -8,7 +8,7 @@
   * [There is no song info](#there-is-no-song-info)
   * [Notes on ugly settings](#notes-on-ugly-settings)
   * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
-  * [Buttons are not pressed after a single tap](#buttons-are-not-pressed-after-a-single-tap)
+  * [Some buttons are not pressed after a single tap](#some-buttons-are-not-pressed-after-a-single-tap)
 * [Using Wampy](#using-wampy)
   * [Winamp](#winamp)
     * [UI Buttons](#ui-buttons)
@@ -28,7 +28,7 @@
 * [Walkman One](#walkman-one)
   * [Stock firmware](#stock-firmware)
 * [Sound settings, Low-latency USB DAC (♪♫ button)](#sound-settings-low-latency-usb-dac--button)
-* [Equalizer settings](#equalizer-settings)
+* [Equalizer settings (EQ button)](#equalizer-settings-eq-button)
 * [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
