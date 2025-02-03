@@ -765,7 +765,14 @@ std::pair<std::string, std::string> AudioDeviceInUse() {
 }
 
 bool EnableLLUSBDAC() {
-    auto out = RunWithOutput("insmod /system/vendor/unknown321/modules/llusbdac.ko 2>&1");
+    auto mtkProject = RunWithOutput("gunzip -c /proc/config.gz  | grep CONFIG_ARCH_MTK_PROJECT");
+    DLOG("project is %s\n", mtkProject.c_str());
+    std::string out;
+    if (mtkProject == "CONFIG_ARCH_MTK_PROJECT=\"BBDMP2_linux\"") {
+        out = RunWithOutput("insmod /system/vendor/unknown321/modules/llusbdac.ko_bbdmp2 2>&1");
+    } else {
+        out = RunWithOutput("insmod /system/vendor/unknown321/modules/llusbdac.ko 2>&1");
+    }
     DLOG("%s\n", out.c_str());
     return out.empty();
 }
