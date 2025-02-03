@@ -26,7 +26,8 @@ namespace Hagoromo {
         void restorePlayState();
 
       public:
-        const char *touchscreenPath = "/sys/devices/platform/mt-i2c.1/i2c-1/1-0048/sleep";
+        const char *touchscreenPath = "/sys/devices/platform/mt-i2c.1/i2c-1/1-0048/sleep";  // nw-a50/40/30/zx300
+        const char *touchscreenPath2 = "/sys/devices/platform/mt-i2c.1/i2c-1/1-0020/sleep"; // wm1z
         const char *brightnessPath = "/sys/class/leds/lcd-backlight/brightness";
         //        const char *thermalPath = "/sys/class/thermal/thermal_zone0/temp";
 

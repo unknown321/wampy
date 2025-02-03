@@ -165,9 +165,17 @@ namespace Hagoromo {
 #ifdef DESKTOP
         return;
 #endif
+        const char *tp = touchscreenPath;
+        if (!exists(tp)) {
+            tp = touchscreenPath2;
+            if (!exists(tp)) {
+                DLOG("we are out of touch\n");
+                return;
+            }
+        }
 
         char data[3] = "0\n";
-        int tsFd = open(touchscreenPath, O_RDWR);
+        int tsFd = open(tp, O_RDWR);
         if (write(tsFd, &data, sizeof(data)) < 0) {
             perror("touchscreen enable failed");
             close(tsFd);
@@ -178,7 +186,17 @@ namespace Hagoromo {
 
     void HagoromoConnector::disableTouchscreen() const {
         char data[3] = "1\n";
-        int tsfd = open(touchscreenPath, O_RDWR);
+
+        const char *tp = touchscreenPath;
+        if (!exists(tp)) {
+            tp = touchscreenPath2;
+            if (!exists(tp)) {
+                DLOG("we are out of touch\n");
+                return;
+            }
+        }
+
+        int tsfd = open(tp, O_RDWR);
         if (write(tsfd, &data, sizeof(data)) < 0) {
             perror("touchscreen disable failed");
             close(tsfd);
