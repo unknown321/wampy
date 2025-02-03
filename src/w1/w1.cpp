@@ -17,7 +17,24 @@ namespace W1 {
         {0, "Neutral"}, {1, "Warm (Midnight v2)"}, {2, "Bright (Dawn v2.1)"}, {3, "WM1Z"}};
 
     std::vector<std::string> regionWalkmanOne = {
-        "J", "U", "U2", "U3", "CA", "CEV", "CE7", "CEW", "CEW2", "CN", "KR", "E", "MX", "E2", "MX3", "TW"};
+        "J",    // 0x00000000
+        "U",    // 0x00000001, US, CND : Canadian model
+        "U2",   // 0x00000101
+        "U3",   // 0x00000201
+        "CA",   // 0x00000301
+        "CEV",  // 0x00000002, EE : Russian model (CIS area: Except for Moldova)
+        "CE7",  // 0x00000102
+        "CEW",  // 0x00000003
+        "CEW2", // 0x00000103, AEP : European, East European and Moldova models, aka UK,
+        "CN",   // 0x00000004, CH : Chinese model
+        "KR",   // 0x00000005
+        "E",    // 0x00000006, AUS : Australian model, JE : Tourist model
+        "MX",   // 0x00000203 is actually a KR3, typo in walkman one
+        "KR3",  // 0x00000203
+        "E2",   // 0x00000206
+        "MX3",  // 0x00000306
+        "TW",   // 0x00000007
+    };
 
     std::map<uint, std::string> signatureToPathWalkmanOne = {
         {0, "/contents/CFW/External_Tunings/Neutral_&_Warm_external_tuning/"},
