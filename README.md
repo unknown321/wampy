@@ -1,9 +1,9 @@
 wampy
 =====
 
-Interface addon for NW-A50 series Walkman player.
+Interface addon for NW-A50/ZX300/WM1A/WM1Z series Walkman players.
 
-Also works on Walkman One [NW-A50][1]/[A40][2]/[A30][3].
+Also works on Walkman One [NW-A50][1]/[A40][2]/[A30][3]/[ZX300][4]/[WM1A/Z][5].
 
 [1]: https://www.mrwalkman.com/p/sony-nw-a50series-custom-firmware.html
 
@@ -11,8 +11,12 @@ Also works on Walkman One [NW-A50][1]/[A40][2]/[A30][3].
 
 [3]: https://www.mrwalkman.com/p/walkman-one-nw-a30series.html
 
-<img src="images/winamp.png" alt="winamp" width="49%">&nbsp;<img src="images/cassette.png" alt="cassette" width="49%">
-<img src="images/promo-a30.png" width="20%"> <img src="images/promo-mvt.png" width="55%"> <img src="images/promo-digiclock.png" width="20%">
+[4]: https://www.mrwalkman.com/p/walkman-one-zx300series.html
+
+[5]: https://www.mrwalkman.com/p/walkman-one-for-wm1az.html
+
+<p align="center"><img src="images/promo-a50.png" alt="winamp">&nbsp;<img src="images/promo-a40.png" alt="cassette"></p>
+<p align="center"><img src="images/promo-a30.png">&nbsp;<img src="images/promo-zx300.png">&nbsp;<img src="images/promo-wm1z.png"></p>
 
 ## Features:
 
@@ -34,17 +38,17 @@ See [USAGE.md](./USAGE.md).
 | NW-A50          | ✅     | ✅           |                                                          |
 | └──A50Z mod     | ✅     | ---         | mod is unavailable                                       |
 | NW-A40          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
-| └──[A50 mod][4] | ✅     | ---         | confirmed by community                                   |
+| └──[A50 mod][6] | ✅     | ---         | confirmed by community                                   |
 | NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
-| NW-ZX300        | ?     | ✅           | looking for tester [#12][5]                              |
-| NW-WM1A/Z       | ?     | ?           | looking for tester [#13][6]                              |
+| NW-ZX300        | ?     | ✅           | looking for tester [#12][7]                              |
+| NW-WM1A/Z       | ?     | ?           | looking for tester [#13][8]                              |
 | DMP-Z1          | ?     | ?           | looking for tester                                       |
 
-[4]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
+[6]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
 
-[5]: https://github.com/unknown321/wampy/issues/12
+[7]: https://github.com/unknown321/wampy/issues/12
 
-[6]: https://github.com/unknown321/wampy/issues/13
+[8]: https://github.com/unknown321/wampy/issues/13
 
 ## Install
 
