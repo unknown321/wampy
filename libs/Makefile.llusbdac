@@ -11,16 +11,23 @@ llusbdac/kernel/build.sh: | $(KERNEL_FILE)
 	tar -C llusbdac/kernel/ -xf $(KERNEL_FILE)
 
 llusbdac/kernel/vmlinux: llusbdac/kernel/build.sh
-	cp config.kernel llusbdac/kernel/.config
-	$(DOCKER) ./kernel.sh
 
-llusbdac/llusbdac/llusbdac.ko:
+llusbdac/llusbdac/llusbdac.ko_bbdmp5:
+	cp llusbdac/kernel/arch/arm/configs/BBDMP5_linux_debug_defconfig llusbdac/kernel/.config
+	$(DOCKER) -c ./kernel.sh
 	$(DOCKER) -c "cd llusbdac/llusbdac/ && make"
+	mv llusbdac/llusbdac/llusbdac.ko llusbdac/llusbdac/llusbdac.ko_bbdmp5
 
-build: llusbdac/kernel/vmlinux llusbdac/llusbdac/llusbdac.ko
+llusbdac/llusbdac/llusbdac.ko_bbdmp2:
+	cp llusbdac/kernel/arch/arm/configs/BBDMP2_linux_debug_defconfig llusbdac/kernel/.config
+	$(DOCKER) -c ./kernel.sh
+	$(DOCKER) -c "cd llusbdac/llusbdac/ && make"
+	mv llusbdac/llusbdac/llusbdac.ko llusbdac/llusbdac/llusbdac.ko_bbdmp2
+
+build: llusbdac/kernel/vmlinux llusbdac/llusbdac/llusbdac.ko_bbdmp5 llusbdac/llusbdac/llusbdac.ko_bbdmp2
 
 clean:
-	-$(DOCKER) -c "cd llusbdac/llusbdac/ && make clean"
+	-$(DOCKER) -c "cd llusbdac/llusbdac/ && make clean && rm -fv llusbdac.ko*"
 
 veryclean: clean
 	-$(DOCKER) -c "rm -rf llusbdac/kernel"

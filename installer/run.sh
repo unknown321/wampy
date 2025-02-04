@@ -134,7 +134,9 @@ install() {
 
   log "installing llusbdac"
   ${MKDIR} -p ${VENDOR}/modules/
-  ${CP} llusbdac.ko ${VENDOR}/modules/
+  ${RM} -f ${VENDOR}/modules/llusbdac.ko
+  ${CP} llusbdac.ko_bbdmp2 ${VENDOR}/modules/
+  ${CP} llusbdac.ko_bbdmp5 ${VENDOR}/modules/
 
   clearBadBoots
 }

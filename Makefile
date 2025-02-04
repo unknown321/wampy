@@ -79,7 +79,8 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 	$(MAKE) -C pstserver
 	cp pstserver/pstserver installer/
 	$(UPX) -qqq --best installer/pstserver
-	cp libs/llusbdac/llusbdac/llusbdac.ko installer/
+	cp libs/llusbdac/llusbdac/llusbdac.ko_bbdmp5 installer/
+	cp libs/llusbdac/llusbdac/llusbdac.ko_bbdmp2 installer/
 	cp LICENSE installer/
 	cp LICENSE_3rdparty installer/
 	cp qr.bmp installer/
@@ -99,7 +100,8 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 		cassette.tar.gz \
 		digital_clock.tar.gz \
 		tunings.tar.gz \
-		llusbdac.ko \
+		llusbdac.ko_bbdmp2 \
+		llusbdac.ko_bbdmp5 \
 		pstserver \
 		upgtool-linux-arm5 \
 		LICENSE \

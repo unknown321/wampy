@@ -41,6 +41,7 @@
 [submodule "libs/llusbdac"]
 	path = libs/llusbdac
 	url = https://github.com/zhangboyang/llusbdac.git
+    ignore = dirty
 [submodule "libs/sqlite"]
 	path = libs/sqlite
 	url = https://github.com/sqlite/sqlite.git
