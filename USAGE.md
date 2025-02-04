@@ -9,6 +9,7 @@
   * [Notes on ugly settings](#notes-on-ugly-settings)
   * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
   * [Some buttons are not pressed after a single tap](#some-buttons-are-not-pressed-after-a-single-tap)
+  * [Some characters are missing](#some-characters-are-missing)
 * [Using Wampy](#using-wampy)
   * [Winamp](#winamp)
     * [UI Buttons](#ui-buttons)
