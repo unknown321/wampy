@@ -300,7 +300,7 @@ Set `artistx`/`titlex`/`albumx` to negative value to hide artist/title/album lab
 
 Format variables:
 
-- `$title` / `$TITLE`
+- `$title` / `$TITLE` (as is / uppercase)
 - `$artist` / `$ARTIST`
 - `$album` / `$ALBUM`
 - `$year`
