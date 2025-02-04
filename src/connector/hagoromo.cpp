@@ -624,7 +624,8 @@ namespace Hagoromo {
         auto localStatus = *hagoromoStatus;
         if (prevEntryID != localStatus.entryId) {
             auto si = SongInfo{};
-            getSongData(localStatus.entryId - 0x10000000, &si);
+            DLOG("entry id is %x\n", localStatus.entryId);
+            getSongData(localStatus.entryId & 0xffffff, &si);
             prevEntryID = localStatus.entryId;
 
             status.Bits = si.BitDepth;
@@ -1143,7 +1144,9 @@ namespace Hagoromo {
             return;
         }
 
+        int rows = 0;
         while (SQLITE_ROW == (rc = sqlite3_step(select_stmt))) {
+            rows++;
             s->Filename = (char *)sqlite3_column_text(select_stmt, 0);
             s->Title = (char *)sqlite3_column_text(select_stmt, 1);
             s->Artist = (char *)sqlite3_column_text(select_stmt, 2);
@@ -1160,6 +1163,8 @@ namespace Hagoromo {
 
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
+
+        DLOG("found %d rows for id %x\n", rows, entryId);
     }
 
     void HagoromoConnector::pauseIfNeeded() {
