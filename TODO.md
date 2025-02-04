@@ -1,7 +1,7 @@
 #general
 
 - [ ] apply tunings on boot
-- [ ] user font
+- [x] user font
 - [x] mtk backup is broken on nw-a40, update docs
 - [x] make llusbdac build everywhere, not just on my machine
 - [x] export bookmarks

@@ -5,9 +5,13 @@
 namespace DigitalClock {
 #ifdef DESKTOP
     const std::string FontPath = "../NotoSansKR-Regular.otf";
+    const std::string FontPathCustom = "../font.ttf";
+    const std::string FontPathCustom2 = "../font.otf";
     const char *basePath = "../digital_clock";
 #else
     const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
+    const std::string FontPathCustom = "/contents/wampy/fonts/font.ttf";
+    const std::string FontPathCustom2 = "/contents/wampy/fonts/font.otf";
     const char *basePath = "/system/vendor/unknown321/usr/share/wampy/skins/digital_clock";
 #endif
 
@@ -349,7 +353,16 @@ namespace DigitalClock {
         range.AddChar(ImWchar(0x24c8)); // Ⓢ
 
         range.BuildRanges(&gr);
-        *fontRegular = io.Fonts->AddFontFromFileTTF(FontPath.c_str(), fontSizeTTF, nullptr, gr.Data);
+
+        std::string fp = FontPath;
+        if (exists(FontPathCustom)) {
+            fp = FontPathCustom;
+        }
+        if (exists(FontPathCustom2)) {
+            fp = FontPathCustom2;
+        }
+
+        *fontRegular = io.Fonts->AddFontFromFileTTF(fp.c_str(), fontSizeTTF, nullptr, gr.Data);
 
         ImGui_ImplOpenGL3_DestroyFontsTexture();
         ImGui_ImplOpenGL3_CreateFontsTexture();

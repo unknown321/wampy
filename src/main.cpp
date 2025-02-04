@@ -437,6 +437,7 @@ int main(int, char **) {
     std::thread f(events);
     f.detach();
 
+    mkpath("/contents/wampy/fonts/", 0777);
     mkpath("/contents/wampy/skins/cassette", 0777);
     mkpath("/contents/wampy/skins/winamp/", 0777);
     mkpath("/contents/wampy/skins/cassette/reel/", 0777);

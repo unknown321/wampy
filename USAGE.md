@@ -83,6 +83,12 @@ Reboot the device. I suppose that happens because of opengl texture unloading (o
 
 Tap that button twice. This is a rarely encountered bug, please report if you encounter it frequently.
 
+### Some characters are missing
+
+Wampy is limited to one font due to framework specifics. If some characters are replaced with `?`, you can provide
+custom font file, overriding the default one. File must be named `font.tff` (or `font.otf`) and put
+into `internal storage/wampy/fonts/` directory. Supported formats: `.ttf`, `.otf`.
+
 ## Using Wampy
 
 Wampy works with default music player.

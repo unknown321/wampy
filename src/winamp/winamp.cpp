@@ -29,9 +29,13 @@ namespace Winamp {
 #ifdef DESKTOP
     //    const std::string FontPath = "../SSTJpPro-Regular.otf";
     const std::string FontPath = "../NotoSansKR-Regular.otf";
+    const std::string FontPathCustom = "../font.ttf";
+    const std::string FontPathCustom2 = "../font.otf";
     const char *defaultSkinPath = "../skins/base-2.91.wsz";
 #else
     const std::string FontPath = "/system/vendor/sony/lib/fonts/NotoSansKR-Regular.otf";
+    const std::string FontPathCustom = "/contents/wampy/fonts/font.ttf";
+    const std::string FontPathCustom2 = "/contents/wampy/fonts/font.otf";
     const char *defaultSkinPath = "/system/vendor/unknown321/usr/share/skins/winamp/base-2.91.wsz";
 #endif
 
@@ -111,7 +115,15 @@ namespace Winamp {
             isEx = true;
         }
 
-        auto res = addFont(FontPath, numFontData, textures["text.bmp"]);
+        std::string fp = FontPath;
+        if (exists(FontPathCustom)) {
+            fp = FontPathCustom;
+        }
+        if (exists(FontPathCustom2)) {
+            fp = FontPathCustom2;
+        }
+
+        auto res = addFont(fp, numFontData, textures["text.bmp"]);
         FontBitmap = res.bitmap;
         FontNumbers = res.number;
         FontRegular = res.regular;
