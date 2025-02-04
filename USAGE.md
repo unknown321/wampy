@@ -87,9 +87,10 @@ Tap that button twice. This is a rarely encountered bug, please report if you en
 
 Wampy is limited to one font due to framework specifics. If some characters are replaced with `?`, you can provide
 custom font file, overriding the default one. File must be named `font.tff` (or `font.otf`) and put
-into `internal storage/wampy/fonts/` directory. Supported formats: `.ttf`, `.otf`.
+into `internal storage/wampy/fonts/` directory. Supported formats: `.ttf`, `.otf`. Changes are applied after reboot.
+Invalid font files will crash Wampy; there will be no graphical indication.
 
-You can get font with another character set from https://fonts.google.com/noto. Default font is `NotoSansKR-Regular`.
+You can get font files with other character sets from https://fonts.google.com/noto. Default is `NotoSansKR-Regular`.
 
 ## Using Wampy
 
