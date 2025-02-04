@@ -654,48 +654,57 @@ namespace Hagoromo {
             status.Album = si.Album;
             status.TrackNumber = std::to_string(si.TrackNumber);
             status.Date = std::to_string(si.Year);
-        }
 
-        if (m == nullptr) {
-            m = new std::mutex();
-        }
+            if (m == nullptr) {
+                m = new std::mutex();
+            }
 
-        m->lock();
-        std::sort(&localStatus.playlist[0], &localStatus.playlist[PLAYLIST_SIZE], TrackComparer());
+            m->lock();
 
-        for (auto &i : playlist) {
-            i.Reset();
-        }
+            std::sort(&localStatus.playlist[0], &localStatus.playlist[PLAYLIST_SIZE], TrackComparer());
+            for (auto &i : playlist) {
+                i.Reset();
+            }
 
-        int i = 0;
-        bool activeFound = false;
-        for (const auto &track : localStatus.playlist) {
-            if (track.Active) {
-                activeFound = true;
-                //                DLOG("track ----->>>> %d %d %s %d, found %d\n", i, track.TrackNumber, track.Title, track.Active,
-                //                activeFound);
+            int i = 0;
+            bool activeFound = false;
+            for (const auto &track : localStatus.playlist) {
+                if (track.Active) {
+                    activeFound = true;
+                    //                DLOG("track ----->>>> %d %d %s %d, found %d\n", i, track.TrackNumber, track.Title, track.Active,
+                    //                activeFound);
+                }
+
+                if (!activeFound) {
+                    continue;
+                }
+
+                //            DLOG("track %d %d %s %d, found %d\n", i, track.TrackNumber, track.Title, track.Active, activeFound);
+                playlist[i].Track = std::to_string(track.TrackNumber);
+                playlist[i].Artist = track.Artist;
+                playlist[i].Title = track.Title;
+                playlist[i].Duration = track.Duration;
+                i++;
+                if (i == playlist.size()) {
+                    break;
+                }
             }
 
             if (!activeFound) {
-                continue;
+                DLOG("active not found, inserting first track from database to playlist\n");
+                auto si = SongInfo{};
+                getSongData(localStatus.entryId & 0xffffff, &si);
+                playlist[0].Track = std::to_string(si.TrackNumber);
+                playlist[0].Artist = si.Artist;
+                playlist[0].Title = si.Title;
+                playlist[0].Duration = si.Duration / 1000;
             }
 
-            //            DLOG("track %d %d %s %d, found %d\n", i, track.TrackNumber, track.Title, track.Active, activeFound);
-            playlist[i].Track = std::to_string(track.TrackNumber);
-            playlist[i].Artist = track.Artist;
-            playlist[i].Title = track.Title;
-            playlist[i].Duration = track.Duration;
-            i++;
-            if (i == playlist.size()) {
-                break;
-            }
+            m->unlock();
+
+            status.Channels = 2;
         }
-        m->unlock();
-        //        for (; i < playlist.size(); i++) {
-        //            playlist[i].Reset();
-        //        }
 
-        status.Channels = 2;
         status.State = localStatus.playState;
         status.Shuffle = localStatus.shuffleOn;
         status.Repeat = localStatus.repeatMode;
