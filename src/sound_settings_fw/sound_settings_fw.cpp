@@ -119,6 +119,28 @@ void SoundSettingsFww::Update() {
     strcpy(s->command.resultChar, "2");
 #endif
     eq6Value = std::strtol(s->command.resultChar, &endptr, 10);
+
+    for (int i = 0; i < eqtone.size(); i++) {
+        s->command.id = SSFW_GET_PARAM;
+        memset(s->command.resultChar, 0, sizeof s->command.resultChar);
+        sprintf(s->command.valueChar, "eqtone,type=%d,value", i);
+        Send();
+#ifdef DESKTOP
+        strcpy(s->command.resultChar, "1");
+#endif
+        eqtone.at(i).second = std::strtol(s->command.resultChar, &endptr, 10);
+    }
+
+    for (int i = 0; i < eqtoneFreq.size(); i++) {
+        s->command.id = SSFW_GET_PARAM;
+        memset(s->command.resultChar, 0, sizeof s->command.resultChar);
+        sprintf(s->command.valueChar, "eqtone,type=%d,centerfreq", i);
+        Send();
+#ifdef DESKTOP
+        strcpy(s->command.resultChar, "1");
+#endif
+        eqtoneFreq.at(i).second = std::strtol(s->command.resultChar, &endptr, 10);
+    }
 }
 
 void SoundSettingsFww::SetEq10Band(int band, int value) const {

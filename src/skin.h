@@ -522,20 +522,7 @@ struct Skin {
     void Header() {
         float offset = 15.0f;
         ImGui::Indent(offset);
-        //        ImGui::Text("Settings");
 
-        char buffer[9];
-        time_t rawtime;
-        time(&rawtime);
-        const auto timeinfo = localtime(&rawtime);
-        strftime(buffer, sizeof(buffer), "%H:%M", timeinfo);
-
-        ImGui::SetCursorPosX(380.0f);
-        ImGui::Text("%s", buffer);
-
-        //        ImGui::SameLine(ImGui::CalcTextSize("Settings").x + ImGui::GetStyle().FramePadding.x * 2.f + offset * 2);
-        ImGui::SameLine();
-        ImGui::SetCursorPosX(offset);
         if (ImGui::Button("  W1  ")) {
             loadStatusStr = "";
             displayTab = SettingsTab::TabWalkmanOne;
@@ -585,7 +572,21 @@ struct Skin {
         auto miscSize = ImGui::CalcTextSize("Misc").x + ImGui::GetStyle().FramePadding.x * 2.f;
         auto skinSize = ImGui::CalcTextSize("Skin").x + ImGui::GetStyle().FramePadding.x * 2.f;
         auto closeSize = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.f;
-        ImGui::SameLine(800.0f - closeSize - miscSize - skinSize - offset * 3);
+
+        // clock
+        char buffer[9];
+        time_t rawtime;
+        time(&rawtime);
+        const auto timeinfo = localtime(&rawtime);
+        strftime(buffer, sizeof(buffer), "%H:%M", timeinfo);
+
+        auto skinButtonPos = 800.0f - closeSize - miscSize - skinSize - offset * 3;
+
+        ImGui::SameLine();
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((skinButtonPos - ImGui::GetCursorPosX()) / 2) - ImGui::CalcTextSize(buffer).x / 2);
+        ImGui::Text("%s", buffer);
+
+        ImGui::SameLine(skinButtonPos);
         if (ImGui::Button("Skin")) {
             loadStatusStr = "";
             displayTab = SettingsTab::SkinOpts;
