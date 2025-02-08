@@ -2563,7 +2563,6 @@ struct Skin {
             if (ImGui::Button("Stop music", ImVec2(186, 60))) {
                 connector->Pause();
             }
-            ImGui::EndTabItem();
             return;
         }
 
