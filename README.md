@@ -24,6 +24,7 @@ Also works on Walkman One [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [WM1A
 - On-the-fly skin change
 - Volume table editor
 - Per-song audio options
+- All audio filters are available regardless of firmware
 - Default player enhancements (add clock and increase cover art size)
 - Digital clock skin (pretty!)
 - [Low latency USB DAC module](https://github.com/zhangboyang/llusbdac)
@@ -35,14 +36,14 @@ See [USAGE.md](./USAGE.md).
 | Device          | Stock | Walkman One | Notes                                                    |
 |-----------------|-------|-------------|----------------------------------------------------------|
 | NW-A50          | ✅     | ✅           |                                                          |
-| └──A50Z mod     | ✅     | ---         | mod is unavailable                                       |
+| └──A50Z mod     | ✅     |             | mod is unavailable                                       |
 | NW-A40          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
-| └──[A50 mod][6] | ✅     | ---         | confirmed by community                                   |
+| └──[A50 mod][6] | ✅     |             | confirmed by community                                   |
 | NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
 | NW-ZX300        | ?     | ✅           | looking for tester [#12][7]                              |
 | NW-WM1A         | ?     | ?           | looking for tester [#13][8]                              |
 | NW-WM1Z         | ✅     | ✅           | there is a black bar on top of the screen                |
-| DMP-Z1          | ?     | ?           | looking for the bravest tester of them all               |
+| DMP-Z1          | ?     |             | looking for the bravest tester of them all               |
 
 [6]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
 
@@ -73,6 +74,8 @@ See [BUILD.md](./BUILD.md)
 
 ## Other projects for these DAPs
 
+[fix-coverart](https://github.com/unknown321/fix-coverart) - fixes missing cover art.
+
 [Scrobbler](https://github.com/unknown321/scrobbler) - keeps tracks of played songs in .scrobbler.log for further
 submission to Last.fm.
 
@@ -80,9 +83,11 @@ submission to Last.fm.
 
 [Making of](./MAKING_OF.md)
 
-[Making of sound settings](./MAKING_OF_SOUND_SETTINGS.md)
+[Making of volume tables](./MAKING_OF_VOLUME_TABLES.md)
 
-[Making of equalizer](./MAKING_OF_EQUALIZER.md)
+[Making of equalizer per song](./MAKING_OF_EQUALIZER_PER_SONG.md)
+
+[Making of equalizer / audio filters](./MAKING_OF_EQUALIZER_FILTERS.md)
 
 ## Support me
 

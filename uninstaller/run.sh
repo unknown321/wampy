@@ -73,6 +73,12 @@ uninstall() {
 
   log "removing modules"
   ${RM} -rf ${VENDOR}/modules/
+
+  ${GREP} -q "libsound_service_fw.so" ${INITRD_UNPACKED}/init.hagoromo.rc
+  if test $? -eq 0; then
+    log "removing LD_PRELOAD entry for SoundServiceFw"
+    ${SED} -i '/libsound_service_fw.so/d' ${INITRD_UNPACKED}/init.hagoromo.rc
+  fi
 }
 
 log "uninstaller for $(cat product_info)"

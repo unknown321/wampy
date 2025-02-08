@@ -1,8 +1,8 @@
-# Equalizer settings
+# Equalizer per song
 
 Wampy can conditionally change equalizer settings depending on currently playing song.
 
-Enable it on "EQ" tab (or toggle it on/off on "Misc" tab). You can also press "EQ" button in Winamp.
+Enable it on "EQ/Song" tab (or toggle it on/off on "Misc" tab).
 
 <img src="images/settings-eq.png">
 
@@ -26,7 +26,7 @@ Settings are saved per file or per directory. Setting list:
 - Tone Control High
 - Vinyl Processor
 - Vinyl Type
-- DN (?)
+- Dynamic Normalizer (saved but not applied)
 
 Options without model are available on Walkman One, ZX-300 and NW-WM1A/Z.
 
@@ -79,9 +79,6 @@ There is a "NW-A50 default mode?" vinyl type on stock NW-A50 firmware. I am not 
 resets mode to this value. There is no special mode entry for it in standard player, most likely it falls back to
 "Standard" mode.
 
-There is a mysterious `DN` option (id `DMP_CONFIG_SS_DN_ONOFF`). If this option is On for you, please tell me how do
-you toggle it so the description could be updated.
-
 ### See also
 
-[Making of equalizer](./MAKING_OF_EQUALIZER.md)
+[Making of equalizer per song](./MAKING_OF_EQUALIZER_PER_SONG.md)

@@ -56,6 +56,7 @@ include_directories(
         server/qt/qtdeclarative/include/QtQuick
 
         pstserver/
+        sound_service_fw/
 )
 
 set(GLFW_BUILD_WAYLAND false)
@@ -133,6 +134,7 @@ add_executable(${PROJECT_NAME}
         #        libs/imgui/imgui_demo.cpp
         src/shader.cpp
         src/sound_settings/sound_settings.cpp
+        src/sound_settings_fw/sound_settings_fw.cpp
         src/dac/dac.cpp)
 
 #add_executable(dac

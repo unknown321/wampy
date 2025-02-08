@@ -138,6 +138,16 @@ install() {
   ${CP} llusbdac.ko_bbdmp2 ${VENDOR}/modules/
   ${CP} llusbdac.ko_bbdmp5 ${VENDOR}/modules/
 
+  log "installing SoundServiceFw preload library"
+  ${CP} libsound_service_fw.so ${VENDOR}/lib/
+  chmod 0755 ${VENDOR}/lib/libsound_service_fw.so
+
+  ${GREP} -q "LD_PRELOAD /system/vendor/unknown321/lib/libsound_service_fw.so" ${INITRD_UNPACKED}/init.hagoromo.rc
+  if test $? -ne 0; then
+    log "adding LD_PRELOAD entry for SoundServiceFw"
+    ${SED} -i '/SoundServiceFw/a \ setenv LD_PRELOAD /system/vendor/unknown321/lib/libsound_service_fw.so' ${INITRD_UNPACKED}/init.hagoromo.rc
+  fi
+
   clearBadBoots
 }
 

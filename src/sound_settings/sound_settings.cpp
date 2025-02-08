@@ -36,9 +36,6 @@ void SoundSettings::Start() {
 
     int fd;
 
-    /* Open the existing shared memory object and map it
-       into the caller's address space. */
-
     fd = shm_open(SHMPATH, O_RDWR, 0);
     if (fd == -1)
         errExit("shm_open");
@@ -57,6 +54,7 @@ void SoundSettings::Start() {
 }
 
 void SoundSettings::Update() const {
+    DLOG("\n");
 #ifdef DESKTOP
     return;
 #endif

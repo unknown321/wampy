@@ -28,8 +28,12 @@
   * [Issues](#issues)
 * [Walkman One](#walkman-one)
   * [Stock firmware](#stock-firmware)
-* [Sound settings, Low-latency USB DAC (♪♫ button)](#sound-settings-low-latency-usb-dac--button)
-* [Equalizer settings (EQ button)](#equalizer-settings-eq-button)
+* [Low latency USB DAC (llusbdac)](#low-latency-usb-dac-llusbdac)
+  * [Usage](#usage-1)
+  * [Issues](#issues-1)
+* [Volume tables (VolT)](#volume-tables-volt)
+* [Equalizer](#equalizer)
+* [Equalizer per song settings (EQ/Song)](#equalizer-per-song-settings-eqsong)
 * [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
@@ -462,13 +466,29 @@ Sound signature is applied on device without PC connection. `CFW/External_Tuning
 
 On stock firmware there is only one option: UI color change.
 
-## Sound settings, Low-latency USB DAC (♪♫ button)
+## Low latency USB DAC (llusbdac)
 
-See [SOUND_SETTINGS.md](./SOUND_SETTINGS.md)
+### Usage
 
-## Equalizer settings (EQ button)
+Stop currently playing track, press huge button to start, see overlay, navigate to USB DAC screen.
 
-See [EQUALIZER_SETTINGS.md](./EQUALIZER_SETTINGS.md)
+Source code is available on https://github.com/zhangboyang/llusbdac.
+
+### Issues
+
+Random crashes/slowdowns after turning module off. Reboot if needed.
+
+## Volume tables (VolT)
+
+See [VOLUME_TABLES.md](./VOLUME_TABLES.md)
+
+## Equalizer / audio filters (EQ)
+
+See [EQUALIZER-FILTERS.md](./EQUALIZER-FILTERS.md)
+
+## Equalizer per song settings (EQ/Song)
+
+See [EQUALIZER_PER_SONG_SETTINGS.md](./EQUALIZER_PER_SONG_SETTINGS.md)
 
 ## Providing debug information
 

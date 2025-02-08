@@ -1,17 +1,15 @@
-# Sound settings
+# Volume tables
 
 <!-- TOC -->
 
-* [Sound settings](#sound-settings)
+* [Volume tables](#volume-tables)
   * [Table types](#table-types)
     * [Master volume](#master-volume)
     * [Value editor](#value-editor)
     * [Master volume, DSD](#master-volume-dsd)
     * [Tone control](#tone-control)
+    * [User-provided tables](#user-provided-tables)
     * [Status](#status)
-  * [Low latency USB DAC (llusbdac)](#low-latency-usb-dac-llusbdac)
-    * [Usage](#usage)
-    * [Issues](#issues)
   * [Other issues](#other-issues)
   * [See also](#see-also)
 
@@ -184,22 +182,10 @@ Tables shown are tables currently in use.
 Audio card, audio device and CPU frequency change depending on type of currently played file (DSD/HiRes) and on Walkman
 One Plus mode status.
 
-## Low latency USB DAC (llusbdac)
-
-### Usage
-
-Stop currently playing track, press huge button to start, see overlay, navigate to USB DAC screen.
-
-Source code is available on https://github.com/zhangboyang/llusbdac.
-
-### Issues
-
-Random crashes/slowdowns after turning module off. Reboot if needed.
-
 ## Other issues
 
 Switching sound setting tabs may fail if you tap too quickly and very unlucky. Just tap again to switch.
 
 ## See also
 
-[Making of sound settings](./MAKING_OF_SOUND_SETTINGS.md)
+[Making of volume tables](./MAKING_OF_VOLUME_TABLES.md)

@@ -363,6 +363,7 @@ namespace Hagoromo {
         }
 
         soundSettings.Update();
+        soundSettingsFw.Update();
     }
 
     void HagoromoConnector::Connect() {}
@@ -391,6 +392,8 @@ namespace Hagoromo {
             PollStatus();
             if (status.Filename != prevFilename) {
                 updateSoundSettings();
+                sleep(1);
+                soundSettingsFw.Update();
             }
         }
     }
@@ -613,6 +616,8 @@ namespace Hagoromo {
         }
 
         restorePlayState();
+
+        soundSettingsFw.Update();
     }
 
     struct TrackComparer {

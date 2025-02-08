@@ -398,6 +398,7 @@ int main(int, char **) {
     skin.ReadQR();
     skin.GetLogsDirSize();
     connector->soundSettings.Start();
+    connector->soundSettingsFw.Start();
     skin.Load();
 
     if (socket.empty()) {

@@ -124,7 +124,7 @@ namespace pst {
           public:
             static Framework *GetReference();
             void StartForApplication(myfunc, bool);
-            void StartForDaemon(int, char const**, myfunc);
+            void StartForDaemon(int, char const **, myfunc);
             void StartForApplicationTestOnly();
             void Stop();
             void Pump(bool);
@@ -135,16 +135,32 @@ namespace pst {
     } // namespace core
 
     namespace services {
+
+        class SoundServiceFwClient {
+          public:
+        };
         namespace sound {
+            class mobile {
+              public:
+                void CreateFilter(std::basic_string<char, std::char_traits<char>, std::allocator<char>> const &);
+                class FilterChain {
+                  public:
+                    void ShowConfiguration();
+                };
+            };
+
             class VptMode {
+              public:
                 int value;
             };
 
             class ToneType {
+              public:
                 int value;
             };
 
             class UserPresetNo {
+              public:
                 int value;
             };
 
@@ -152,6 +168,7 @@ namespace pst {
                 int value;
             };
             class Eq10Band {
+              public:
                 int value;
             };
 
@@ -162,15 +179,21 @@ namespace pst {
             class Eq10BandPreset {
                 int value;
             };
-            class EqType{
+            class EqType {
               public:
                 int value;
             };
 
             class EffectSettingsDmp {};
-            class ToneCenterFreq{};
-            class DseeHxCustomMode{};
-            class DcPhaseFilterType{};
+            class ToneCenterFreq {
+              public:
+                int value;
+            };
+            class DseeHxCustomMode {};
+            class DcPhaseFilterType {
+              public:
+                int value;
+            };
 
             class EffectCtrlDmp {
               public:
@@ -317,19 +340,20 @@ namespace pst {
                 Configuration();
                 //                ~Configuration();
                 bool GetCrcStatus();
-//                int GetLastStatus(pst::services::IConfigurationService::Status const&);
+                //                int GetLastStatus(pst::services::IConfigurationService::Status const&);
 
-//                int Get(std::vector<pst::services::configuration::SettingValue>&);
-//                int Set(std::vector<pst::services::configuration::SettingValue>&);
+                //                int Get(std::vector<pst::services::configuration::SettingValue>&);
+                //                int Set(std::vector<pst::services::configuration::SettingValue>&);
                 int SetInt(pst::services::configuration::GroupId, pst::services::configuration::KeyId, int);
                 int SetBool(pst::services::configuration::GroupId, pst::services::configuration::KeyId, bool);
-                int SetString(pst::services::configuration::GroupId, pst::services::configuration::KeyId, std::string const&);
-                int SetString(pst::services::configuration::GroupId, pst::services::configuration::KeyId, char const*);
-                int SetBinary(pst::services::configuration::GroupId, pst::services::configuration::KeyId, unsigned int, unsigned char const*);
+                int SetString(pst::services::configuration::GroupId, pst::services::configuration::KeyId, std::string const &);
+                int SetString(pst::services::configuration::GroupId, pst::services::configuration::KeyId, char const *);
+                int
+                SetBinary(pst::services::configuration::GroupId, pst::services::configuration::KeyId, unsigned int, unsigned char const *);
                 int SetFloat(pst::services::configuration::GroupId, pst::services::configuration::KeyId, float);
 
-                int GetSystemNvp(unsigned int const&, std::vector<unsigned char>&);
-                int SetSystemNvp(unsigned int const&, std::vector<unsigned char> const&);
+                int GetSystemNvp(unsigned int const &, std::vector<unsigned char> &);
+                int SetSystemNvp(unsigned int const &, std::vector<unsigned char> const &);
 
                 void Reset();
                 void Flush();
@@ -340,19 +364,34 @@ namespace pst {
                 int GetString(pst::services::configuration::GroupId, pst::services::configuration::KeyId, std::string);
                 int GetString(pst::services::configuration::GroupId, pst::services::configuration::KeyId, unsigned int, char *);
 
-                int LockSecureParam(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&);
-                int GetIntWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&, int&);
-                int SetIntWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&, int const&);
-                int GetBoolWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&, bool&);
-                int SetBoolWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&, bool const&);
-                int GetStringWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&, std::string&);
-                int SetStringWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&, std::string const&);
-                int GetStringWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned int const&, unsigned long long const&, char*);
-                int SetStringWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&, char const*);
-                int GetBinaryWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned int const&, unsigned long long const&, unsigned char*);
-                int SetBinaryWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned int const&, unsigned long long const&, unsigned char const*);
-                int GetFloatWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&, float&);
-                int SetFloatWithPassword(pst::services::configuration::GroupId const&, pst::services::configuration::KeyId const&, unsigned long long const&, float);
+                int
+                LockSecureParam(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &);
+                int
+                GetIntWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &, int &);
+                int
+                SetIntWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &, int const &);
+                int
+                GetBoolWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &, bool &);
+                int
+                SetBoolWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &, bool const &);
+                int
+                GetStringWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &, std::string &);
+                int
+                SetStringWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &, std::string const &);
+                int
+                GetStringWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned int const &, unsigned long long const &, char *);
+                int
+                SetStringWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &, char const *);
+                int
+                GetBinaryWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned int const &, unsigned long long const &, unsigned char *);
+                int
+                SetBinaryWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned int const &, unsigned long long const &, unsigned char const *);
+                int
+                GetFloatWithPassword(pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &, float &);
+                int SetFloatWithPassword(
+                    pst::services::configuration::GroupId const &, pst::services::configuration::KeyId const &, unsigned long long const &,
+                    float
+                );
             };
         } // namespace configuration
           /*
@@ -534,13 +573,13 @@ namespace pst {
             std::map<int, int> m1{};
             std::map<int, int> m2{};
             int v1;
-//            int v2;
-//            int v3;
-//            int v4;
-//            int v5;
-//            int v6;
-//            int v7;
-//            DmpConfigData *configData2;
+            //            int v2;
+            //            int v3;
+            //            int v4;
+            //            int v5;
+            //            int v6;
+            //            int v7;
+            //            DmpConfigData *configData2;
 
             DmpConfig();
             ~DmpConfig();

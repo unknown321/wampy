@@ -859,12 +859,8 @@ int Controller::setEqBands(QList<double> &bandValues) {
 
     QList<QString> mems;
 
-    if (isEq6.toBool()) {
-        if (bandValues.size() != 6) {
-            DLOG("band values is not 6, it's %d\n", bandValues.size());
-            return -1;
-        }
-
+    DLOG("got %d band values\n", bandValues.size());
+    if (bandValues.size() == 6) {
         mems = {
             "Equalizer6bandValue100hzChanged",
             "Equalizer6bandValue400hzChanged",
@@ -874,11 +870,6 @@ int Controller::setEqBands(QList<double> &bandValues) {
             "Equalizer6bandValue16KhzChanged",
         };
     } else {
-        if (bandValues.size() != 10) {
-            DLOG("band values is not 10, it's %d\n", bandValues.size());
-            return -1;
-        }
-
         mems = {
             "Equalizer10bandValue31hzChanged",
             "Equalizer10bandValue62hzChanged",

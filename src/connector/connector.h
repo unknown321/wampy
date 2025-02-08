@@ -4,9 +4,11 @@
 #include "../INotifiable.h"
 #include "../playlist.h"
 #include "../sound_settings/sound_settings.h"
+#include "../sound_settings_fw/sound_settings_fw.h"
 #include "../util/util.h"
 #include "hagoromoStatus.h"
 #include "song.h"
+#include "sound_service_fw.h"
 #include <cmath>
 #include <mutex>
 #include <vector>
@@ -95,6 +97,8 @@ struct Connector {
     std::vector<INotifiable *> clients;
 
     SoundSettings soundSettings{};
+
+    SoundSettingsFww soundSettingsFw{};
 
     Connector() {
         for (int i = 0; i < PLAYLIST_SIZE; i++) {

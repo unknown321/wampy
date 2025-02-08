@@ -26,6 +26,21 @@ enum SettingsTab {
     TabSoundSettings = 7,
     TabCurveEditor = 8,
     TabEQ = 9,
+    TabEQOld = 10,
+    TabDAC = 11,
+};
+
+enum EActiveFilterTab {
+    ActiveFilterTab_Invalid = 0,
+    ActiveFilterTab_DynamicNormalizer = 1,
+    ActiveFilterTab_Eq6Band = 2,
+    ActiveFilterTab_Vpt = 3,
+    ActiveFilterTab_DCPhaseLinearizer = 5,
+    ActiveFilterTab_Vinylizer = 6,
+    ActiveFilterTab_Eq10Band = 7,
+    ActiveFilterTab_EqTone = 8,
+    ActiveFilterTab_Donate = 9,
+    ActiveFilterTab_Misc = 10,
 };
 
 #define PLEASANT_GREEN ImVec4(0.26f, 0.98f, 0.37f, 0.4f)     // #42fa5f
@@ -159,6 +174,23 @@ struct Skin {
     bool eqSongDirExists{};
 
     bool alwaysFalse{};
+
+    std::string activeFilter;
+    EActiveFilterTab eActiveFilterTab = ActiveFilterTab_Invalid;
+
+    std::map<std::string, EActiveFilterTab> filterToTab = {
+        {"dynamicnormalizer", ActiveFilterTab_DynamicNormalizer},
+        {"eq6band", ActiveFilterTab_Eq6Band},
+        {"vpt", ActiveFilterTab_Vpt},
+        {"dcphaselinear", ActiveFilterTab_DCPhaseLinearizer},
+        {"vinylizer", ActiveFilterTab_Vinylizer},
+        {"eq10band", ActiveFilterTab_Eq10Band},
+        {"eqtone", ActiveFilterTab_EqTone},
+        {"misc", ActiveFilterTab_Misc},
+        {"donate", ActiveFilterTab_Donate},
+    };
+
+    struct timespec ssfwUpdateDelay = {0, 500000000};
 
     void WithWinampSkinDir(const std::string &d) { winampSkinDirectories.push_back(d); }
 
@@ -348,6 +380,7 @@ struct Skin {
         activeSettingsTab = activeSkinVariant;
 
         connector->soundSettings.Update();
+        connector->soundSettingsFw.Update();
     }
 
     void LoadUpdatedSkin() {
@@ -487,8 +520,9 @@ struct Skin {
     }
 
     void Header() {
-        ImGui::Indent(15.0f);
-        ImGui::Text("Settings");
+        float offset = 15.0f;
+        ImGui::Indent(offset);
+        //        ImGui::Text("Settings");
 
         char buffer[9];
         time_t rawtime;
@@ -496,19 +530,19 @@ struct Skin {
         const auto timeinfo = localtime(&rawtime);
         strftime(buffer, sizeof(buffer), "%H:%M", timeinfo);
 
-        ImGui::SameLine(380.0f);
+        ImGui::SetCursorPosX(380.0f);
         ImGui::Text("%s", buffer);
 
-        float offset = 15.0f;
-
-        ImGui::SameLine(ImGui::CalcTextSize("Settings").x + ImGui::GetStyle().FramePadding.x * 2.f + offset * 2);
-        if (ImGui::Button("W1")) {
+        //        ImGui::SameLine(ImGui::CalcTextSize("Settings").x + ImGui::GetStyle().FramePadding.x * 2.f + offset * 2);
+        ImGui::SameLine();
+        ImGui::SetCursorPosX(offset);
+        if (ImGui::Button("  W1  ")) {
             loadStatusStr = "";
             displayTab = SettingsTab::TabWalkmanOne;
         }
 
         ImGui::SameLine();
-        if (ImGui::Button("♪♫")) {
+        if (ImGui::Button("VolT")) {
             loadStatusStr = "";
             displayTab = SettingsTab::TabSoundSettings;
             RefreshMasterVolumeTableFiles();
@@ -518,16 +552,34 @@ struct Skin {
         }
 
         ImGui::SameLine();
-        if (ImGui::Button("EQ")) {
+        if (ImGui::Button("  EQ  ")) {
             loadStatusStr = "";
             displayTab = SettingsTab::TabEQ;
-            if (config->features.eqPerSong) {
-                connector->soundSettings.Update();
-                eqSongExists = SoundSettings::Exists(connector->status.Filename);
-                eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
-                prevSong = connector->status.Filename;
-                eqStatus = "Refreshed";
-            }
+            connector->soundSettings.Update();
+            connector->soundSettingsFw.Update();
+            eqSongExists = SoundSettings::Exists(connector->status.Filename);
+            eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
+            prevSong = connector->status.Filename;
+            eqStatus = "Refreshed";
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("EQ/Song")) {
+            loadStatusStr = "";
+            displayTab = SettingsTab::TabEQOld;
+
+            connector->soundSettings.Update();
+            connector->soundSettingsFw.Update();
+            eqSongExists = SoundSettings::Exists(connector->status.Filename);
+            eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
+            prevSong = connector->status.Filename;
+            eqStatus = "Refreshed";
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("DAC")) {
+            loadStatusStr = "";
+            displayTab = SettingsTab::TabDAC;
         }
 
         auto miscSize = ImGui::CalcTextSize("Misc").x + ImGui::GetStyle().FramePadding.x * 2.f;
@@ -1264,6 +1316,12 @@ struct Skin {
         case SettingsTab::TabEQ:
             TabEQ();
             break;
+        case SettingsTab::TabEQOld:
+            TabEQOld();
+            break;
+        case SettingsTab::TabDAC:
+            TabDac();
+            break;
         default:
             break;
         }
@@ -1938,35 +1996,6 @@ struct Skin {
         }
     }
 
-    void TabLlusbdac() {
-        if (ImGui::BeginTabItem("llusbdac")) {
-            if (connector->status.State == PlayStateE::PLAYING) {
-                ImGui::NewLine();
-                ImGui::Text("Stop music first.");
-                ImGui::NewLine();
-                if (ImGui::Button("Stop music", ImVec2(186, 60))) {
-                    connector->Pause();
-                }
-                ImGui::EndTabItem();
-                return;
-            }
-
-            ImGui::Text(llusbdacStatus.c_str());
-            auto label = llusbdacLoaded ? "Disable" : "Enable";
-            if (ImGui::Button(label, ImVec2(756, 350))) {
-                if (llusbdacLoaded) {
-                    llusbdacLoaded = !DisableLLUSBDAC();
-                    llusbdacStatus = !llusbdacLoaded ? "Unloaded" : "Failure";
-                } else {
-                    llusbdacLoaded = EnableLLUSBDAC();
-                    llusbdacStatus = llusbdacLoaded ? "Loaded" : "Failure";
-                }
-            }
-
-            ImGui::EndTabItem();
-        }
-    }
-
     void SoundSettingsTab() {
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
@@ -1975,7 +2004,6 @@ struct Skin {
             TabMasterDSDVolume();
             TabToneControl();
             TabSoundStatus();
-            TabLlusbdac();
             ImGui::EndTabBar();
         }
     }
@@ -2109,6 +2137,7 @@ struct Skin {
             }
 
             connector->soundSettings.Update();
+            connector->soundSettingsFw.Update();
             eqStatus = "Refreshed";
 
             ImGui::GetIO().AddMousePosEvent(0.0f, 0.0f);
@@ -2177,7 +2206,527 @@ struct Skin {
         logCleanupButtonLabel = "Remove wampy logs (" + std::to_string(res) + " MB)";
     }
 
+    void SetActiveEqFilter(const std::string &v) {
+        DLOG("setting active filter tab: %s\n", v.c_str());
+        if (v == "donate") {
+            eActiveFilterTab = ActiveFilterTab_Donate;
+            activeFilter = v;
+            return;
+        }
+
+        if (v == "misc") {
+            eActiveFilterTab = ActiveFilterTab_Misc;
+            activeFilter = v;
+            return;
+        }
+
+        if (connector->soundSettingsFw.filters.find(v) == connector->soundSettingsFw.filters.end()) {
+            activeFilter = connector->soundSettingsFw.filterInvalid;
+            eActiveFilterTab = ActiveFilterTab_Invalid;
+            return;
+        }
+
+        activeFilter = v;
+
+        if (filterToTab.find(activeFilter) == filterToTab.end()) {
+            eActiveFilterTab = ActiveFilterTab_Invalid;
+            activeFilter = connector->soundSettingsFw.filterInvalid;
+            return;
+        }
+
+        eActiveFilterTab = filterToTab[activeFilter];
+    }
+
+    void TabEQ_Donate() const {
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 425 / 2 - qrSide / 2 - 28);
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 580 / 2 - qrSide / 2);
+
+        ImGui::Image((void *)(intptr_t)qrDonateTexture, ImVec2(qrSide, qrSide));
+
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 580 / 2 - ImGui::CalcTextSize("boosty.to/unknown321/donate").x / 2);
+        ImGui::TextColored(GOLD_DONATE, "boosty.to/unknown321/donate");
+    }
+
+    void TabEQ_Misc() {
+        static ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody;
+        if (ImGui::BeginTable("##sswMisc", 2, flags)) {
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 65.0);
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 35.0);
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Direct Source");
+
+            ImGui::TableNextColumn();
+            if (connector->soundSettingsFw.s->directSourceOn) {
+                if (ImGui::Button("Disable", ImVec2(186, 60))) {
+                    connector->soundSettingsFw.SetDirectSource(false);
+                    nanosleep(&ssfwUpdateDelay, nullptr);
+                    connector->soundSettingsFw.Update();
+                }
+            } else {
+                if (ImGui::Button("Enable", ImVec2(186, 60))) {
+                    connector->soundSettingsFw.SetDirectSource(true);
+                    nanosleep(&ssfwUpdateDelay, nullptr);
+                    connector->soundSettingsFw.Update();
+                }
+            }
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("ClearAudio+");
+
+            ImGui::TableNextColumn();
+            if (isWalkmanOne) {
+                ImGui::BeginDisabled();
+            }
+            if (connector->soundSettingsFw.s->clearAudioPlusOn) {
+                ImGui::PushID(30 + 1);
+                if (ImGui::Button("Disable", ImVec2(186, 60))) {
+                    connector->soundSettingsFw.SetClearAudioPlus(false);
+                    nanosleep(&ssfwUpdateDelay, nullptr);
+                    connector->soundSettingsFw.Update();
+                }
+                ImGui::PopID();
+            } else {
+                ImGui::PushID(30 + 1);
+                if (ImGui::Button("Enable", ImVec2(186, 60))) {
+                    connector->soundSettingsFw.SetClearAudioPlus(true);
+                    nanosleep(&ssfwUpdateDelay, nullptr);
+                    connector->soundSettingsFw.Update();
+                }
+                ImGui::PopID();
+            }
+
+            if (isWalkmanOne) {
+                ImGui::EndDisabled();
+            }
+
+            ImGui::EndTable();
+        }
+    }
+
+    void TabEq_EnableDisableFilter() {
+        if (connector->soundSettingsFw.filters.at(activeFilter)) {
+            if (ImGui::Button("Disable", ImVec2(186, 60))) {
+                connector->soundSettingsFw.SetFilter(activeFilter, false);
+                nanosleep(&ssfwUpdateDelay, nullptr);
+                connector->soundSettingsFw.Update();
+            }
+        } else {
+            if (ImGui::Button("Enable", ImVec2(186, 60))) {
+                connector->soundSettingsFw.SetFilter(activeFilter, true);
+                nanosleep(&ssfwUpdateDelay, nullptr);
+                connector->soundSettingsFw.Update();
+            }
+        }
+    }
+
+    void TabEQ_Vinylizer() {
+        TabEq_EnableDisableFilter();
+
+        ImGui::SeparatorText("Vinylizer type:");
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        ImGui::PushItemWidth(-FLT_MIN);
+        if (ImGui::BeginCombo(
+                "##vinylizerValues", vinylTypeToString.at(connector->soundSettingsFw.vinylizerValue).c_str(), ImGuiComboFlags_HeightRegular
+            )) {
+            for (const auto &entry : vinylTypeToString) {
+                if (entry.second == "?") {
+                    continue;
+                }
+                if (ImGui::Selectable(entry.second.c_str(), false)) {
+                    connector->soundSettingsFw.SetVinylizerType(entry.first);
+                    nanosleep(&ssfwUpdateDelay, nullptr);
+                    connector->soundSettingsFw.Update();
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopStyleVar(2);
+    }
+
+    void TabEQ_DCPhase() {
+        TabEq_EnableDisableFilter();
+        ImGui::SeparatorText("Type:");
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        ImGui::PushItemWidth(-FLT_MIN);
+        if (ImGui::BeginCombo(
+                "##DcPhaseValues", dcFilterToString.at(connector->soundSettingsFw.dcValue).c_str(), ImGuiComboFlags_HeightRegular
+            )) {
+            for (const auto &entry : dcFilterToString) {
+                if (entry.second == "?") {
+                    continue;
+                }
+                if (ImGui::Selectable(entry.second.c_str(), false)) {
+                    connector->soundSettingsFw.SetDcFilterType(entry.first);
+                    nanosleep(&ssfwUpdateDelay, nullptr);
+                    connector->soundSettingsFw.Update();
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopStyleVar(2);
+    }
+
+    void TabEQ_Vpt() {
+        TabEq_EnableDisableFilter();
+        ImGui::SeparatorText("VPT type:");
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        ImGui::PushItemWidth(-FLT_MIN);
+        if (ImGui::BeginCombo(
+                "##vptValues", vptA50SmallToString.at(connector->soundSettingsFw.vptValue).c_str(), ImGuiComboFlags_HeightRegular
+            )) {
+            for (const auto &entry : vptA50SmallToString) {
+                if (entry.second == "?") {
+                    continue;
+                }
+                if (ImGui::Selectable(entry.second.c_str(), false)) {
+                    connector->soundSettingsFw.SetVptMode(entry.first);
+                    nanosleep(&ssfwUpdateDelay, nullptr);
+                    connector->soundSettingsFw.Update();
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopStyleVar(2);
+    }
+
+    void TabEQ_DynamicNormalizer() {
+        TabEq_EnableDisableFilter();
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 580 / 2 - ImGui::CalcTextSize("No options").x / 2);
+        ImGui::SetCursorPosY(
+            ImGui::GetCursorPosY() + 425 / 2 - ImGui::CalcTextSize("No options").y / 2 - ImGui::GetTextLineHeightWithSpacing() - 60
+        );
+        ImGui::Text("No options");
+    }
+
+    void TabEQ_Eq6Band() {
+        TabEq_EnableDisableFilter();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+        ImGui::SeparatorText("Preset:");
+        ImGui::PushItemWidth(-FLT_MIN);
+        if (ImGui::BeginCombo(
+                "##eq6preset", eq6PresetToString.at(connector->soundSettingsFw.eq6Value).c_str(), ImGuiComboFlags_HeightRegular
+            )) {
+            for (const auto &entry : eq6PresetToString) {
+                if (ImGui::Selectable(entry.second.c_str(), false)) {
+                    connector->soundSettingsFw.SetEq6Preset(entry.first);
+                    nanosleep(&ssfwUpdateDelay, nullptr);
+                    connector->soundSettingsFw.Update();
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopStyleVar(2);
+
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(18, 14));
+        static ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody;
+        if (ImGui::BeginTable("##ssweq6", 6, flags)) {
+            ImGui::TableNextRow(0, ImGui::TableGetHeaderRowHeight() + 4);
+            for (int i = 0; i < 6; i++) {
+                ImGui::TableNextColumn();
+                ImGui::Text("%d", connector->soundSettingsFw.eq6bands.at(i).second);
+            }
+            ImGui::TableNextRow();
+            for (int i = 0; i < 6; i++) {
+                ImGui::TableNextColumn();
+                ImGui::PushID(20 + i);
+                if (ImGui::VSliderInt("##int", ImVec2(40, 196), &connector->soundSettingsFw.eq6bands.at(i).second, -10, 10, "")) {
+                    connector->soundSettingsFw.SetEq6Band(i, connector->soundSettingsFw.eq6bands.at(i).second);
+                }
+                ImGui::PopID();
+            }
+            ImGui::TableNextRow();
+            for (int i = 0; i < 6; i++) {
+                ImGui::TableNextColumn();
+                ImGui::Text(connector->soundSettingsFw.eq6bands.at(i).first.c_str());
+            }
+
+            ImGui::EndTable();
+        }
+
+        ImGui::PopStyleVar(2);
+    }
+
+    void TabEQ_Eq10Band() {
+        TabEq_EnableDisableFilter();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(18, 14));
+
+        static ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody;
+        if (ImGui::BeginTable("##ssweq10", 10, flags)) {
+            ImGui::TableNextRow(0, ImGui::TableGetHeaderRowHeight() + 4);
+            for (int i = 0; i < 10; i++) {
+                ImGui::TableNextColumn();
+                ImGui::Text("%.1f", float(connector->soundSettingsFw.eq10bands.at(i).second) / 2);
+            }
+            ImGui::TableNextRow();
+            for (int i = 0; i < 10; i++) {
+                ImGui::TableNextColumn();
+                ImGui::PushID(i);
+                if (ImGui::VSliderInt("##int", ImVec2(40, 278), &connector->soundSettingsFw.eq10bands.at(i).second, -20, 20, "")) {
+                    connector->soundSettingsFw.SetEq10Band(i, connector->soundSettingsFw.eq10bands.at(i).second);
+                }
+                ImGui::PopID();
+            }
+            ImGui::TableNextRow();
+            for (int i = 0; i < 10; i++) {
+                ImGui::TableNextColumn();
+                ImGui::Text(connector->soundSettingsFw.eq10bands.at(i).first.c_str());
+            }
+
+            ImGui::EndTable();
+        }
+
+        ImGui::PopStyleVar(2);
+    }
+
+    void TabEQ_EqTone() {
+        TabEq_EnableDisableFilter();
+
+        ImGui::SeparatorText("Tone:");
+
+        static ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody;
+        if (ImGui::BeginTable("##sswEqtone", 3, flags)) {
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 20.0);
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 70.0);
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 10.0);
+            for (int i = 0; i < 3; i++) {
+                ImGui::TableNextRow(0, 40.0f);
+                ImGui::TableNextColumn();
+                ImGui::Text(connector->soundSettingsFw.eqtone.at(i).first.c_str());
+
+                ImGui::TableNextColumn();
+                ImGui::PushID(i);
+                ImGui::PushItemWidth(-FLT_MIN);
+                ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40);
+                if (ImGui::SliderInt("##int", &connector->soundSettingsFw.eqtone.at(i).second, -20, 20, "")) {
+                    connector->soundSettingsFw.SetEqTone(i, connector->soundSettingsFw.eqtone.at(i).second);
+                }
+                ImGui::PopStyleVar();
+                ImGui::PopItemWidth();
+                ImGui::PopID();
+                ImGui::TableNextColumn();
+                ImGui::Text("%.1f", float(connector->soundSettingsFw.eqtone.at(i).second) / 2);
+            }
+
+            ImGui::EndTable();
+        }
+
+        ImGui::SeparatorText("Tone frequency type:");
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+        if (ImGui::BeginTable("##sswEqtone2", 3, flags)) {
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 20.0);
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 70.0);
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 10.0);
+
+            for (int i = 0; i < 3; i++) {
+                ImGui::TableNextRow(0, 40.0f);
+                ImGui::TableNextColumn();
+                ImGui::Text(connector->soundSettingsFw.eqtoneFreq.at(i).first.c_str());
+
+                ImGui::TableNextColumn();
+                ImGui::PushID(10 + i);
+                ImGui::PushItemWidth(-FLT_MIN);
+                ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40);
+                if (ImGui::SliderInt("##int", &connector->soundSettingsFw.eqtoneFreq.at(i).second, 0, 5, "")) {
+                    connector->soundSettingsFw.SetEqToneFreq(i, connector->soundSettingsFw.eqtoneFreq.at(i).second);
+                }
+                ImGui::PopStyleVar();
+                ImGui::PopItemWidth();
+                ImGui::PopID();
+                ImGui::TableNextColumn();
+                ImGui::Text("%d", connector->soundSettingsFw.eqtoneFreq.at(i).second);
+            }
+
+            ImGui::EndTable();
+        }
+    }
+
+    void TabDac() {
+        if (connector->status.State == PlayStateE::PLAYING) {
+            ImGui::NewLine();
+            ImGui::Text("Stop music first.");
+            ImGui::NewLine();
+            if (ImGui::Button("Stop music", ImVec2(186, 60))) {
+                connector->Pause();
+            }
+            ImGui::EndTabItem();
+            return;
+        }
+
+        ImGui::Text(llusbdacStatus.c_str());
+        auto label = llusbdacLoaded ? "Disable" : "Enable";
+        if (ImGui::Button(label, ImVec2(756, 350))) {
+            if (llusbdacLoaded) {
+                llusbdacLoaded = !DisableLLUSBDAC();
+                llusbdacStatus = !llusbdacLoaded ? "Unloaded" : "Failure";
+            } else {
+                llusbdacLoaded = EnableLLUSBDAC();
+                llusbdacStatus = llusbdacLoaded ? "Loaded" : "Failure";
+            }
+        }
+    }
+
     void TabEQ() {
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+        if (prevSong != connector->status.Filename) {
+            connector->soundSettings.Update();
+            connector->soundSettingsFw.Update();
+            eqSongExists = SoundSettings::Exists(connector->status.Filename);
+            eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
+            prevSong = connector->status.Filename;
+            eqStatus = "Refreshed";
+        }
+
+        {
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
+            ImGui::BeginChild("ChildL", ImVec2(580, 425), ImGuiChildFlags_Border, window_flags);
+
+            switch (eActiveFilterTab) {
+
+            case ActiveFilterTab_Invalid:
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 580 / 2 - ImGui::CalcTextSize("Select filter").x / 2);
+                ImGui::SetCursorPosY(
+                    ImGui::GetCursorPosY() + 425 / 2 - ImGui::CalcTextSize("Select filter").y / 2 - ImGui::GetTextLineHeightWithSpacing()
+                );
+                ImGui::Text("Select filter");
+                break;
+            case ActiveFilterTab_DynamicNormalizer:
+                TabEQ_DynamicNormalizer();
+                break;
+            case ActiveFilterTab_Eq6Band:
+                TabEQ_Eq6Band();
+                break;
+            case ActiveFilterTab_Vpt:
+                TabEQ_Vpt();
+                break;
+            case ActiveFilterTab_DCPhaseLinearizer:
+                TabEQ_DCPhase();
+                break;
+            case ActiveFilterTab_Vinylizer:
+                TabEQ_Vinylizer();
+                break;
+            case ActiveFilterTab_Eq10Band:
+                TabEQ_Eq10Band();
+                break;
+            case ActiveFilterTab_EqTone:
+                TabEQ_EqTone();
+                break;
+            case ActiveFilterTab_Donate:
+                TabEQ_Donate();
+                break;
+            case ActiveFilterTab_Misc:
+                TabEQ_Misc();
+                break;
+            }
+
+            ImGui::EndChild();
+        }
+
+        ImGui::SameLine();
+
+        {
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
+            ImGui::BeginChild("ChildR", ImVec2(180, 425), ImGuiChildFlags_Border, window_flags);
+
+            static ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody;
+            if (ImGui::BeginTable("##sswFilters", 2, flags)) {
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 10.0f);
+                ImGui::TableSetupColumn("Filter", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 120.0f);
+                ImGui::TableHeadersRow();
+                for (auto v : connector->soundSettingsFw.s->FilterStatus) {
+                    if (v.name[0] == '\0') {
+                        continue;
+                    }
+                    if (strcmp(v.name, "i2f") == 0) {
+                        continue;
+                    }
+                    if (strcmp(v.name, "f2i") == 0) {
+                        continue;
+                    }
+                    if (strcmp(v.name, "heq") == 0) {
+                        continue;
+                    }
+                    if (strcmp(v.name, "alc") == 0) {
+                        continue;
+                    }
+                    if (strcmp(v.name, "attn") == 0) {
+                        continue;
+                    }
+                    if (strcmp(v.name, "clearphase") == 0) {
+                        continue;
+                    }
+                    if (strlen(v.name) > 4) {
+                        if (strncmp(v.name, "dsee", 4) == 0) {
+                            continue;
+                        }
+                    }
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    if (v.is_proc) {
+                        ImGui::Text("+");
+                    }
+                    ImGui::TableNextColumn();
+
+                    if (strcmp(v.name, activeFilter.c_str()) == 0) {
+                        ImGui::PushStyleColor(ImGuiCol_Button, PLEASANT_GREEN);
+                        if (ImGui::Button(v.name, ImVec2(130, 38))) {
+                            SetActiveEqFilter(v.name);
+                        }
+                        ImGui::PopStyleColor();
+                    } else {
+                        if (ImGui::Button(v.name, ImVec2(130, 38))) {
+                            SetActiveEqFilter(v.name);
+                        }
+                    }
+                }
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::TableNextColumn();
+                if (strcmp("misc", activeFilter.c_str()) == 0) {
+                    ImGui::PushStyleColor(ImGuiCol_Button, PLEASANT_GREEN);
+                    if (ImGui::Button("Misc", ImVec2(130, 38))) {
+                        SetActiveEqFilter("misc");
+                    }
+                    ImGui::PopStyleColor();
+                } else {
+                    if (ImGui::Button("Misc", ImVec2(130, 38))) {
+                        SetActiveEqFilter("misc");
+                    }
+                }
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::TableNextColumn();
+                ImGui::PushStyleColor(ImGuiCol_Button, GOLD_DONATE);
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1.0f));
+                if (ImGui::Button("Donate", ImVec2(130, 38))) {
+                    SetActiveEqFilter("donate");
+                }
+                ImGui::PopStyleColor(2);
+
+                ImGui::EndTable();
+            }
+
+            ImGui::EndChild();
+        }
+    }
+
+    void TabEQOld() {
         ImGui::NewLine();
 
         if (!config->features.eqPerSong) {
@@ -2410,7 +2959,7 @@ struct Skin {
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::Text("DN (?)");
+            ImGui::Text("Dynamic Normalizer");
             ImGui::TableNextColumn();
             ImGui::Text("%s", connector->soundSettings.s->DNOn == 1 ? "On" : "Off");
 
@@ -2452,6 +3001,7 @@ struct Skin {
 
         if (prevSong != connector->status.Filename) {
             connector->soundSettings.Update();
+            connector->soundSettingsFw.Update();
             eqSongExists = SoundSettings::Exists(connector->status.Filename);
             eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
             prevSong = connector->status.Filename;
