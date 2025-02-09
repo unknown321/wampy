@@ -1569,8 +1569,6 @@ namespace Winamp {
         gr.clear();
         static const ImWchar rr[] = {0x0020, 0x007F, 0};
         range.AddRanges(rr);
-        range.AddChar(ImWchar(0x266a)); // ♪
-        range.AddChar(ImWchar(0x266b)); // ♫
         range.AddChar(ImWchar(0x24c8)); // Ⓢ
         range.AddChar(ImWchar(0x2713)); // ✓
 

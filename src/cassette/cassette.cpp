@@ -71,6 +71,7 @@ namespace Cassette {
 
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
         range.AddChar(ImWchar(0x24c8)); // Ⓢ
+        range.AddChar(ImWchar(0x2713)); // ✓
 
         std::vector<uint32_t> allchars;
         getCharRange(&allchars);

@@ -348,9 +348,8 @@ namespace DigitalClock {
         // ascii is enough for settings
 
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
-        range.AddChar(ImWchar(0x266a)); // ♪
-        range.AddChar(ImWchar(0x266b)); // ♫
         range.AddChar(ImWchar(0x24c8)); // Ⓢ
+        range.AddChar(ImWchar(0x2713)); // ✓
 
         range.BuildRanges(&gr);
 
