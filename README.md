@@ -3,7 +3,7 @@ Wampy
 
 Interface addon for NW-A50 / ZX300 / WM1A / WM1Z series WALKMAN® players.
 
-Also works on Walkman One [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [WM1A/Z][5].
+Also works on Walkman One for [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [WM1A/Z][5].
 
 [1]: https://www.mrwalkman.com/p/sony-nw-a50series-custom-firmware.html
 
@@ -41,7 +41,7 @@ See [USAGE.md](./USAGE.md).
 | └──[A50 mod][6] | ✅     |             | confirmed by community                                   |
 | NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
 | NW-ZX300        | ?     | ✅           | looking for tester [#12][7]                              |
-| NW-WM1A         | ?     | ?           | looking for tester [#13][8]                              |
+| NW-WM1A         | ✅     | ✅           | there is a black bar on top of the screen                |
 | NW-WM1Z         | ✅     | ✅           | there is a black bar on top of the screen                |
 | DMP-Z1          | ?     |             | looking for the bravest tester of them all               |
 
