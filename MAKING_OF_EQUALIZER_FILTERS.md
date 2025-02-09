@@ -1,20 +1,20 @@
 # Making of equalizer and audio filters
 
-Walkman One proved that most sound filters are software-locked and do not depend on firmware; however, you lose some
-features when switching from stock to W1 (such as VPT). Personally, I like Tone Control (WM1A/Z), but 6 band EQ sound
+Walkman One proved that most sound filters are software-locked and do not depend on hardware; however, you lose some
+features when switching from stock to W1 (such as VPT). Personally, I like Tone Control (WM1A/Z), but 6 band EQ sounds
 better than 10 band one. What if there is a way to support everything on a single firmware?
 
-Sound makes its way through audio filters, which live in `libSoundServiceFw.so` library. Comparing NW-A50 stock
-and WM1Z versions showed some differences in DSEE; everything else was more or less the same. If libraries are the
-same, the difference must be hardcoded in some filter list; where is it?
+Sound makes its way through audio filter chain, which lives in `libSoundServiceFw.so` library. Comparing NW-A50 stock
+and WM1Z versions showed some differences in DSEE filter; everything else was more or less the same. If libraries are
+the same, the difference between firmwares must be hardcoded in some list of filters; where is it?
 
 Filter list is hardcoded in the same library in one of the initialization functions and looks like this:
 
 <img src="images/filter-list-decompiled.png">
 
 This is a big (in decompiled representation) function that reads a lot of strings and shoves them into predefined memory
-regions; filter list lives in `std::vector<std::string>` and is later fed to `FilterChain::Create` function. How
-to modify that list? Here are the options:
+regions; filter list is represented by `std::vector<std::string>` and is later used by `FilterChain::Create` function.
+How to modify that list? Here are the options:
 
 - replace strings by patching the file
 - patch initialization function in memory via ptrace
@@ -24,7 +24,8 @@ to modify that list? Here are the options:
 ### File patch
 
 In general, file patching sucks. It changes one static list to another static list; it also won't work, because list is
-smaller on WM1Z: some of the entries are empty, and you can't replace "empty" in library file.
+smaller on WM1Z: some of the entries are empty, and you can't replace "empty" in library file. String pointers are taken
+from stack, some strings are long gone from stack and impossible to recover.
 
 ### Memory patch
 
@@ -57,11 +58,11 @@ Last option is to override `FilterChain::Create` function and modify its argumen
 use `LD_PRELOAD`. List is successfully modified, filters are there, but they don't work.
 Logs (`setprop persist.sys.sony.icx.showselog 1`) tell us that `is_proc_` variable for failed filter is set to `false`
 by `UpdateProcCond` function every time it runs. Reason is unknown; code differs from filter to filter; most likely that
-happens because of some missing initialization step despite `Init()` and `InitEffect()` functions running successfully.
-Here comes the dirty hack: that value is forcefully set to user-provided value right after `UpdateProcCond` call. This
-enables the filter and it works just fine.
+happens because of some missing initialization step despite `Init()` and `InitEffect()` filter functions running
+successfully. Here comes the dirty hack: that value is forcefully set to user-provided value right
+after `UpdateProcCond` call. This enables the filter and it works just fine.
 
-Now we can use shared memory to pass values from `SoundServiceFw` library and control filters
+Now we can use shared memory to pass config values from `SoundServiceFw` library and control filters
 directly which is much faster than using standard player (like it was in "equalizer per song" option). That
 does not update player interface, but there is no interface for 6 band and VPT on WM1Z anyway. Setting filter parameters
 also change player settings in nvram, which are then picked up by Wampy's "equalizer per song" (very nice).
