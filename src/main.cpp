@@ -47,7 +47,6 @@ std::string dumpDir = "/contents/wampy/log";
 static void glfw_error_callback(int error, const char *description) { DLOG("Glfw Error %d: %s\n", error, description); }
 
 void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
-
     //    printf("cliprect %f %f %f %f\n", cmd->ClipRect.x, cmd->ClipRect.y, cmd->ClipRect.z, cmd->ClipRect.w);
     auto newCmd = (ImDrawCmd *)cmd;
 
@@ -127,16 +126,20 @@ GLFWwindow *CreateWindow() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-#ifndef DESKTOP
+#ifdef DESKTOP
+    GLFWmonitor *monitor = nullptr;
+#else
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
     glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-#else
-    GLFWmonitor *monitor = nullptr;
 #endif
 
     DLOG("monitor is %p\n", monitor);
+    if (monitor != nullptr) {
+        auto vmode = glfwGetVideoMode(monitor);
+        DLOG("mode: %dx%d\n", vmode->width, vmode->height);
+    }
 
     GLFWwindow *window = glfwCreateWindow(GLFW_WIDTH, GLFW_HEIGHT, title, monitor, nullptr);
     if (window == nullptr) {

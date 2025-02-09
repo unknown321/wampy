@@ -99,11 +99,18 @@ index 4f097aa8..820df7a0 100644
      GLFW_PLATFORM_LIBRARY_WINDOW_STATE
      GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 diff --git a/src/null_monitor.c b/src/null_monitor.c
-index a9b528f0..5c3e2883 100644
+index a9b528f0..681df56f 100644
 --- a/src/null_monitor.c
 +++ b/src/null_monitor.c
-@@ -33,11 +33,10 @@
+@@ -31,13 +31,34 @@
+ #include <string.h>
+ #include <math.h>
  
++#include "fcntl.h"
++#include "stdio.h"
++#include "sys/ioctl.h"
++#include "linux/fb.h"
++
  // The the sole (fake) video mode of our (sole) fake monitor
  //
 -static GLFWvidmode getVideoMode(void)
@@ -112,12 +119,29 @@ index a9b528f0..5c3e2883 100644
      GLFWvidmode mode;
 -    mode.width = 1920;
 -    mode.height = 1080;
-+    mode.width = 800;
-+    mode.height = 800;
++
++    int fh = open("/dev/graphics/fb0", O_RDONLY);
++
++    if (fh < 0)
++    {
++        printf("Unable to open /dev/fb0\n");
++        exit(EXIT_FAILURE);
++    }
++
++    struct fb_var_screeninfo var;
++
++    if (ioctl(fh, FBIOGET_VSCREENINFO, &var) != 0)
++    {
++        printf("ioctl failed for FBIOGET_VSCREENINFO\n");
++        exit(EXIT_FAILURE);
++    }
++
++    mode.width = var.yres;
++    mode.height = var.yres;
      mode.redBits = 8;
      mode.greenBits = 8;
      mode.blueBits = 8;
-@@ -49,11 +48,11 @@ static GLFWvidmode getVideoMode(void)
+@@ -49,11 +70,11 @@ static GLFWvidmode getVideoMode(void)
  //////                       GLFW internal API                      //////
  //////////////////////////////////////////////////////////////////////////
  
@@ -133,7 +157,7 @@ index a9b528f0..5c3e2883 100644
                                                (int) (mode.width * 25.4f / dpi),
                                                (int) (mode.height * 25.4f / dpi));
      _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_FIRST);
-@@ -63,98 +62,87 @@ void _glfwPollMonitorsNull(void)
+@@ -63,98 +84,87 @@ void _glfwPollMonitorsNull(void)
  //////                       GLFW platform API                      //////
  //////////////////////////////////////////////////////////////////////////
  
@@ -256,7 +280,7 @@ index a9b528f0..5c3e2883 100644
  }
  
 diff --git a/src/null_window.c b/src/null_window.c
-index f0e1dcc9..d5432305 100644
+index f0e1dcc9..bdb6acae 100644
 --- a/src/null_window.c
 +++ b/src/null_window.c
 @@ -30,6 +30,16 @@
@@ -276,7 +300,7 @@ index f0e1dcc9..d5432305 100644
  static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
  {
      if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
-@@ -485,8 +495,264 @@ GLFWbool _glfwWindowVisibleNull(_GLFWwindow* window)
+@@ -485,8 +495,265 @@ GLFWbool _glfwWindowVisibleNull(_GLFWwindow* window)
      return window->null.visible;
  }
  
@@ -321,6 +345,7 @@ index f0e1dcc9..d5432305 100644
 +const int cosr = 0;
 +const int originX = 0;
 +const int originY = 0;
++const int screenWidth = 480;
 +
 +void handleTSEvent(int key, int value, int type) {
 +//    if ((key != ABS_MT_POSITION_X) && (key != ABS_MT_POSITION_Y) && (key != ABS_PRESSURE)) {
@@ -354,7 +379,7 @@ index f0e1dcc9..d5432305 100644
 +//        _glfw.touchscreen.y = (int)(newY + (480*2));
 +
 +        _glfw.touchscreen.x = ((_glfw.touchscreen.bufX - originX) * cosr - (_glfw.touchscreen.bufY - originY)*sinr) + originX;
-+        _glfw.touchscreen.y = ((_glfw.touchscreen.bufX - originX) * sinr + (-_glfw.touchscreen.bufY - originY) * cosr) + originY + 480*2;
++        _glfw.touchscreen.y = ((_glfw.touchscreen.bufX - originX) * sinr + (-_glfw.touchscreen.bufY - originY) * cosr) + originY + screenWidth*2;
 +
 +
 +//        _glfw.touchscreen.x = _glfw.touchscreen.bufX;
