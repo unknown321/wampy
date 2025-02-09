@@ -2,3 +2,4 @@
 *.UPG
 sysroot/
 *.tar.gz
+icu

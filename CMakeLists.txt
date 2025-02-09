@@ -39,6 +39,7 @@ include_directories(
         libs/alsa-lib/src/include
         libs/mINI/src
         libs/sqlite/build-${arch}/install/include
+        libs/icu/icu4c/source/build-${arch}/install/include
         libs
         server/armv5-unknown-linux-gnueabihf
         ${PROTOBUF_INCLUDE}
@@ -156,12 +157,17 @@ set(ENV{PKG_CONFIG_LIBDIR} "${CMAKE_SOURCE_DIR}/libs/ImageMagick/build-${arch}/l
 find_package(ImageMagick COMPONENTS MagickCore MagickWand Magick++ REQUIRED)
 include_directories(${ImageMagick_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${ImageMagick_LIBRARIES})
+
 find_library(PROTOBUF protobuf REQUIRED PATHS libs/protobuf/build-${arch}/lib/ REQUIRED)
 target_link_libraries(${PROJECT_NAME} "${PROTOBUF}")
 
 set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/libs/sqlite/build-${arch}/install")
 find_package(SQLite3 REQUIRED)
 target_link_libraries(${PROJECT_NAME} "${SQLite3_LIBRARIES}")
+
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/libs/icu/icu4c/source/build-${arch}/install")
+find_package(ICU REQUIRED COMPONENTS data i18n uc)
+target_link_libraries(${PROJECT_NAME} "${ICU_DATA_LIBRARIES}" "${ICU_LIBRARIES}")
 
 add_custom_target(version
         ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/src/Version.h.in
@@ -170,7 +176,6 @@ add_custom_target(version
         )
 
 add_dependencies(${PROJECT_NAME} version)
-
 
 if (DESKTOP EQUAL 1)
     find_library(GLES GLESv2 PATHS /usr/lib)
@@ -201,3 +206,10 @@ install(FILES ${JPEG_NAME} DESTINATION lib)
 
 get_filename_component(PROTOBUF_NAME ${PROTOBUF} REALPATH)
 install(FILES ${PROTOBUF_NAME} DESTINATION lib)
+
+foreach (Library ${ICU_LIBRARIES})
+    get_filename_component(Libname ${Library} REALPATH)
+    get_filename_component(Libdir ${Libname} DIRECTORY)
+    get_filename_component(LibnameWLE ${Libname} NAME_WLE)
+    install(FILES ${Libname} DESTINATION lib RENAME ${LibnameWLE})
+endforeach ()

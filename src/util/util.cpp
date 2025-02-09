@@ -5,6 +5,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_internal.h"
 #include "sqlite3.h"
+#include "unicode/unistr.h"
 #include <algorithm>
 #include <fstream>
 #include <sys/stat.h>
@@ -864,12 +865,9 @@ const char *query = "WITH RECURSIVE split_chars AS (\n"
                     "    FROM split_chars\n"
                     "    WHERE LENGTH(rest) > 0\n"
                     ")\n"
-                    "-- Select distinct characters\n"
                     "SELECT DISTINCT char\n"
                     "FROM(\n"
                     "SELECT char FROM split_chars\n"
-                    "UNION\n"
-                    "SELECT UPPER(char) AS char FROM split_chars\n"
                     ")\n"
                     "WHERE char != ''\n"
                     "ORDER BY char";
@@ -908,8 +906,25 @@ void getCharRange(std::vector<uint32_t> *points) {
     DLOG("%d characters found\n", utfLen(res));
 
     size_t index = 0;
+    size_t pointsize = 0;
+    size_t index_before = 0;
+    std::string resUpper;
     while (index < res.size()) {
-        points->push_back(utfToPoint(res, index));
+        index_before = index;
+        pointsize = 0;
+
+        auto v = utfToPoint(res, index);
+        points->push_back(v);
+        pointsize = index - index_before;
+
+        resUpper.clear();
+        auto point = res.substr(index_before, pointsize);
+        icu::UnicodeString(point.c_str()).toUpper().toUTF8String(resUpper);
+        if (point != resUpper) {
+            //            printf("%s -> %s\n", point.c_str(), resUpper.c_str());
+            size_t i = 0;
+            points->push_back(utfToPoint(resUpper, i));
+        }
     }
 }
 

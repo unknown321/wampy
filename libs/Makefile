@@ -96,11 +96,32 @@ sqlite/build-x86:
 		make && make install && patchelf --set-soname libsqlite3.so `pwd`/$@/install/lib/libsqlite3.so \
 	"
 
+icu_get:
+	test -d icu || git clone --depth 1 --branch maint/maint-61 --single-branch https://github.com/unicode-org/icu
+
+icu/icu4c/source/build-x86:
+	mkdir -p $@
+	$(DOCKER) bash -c "\
+		cd $@ && \
+		../configure --prefix=`pwd`/$@/install --enable-rpath && \
+		make && make install"
+
+icu/icu4c/source/build-arm:
+	mkdir -p $@
+	$(DOCKER) bash -c "\
+		cd $@ && \
+		../configure $(ARM_CC) $(ARM_CXX) --host arm-unknown-linux --with-cross-build=`pwd`/$@/../build-x86 --prefix=`pwd`/$@/install  && \
+		 make && make install"
+
+
+icu: icu_get icu/icu4c/source/build-x86 icu/icu4c/source/build-arm
+
 libjpeg: libjpeg-turbo/build-arm libjpeg-turbo/build-x86
 
 magick: ImageMagick/build-x86 ImageMagick/build-arm
 
 sqlite: sqlite/build-arm sqlite/build-x86
+
 
 protobuf:
 	$(DOCKER) bash -c "\
@@ -114,7 +135,7 @@ sysroot:
 	cd ../ && make -C nw-installer prepare
 	$(MAKE) -f Makefile.sysroot
 
-all: patch libjpeg magick protobuf llusbdac sqlite sysroot
+all: patch libjpeg magick protobuf llusbdac sqlite sysroot icu
 
 clean:
 	rm -rf libjpeg-turbo/build-*
@@ -129,4 +150,4 @@ clean:
 
 .DEFAULT_GOAL := all
 
-.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch llusbdac sqlite sysroot
+.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch llusbdac sqlite sysroot icu

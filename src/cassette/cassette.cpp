@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <thread>
+#include <unicode/unistr.h>
 
 namespace Cassette {
 
@@ -69,8 +70,6 @@ namespace Cassette {
         gr.clear();
 
         range.AddRanges(io.Fonts->GetGlyphRangesDefault());
-        range.AddChar(ImWchar(0x266a)); // ♪
-        range.AddChar(ImWchar(0x266b)); // ♫
         range.AddChar(ImWchar(0x24c8)); // Ⓢ
 
         std::vector<uint32_t> allchars;
@@ -593,12 +592,12 @@ namespace Cassette {
         std::string tempAlbum = song.Album.empty() ? connector->status.Album : song.Album;
         std::string tempTitle = song.Title;
         std::string tempArtist = song.Artist;
-        std::string upperAlbum = song.Album.empty() ? connector->status.Album : song.Album;
-        std::string upperTitle = song.Title;
-        std::string upperArtist = song.Artist;
-        toUpper(upperAlbum);
-        toUpper(upperTitle);
-        toUpper(upperArtist);
+        std::string upperAlbum;
+        std::string upperTitle;
+        std::string upperArtist;
+        icu::UnicodeString((song.Album.empty() ? connector->status.Album : song.Album).c_str()).toUpper().toUTF8String(upperAlbum);
+        icu::UnicodeString(song.Title.c_str()).toUpper().toUTF8String(upperTitle);
+        icu::UnicodeString(song.Artist.c_str()).toUpper().toUTF8String(upperArtist);
         char croppedArtist[FIELD_SIZE];
         char croppedTitle[FIELD_SIZE];
         char croppedAlbum[FIELD_SIZE];
