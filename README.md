@@ -58,6 +58,9 @@ See [USAGE.md](./USAGE.md).
 It is recommended to make a backup. See [BACKUP.md](./BACKUP.md).
 You should also read [USAGE.md](./USAGE.md) beforehand to get acquainted with quirks and bugs.
 
+Check [Device support](#device-support) table, find your device and select supported version for currently installed
+firmware.
+
 ### Windows
 
 Download exe from [releases](https://github.com/unknown321/wampy/releases), run and follow instructions.
@@ -67,6 +70,14 @@ Device will restart twice.
 ### Linux/OSX
 
 See [INSTALL.md](./INSTALL.md)
+
+## Upgrade
+
+Just install new version, no need to uninstall previous version.
+
+## Uninstall
+
+Run installer, select your model, installed firmware version and check "Uninstall" action.
 
 ## Build from source
 
