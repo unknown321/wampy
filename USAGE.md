@@ -32,7 +32,7 @@
   * [Usage](#usage-1)
   * [Issues](#issues-1)
 * [Volume tables (VolT)](#volume-tables-volt)
-* [Equalizer](#equalizer)
+* [Equalizer / audio filters (EQ)](#equalizer--audio-filters-eq)
 * [Equalizer per song settings (EQ/Song)](#equalizer-per-song-settings-eqsong)
 * [Providing debug information](#providing-debug-information)
 
