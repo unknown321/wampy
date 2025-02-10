@@ -762,7 +762,31 @@ std::pair<std::string, std::string> AudioDeviceInUse() {
     }
     auto dev = words[1];
 
-    return {card, dev};
+    return {card.substr(1, card.length() - 1), dev.substr(1, card.length() - 1)};
+}
+
+std::string CardSampleRate() {
+#ifdef DESKTOP
+    return "Desktop";
+#endif
+
+    std::vector<directoryEntry> v;
+    listdirs("/proc/asound/card0/", &v);
+    for (const auto &pcm : v) {
+        auto contents = ReadFile(pcm.fullPath + "/sub0/hw_params");
+        if (contents == "closed") {
+            continue;
+        }
+
+        for (const auto &line : split(contents, "\n")) {
+            auto parts = split(line, ":");
+            if (parts[0] == "rate") {
+                return parts[1].substr(1, parts[1].length() - 1); // format is rate (rate / rate denominator)
+            }
+        }
+    }
+
+    return "No audio playing?";
 }
 
 bool EnableLLUSBDAC() {

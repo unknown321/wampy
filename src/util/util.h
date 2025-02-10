@@ -138,6 +138,8 @@ std::string GetRegionIDStr();
 
 std::pair<std::string, std::string> AudioDeviceInUse();
 
+std::string CardSampleRate();
+
 extern std::string DefaultRegion;
 extern std::map<std::string, std::string> RegionIDToString;
 

@@ -151,6 +151,7 @@ struct Skin {
     std::string deviceRegionID;
     std::string deviceRegionStr;
     std::pair<std::string, std::string> deviceAudioInUse;
+    std::string deviceAudioSampleRate;
     std::string minCpuFreq;
     std::string curCpuFreq;
     std::string freqStr;
@@ -1944,6 +1945,7 @@ struct Skin {
                     curCpuFreq = ReadFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq");
                     rstrip(&curCpuFreq, '\n');
                     freqStr = minCpuFreq + " (" + curCpuFreq + ") Hz";
+                    deviceAudioSampleRate = CardSampleRate();
 
                     refreshStatus = "Refreshed";
                 }
@@ -2005,6 +2007,12 @@ struct Skin {
                 ImGui::Text("Audio device");
                 ImGui::TableNextColumn();
                 ImGui::Text(deviceAudioInUse.second.c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Sample rate");
+                ImGui::TableNextColumn();
+                ImGui::Text(deviceAudioSampleRate.c_str());
 
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
