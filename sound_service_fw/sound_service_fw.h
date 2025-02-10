@@ -226,7 +226,7 @@ struct sound_settings_fw {
 
     void GetParam(const char *param, std::string *out) const {
         chain->GetParam(param, *out);
-        DLOGG("param %s, res is %s\n", param, out->c_str());
+        //        DLOGG("param %s, res is %s\n", param, out->c_str());
     }
 };
 

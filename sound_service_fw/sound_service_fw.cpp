@@ -311,7 +311,7 @@ void pst::services::sound::mobile::FilterChain::GetParam(const std::string &s1, 
 
     (this->*original_FilterChainGetParam)(s1, s2);
 
-    DLOGG("Get param %s, result %s\n", s1.c_str(), s2.c_str());
+    //    DLOGG("Get param %s, result %s\n", s1.c_str(), s2.c_str());
 }
 
 void pst::services::sound::mobile::Eq10band::UpdateProcCond(bool b1, bool b2) {
@@ -526,7 +526,7 @@ void StartServer() {
         if (sem_wait(&shmp->sem1) == -1)
             errExit("sem_wait");
 
-        DLOGG("request, command %d\n", shmp->command.id);
+        //        DLOGG("request, command %d\n", shmp->command.id);
         switch (shmp->command.id) {
         case SSFW_UNKNOWN:
             DLOGG("unknown command\n");

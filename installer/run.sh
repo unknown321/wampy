@@ -140,7 +140,7 @@ install() {
 
   log "installing SoundServiceFw preload library"
   ${CP} libsound_service_fw.so ${VENDOR}/lib/
-  chmod 0755 ${VENDOR}/lib/libsound_service_fw.so
+  ${CHMOD} 0755 ${VENDOR}/lib/libsound_service_fw.so
 
   ${GREP} -q "LD_PRELOAD /system/vendor/unknown321/lib/libsound_service_fw.so" ${INITRD_UNPACKED}/init.hagoromo.rc
   if test $? -ne 0; then
