@@ -29,8 +29,8 @@
 #define IMGUI_WIDTH 800.0f
 #define IMGUI_HEIGHT 480.0f
 
-#define GLFW_WIDTH 800.0f
-#define GLFW_HEIGHT 800.0f
+int GLFW_WIDTH = 800.0f;
+int GLFW_HEIGHT = 800.0f;
 
 #ifdef DESKTOP
 
@@ -56,7 +56,7 @@ void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
     auto sinr = -1;
     auto cosr = 0;
     auto x1 = (int)clip_min.x;
-    auto y1 = (int)((float)800 - clip_max.y);
+    auto y1 = (int)((float)IMGUI_WIDTH - clip_max.y);
     auto width = (int)(clip_max.x - clip_min.x);
     auto height = (int)(clip_max.y - clip_min.y);
     auto originX = 0;
@@ -76,7 +76,7 @@ void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
 
     glUniform1i(glGetUniformLocation(sp, "Texture"), 0);
 
-    glm::mat4 Projection = glm::ortho(-GLFW_WIDTH, 0.0f, GLFW_WIDTH, 0.0f);
+    glm::mat4 Projection = glm::ortho((float)-GLFW_WIDTH, 0.0f, (float)GLFW_HEIGHT, 0.0f);
     glm::mat4 ViewTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
     //    glm::mat4 ViewRotateX = glm::rotate( ViewTranslate, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f) );
@@ -87,7 +87,7 @@ void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
     glm::mat4 Model = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
 
     glm::mat4 MVP = Projection * View * Model;
-    glm::mat4 tMVP = glm::translate(MVP, glm::vec3(0, IMGUI_WIDTH - IMGUI_HEIGHT, 0));
+    glm::mat4 tMVP = glm::translate(MVP, glm::vec3(0, (float)GLFW_WIDTH - IMGUI_HEIGHT, 0));
     //    glm::mat4 tMVP = glm::translate(MVP, glm::vec3(0, 0, 0));
     GLint uniTrans = glGetUniformLocation(sp, "ProjMtx");
     glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(tMVP));
@@ -139,6 +139,8 @@ GLFWwindow *CreateWindow() {
     if (monitor != nullptr) {
         auto vmode = glfwGetVideoMode(monitor);
         DLOG("mode: %dx%d\n", vmode->width, vmode->height);
+        GLFW_WIDTH = vmode->width;
+        GLFW_HEIGHT = vmode->width;
     }
 
     GLFWwindow *window = glfwCreateWindow(GLFW_WIDTH, GLFW_HEIGHT, title, monitor, nullptr);
