@@ -190,6 +190,10 @@ struct Skin {
         {"donate", ActiveFilterTab_Donate},
     };
 
+    ImVec2 *windowOffset;
+    ImVec2 screenMode;
+    ImVec2 windowSize;
+
     struct timespec ssfwUpdateDelay = {0, 500000000};
 
     void WithWinampSkinDir(const std::string &d) { winampSkinDirectories.push_back(d); }
@@ -698,10 +702,28 @@ struct Skin {
                 connector->FeatureSetMaxVolume(config->features.limitVolume);
             }
 
+            ImGui::TableNextColumn();
+            ImGui::TableNextColumn();
+            ImGui::Text("Window position");
+
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             if (ImGui::Checkbox("Enable EQ per song", &config->features.eqPerSong)) {
                 config->Save();
+            }
+
+            ImGui::TableNextColumn();
+            ImGui::TableNextColumn();
+            if (ImGui::BeginCombo("##windowPos", WindowOffsetToString.at(config->windowOffset).c_str(), ImGuiComboFlags_HeightRegular)) {
+                for (const auto &entry : WindowOffsetToString) {
+                    if (ImGui::Selectable(entry.second.c_str(), false)) {
+                        config->windowOffset = entry.first;
+                        DLOG("selected offset %s\n", WindowOffsetToString.at(config->windowOffset).c_str());
+                        config->Save();
+                        CalcWindowPos();
+                    }
+                }
+                ImGui::EndCombo();
             }
 
             ImGui::TableNextRow();
@@ -2204,7 +2226,7 @@ struct Skin {
 
         res = res / 1024 / 1024;
 
-        logCleanupButtonLabel = "Remove wampy logs (" + std::to_string(res) + " MB)";
+        logCleanupButtonLabel = "Remove Wampy logs (" + std::to_string(res) + " MB)";
     }
 
     void SetActiveEqFilter(const std::string &v) {
@@ -3066,6 +3088,26 @@ struct Skin {
         ImGui::SetCursorPos(curpos);
         if (ImGui::InvisibleButton("##removeEqStatus", ImVec2(186 * 3 + ImGui::GetStyle().ItemSpacing.x + 3, 60))) {
             eqStatus = "";
+        }
+    }
+
+    void CalcWindowPos() const {
+        assert(windowOffset);
+        switch (config->windowOffset) {
+        case EWindowOffset_UNKNOWN:
+            break;
+        case EWindowOffset_LEFT:
+            windowOffset->x = 0;
+            windowOffset->y = 0;
+            break;
+        case EWindowOffset_CENTER:
+            windowOffset->x = (screenMode.x - windowSize.x) / 2;
+            windowOffset->y = 0;
+            break;
+        case EWindowOffset_RIGHT:
+            windowOffset->x = screenMode.x - windowSize.x;
+            windowOffset->y = 0;
+            break;
         }
     }
 };

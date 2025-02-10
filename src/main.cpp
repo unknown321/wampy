@@ -31,6 +31,7 @@
 
 int GLFW_WIDTH = 800.0f;
 int GLFW_HEIGHT = 800.0f;
+ImVec2 screenMode = ImVec2((float)GLFW_WIDTH, (float)GLFW_HEIGHT);
 
 #ifdef DESKTOP
 
@@ -141,6 +142,8 @@ GLFWwindow *CreateWindow() {
         DLOG("mode: %dx%d\n", vmode->width, vmode->height);
         GLFW_WIDTH = vmode->width;
         GLFW_HEIGHT = vmode->width;
+        screenMode.x = (float)vmode->width;
+        screenMode.y = (float)vmode->height;
     }
 
     GLFWwindow *window = glfwCreateWindow(GLFW_WIDTH, GLFW_HEIGHT, title, monitor, nullptr);
@@ -375,6 +378,9 @@ int main(int, char **) {
     skin.power_pressed = &power_pressed;
     skin.hold_value = &hold_value;
     skin.config = &config;
+    skin.windowOffset = &imguiWindowPos;
+    skin.screenMode = screenMode;
+    skin.windowSize = imguiWindowSize;
 
     auto opt = W1::WalkmanOneOptions{};
     W1::ParseSettings(&opt);

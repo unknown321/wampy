@@ -15,6 +15,15 @@ enum ESkinVariant {
     DIGITAL_CLOCK,
 };
 
+enum EWindowOffset {
+    EWindowOffset_UNKNOWN = 0,
+    EWindowOffset_LEFT = 1,
+    EWindowOffset_CENTER = 2,
+    EWindowOffset_RIGHT = 3,
+};
+
+extern std::map<EWindowOffset, std::string> WindowOffsetToString;
+
 namespace AppConfig {
     struct Misc {
         bool swapTrackButtons = false;
@@ -46,6 +55,7 @@ namespace AppConfig {
         int badBoots{};
         bool limitFPS = false;
         std::string forceConnector{};
+        EWindowOffset windowOffset = EWindowOffset_LEFT;
 
         int FindConfig();
 

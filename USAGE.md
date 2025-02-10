@@ -40,11 +40,11 @@
 
 ## Usage
 
-Use "Hold" toggle to enable/disable wampy.
+Use "Hold" toggle to enable/disable Wampy.
 
 <img src="images/switch.png" alt="here is the switch">
 
-While wampy is running, default locking functionality is disabled - buttons and touchscreen are working.
+While Wampy is running, default locking functionality is disabled - buttons and touchscreen are working.
 
 Holding volume button to rapidly change volume doesn't work. Volume is changed per button press in 1% intervals (~2
 points in default player terms).
@@ -423,9 +423,11 @@ this mode, set volume to 120 in default player app and toggle Wampy on.
 
 `Export bookmarks` button saves bookmark files to `wampy/bookmarks/` directory.
 
-`Remove wampy logs` button removes logs from `wampy/log/` directory.
+`Remove Wampy logs` button removes logs from `wampy/log/` directory.
 
 `DB char count` shows amount of unique characters in your database, which impacts loading time.
+
+`Window position` sets window position on devices with bigger screen (WM1A/Z).
 
 `Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is
 cassette.

@@ -4,6 +4,9 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
+std::map<EWindowOffset, std::string> WindowOffsetToString = {
+    {EWindowOffset_LEFT, "Left"}, {EWindowOffset_CENTER, "Center"}, {EWindowOffset_RIGHT, "Right"}};
+
 namespace AppConfig {
 
     enum ConfigErrors {
@@ -33,6 +36,7 @@ namespace AppConfig {
         ini["wampy"]["limitFPS"] = std::to_string(limitFPS);
         ini["wampy"]["debug"] = std::to_string(debug);
         ini["wampy"]["forceConnector"] = forceConnector;
+        ini["wampy"]["windowOffset"] = std::to_string(windowOffset);
 
         ini["cassette:mp3_128"].set({{"tape", cassette.Get(Tape::MP3_128)->tape}, {"reel", cassette.Get(Tape::MP3_128)->reel}});
         ini["cassette:mp3_160"].set({{"tape", cassette.Get(Tape::MP3_160)->tape}, {"reel", cassette.Get(Tape::MP3_160)->reel}});
@@ -83,6 +87,7 @@ namespace AppConfig {
         activeSkin = WINAMP;
         MPDSocketPath = MPDDefaultAddress;
         forceConnector = "";
+        windowOffset = EWindowOffset_LEFT;
 
         ToIni();
     }
@@ -111,6 +116,16 @@ namespace AppConfig {
         // NOLINTEND
 
         forceConnector = ini["wampy"]["forceConnector"];
+
+        auto windowOffsetTemp = std::atoi(ini["wampy"]["windowOffset"].c_str());
+        switch (windowOffsetTemp) {
+        case EWindowOffset_LEFT:
+        case EWindowOffset_RIGHT:
+        case EWindowOffset_CENTER:
+            windowOffset = (EWindowOffset)windowOffsetTemp;
+        default:
+            windowOffset = EWindowOffset_LEFT;
+        }
 
         cassette.SetOrDefault(Tape::MP3_128, {ini["cassette:mp3_128"]["tape"], ini["cassette:mp3_128"]["reel"], "MP3 128kbps"});
         cassette.SetOrDefault(Tape::MP3_160, {ini["cassette:mp3_160"]["tape"], ini["cassette:mp3_160"]["reel"], "MP3 160kbps"});
