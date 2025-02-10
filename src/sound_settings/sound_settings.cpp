@@ -25,6 +25,7 @@ void SoundSettings::Start() {
 
 #ifdef DESKTOP
     s = new sound_settings();
+    s->fmStatus.state = 2;
     sqlite3_close(db);
     return;
 #endif
@@ -55,14 +56,16 @@ void SoundSettings::Start() {
 
 void SoundSettings::Update() const {
     DLOG("\n");
+    s->command.id = EPstServerCommand::PSC_UPDATE;
+    Send();
+}
+
+void SoundSettings::Send() const {
 #ifdef DESKTOP
     return;
 #endif
     if (sem_post(&s->sem1) == -1)
         errExit("sem_post");
-
-    /* Wait until peer says that it has finished accessing
-       the shared memory. */
 
     if (sem_wait(&s->sem2) == -1)
         errExit("sem_wait");
@@ -208,7 +211,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 2, s->vptOn);
+    rc = sqlite3_bind_int(select_stmt, 2, s->status.vptOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -216,7 +219,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 3, s->vptMode);
+    rc = sqlite3_bind_int(select_stmt, 3, s->status.vptMode);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -224,7 +227,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 4, s->clearPhaseOn);
+    rc = sqlite3_bind_int(select_stmt, 4, s->status.clearPhaseOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -232,7 +235,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 5, s->DNOn);
+    rc = sqlite3_bind_int(select_stmt, 5, s->status.DNOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -240,7 +243,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 6, s->dseeOn);
+    rc = sqlite3_bind_int(select_stmt, 6, s->status.dseeOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -248,7 +251,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 7, s->eq6On);
+    rc = sqlite3_bind_int(select_stmt, 7, s->status.eq6On);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -256,7 +259,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 8, s->eq6Preset);
+    rc = sqlite3_bind_int(select_stmt, 8, s->status.eq6Preset);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -264,7 +267,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 9, s->eq6Bands[0]);
+    rc = sqlite3_bind_int(select_stmt, 9, s->status.eq6Bands[0]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -272,7 +275,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 10, s->eq6Bands[1]);
+    rc = sqlite3_bind_int(select_stmt, 10, s->status.eq6Bands[1]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -280,7 +283,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 11, s->eq6Bands[2]);
+    rc = sqlite3_bind_int(select_stmt, 11, s->status.eq6Bands[2]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -288,7 +291,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 12, s->eq6Bands[3]);
+    rc = sqlite3_bind_int(select_stmt, 12, s->status.eq6Bands[3]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -296,7 +299,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 13, s->eq6Bands[4]);
+    rc = sqlite3_bind_int(select_stmt, 13, s->status.eq6Bands[4]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -304,7 +307,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 14, s->eq6Bands[5]);
+    rc = sqlite3_bind_int(select_stmt, 14, s->status.eq6Bands[5]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -312,7 +315,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 14, s->eq6Bands[5]);
+    rc = sqlite3_bind_int(select_stmt, 14, s->status.eq6Bands[5]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -320,7 +323,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 15, s->eq10On);
+    rc = sqlite3_bind_int(select_stmt, 15, s->status.eq10On);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -328,7 +331,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 16, s->eq10Preset);
+    rc = sqlite3_bind_int(select_stmt, 16, s->status.eq10Preset);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -336,7 +339,7 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 17, s->eq10Bands[0]);
+    rc = sqlite3_bind_int(select_stmt, 17, s->status.eq10Bands[0]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -344,182 +347,182 @@ int SoundSettings::Save(const std::string &filename) const {
         return -1;
     }
 
-    rc = sqlite3_bind_int(select_stmt, 18, s->eq10Bands[1]);
+    rc = sqlite3_bind_int(select_stmt, 18, s->status.eq10Bands[1]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 19, s->eq10Bands[2]);
+    rc = sqlite3_bind_int(select_stmt, 19, s->status.eq10Bands[2]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 20, s->eq10Bands[3]);
+    rc = sqlite3_bind_int(select_stmt, 20, s->status.eq10Bands[3]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 21, s->eq10Bands[4]);
+    rc = sqlite3_bind_int(select_stmt, 21, s->status.eq10Bands[4]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 22, s->eq10Bands[5]);
+    rc = sqlite3_bind_int(select_stmt, 22, s->status.eq10Bands[5]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 23, s->eq10Bands[6]);
+    rc = sqlite3_bind_int(select_stmt, 23, s->status.eq10Bands[6]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 24, s->eq10Bands[7]);
+    rc = sqlite3_bind_int(select_stmt, 24, s->status.eq10Bands[7]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 25, s->eq10Bands[8]);
+    rc = sqlite3_bind_int(select_stmt, 25, s->status.eq10Bands[8]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 26, s->eq10Bands[9]);
+    rc = sqlite3_bind_int(select_stmt, 26, s->status.eq10Bands[9]);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 27, s->toneControlOn);
+    rc = sqlite3_bind_int(select_stmt, 27, s->status.toneControlOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 28, s->toneControlLow);
+    rc = sqlite3_bind_int(select_stmt, 28, s->status.toneControlLow);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 29, s->toneControlMid);
+    rc = sqlite3_bind_int(select_stmt, 29, s->status.toneControlMid);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 30, s->toneControlHigh);
+    rc = sqlite3_bind_int(select_stmt, 30, s->status.toneControlHigh);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 31, s->toneControlLowFreq);
+    rc = sqlite3_bind_int(select_stmt, 31, s->status.toneControlLowFreq);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 32, s->toneControlMidFreq);
+    rc = sqlite3_bind_int(select_stmt, 32, s->status.toneControlMidFreq);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 33, s->toneControlMidFreq);
+    rc = sqlite3_bind_int(select_stmt, 33, s->status.toneControlMidFreq);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 34, s->eqUse);
+    rc = sqlite3_bind_int(select_stmt, 34, s->status.eqUse);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 35, s->dcLinearOn);
+    rc = sqlite3_bind_int(select_stmt, 35, s->status.dcLinearOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 36, s->dcLinearFilter);
+    rc = sqlite3_bind_int(select_stmt, 36, s->status.dcLinearFilter);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 37, s->clearAudioOn);
+    rc = sqlite3_bind_int(select_stmt, 37, s->status.clearAudioOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 38, s->directSourceOn);
+    rc = sqlite3_bind_int(select_stmt, 38, s->status.directSourceOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 39, s->dseeHXOn);
+    rc = sqlite3_bind_int(select_stmt, 39, s->status.dseeHXOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 40, s->vinylOn);
+    rc = sqlite3_bind_int(select_stmt, 40, s->status.vinylOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 41, s->vinylType);
+    rc = sqlite3_bind_int(select_stmt, 41, s->status.vinylType);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 42, s->dseeCustOn);
+    rc = sqlite3_bind_int(select_stmt, 42, s->status.dseeCustOn);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
         sqlite3_close(db);
         return -1;
     }
-    rc = sqlite3_bind_int(select_stmt, 43, s->dseeCustMode);
+    rc = sqlite3_bind_int(select_stmt, 43, s->status.dseeCustMode);
     if (SQLITE_OK != rc) {
         fprintf(stderr, "Error binding value in select (%i): %s\n", rc, sqlite3_errmsg(db));
         sqlite3_finalize(select_stmt);
@@ -662,48 +665,48 @@ int SoundSettings::Get(const std::string &filename, sound_settings *dbValues) {
     int rows = 0;
     while (SQLITE_ROW == (rc = sqlite3_step(select_stmt))) {
         rows++;
-        dbValues->vptOn = sqlite3_column_int(select_stmt, 0);
-        dbValues->vptMode = sqlite3_column_int(select_stmt, 1);
-        dbValues->clearPhaseOn = sqlite3_column_int(select_stmt, 2);
-        dbValues->DNOn = sqlite3_column_int(select_stmt, 3);
-        dbValues->dseeOn = sqlite3_column_int(select_stmt, 4);
-        dbValues->eq6On = sqlite3_column_int(select_stmt, 5);
-        dbValues->eq6Preset = sqlite3_column_int(select_stmt, 6);
-        dbValues->eq6Bands[0] = sqlite3_column_int(select_stmt, 7);
-        dbValues->eq6Bands[1] = sqlite3_column_int(select_stmt, 8);
-        dbValues->eq6Bands[2] = sqlite3_column_int(select_stmt, 9);
-        dbValues->eq6Bands[3] = sqlite3_column_int(select_stmt, 10);
-        dbValues->eq6Bands[4] = sqlite3_column_int(select_stmt, 11);
-        dbValues->eq6Bands[5] = sqlite3_column_int(select_stmt, 12);
-        dbValues->eq10On = sqlite3_column_int(select_stmt, 13);
-        dbValues->eq10Preset = sqlite3_column_int(select_stmt, 14);
-        dbValues->eq10Bands[0] = sqlite3_column_int(select_stmt, 15);
-        dbValues->eq10Bands[1] = sqlite3_column_int(select_stmt, 16);
-        dbValues->eq10Bands[2] = sqlite3_column_int(select_stmt, 17);
-        dbValues->eq10Bands[3] = sqlite3_column_int(select_stmt, 18);
-        dbValues->eq10Bands[4] = sqlite3_column_int(select_stmt, 19);
-        dbValues->eq10Bands[5] = sqlite3_column_int(select_stmt, 20);
-        dbValues->eq10Bands[6] = sqlite3_column_int(select_stmt, 21);
-        dbValues->eq10Bands[7] = sqlite3_column_int(select_stmt, 22);
-        dbValues->eq10Bands[8] = sqlite3_column_int(select_stmt, 23);
-        dbValues->eq10Bands[9] = sqlite3_column_int(select_stmt, 24);
-        dbValues->toneControlOn = sqlite3_column_int(select_stmt, 25);
-        dbValues->toneControlLow = sqlite3_column_int(select_stmt, 26);
-        dbValues->toneControlMid = sqlite3_column_int(select_stmt, 27);
-        dbValues->toneControlHigh = sqlite3_column_int(select_stmt, 28);
-        dbValues->toneControlLowFreq = sqlite3_column_int(select_stmt, 29);
-        dbValues->toneControlMidFreq = sqlite3_column_int(select_stmt, 30);
-        dbValues->toneControlHighFreq = sqlite3_column_int(select_stmt, 31);
-        dbValues->eqUse = sqlite3_column_int(select_stmt, 32);
-        dbValues->dcLinearOn = sqlite3_column_int(select_stmt, 33);
-        dbValues->dcLinearFilter = sqlite3_column_int(select_stmt, 34);
-        dbValues->clearAudioOn = sqlite3_column_int(select_stmt, 35);
-        dbValues->directSourceOn = sqlite3_column_int(select_stmt, 36);
-        dbValues->dseeHXOn = sqlite3_column_int(select_stmt, 37);
-        dbValues->vinylOn = sqlite3_column_int(select_stmt, 38);
-        dbValues->vinylType = sqlite3_column_int(select_stmt, 39);
-        dbValues->dseeCustOn = sqlite3_column_int(select_stmt, 40);
-        dbValues->dseeCustMode = sqlite3_column_int(select_stmt, 41);
+        dbValues->status.vptOn = sqlite3_column_int(select_stmt, 0);
+        dbValues->status.vptMode = sqlite3_column_int(select_stmt, 1);
+        dbValues->status.clearPhaseOn = sqlite3_column_int(select_stmt, 2);
+        dbValues->status.DNOn = sqlite3_column_int(select_stmt, 3);
+        dbValues->status.dseeOn = sqlite3_column_int(select_stmt, 4);
+        dbValues->status.eq6On = sqlite3_column_int(select_stmt, 5);
+        dbValues->status.eq6Preset = sqlite3_column_int(select_stmt, 6);
+        dbValues->status.eq6Bands[0] = sqlite3_column_int(select_stmt, 7);
+        dbValues->status.eq6Bands[1] = sqlite3_column_int(select_stmt, 8);
+        dbValues->status.eq6Bands[2] = sqlite3_column_int(select_stmt, 9);
+        dbValues->status.eq6Bands[3] = sqlite3_column_int(select_stmt, 10);
+        dbValues->status.eq6Bands[4] = sqlite3_column_int(select_stmt, 11);
+        dbValues->status.eq6Bands[5] = sqlite3_column_int(select_stmt, 12);
+        dbValues->status.eq10On = sqlite3_column_int(select_stmt, 13);
+        dbValues->status.eq10Preset = sqlite3_column_int(select_stmt, 14);
+        dbValues->status.eq10Bands[0] = sqlite3_column_int(select_stmt, 15);
+        dbValues->status.eq10Bands[1] = sqlite3_column_int(select_stmt, 16);
+        dbValues->status.eq10Bands[2] = sqlite3_column_int(select_stmt, 17);
+        dbValues->status.eq10Bands[3] = sqlite3_column_int(select_stmt, 18);
+        dbValues->status.eq10Bands[4] = sqlite3_column_int(select_stmt, 19);
+        dbValues->status.eq10Bands[5] = sqlite3_column_int(select_stmt, 20);
+        dbValues->status.eq10Bands[6] = sqlite3_column_int(select_stmt, 21);
+        dbValues->status.eq10Bands[7] = sqlite3_column_int(select_stmt, 22);
+        dbValues->status.eq10Bands[8] = sqlite3_column_int(select_stmt, 23);
+        dbValues->status.eq10Bands[9] = sqlite3_column_int(select_stmt, 24);
+        dbValues->status.toneControlOn = sqlite3_column_int(select_stmt, 25);
+        dbValues->status.toneControlLow = sqlite3_column_int(select_stmt, 26);
+        dbValues->status.toneControlMid = sqlite3_column_int(select_stmt, 27);
+        dbValues->status.toneControlHigh = sqlite3_column_int(select_stmt, 28);
+        dbValues->status.toneControlLowFreq = sqlite3_column_int(select_stmt, 29);
+        dbValues->status.toneControlMidFreq = sqlite3_column_int(select_stmt, 30);
+        dbValues->status.toneControlHighFreq = sqlite3_column_int(select_stmt, 31);
+        dbValues->status.eqUse = sqlite3_column_int(select_stmt, 32);
+        dbValues->status.dcLinearOn = sqlite3_column_int(select_stmt, 33);
+        dbValues->status.dcLinearFilter = sqlite3_column_int(select_stmt, 34);
+        dbValues->status.clearAudioOn = sqlite3_column_int(select_stmt, 35);
+        dbValues->status.directSourceOn = sqlite3_column_int(select_stmt, 36);
+        dbValues->status.dseeHXOn = sqlite3_column_int(select_stmt, 37);
+        dbValues->status.vinylOn = sqlite3_column_int(select_stmt, 38);
+        dbValues->status.vinylType = sqlite3_column_int(select_stmt, 39);
+        dbValues->status.dseeCustOn = sqlite3_column_int(select_stmt, 40);
+        dbValues->status.dseeCustMode = sqlite3_column_int(select_stmt, 41);
     }
 
     DLOG("found %d rows for %s\n", rows, filename.c_str());
@@ -739,4 +742,22 @@ int SoundSettings::SaveDir(const std::string &filename) const {
     parts.erase(parts.end());
 
     return Save(join(parts, 0, "/"));
+}
+
+void SoundSettings::SetFM(int v) const {
+    s->command.id = PSC_SET_FM;
+    s->command.valueInt = v;
+    Send();
+}
+
+void SoundSettings::SetFMFreq(int v) const {
+    s->command.id = PSC_SET_FM_FREQ;
+    s->command.valueInt = v;
+    Send();
+}
+
+void SoundSettings::SetFMStereo(bool v) const {
+    s->command.id = PSC_SET_FM_STEREO;
+    s->command.valueInt = (int)v;
+    Send();
 }

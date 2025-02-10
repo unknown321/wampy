@@ -77,6 +77,13 @@ namespace AppConfig {
         ini["w1"]["deviceColor"] = std::to_string(w1Options.deviceColor);
 
         ini["digitalClock"]["color"] = digitalClock.color;
+
+        std::string presets;
+        for (auto v : fmPresets) {
+            presets += std::to_string(v) + ",";
+        }
+        rstrip(&presets, ',');
+        ini["wampy"]["fmPresets"] = presets;
     }
 
     void AppConfig::Default() {
@@ -182,6 +189,14 @@ namespace AppConfig {
         MPDSocketPath = ini["mpd"]["socketPath"];
 
         digitalClock.color = ini["digitalClock"]["color"];
+
+        for (const auto &p : split(ini["wampy"]["fmPresets"], ",")) {
+            auto r = std::atoi(p.c_str());
+            if (r < FM_FREQ_MIN || r > FM_FREQ_MAX) {
+                continue;
+            }
+            fmPresets.emplace_back(r);
+        }
 
         return 0;
     }

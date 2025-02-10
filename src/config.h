@@ -56,6 +56,7 @@ namespace AppConfig {
         bool limitFPS = false;
         std::string forceConnector{};
         EWindowOffset windowOffset = EWindowOffset_LEFT;
+        std::vector<int> fmPresets{};
 
         int FindConfig();
 

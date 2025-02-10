@@ -17,6 +17,10 @@ class SoundSettings {
 
     void Start();
     void Update() const;
+    void Send() const;
+    void SetFM(int) const;
+    void SetFMFreq(int) const;
+    void SetFMStereo(bool v) const;
     int Save(const std::string &filename) const;
     int SaveDir(const std::string &filename) const;
     static bool Exists(const std::string &filename);

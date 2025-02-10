@@ -135,7 +135,7 @@ sysroot:
 	cd ../ && make -C nw-installer prepare
 	$(MAKE) -f Makefile.sysroot
 
-all: patch libjpeg magick protobuf llusbdac sqlite sysroot icu
+all: patch alsa-lib/src libjpeg magick protobuf llusbdac sqlite sysroot icu
 
 clean:
 	rm -rf libjpeg-turbo/build-*

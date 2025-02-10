@@ -7,8 +7,10 @@
 #include "sqlite3.h"
 #include "unicode/unistr.h"
 #include <algorithm>
+#include <fcntl.h>
 #include <fstream>
 #include <sys/stat.h>
+#include <unistd.h>
 
 bool dirComp(const directoryEntry &a, const directoryEntry &b) { return b.name >= a.name; }
 
@@ -964,4 +966,27 @@ void toUpper(std::string &s) {
     for (auto &c : s) {
         c = std::toupper(c);
     }
+}
+
+const char *powerWakeLock = "/sys/power/wake_lock";
+const char *powerWakeUnlock = "/sys/power/wake_unlock";
+
+void RadioOn() {
+    RunWithOutput("amixer cset name='analog input device' 1");
+    RunWithOutput("amixer cset name='analog playback mute' 0");
+    RunWithOutput("amixer cset name='headphone amp' 0");
+
+    auto ddf = open(powerWakeLock, O_RDWR);
+    write(ddf, "wampy_fm_lock", sizeof "wampy_fm_lock");
+    close(ddf);
+}
+
+void RadioOff() {
+    RunWithOutput("amixer cset name='analog input device' 0");
+    RunWithOutput("amixer cset name='analog playback mute' 1");
+    RunWithOutput("amixer cset name='headphone amp' 1");
+
+    auto ddf = open(powerWakeUnlock, O_RDWR);
+    write(ddf, "wampy_fm_lock", sizeof "wampy_fm_lock");
+    close(ddf);
 }

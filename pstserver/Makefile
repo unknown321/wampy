@@ -27,6 +27,7 @@ build:
 			-lEffectCtrlDmp \
 			-lPlayerServiceClient \
 			-lConfigurationService \
+			-lTunerPlayerService \
 			-I/usr/arm-linux-gnueabihf/include/ \
 			-Wl,-rpath,. \
 			-Wl,-rpath,/system/vendor/sony/lib \
@@ -81,6 +82,7 @@ test:
 			-lPlayerServiceClient \
 			-lConfigurationService \
 			-lSoundServiceFw \
+			-lTunerPlayerService \
 			-I/usr/arm-linux-gnueabihf/include/ \
 			-Wl,-rpath,. \
 			-Wl,-rpath,/system/vendor/sony/lib \

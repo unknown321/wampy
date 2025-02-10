@@ -153,10 +153,10 @@ struct sound_settings_fw {
 
     filterStatus FilterStatus[15];
 
-    bool clearAudioPlusPresent; // backend returns "" on GetParam
-    bool clearAudioPlusOn;
-    bool directSourcePresent;
-    bool directSourceOn;
+    bool clearAudioPlusPresent{}; // backend returns "" on GetParam
+    bool clearAudioPlusOn{};
+    bool directSourcePresent{};
+    bool directSourceOn{};
 
     pst::services::sound::mobile::FilterChain *chain = nullptr; // pointer to filter chain. Do stupid things, win stupid prizes.
 

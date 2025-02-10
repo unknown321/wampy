@@ -492,6 +492,22 @@ See [EQUALIZER-FILTERS.md](./EQUALIZER-FILTERS.md)
 
 See [EQUALIZER_PER_SONG_SETTINGS.md](./EQUALIZER_PER_SONG_SETTINGS.md)
 
+## FM radio
+
+<img src="images/settings-fm.png">
+
+Radio works only on devices with FM chip: A30, A40, A50.
+
+Range: 76-108 MHz.
+
+Press Save to save preset, press Remove to remove current value from presets. Amount of presets is unlimited (unlike 30
+in standard application). Arrow buttons change current value by 0.1 and 0.5. "Stereo" checkbox toggles stereo mode;
+useful when signal is flapping between mono and stereo.
+
+Radio will stop for up to a second after hitting power button.
+
+[Developer notes](./MAKING_OF_FM.md);
+
 ## Providing debug information
 
 Wampy automatically collects crash dumps and logs on start. These are located in `wampy/log/` directory. Feel free to

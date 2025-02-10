@@ -79,6 +79,14 @@ uninstall() {
     log "removing LD_PRELOAD entry for SoundServiceFw"
     ${SED} -i '/libsound_service_fw.so/d' ${INITRD_UNPACKED}/init.hagoromo.rc
   fi
+
+  test -f /system/vendor/sony/lib/libTunerPlayerService.so_vendor
+  if busybox test $? -eq 0; then
+    log "restoring libTunerPlayerService.so from backup"
+    ${CP} -f /system/vendor/sony/lib/libTunerPlayerService.so_vendor /system/vendor/sony/lib/libTunerPlayerService.so
+    chown root:shell /system/vendor/sony/lib/libTunerPlayerService.so
+    chmod 0755 /system/vendor/sony/lib/libTunerPlayerService.so
+  fi
 }
 
 log "uninstaller for $(cat product_info)"

@@ -148,6 +148,15 @@ install() {
     ${SED} -i '/SoundServiceFw/a \ setenv LD_PRELOAD /system/vendor/unknown321/lib/libsound_service_fw.so' ${INITRD_UNPACKED}/init.hagoromo.rc
   fi
 
+  log "installing tuner library"
+  test -f /system/vendor/sony/lib/libTunerPlayerService.so_vendor
+  if test $? -ne 0; then
+    ${CP} -p /system/vendor/sony/lib/libTunerPlayerService.so /system/vendor/sony/lib/libTunerPlayerService.so_vendor
+  fi
+  ${CP} libTunerPlayerService.so  /system/vendor/sony/lib/libTunerPlayerService.so
+  ${CHMOD} 0755 /system/vendor/sony/lib/libTunerPlayerService.so
+  ${CHOWN} root:shell /system/vendor/sony/lib/libTunerPlayerService.so
+
   clearBadBoots
 }
 

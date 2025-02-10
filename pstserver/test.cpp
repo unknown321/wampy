@@ -13,6 +13,31 @@ void healthcheck() {
 
 std::string a;
 
+void Radio() {
+    printf("a1\n");
+    auto f = pst::services::TunerPlayerServiceClientFactory();
+    printf("a2\n");
+    auto client = f.CreateInstance();
+    printf("a3\n");
+    client->Open();
+    uint freq = 0;
+    client->GetFrequency(freq);
+    printf("freq %d\n", freq);
+
+    auto effectCtrlDmp = pst::services::sound::EffectCtrlDmp();
+
+    auto res = client->GetTunerState();
+    printf("status %d\n", res);
+    client->Play();
+    res = client->GetTunerState();
+
+    printf("status %d\n", res);
+    getchar();
+    printf("a4\n");
+    client->Close();
+    printf("a5\n");
+}
+
 int main(int argc, char **argv) {
     printf("start\n");
     if (strcmp(argv[1], "1") == 0) {
@@ -37,6 +62,9 @@ int main(int argc, char **argv) {
     t.detach();
 
     sleep(1);
+
+    Radio();
+    exit(0);
 
     auto effectCtrlDmp = pst::services::sound::EffectCtrlDmp();
 

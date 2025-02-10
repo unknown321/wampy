@@ -135,6 +135,57 @@ namespace pst {
     } // namespace core
 
     namespace services {
+        class ITunerPlayerService {
+          public:
+            class StereoMode {
+              public:
+                int value;
+            };
+        };
+        class TunerPlayerServiceClient {
+          public:
+            void GetBandwidth(unsigned int &, unsigned int &, unsigned int &);
+            void GetFrequency(unsigned int &);
+            void GetName() const;
+            void GetSoftBandwidth(unsigned int &, unsigned int &, unsigned int &);
+            int GetTunerState();
+            void IsRunningAutoTuning();
+            void Play();
+            void SetFrequency(unsigned int const &);
+            void SetSoftBandwidth(unsigned int const &, unsigned int const &, unsigned int const &);
+            void StartAutoTuning(unsigned int const &, bool const &, unsigned int const &);
+            void Stop();
+            void StopAutoTuning();
+            void Open();
+            void Close();
+            void GetStereoMode(pst::services::ITunerPlayerService::StereoMode &);
+            void SetStereoMode(pst::services::ITunerPlayerService::StereoMode const &);
+            //            void AddListener(pst::services::ITunerPlayerService::IServiceListener *, std::__1::basic_string<char,
+            //            std::__1::char_traits<char>, std::__1::allocator<char>> const &); void
+            //            GetMuteMode(pst::services::ITunerPlayerService::MuteMode &); void
+            //            GetSenseMode(pst::services::ITunerPlayerService::SenseMode &); void
+            //            GetSignalLevel(pst::services::ITunerPlayerService::SignalLevel &); void
+            //            GetStereoState(pst::services::ITunerPlayerService::StereoMode &); void
+            //            ReadDeviceSettings(pst::services::binder::TransactionParam &, pst::services::ITunerPlayerService::DeviceSettings
+            //            &); void ReadSoundSettings(pst::services::binder::TransactionParam &,
+            //            pst::services::ITunerPlayerService::SoundSettings &); void
+            //            RemoveListener(pst::services::ITunerPlayerService::IServiceListener *); void
+            //            SetDeviceSettings(pst::services::ITunerPlayerService::DeviceSettings const &); void
+            //            SetMuteMode(pst::services::ITunerPlayerService::MuteMode const &); void
+            //            SetSenseMode(pst::services::ITunerPlayerService::SenseMode const &); void
+            //            SetSoundSettings(pst::services::ITunerPlayerService::SoundSettings const &); void
+            //            SizeOfDeviceSettings(pst::services::ITunerPlayerService::DeviceSettings const &); void
+            //            SizeOfSoundSettings(pst::services::ITunerPlayerService::SoundSettings const &); void
+            //            WriteDeviceSettings(pst::services::ITunerPlayerService::DeviceSettings const &,
+            //            pst::services::binder::TransactionParam &); void
+            //            WriteSoundSettings(pst::services::ITunerPlayerService::SoundSettings const &,
+            //            pst::services::binder::TransactionParam &);
+        };
+
+        class TunerPlayerServiceClientFactory {
+          public:
+            TunerPlayerServiceClient *CreateInstance();
+        };
 
         class SoundServiceFwClient {
           public:

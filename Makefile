@@ -83,6 +83,7 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 	$(UPX) -qqq --best installer/pstserver
 	cp libs/llusbdac/llusbdac/llusbdac.ko_bbdmp5 installer/
 	cp libs/llusbdac/llusbdac/llusbdac.ko_bbdmp2 installer/
+	cp libs/sysroot/lib/libTunerPlayerService.so installer/
 	cp LICENSE installer/
 	cp LICENSE_3rdparty installer/
 	cp qr.bmp installer/
@@ -104,6 +105,7 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 		tunings.tar.gz \
 		llusbdac.ko_bbdmp2 \
 		llusbdac.ko_bbdmp5 \
+		libTunerPlayerService.so \
 		pstserver \
 		libsound_service_fw.so \
 		upgtool-linux-arm5 \

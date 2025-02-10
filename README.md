@@ -28,6 +28,7 @@ Also works on Walkman One for [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [
 - Default player enhancements (add clock and increase cover art size)
 - Digital clock skin (pretty!)
 - [Low latency USB DAC module](https://github.com/zhangboyang/llusbdac)
+- FM radio on devices with FM chip and Walkman One (A30/40/50)
 
 See [USAGE.md](./USAGE.md).
 

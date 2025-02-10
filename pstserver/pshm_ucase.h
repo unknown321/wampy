@@ -14,10 +14,7 @@
 
 #define SHMPATH "/sound_settings"
 
-struct sound_settings {
-    sem_t sem1; /* POSIX unnamed semaphore */
-    sem_t sem2; /* POSIX unnamed semaphore */
-
+struct sound_settings_status {
     int vptOn;
     int vptMode;
     int clearPhaseOn;
@@ -50,44 +47,75 @@ struct sound_settings {
 
     int clearAudioAvailable;
     int directSourceAvailable;
+};
+
+enum EPstServerCommand {
+    PSC_UNKNOWN = 0,
+    PSC_UPDATE = 1,
+    PSC_SET_FM = 2,
+    PSC_SET_FM_FREQ = 3,
+    PSC_SET_FM_STEREO = 4,
+};
+
+struct PstServerCommand {
+    EPstServerCommand id = PSC_UNKNOWN;
+    int valueInt = 0;
+};
+
+#define FM_FREQ_MIN 76000
+#define FM_FREQ_MAX 108000
+
+struct FmStatus {
+    int state;
+    int freq = FM_FREQ_MIN;
+    bool stereo = false;
+};
+
+struct sound_settings {
+    sem_t sem1{}; /* POSIX unnamed semaphore */
+    sem_t sem2{}; /* POSIX unnamed semaphore */
+
+    PstServerCommand command{};
+    sound_settings_status status{};
+    FmStatus fmStatus{};
 
     void Print() {
-        printf("clearAudioAvailable: %d\n", clearAudioAvailable);
-        printf("directSourceAvailable: %d\n", directSourceAvailable);
-        printf("vptOn: %d\n", vptOn);
-        printf("vptMode: %d\n", vptMode);
-        printf("clearPhaseOn: %d\n", clearPhaseOn);
-        printf("DNOn: %d\n", DNOn);
-        printf("dseeOn: %d\n", dseeOn);
-        printf("dseeCustOn: %d\n", dseeCustOn);
-        printf("dseeCustMode: %d\n", dseeCustMode);
-        printf("eq6On: %d\n", eq6On);
-        printf("eq6Preset: %d\n", eq6Preset);
-        for (const auto i : eq6Bands) {
+        printf("clearAudioAvailable: %d\n", status.clearAudioAvailable);
+        printf("directSourceAvailable: %d\n", status.directSourceAvailable);
+        printf("vptOn: %d\n", status.vptOn);
+        printf("vptMode: %d\n", status.vptMode);
+        printf("clearPhaseOn: %d\n", status.clearPhaseOn);
+        printf("DNOn: %d\n", status.DNOn);
+        printf("dseeOn: %d\n", status.dseeOn);
+        printf("dseeCustOn: %d\n", status.dseeCustOn);
+        printf("dseeCustMode: %d\n", status.dseeCustMode);
+        printf("eq6On: %d\n", status.eq6On);
+        printf("eq6Preset: %d\n", status.eq6Preset);
+        for (const auto i : status.eq6Bands) {
             printf("eq6Bands: %d\n", i);
         }
-        printf("eq10On: %d\n", eq10On);
-        printf("eq10Preset: %d\n", eq10Preset);
-        for (const auto i : eq10Bands) {
+        printf("eq10On: %d\n", status.eq10On);
+        printf("eq10Preset: %d\n", status.eq10Preset);
+        for (const auto i : status.eq10Bands) {
             printf("eq10Bands: %d\n", i);
         }
 
-        printf("toneControlOn: %d\n", toneControlOn);
-        printf("toneControlLow: %d\n", toneControlLow);
-        printf("toneControlMid: %d\n", toneControlMid);
-        printf("toneControlHigh: %d\n", toneControlHigh);
-        printf("toneControlLowFreq: %d\n", toneControlLowFreq);
-        printf("toneControlMidFreq: %d\n", toneControlMidFreq);
-        printf("toneControlHighFreq: %d\n", toneControlHighFreq);
-        printf("eqUse: %d\n", eqUse);
-        printf("dcLinearOn: %d\n", dcLinearOn);
-        printf("dcLinearFilter: %d\n", dcLinearFilter);
-        printf("clearAudioOn: %d\n", clearAudioOn);
-        printf("directSourceOn: %d\n", directSourceOn);
-        printf("masterVolume: %d\n", masterVolume);
-        printf("dseeHXOn: %d\n", dseeHXOn);
-        printf("vinylOn: %d\n", vinylOn);
-        printf("vinylType: %d\n", vinylType);
+        printf("toneControlOn: %d\n", status.toneControlOn);
+        printf("toneControlLow: %d\n", status.toneControlLow);
+        printf("toneControlMid: %d\n", status.toneControlMid);
+        printf("toneControlHigh: %d\n", status.toneControlHigh);
+        printf("toneControlLowFreq: %d\n", status.toneControlLowFreq);
+        printf("toneControlMidFreq: %d\n", status.toneControlMidFreq);
+        printf("toneControlHighFreq: %d\n", status.toneControlHighFreq);
+        printf("eqUse: %d\n", status.eqUse);
+        printf("dcLinearOn: %d\n", status.dcLinearOn);
+        printf("dcLinearFilter: %d\n", status.dcLinearFilter);
+        printf("clearAudioOn: %d\n", status.clearAudioOn);
+        printf("directSourceOn: %d\n", status.directSourceOn);
+        printf("masterVolume: %d\n", status.masterVolume);
+        printf("dseeHXOn: %d\n", status.dseeHXOn);
+        printf("vinylOn: %d\n", status.vinylOn);
+        printf("vinylType: %d\n", status.vinylType);
     }
 };
 

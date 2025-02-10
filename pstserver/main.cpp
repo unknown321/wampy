@@ -15,38 +15,38 @@ void healthcheck() {
     // do nothing
 }
 
-void dumpSoundSettings(
-    pst::dmpconfig::DmpConfig *dmpConfig, pst::dmpconfig::Key *k, pst::dmpfeature::DmpFeature *dmpFeature, sound_settings *a
-) {
+pst::services::TunerPlayerServiceClient *tunerClient;
+
+void Update(pst::dmpconfig::DmpConfig *dmpConfig, pst::dmpconfig::Key *k, pst::dmpfeature::DmpFeature *dmpFeature, sound_settings *a) {
     k->value = DMP_CONFIG_SS_VPT_ONOFF;
-    dmpConfig->Get(*k, a->vptOn);
+    dmpConfig->Get(*k, a->status.vptOn);
 
     k->value = DMP_CONFIG_SS_VPT_MODE;
-    dmpConfig->Get(*k, a->vptMode);
+    dmpConfig->Get(*k, a->status.vptMode);
 
     k->value = DMP_CONFIG_SS_CPHP_ONOFF;
-    dmpConfig->Get(*k, a->clearPhaseOn);
+    dmpConfig->Get(*k, a->status.clearPhaseOn);
 
     k->value = DMP_CONFIG_SS_DSEE_ONOFF;
-    dmpConfig->Get(*k, a->dseeOn);
+    dmpConfig->Get(*k, a->status.dseeOn);
 
     k->value = DMP_CONFIG_SS_DSEECUST_ONOFF;
-    dmpConfig->Get(*k, a->dseeCustOn);
+    dmpConfig->Get(*k, a->status.dseeCustOn);
 
     k->value = DMP_CONFIG_SS_DSEECUST_MODE;
-    dmpConfig->Get(*k, a->dseeCustMode);
+    dmpConfig->Get(*k, a->status.dseeCustMode);
 
     k->value = DMP_CONFIG_SS_DN_ONOFF;
-    dmpConfig->Get(*k, a->DNOn);
+    dmpConfig->Get(*k, a->status.DNOn);
 
     k->value = DMP_CONFIG_SS_EQ6_ONOFF;
-    dmpConfig->Get(*k, a->eq6On);
+    dmpConfig->Get(*k, a->status.eq6On);
 
     k->value = DMP_CONFIG_SS_EQ6_PRESET;
-    dmpConfig->Get(*k, a->eq6Preset);
+    dmpConfig->Get(*k, a->status.eq6Preset);
 
     k->value = DMP_CONFIG_SS_EQ_USE;
-    dmpConfig->Get(*k, a->eqUse);
+    dmpConfig->Get(*k, a->status.eqUse);
 
     std::vector<int> bands6 = {
         DMP_CONFIG_SS_EQ6_BAND1,
@@ -59,14 +59,14 @@ void dumpSoundSettings(
 
     for (int i = 0; i < bands6.size(); i++) {
         k->value = bands6[i];
-        dmpConfig->Get(*k, a->eq6Bands[i]);
+        dmpConfig->Get(*k, a->status.eq6Bands[i]);
     }
 
     k->value = DMP_CONFIG_SS_EQ10_ONOFF;
-    dmpConfig->Get(*k, a->eq10On);
+    dmpConfig->Get(*k, a->status.eq10On);
 
     k->value = DMP_CONFIG_SS_EQ10_PRESET;
-    dmpConfig->Get(*k, a->eq10Preset);
+    dmpConfig->Get(*k, a->status.eq10Preset);
 
     std::vector<int> bands10 = {
         DMP_CONFIG_SS_EQ10_BAND01,
@@ -83,56 +83,121 @@ void dumpSoundSettings(
 
     for (int i = 0; i < bands10.size(); i++) {
         k->value = bands10[i];
-        dmpConfig->Get(*k, a->eq10Bands[i]);
+        dmpConfig->Get(*k, a->status.eq10Bands[i]);
     }
 
     k->value = DMP_CONFIG_SS_TONE_ONOFF;
-    dmpConfig->Get(*k, a->toneControlOn);
+    dmpConfig->Get(*k, a->status.toneControlOn);
 
     k->value = DMP_CONFIG_SS_TONE_LOW;
-    dmpConfig->Get(*k, a->toneControlLow);
+    dmpConfig->Get(*k, a->status.toneControlLow);
 
     k->value = DMP_CONFIG_SS_TONE_MID;
-    dmpConfig->Get(*k, a->toneControlMid);
+    dmpConfig->Get(*k, a->status.toneControlMid);
 
     k->value = DMP_CONFIG_SS_TONE_HIGH;
-    dmpConfig->Get(*k, a->toneControlHigh);
+    dmpConfig->Get(*k, a->status.toneControlHigh);
 
     k->value = DMP_CONFIG_SS_TONE_LOW_FREQ;
-    dmpConfig->Get(*k, a->toneControlLowFreq);
+    dmpConfig->Get(*k, a->status.toneControlLowFreq);
 
     k->value = DMP_CONFIG_SS_TONE_MID_FREQ;
-    dmpConfig->Get(*k, a->toneControlMidFreq);
+    dmpConfig->Get(*k, a->status.toneControlMidFreq);
 
     k->value = DMP_CONFIG_SS_TONE_HIGH_FREQ;
-    dmpConfig->Get(*k, a->toneControlHighFreq);
+    dmpConfig->Get(*k, a->status.toneControlHighFreq);
 
     k->value = DMP_CONFIG_SS_DCLINEAR_ONOFF;
-    dmpConfig->Get(*k, a->dcLinearOn);
+    dmpConfig->Get(*k, a->status.dcLinearOn);
 
     k->value = DMP_CONFIG_SS_DCLINEAR_FILTER;
-    dmpConfig->Get(*k, a->dcLinearFilter);
+    dmpConfig->Get(*k, a->status.dcLinearFilter);
 
     k->value = DMP_CONFIG_SS_CAPLUS_ONOFF;
-    dmpConfig->Get(*k, a->clearAudioOn);
+    dmpConfig->Get(*k, a->status.clearAudioOn);
 
     k->value = DMP_CONFIG_SS_SRCDIRECT_ONOFF;
-    dmpConfig->Get(*k, a->directSourceOn);
+    dmpConfig->Get(*k, a->status.directSourceOn);
 
     k->value = DMP_CONFIG_VOL_MASTERVOL;
-    dmpConfig->Get(*k, a->masterVolume);
+    dmpConfig->Get(*k, a->status.masterVolume);
 
     k->value = DMP_CONFIG_DSEEAI_ONOFF;
-    dmpConfig->Get(*k, a->dseeHXOn);
+    dmpConfig->Get(*k, a->status.dseeHXOn);
 
     k->value = DMP_CONFIG_VINYL_ONOFF;
-    dmpConfig->Get(*k, a->vinylOn);
+    dmpConfig->Get(*k, a->status.vinylOn);
 
     k->value = DMP_CONFIG_VINYL_TYPE;
-    dmpConfig->Get(*k, a->vinylType);
+    dmpConfig->Get(*k, a->status.vinylType);
 
-    a->clearAudioAvailable = dmpFeature->IsFeaturedClearAudioPlus();
-    a->directSourceAvailable = dmpFeature->IsFeaturedSourceDirect();
+    a->status.clearAudioAvailable = dmpFeature->IsFeaturedClearAudioPlus();
+    a->status.directSourceAvailable = dmpFeature->IsFeaturedSourceDirect();
+
+    if (tunerClient == nullptr) {
+        auto f = pst::services::TunerPlayerServiceClientFactory();
+        tunerClient = f.CreateInstance();
+    }
+
+    uint freq = 0;
+    tunerClient->GetFrequency(freq);
+    a->fmStatus.freq = (int)freq;
+    a->fmStatus.state = tunerClient->GetTunerState();
+}
+
+void SetFmStereoMode(int value, sound_settings *shmp) {
+    auto stereoMode = pst::services::ITunerPlayerService::StereoMode();
+    tunerClient->GetStereoMode(stereoMode);
+    printf("stereo is %d, setting to %d\n", stereoMode.value, value);
+    stereoMode.value = value;
+    tunerClient->SetStereoMode(stereoMode);
+    shmp->fmStatus.stereo = value;
+}
+
+void SetFM(int value, sound_settings *shmp) {
+    if (tunerClient == nullptr) {
+        auto f = pst::services::TunerPlayerServiceClientFactory();
+        tunerClient = f.CreateInstance();
+    }
+
+    auto res = tunerClient->GetTunerState();
+    printf("tuner status %d, action %d\n", res, value);
+
+    if (value == 1) {
+        tunerClient->Open();
+        tunerClient->Play();
+
+        uint tunerMin, tunerMax, tunerStep = 0;
+        tunerClient->GetBandwidth(tunerMin, tunerMax, tunerStep);
+        printf("Bandwidth: %d %d %d\n", tunerMin, tunerMax, tunerStep);
+
+        tunerClient->GetSoftBandwidth(tunerMin, tunerMax, tunerStep);
+        printf("Soft bandwidth: %d %d %d\n", tunerMin, tunerMax, tunerStep);
+
+        tunerClient->SetSoftBandwidth(FM_FREQ_MIN, FM_FREQ_MAX, tunerStep);
+        auto stereoMode = pst::services::ITunerPlayerService::StereoMode();
+        tunerClient->GetStereoMode(stereoMode);
+        shmp->fmStatus.stereo = (bool)stereoMode.value;
+    } else {
+        tunerClient->Stop();
+        tunerClient->Close();
+    }
+
+    shmp->fmStatus.state = tunerClient->GetTunerState();
+    printf("tuner status: %d\n", res);
+    uint freq = 0;
+    tunerClient->GetFrequency(freq);
+    shmp->fmStatus.freq = (int)freq;
+}
+
+void SetFmFreq(int value, sound_settings *shmp) {
+    if (tunerClient == nullptr) {
+        printf("client is nullpo\n");
+        return;
+    }
+
+    printf("tuner freq to %d\n", value);
+    tunerClient->SetFrequency(value);
 }
 
 int main(int argc, char **argv) {
@@ -196,11 +261,26 @@ int main(int argc, char **argv) {
         if (sem_wait(&shmp->sem1) == -1)
             errExit("sem_wait");
 
-        printf("request\n");
-        dumpSoundSettings(dmpconfig, &k, &dmpFeature, shmp);
-
-        /* Post 'sem2' to tell the peer that it can now
-           access the modified data in shared memory. */
+        printf("request %d\n", shmp->command.id);
+        switch (shmp->command.id) {
+        case PSC_UPDATE:
+            Update(dmpconfig, &k, &dmpFeature, shmp);
+            break;
+        case PSC_SET_FM:
+            SetFM(shmp->command.valueInt, shmp);
+            break;
+        case PSC_SET_FM_FREQ:
+            SetFmFreq(shmp->command.valueInt, shmp);
+            break;
+        case PSC_SET_FM_STEREO:
+            SetFmStereoMode(shmp->command.valueInt, shmp);
+            break;
+        default:
+        case PSC_UNKNOWN:
+            printf("unknown command\n");
+            break;
+        }
+        shmp->command.id = PSC_UNKNOWN;
 
         if (sem_post(&shmp->sem2) == -1)
             errExit("sem_post");

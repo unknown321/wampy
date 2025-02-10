@@ -37,6 +37,7 @@ include_directories(
         libs/ImageMagick/Magick++/lib
         libs/glm
         libs/alsa-lib/src/include
+        libs/alsa-lib/src/include/alsa
         libs/mINI/src
         libs/sqlite/build-${arch}/install/include
         libs/icu/icu4c/source/build-${arch}/install/include
@@ -188,8 +189,9 @@ else ()
             INSTALL_RPATH "./;../lib/;/system/lib;/system/vendor/unknown321/lib;/lib;/system/vendor/sony/lib")
 
     find_library(MALI Mali_linux PATHS libs/sysroot/lib/)
-    #    find_library(ASOUND asound PATHS libs)
     target_link_libraries(${PROJECT_NAME} ${MALI})
+    find_library(ASOUND asound PATHS libs/sysroot/lib/)
+    target_link_libraries(${PROJECT_NAME} ${ASOUND})
     #    target_link_libraries(${PROJECT_NAME} "${ASOUND}")
 endif ()
 

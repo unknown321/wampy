@@ -1,3 +1,6 @@
+on post-fs-data
+    insmod /system/lib/modules/radio-si4708icx.ko
+
 on boot
   start pstserver
   start wampy

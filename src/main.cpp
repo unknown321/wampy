@@ -354,6 +354,8 @@ int main(int, char **) {
     skin.WithMasterVolumeTableDSDDirs("../ss/user/master_volume_dsd/");
     skin.WithToneControlTableDirs("../ss/system/tone_control/");
     skin.WithToneControlTableDirs("../ss/user/tone_control/");
+
+    skin.radioAvailable = true;
 #else
     skin.WithWinampSkinDir("/system/vendor/unknown321/usr/share/wampy/skins/winamp/");
     skin.WithWinampSkinDir("/contents/wampy/skins/winamp/");
@@ -372,6 +374,8 @@ int main(int, char **) {
 
     skin.WithToneControlTableDirs("/system/vendor/unknown321/usr/share/wampy/sound_settings/tone_control/");
     skin.WithToneControlTableDirs("/contents/wampy/sound_settings/tone_control/");
+
+    skin.radioAvailable = exists("/dev/radio0");
 #endif
 
     skin.hold_toggled = &hold_toggled;

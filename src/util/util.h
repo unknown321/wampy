@@ -1,5 +1,5 @@
-#ifndef IMGUITEST_UTIL_H
-#define IMGUITEST_UTIL_H
+#ifndef WAMPY_UTIL_H
+#define WAMPY_UTIL_H
 
 #include "GLFW/glfw3.h"
 #include "glm/ext/matrix_float4x4.hpp"
@@ -163,4 +163,8 @@ bool replace(std::string &str, const std::string &from, const std::string &to);
 
 void toUpper(std::string &s);
 
-#endif // IMGUITEST_UTIL_H
+void RadioOn();
+
+void RadioOff();
+
+#endif // WAMPY_UTIL_H

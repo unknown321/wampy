@@ -1,9 +1,13 @@
 #ifndef WAMPY_HAGOROMO_H
 #define WAMPY_HAGOROMO_H
 
+#include "asoundlib.h"
 #include "command.pb.h"
 #include "connector.h"
 #include "hagoromoStatus.h"
+
+#define ALSA_ANALOG_INPUT_OFF 0
+#define ALSA_ANALOG_INPUT_TUNER 1
 
 namespace Hagoromo {
     // lconvert HgrmMediaPlayerApp_en_US.qm
@@ -87,7 +91,7 @@ namespace Hagoromo {
 
         void powerLoop(bool *render, bool *power) override;
 
-        __attribute__((unused)) void volumeLoop() override{};
+        void volumeLoop() override;
 
         void FeatureBigCover(bool enable) override;
 

@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 // #include "alsa/asoundlib.h"
+#include "asoundlib.h"
 #include "hagoromo.h"
 #include "sqlite3.h"
 #include "wampy.h"
@@ -427,60 +428,72 @@ namespace Hagoromo {
 
         DLOG("updating sound settings\n");
 
-        if (soundSettings.s->clearAudioAvailable) {
-            if (soundSettings.s->clearAudioOn != ss.clearAudioOn) {
+        if (soundSettings.s->status.clearAudioAvailable) {
+            if (soundSettings.s->status.clearAudioOn != ss.status.clearAudioOn) {
                 pauseIfNeeded();
-                SetClearAudio(ss.clearAudioOn);
-                DLOG("ca: %d\n", ss.clearAudioOn);
+                SetClearAudio(ss.status.clearAudioOn);
+                DLOG("ca: %d\n", ss.status.clearAudioOn);
             }
 
-            if (ss.clearAudioOn == 1) {
+            if (ss.status.clearAudioOn == 1) {
                 // ignore everything else
                 restorePlayState();
                 return;
             }
         }
 
-        if (soundSettings.s->directSourceAvailable) {
-            if (soundSettings.s->directSourceOn != ss.directSourceOn) {
+        if (soundSettings.s->status.directSourceAvailable) {
+            if (soundSettings.s->status.directSourceOn != ss.status.directSourceOn) {
                 pauseIfNeeded();
-                SetDirectSource(ss.directSourceOn);
-                DLOG("Direct Source: %d\n", ss.directSourceOn);
+                SetDirectSource(ss.status.directSourceOn);
+                DLOG("Direct Source: %d\n", ss.status.directSourceOn);
             }
 
-            if (ss.directSourceOn == 1) {
+            if (ss.status.directSourceOn == 1) {
                 // ignore everything else
                 restorePlayState();
                 return;
             }
         }
 
-        if (soundSettings.s->vptOn != ss.vptOn) {
+        if (soundSettings.s->status.vptOn != ss.status.vptOn) {
             pauseIfNeeded();
-            SetVPT(ss.vptOn);
+            SetVPT(ss.status.vptOn);
         }
 
-        if (soundSettings.s->vptMode != ss.vptMode) {
-            DLOG("vpt mode %d -> %d (index %d)\n", soundSettings.s->vptMode, ss.vptMode, vptA50SmallToHgrmIndex.at(ss.vptMode));
+        if (soundSettings.s->status.vptMode != ss.status.vptMode) {
+            DLOG(
+                "vpt mode %d -> %d (index %d)\n",
+                soundSettings.s->status.vptMode,
+                ss.status.vptMode,
+                vptA50SmallToHgrmIndex.at(ss.status.vptMode)
+            );
             pauseIfNeeded();
-            SetVPTPreset(vptA50SmallToHgrmIndex.at(ss.vptMode));
+            SetVPTPreset(vptA50SmallToHgrmIndex.at(ss.status.vptMode));
         }
 
-        if (soundSettings.s->dseeHXOn != ss.dseeHXOn) {
+        if (soundSettings.s->status.dseeHXOn != ss.status.dseeHXOn) {
             pauseIfNeeded();
-            SetDsee(ss.dseeHXOn);
+            SetDsee(ss.status.dseeHXOn);
         }
 
-        if (soundSettings.s->eq6Preset != ss.eq6Preset) {
-            DLOG("eq6preset %d -> %d (index %d)\n", soundSettings.s->eq6Preset, ss.eq6Preset, eq6PresetToHgrmIndex.at(ss.eq6Preset));
+        if (soundSettings.s->status.eq6Preset != ss.status.eq6Preset) {
+            DLOG(
+                "eq6preset %d -> %d (index %d)\n",
+                soundSettings.s->status.eq6Preset,
+                ss.status.eq6Preset,
+                eq6PresetToHgrmIndex.at(ss.status.eq6Preset)
+            );
             pauseIfNeeded();
-            SetEqPreset(eq6PresetToHgrmIndex.at(ss.eq6Preset));
+            SetEqPreset(eq6PresetToHgrmIndex.at(ss.status.eq6Preset));
             soundSettings.Update();
         }
 
-        if (!std::equal(std::begin(soundSettings.s->eq6Bands), std::end(soundSettings.s->eq6Bands), std::begin(ss.eq6Bands))) {
+        if (!std::equal(
+                std::begin(soundSettings.s->status.eq6Bands), std::end(soundSettings.s->status.eq6Bands), std::begin(ss.status.eq6Bands)
+            )) {
             std::vector<double> bands;
-            for (auto v : ss.eq6Bands) {
+            for (auto v : ss.status.eq6Bands) {
                 bands.push_back(v);
             }
             pauseIfNeeded();
@@ -488,16 +501,20 @@ namespace Hagoromo {
             soundSettings.Update();
         }
 
-        if (soundSettings.s->eqUse != ss.eqUse) {
-            DLOG("eq use: %d -> %d\n", soundSettings.s->eqUse, ss.eqUse);
+        if (soundSettings.s->status.eqUse != ss.status.eqUse) {
+            DLOG("eq use: %d -> %d\n", soundSettings.s->status.eqUse, ss.status.eqUse);
             pauseIfNeeded();
-            SetToneControlOrEQ(ss.eqUse);
+            SetToneControlOrEQ(ss.status.eqUse);
         }
 
-        if (ss.eqUse == 2) {
-            if (!std::equal(std::begin(soundSettings.s->eq10Bands), std::end(soundSettings.s->eq10Bands), std::begin(ss.eq10Bands))) {
+        if (ss.status.eqUse == 2) {
+            if (!std::equal(
+                    std::begin(soundSettings.s->status.eq10Bands),
+                    std::end(soundSettings.s->status.eq10Bands),
+                    std::begin(ss.status.eq10Bands)
+                )) {
                 std::vector<double> bands;
-                for (auto v : ss.eq10Bands) {
+                for (auto v : ss.status.eq10Bands) {
                     bands.push_back(int(v / 2));
                 }
                 pauseIfNeeded();
@@ -505,113 +522,122 @@ namespace Hagoromo {
             }
         }
 
-        if (soundSettings.s->toneControlLow != ss.toneControlLow || soundSettings.s->toneControlMid != ss.toneControlMid ||
-            soundSettings.s->toneControlHigh != ss.toneControlHigh) {
+        if (soundSettings.s->status.toneControlLow != ss.status.toneControlLow ||
+            soundSettings.s->status.toneControlMid != ss.status.toneControlMid ||
+            soundSettings.s->status.toneControlHigh != ss.status.toneControlHigh) {
             std::vector<int> values;
-            values.push_back(ss.toneControlLow);
-            values.push_back(ss.toneControlMid);
-            values.push_back(ss.toneControlHigh);
+            values.push_back(ss.status.toneControlLow);
+            values.push_back(ss.status.toneControlMid);
+            values.push_back(ss.status.toneControlHigh);
             DLOG(
                 "tone low: %d -> %d\ntone mid: %d -> %d\ntone high: %d -> %d\n",
-                soundSettings.s->toneControlLow,
-                ss.toneControlLow,
-                soundSettings.s->toneControlMid,
-                ss.toneControlMid,
-                soundSettings.s->toneControlHigh,
-                ss.toneControlHigh
+                soundSettings.s->status.toneControlLow,
+                ss.status.toneControlLow,
+                soundSettings.s->status.toneControlMid,
+                ss.status.toneControlMid,
+                soundSettings.s->status.toneControlHigh,
+                ss.status.toneControlHigh
             );
             pauseIfNeeded();
             SetToneControlValues(values);
         }
 
-        if (ss.dseeCustOn == true) {
-            if (soundSettings.s->dseeCustOn == true) {
-                if (ss.dseeCustMode != soundSettings.s->dseeCustMode) {
+        if (ss.status.dseeCustOn == true) {
+            if (soundSettings.s->status.dseeCustOn == true) {
+                if (ss.status.dseeCustMode != soundSettings.s->status.dseeCustMode) {
                     // just change mode
-                    DLOG("dsee custom mode: %d (index %d)\n", ss.dseeCustMode, dseeModeToHgrmIndex.at(ss.dseeCustMode));
+                    DLOG("dsee custom mode: %d (index %d)\n", ss.status.dseeCustMode, dseeModeToHgrmIndex.at(ss.status.dseeCustMode));
                     pauseIfNeeded();
-                    SetDseeCustMode(dseeModeToHgrmIndex.at(ss.dseeCustMode));
+                    SetDseeCustMode(dseeModeToHgrmIndex.at(ss.status.dseeCustMode));
                 }
             } else {
                 // changing mode will turn dsee on
-                DLOG("dsee custom mode: %d (index %d)\n", ss.dseeCustMode, dseeModeToHgrmIndex.at(ss.dseeCustMode));
+                DLOG("dsee custom mode: %d (index %d)\n", ss.status.dseeCustMode, dseeModeToHgrmIndex.at(ss.status.dseeCustMode));
                 pauseIfNeeded();
-                SetDseeCustMode(dseeModeToHgrmIndex.at(ss.dseeCustMode));
+                SetDseeCustMode(dseeModeToHgrmIndex.at(ss.status.dseeCustMode));
             }
         } else {
-            if (soundSettings.s->dseeCustOn == false) {
+            if (soundSettings.s->status.dseeCustOn == false) {
                 // do nothing
             } else {
                 // turn off
-                DLOG("dsee custom: %d\n", ss.dseeCustOn);
+                DLOG("dsee custom: %d\n", ss.status.dseeCustOn);
                 pauseIfNeeded();
-                SetDseeCust(ss.dseeCustOn);
+                SetDseeCust(ss.status.dseeCustOn);
             }
         }
 
-        if (ss.dcLinearOn == true) {
-            if (soundSettings.s->dcLinearOn == true) {
-                if (soundSettings.s->dcLinearFilter != ss.dcLinearFilter) {
+        if (ss.status.dcLinearOn == true) {
+            if (soundSettings.s->status.dcLinearOn == true) {
+                if (soundSettings.s->status.dcLinearFilter != ss.status.dcLinearFilter) {
                     // just change mode
                     DLOG(
                         "dc phase preset: %d -> %d (index %d)\n",
-                        soundSettings.s->dcLinearFilter,
-                        ss.dcLinearFilter,
-                        dcFilterToHgrmIndex.at(ss.dcLinearFilter)
+                        soundSettings.s->status.dcLinearFilter,
+                        ss.status.dcLinearFilter,
+                        dcFilterToHgrmIndex.at(ss.status.dcLinearFilter)
                     );
                     pauseIfNeeded();
-                    SetDCPhasePreset(dcFilterToHgrmIndex.at(ss.dcLinearFilter));
+                    SetDCPhasePreset(dcFilterToHgrmIndex.at(ss.status.dcLinearFilter));
                 }
             } else {
                 // changing mode will turn dc on
                 DLOG(
                     "dc phase preset: %d -> %d (index %d)\n",
-                    soundSettings.s->dcLinearFilter,
-                    ss.dcLinearFilter,
-                    dcFilterToHgrmIndex.at(ss.dcLinearFilter)
+                    soundSettings.s->status.dcLinearFilter,
+                    ss.status.dcLinearFilter,
+                    dcFilterToHgrmIndex.at(ss.status.dcLinearFilter)
                 );
                 pauseIfNeeded();
-                SetDCPhasePreset(dcFilterToHgrmIndex.at(ss.dcLinearFilter));
+                SetDCPhasePreset(dcFilterToHgrmIndex.at(ss.status.dcLinearFilter));
             }
         } else {
-            if (soundSettings.s->dcLinearOn == false) {
+            if (soundSettings.s->status.dcLinearOn == false) {
                 // do nothing
             } else {
                 // turn off
-                DLOG("dc phase: %d\n", ss.dcLinearOn);
+                DLOG("dc phase: %d\n", ss.status.dcLinearOn);
                 pauseIfNeeded();
-                SetDCPhase(ss.dcLinearOn);
+                SetDCPhase(ss.status.dcLinearOn);
             }
         }
 
-        if (ss.vinylOn == true) {
-            if (soundSettings.s->vinylOn == true) {
-                if (soundSettings.s->vinylType != ss.vinylType) {
+        if (ss.status.vinylOn == true) {
+            if (soundSettings.s->status.vinylOn == true) {
+                if (soundSettings.s->status.vinylType != ss.status.vinylType) {
                     // just change mode
                     DLOG(
-                        "vinyl mode: %d -> %d (index %d)\n", soundSettings.s->vinylType, ss.vinylType, vinylTypeToHgrmIndex.at(ss.vinylType)
+                        "vinyl mode: %d -> %d (index %d)\n",
+                        soundSettings.s->status.vinylType,
+                        ss.status.vinylType,
+                        vinylTypeToHgrmIndex.at(ss.status.vinylType)
                     );
-                    if (ss.vinylType == 7) {
+                    if (ss.status.vinylType == 7) {
                         DLOG("ignoring vinyl type 7\n");
                     } else {
                         pauseIfNeeded();
-                        SetVinylMode(vinylTypeToHgrmIndex.at(ss.vinylType));
+                        SetVinylMode(vinylTypeToHgrmIndex.at(ss.status.vinylType));
                     }
                 }
             } else {
                 // changing mode will turn vinyl on
-                DLOG("vinyl mode: %d -> %d (index %d)\n", soundSettings.s->vinylType, ss.vinylType, vinylTypeToHgrmIndex.at(ss.vinylType));
+                DLOG(
+                    "vinyl mode: %d -> %d (index %d)\n",
+                    soundSettings.s->status.vinylType,
+                    ss.status.vinylType,
+                    vinylTypeToHgrmIndex.at(ss.status.vinylType)
+                );
                 pauseIfNeeded();
-                SetVinylMode(vinylTypeToHgrmIndex.at(ss.vinylType));
+                SetVinylMode(vinylTypeToHgrmIndex.at(ss.status.vinylType));
             }
         } else {
-            if (soundSettings.s->vinylOn == false) {
+            if (soundSettings.s->status.vinylOn == false) {
                 // do nothing
             } else {
                 // turn off
-                DLOG("vinyl: %d\n", ss.vinylOn);
+                DLOG("vinyl: %d\n", ss.status.vinylOn);
                 pauseIfNeeded();
-                SetVinyl(ss.vinylOn);
+                SetVinyl(ss.status.vinylOn);
             }
         }
 
@@ -868,7 +894,8 @@ namespace Hagoromo {
             exit(EXIT_FAILURE);
         }
 
-        if (inotify_add_watch(fd, brightnessPath, IN_CLOSE_WRITE) < 0) {
+        auto brfd = inotify_add_watch(fd, brightnessPath, IN_CLOSE_WRITE);
+        if (brfd < 0) {
             perror("inotify_add_watch");
             exit(EXIT_FAILURE);
         }
@@ -910,31 +937,35 @@ namespace Hagoromo {
                         for (char *ptr = buf; ptr < buf + len; ptr += sizeof(struct inotify_event) + event->len) {
                             event = (const struct inotify_event *)ptr;
                             if (event->mask & IN_CLOSE_WRITE) {
-                                int ff = open(brightnessPath, O_RDONLY);
-                                if (ff < 0) {
-                                    perror("brightness file");
-                                    exit(EXIT_FAILURE);
-                                }
+                                if (event->wd == brfd) {
+                                    int ff = open(brightnessPath, O_RDONLY);
+                                    if (ff < 0) {
+                                        perror("brightness file");
+                                        exit(EXIT_FAILURE);
+                                    }
 
-                                char b[1];
-                                if (read(ff, b, sizeof b) < 0) {
-                                    perror("failed to read inotified changes\n");
-                                    exit(EXIT_FAILURE);
-                                }
+                                    char b[1];
+                                    if (read(ff, b, sizeof b) < 0) {
+                                        perror("failed to read inotified changes\n");
+                                        exit(EXIT_FAILURE);
+                                    }
 
-                                if (b[0] == '0') {
-                                    printf("power off\n");
-                                    *power = false;
-                                } else {
-                                    printf("power on\n");
-                                    *power = true;
-                                }
+                                    if (b[0] == '0') {
+                                        DLOG("power off\n");
+                                        *power = false;
+                                        if (soundSettings.s->fmStatus.state == 2) {
+                                        }
+                                    } else {
+                                        DLOG("power on\n");
+                                        *power = true;
+                                    }
 
-                                close(ff);
+                                    close(ff);
+                                }
                             }
 
                             if (event->len)
-                                printf("%s", event->name);
+                                DLOG("%s", event->name);
                         }
                     }
                 }
@@ -947,6 +978,10 @@ namespace Hagoromo {
         auto pwr = [this]() { powerLoop(render, &power); };
         std::thread powert(pwr);
         powert.detach();
+
+        auto snd = [this]() { volumeLoop(); };
+        std::thread voll(snd);
+        voll.detach();
     }
 
     void HagoromoConnector::SetClearAudio(bool enable) {
@@ -1208,58 +1243,78 @@ namespace Hagoromo {
         playStateBeforeSoundSettingsUpdate = UNKNOWN;
     }
 
-    /* alsa doesn't receive events (see `amixer sevents`)
-     alsa handle doesn't update either
-     volume is provided by hagoromo!
-        __attribute__((unused)) void HagoromoConnector::volumeLoop() {
-            long pvol = 0;
-            const char *master = "master volume";
-            static char card[64] = "default";
-            int err;
-            snd_mixer_t *handle;
+    /* alsa uses ioctl to update events, so polling with `poll` doesn't work
+     volume is provided by hagoromo
+      */
+    void HagoromoConnector::volumeLoop() {
+        snd_mixer_t *mhandle;
+        static struct snd_mixer_selem_regopt smixer_options;
+        static int smixer_level = 0;
+        int err;
 
-            for (;;) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                if ((err = snd_mixer_open(&handle, 0)) < 0) {
-                    printf("Mixer %s open error: %s", card, snd_strerror(err));
-                    break;
-                }
-
-                if ((err = snd_mixer_attach(handle, card)) < 0) {
-                    printf("Mixer attach %s error: %s", card, snd_strerror(err));
-                    snd_mixer_close(handle);
-                    break;
-                }
-
-                if ((err = snd_mixer_selem_register(handle, nullptr, nullptr)) < 0) {
-                    printf("Mixer register error: %s", snd_strerror(err));
-                    snd_mixer_close(handle);
-                    break;
-                }
-
-                err = snd_mixer_load(handle);
-                if (err < 0) {
-                    printf("Mixer %s load error: %s", card, snd_strerror(err));
-                    snd_mixer_close(handle);
-                    continue;
-                }
-
-                snd_mixer_selem_id_t *sid;
-                snd_mixer_selem_id_alloca(&sid);
-                snd_mixer_selem_id_set_index(sid, 0);
-                snd_mixer_selem_id_set_name(sid, master);
-                auto elem = snd_mixer_find_selem(handle, sid);
-                if (elem == nullptr) {
-                    fprintf(stderr, "failed to find element\n");
-                    continue;
-                }
-
-                snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_MONO, &pvol);
-                Volume = (int) pvol;
-                snd_mixer_close(handle);
-            }
-            fprintf(stderr, "volume loop failed\n");
+        if ((err = snd_mixer_open(&mhandle, 0)) < 0) {
+            DLOG("Mixer open error: %s\n", snd_strerror(err));
+            return;
         }
-    */
 
+        char card[] = "hw:0";
+        if (smixer_level == 0 && (err = snd_mixer_attach(mhandle, card)) < 0) {
+            DLOG("Mixer attach %s error: %s\n", card, snd_strerror(err));
+            snd_mixer_close(mhandle);
+            return;
+        }
+
+        if ((err = snd_mixer_selem_register(mhandle, smixer_level > 0 ? &smixer_options : nullptr, nullptr)) < 0) {
+            DLOG("Mixer register error: %s\n", snd_strerror(err));
+            snd_mixer_close(mhandle);
+            return;
+        }
+
+        err = snd_mixer_load(mhandle);
+        if (err < 0) {
+            DLOG("Mixer load %s error: %s\n", card, snd_strerror(err));
+            snd_mixer_close(mhandle);
+            return;
+        }
+
+        DLOG("Simple ctrls: %i\n", snd_mixer_get_count(mhandle));
+
+        snd_mixer_elem_t *elem = snd_mixer_first_elem(mhandle);
+        while (true) {
+            const char *name = snd_mixer_selem_get_name(elem);
+            //            DLOG("%s\n", snd_mixer_selem_get_name(elem));
+            if (strcmp(name, "analog input device") == 0) {
+                break;
+            }
+            elem = snd_mixer_elem_next(elem);
+            if (!elem) {
+                break;
+            }
+        }
+
+        if (!elem) {
+            DLOG("element not found\n");
+            return;
+        }
+
+        DLOG("volume loop started\n");
+
+        uint fmOutputState;
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            if (power) {
+                continue;
+            }
+
+            if (soundSettings.s->fmStatus.state != 2) {
+                continue;
+            }
+
+            snd_mixer_selem_get_enum_item(elem, static_cast<snd_mixer_selem_channel_id_t>(0), &fmOutputState);
+            if (fmOutputState == ALSA_ANALOG_INPUT_OFF) {
+                DLOG("set analog input to tuner\n");
+                snd_mixer_selem_set_enum_item(elem, static_cast<snd_mixer_selem_channel_id_t>(0), ALSA_ANALOG_INPUT_TUNER);
+            }
+        }
+    }
 } // namespace Hagoromo
