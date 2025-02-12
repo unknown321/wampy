@@ -172,6 +172,8 @@ with percentage per every DAP with Walkman One installed?). No matter the reason
 to take a look yourself into firmware and that's what we are going to do. Let's compare stock NW1A firmware and Walkman
 One NW-A50. That way we could find Mr.Walkman's changes and probably get an explanation.
 
+Edit: there is an explanation for points above; post linked at the bottom.
+
 Comparing root filesystem, ignoring translations and audioanalyzer params (both don't matter):
 
 <details>
@@ -661,6 +663,9 @@ to back up their opinions. At least this hunt for info made me research volume t
 the way NW-A100 also uses `.tbl` files, different size and structure, but the process should apply to it just like it
 does on NW-A50.
 
+Edit: Mr.Walkman explains firmware
+changes: [link][10].
+
 [1]: https://www.rockbox.org/wiki/SonyNWDestTool.html
 
 [2]: http://www.lieberbiber.de/2015/07/05/mediatek-details-little-kernel/
@@ -678,3 +683,5 @@ does on NW-A50.
 [8]: https://tldp.org/LDP/lkmpg/2.4/html/x579.html
 
 [9]: https://www.head-fi.org/threads/sony-walkman-custom-firmware-non-android.943661/post-18092878
+
+[10]: https://web.archive.org/web/20250212060435/https://www.head-fi.org/threads/sony-walkman-custom-firmware-non-android.943661/page-594#post-18572213

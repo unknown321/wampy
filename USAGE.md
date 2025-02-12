@@ -506,7 +506,7 @@ useful when signal is flapping between mono and stereo.
 
 Radio will stop for up to a second after hitting power button.
 
-[Developer notes](./MAKING_OF_FM.md);
+[Developer notes](./MAKING_OF_FM.md)
 
 ## Providing debug information
 
