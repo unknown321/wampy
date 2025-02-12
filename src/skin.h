@@ -236,6 +236,7 @@ struct Skin {
         for (const auto &d : cassetteTapeDirectories) {
             listdirs(d.c_str(), &tapeListCassette);
         }
+        DLOG("exit\n");
     }
 
     void WithMasterVolumeTableDirs(const std::string &d) { masterVolumeTableDirectories.push_back(d); };
