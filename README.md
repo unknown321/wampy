@@ -56,8 +56,7 @@ See [USAGE.md](./USAGE.md).
 
 ### Pre-install
 
-It is recommended to make a backup. See [BACKUP.md](./BACKUP.md).
-You should also read [USAGE.md](./USAGE.md) beforehand to get acquainted with quirks and bugs.
+You should read [USAGE.md](./USAGE.md) beforehand to get acquainted with quirks and bugs.
 
 Check [Device support](#device-support) table, find your device and select supported version for currently installed
 firmware.

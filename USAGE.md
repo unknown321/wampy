@@ -56,8 +56,7 @@ points in default player terms).
 
 If Wampy failed to start 3 times in a row, it stops starting until you edit `wampy/config.ini`.
 Remove config file or set `[wampy][badboots]` to 0 (along with possible device-breaking settings) and
-reboot the device. If you cannot access config file (device stuck in boot loop and won't connect to pc, very unlikely
-situation), restore it from backup that you made beforehand (see [BACKUP.md](./BACKUP.md)).
+reboot the device.
 
 ### Wampy is on screen but doesn't respond and cannot be toggled off
 

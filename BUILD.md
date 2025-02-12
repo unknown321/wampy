@@ -10,6 +10,9 @@
 
 On Debian/Ubuntu: `sudo apt-get install guestmount abootimg --no-install-recommends && sudo apt-get install imagemagick`
 
+It is recommended to make a backup if you are going to modify init scripts, nvram and other stuff that may put your
+device into a brick. See [BACKUP.md](./BACKUP.md).
+
 #### Getting NW_WM_FW.UPG
 
 Download [installer](https://walkman.update.sony.net/fw/pc/A50/J/NW-A50_V1_02.exe), launch it. Use your os' find utility
