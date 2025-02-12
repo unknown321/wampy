@@ -34,6 +34,7 @@
 * [Volume tables (VolT)](#volume-tables-volt)
 * [Equalizer / audio filters (EQ)](#equalizer--audio-filters-eq)
 * [Equalizer per song settings (EQ/Song)](#equalizer-per-song-settings-eqsong)
+* [FM radio](#fm-radio)
 * [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
@@ -156,6 +157,8 @@ Issues:
 
 - Tapping position bar doesn't work sometimes
 - Track time and title marquee tick in uneven intervals
+- Some skins don't work. Winamp had no strict standards on skin format; Wampy is not as flexible and expects at least
+  some files to be present in specific resolution.
 
 Quirks:
 
