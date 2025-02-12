@@ -28,23 +28,23 @@ Also works on Walkman One for [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [
 - Default player enhancements (add clock and increase cover art size)
 - Digital clock skin (pretty!)
 - [Low latency USB DAC module](https://github.com/zhangboyang/llusbdac)
-- FM radio on devices with FM chip and Walkman One (A30/40/50)
+- FM radio on devices with FM chip and Walkman One (A40/50, A30 doesn't work)
 
 See [USAGE.md](./USAGE.md).
 
 ## Device support
 
-| Device          | Stock | Walkman One | Notes                                                    |
-|-----------------|-------|-------------|----------------------------------------------------------|
-| NW-A50          | ✅     | ✅           |                                                          |
-| └──A50Z mod     | ✅     |             | mod is unavailable                                       |
-| NW-A40          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
-| └──[A50 mod][6] | ✅     |             | confirmed by community                                   |
-| NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
-| NW-ZX300        | ?     | ✅           | looking for tester [#12][7]                              |
-| NW-WM1A         | ✅     | ✅           | UI doesn't fill the screen                               |
-| NW-WM1Z         | ✅     | ✅           | UI doesn't fill the screen                               |
-| DMP-Z1          | ?     |             | looking for the bravest tester of them all               |
+| Device          | Stock | Walkman One | Notes                                                                                  |
+|-----------------|-------|-------------|----------------------------------------------------------------------------------------|
+| NW-A50          | ✅     | ✅           |                                                                                        |
+| └──A50Z mod     | ✅     |             | mod is unavailable                                                                     |
+| NW-A40          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One                               |
+| └──[A50 mod][6] | ✅     |             | confirmed by community                                                                 |
+| NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One. FM radio not working at all. |
+| NW-ZX300        | ?     | ✅           | looking for tester [#12][7]                                                            |
+| NW-WM1A         | ✅     | ✅           | UI doesn't fill the screen                                                             |
+| NW-WM1Z         | ✅     | ✅           | UI doesn't fill the screen                                                             |
+| DMP-Z1          | ?     |             | looking for the bravest tester of them all                                             |
 
 [6]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
 

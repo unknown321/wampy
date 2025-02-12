@@ -498,7 +498,7 @@ See [EQUALIZER_PER_SONG_SETTINGS.md](./EQUALIZER_PER_SONG_SETTINGS.md)
 
 <img src="images/settings-fm.png">
 
-Radio works only on devices with FM chip: A30, A40, A50.
+Radio works only on devices with FM chip: A40, A50. A30 does not work.
 
 Range: 76-108 MHz.
 

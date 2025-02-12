@@ -50,6 +50,8 @@ sound libraries is aware of mixer changes, but there is no time to do it.
 
 Finally, radio works just like it supposed to.
 
+Or not, A30 Walkman One fails to load all drivers I provided.
+
 [1]: https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-power
 
 [2]: https://git.alsa-project.org/?p=alsa-utils.git;a=blob;f=alsactl/monitor.c;hb=HEAD. 
