@@ -63,7 +63,10 @@ firmware.
 
 ### Windows
 
-Download exe from [releases](https://github.com/unknown321/wampy/releases), run and follow instructions.
+Download exe from [releases](https://github.com/unknown321/wampy/releases), run and follow instructions. Make sure that
+your internal storage is named "WALKMAN":
+
+<img src="images/explorer.png">
 
 Device will restart twice.
 
