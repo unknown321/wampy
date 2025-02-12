@@ -182,6 +182,8 @@ if (DESKTOP EQUAL 1)
     find_library(GLES GLESv2 PATHS /usr/lib)
     target_link_libraries(${PROJECT_NAME} ${GLES})
     target_compile_definitions(${PROJECT_NAME} PRIVATE DESKTOP=1)
+    find_package(ALSA REQUIRED)
+    target_link_libraries(${PROJECT_NAME} ${ALSA_LIBRARIES})
 else ()
     set_target_properties(${PROJECT_NAME} PROPERTIES
             BUILD_WITH_INSTALL_RPATH FALSE
