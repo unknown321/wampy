@@ -101,6 +101,8 @@ submission to Last.fm.
 
 [Making of equalizer / audio filters](./MAKING_OF_EQUALIZER_FILTERS.md)
 
+[Making of FM radio](./MAKING_OF_FM.md)
+
 ## Support me
 
 https://boosty.to/unknown321/donate
