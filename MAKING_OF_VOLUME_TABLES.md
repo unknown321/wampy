@@ -611,7 +611,7 @@ then sets up audio processing just like it would on real hardware, unlocking Dse
 
 And there is no _custom_ audio data changes, only swapping files from one device to another.
 
-There are some questions left: how does DMP-1Z even work on lower-end hardware? From what I've gathered, it has its own
+There are some questions left: how does DMP-Z1 even work on lower-end hardware? From what I've gathered, it has its own
 Aulos card(?) instead of cxd3778gf used on NW-A50; there are no volume tables and dac tools in its stock firmware. And
 where do these little kernels and nvrams used in tunings came from, dumped from devices?
 
