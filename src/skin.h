@@ -2640,6 +2640,12 @@ struct Skin {
         ImGui::NewLine();
         if (!radioAvailable) {
             ImGui::Text("FM radio is unavailable on this device");
+            ImGui::NewLine();
+            if (ImGui::Button("Hide this tab", ImVec2(200, 60))) {
+                config->showFmInSettings = false;
+                displayTab = SettingsTab::SkinOpts;
+                config->Save();
+            }
             return;
         }
 
