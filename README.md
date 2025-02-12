@@ -34,17 +34,17 @@ See [USAGE.md](./USAGE.md).
 
 ## Device support
 
-| Device          | Stock | Walkman One | Notes                                                                     |
-|-----------------|-------|-------------|---------------------------------------------------------------------------|
-| NW-A50          | ✅     | ✅           |                                                                           |
-| └──A50Z mod     | ✅     |             | mod is unavailable                                                        |
-| NW-A40          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One                  |
-| └──[A50 mod][6] | ✅     |             | confirmed by community                                                    |
-| NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One. FM doesn't work |
-| NW-ZX300        | ?     | ✅           | looking for tester [#12][7]                                               |
-| NW-WM1A         | ✅     | ✅           | UI doesn't fill the screen                                                |
-| NW-WM1Z         | ✅     | ✅           | UI doesn't fill the screen                                                |
-| DMP-Z1          | ?     |             | looking for the bravest tester of them all                                |
+| Device          | Stock | Walkman One | Notes                                                    |
+|-----------------|-------|-------------|----------------------------------------------------------|
+| NW-A50          | ✅     | ✅           |                                                          |
+| └──A50Z mod     | ✅     |             | mod is unavailable                                       |
+| NW-A40          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
+| └──[A50 mod][6] | ✅     |             | confirmed by community                                   |
+| NW-A30          | ❌     | ✅           | stock fw is broken, outdated GPU driver; use Walkman One |
+| NW-ZX300        | ?     | ✅           | looking for tester [#12][7]                              |
+| NW-WM1A         | ✅     | ✅           | UI doesn't fill the screen                               |
+| NW-WM1Z         | ✅     | ✅           | UI doesn't fill the screen                               |
+| DMP-Z1          | ?     |             | looking for the bravest tester of them all               |
 
 [6]: https://www.mrwalkman.com/p/nw-a40-stock-update.html
 
