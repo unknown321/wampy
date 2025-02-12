@@ -137,7 +137,7 @@ release-clean:
 
 release: release-clean build-arm server nw-installer/installer/userdata.tar.gz nw-installer/installer/userdata.uninstaller.tar.gz
 	# first, build and move uninstaller upgs
-	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller A30=0 WM1AZ=1 ZX300=0 DMPZ1=0 USERDATA_FILENAME=userdata.uninstaller.tar.gz build
+	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller A30=0 WM1AZ=1 ZX300=1 DMPZ1=0 USERDATA_FILENAME=userdata.uninstaller.tar.gz build
 	mkdir -p release/uninstaller
 	cd nw-installer/installer/a50z/ && tar -czvf ../../../release/uninstaller/a50z.uninstaller.tar.gz NW_WM_FW.UPG && rm NW_WM_FW.UPG
 	cd nw-installer/installer/nw-a40/ && tar -czvf ../../../release/uninstaller/nw-a40.uninstaller.tar.gz NW_WM_FW.UPG && rm NW_WM_FW.UPG
@@ -145,9 +145,9 @@ release: release-clean build-arm server nw-installer/installer/userdata.tar.gz n
 	cd nw-installer/installer/nw-wm1a/ && tar -czvf ../../../release/uninstaller/nw-wm1az.uninstaller.tar.gz NW_WM_FW.UPG && rm NW_WM_FW.UPG
 	cd nw-installer/installer/walkmanOne/ && tar -czvf ../../../release/uninstaller/walkmanOne.uninstaller.tar.gz NW_WM_FW.UPG && rm NW_WM_FW.UPG
 	# second, build installer upgs
-	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) A30=0 WM1AZ=1 ZX300=0 DMPZ1=0 build
+	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) A30=0 WM1AZ=1 ZX300=1 DMPZ1=0 build
 	# next, build Windows installer (with uninstaller included)
-	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) A30=0 A40MOD_ONLY=1 WM1AZ=1 ZX300=0 DMPZ1=0 win
+	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) A30=0 A40MOD_ONLY=1 WM1AZ=1 ZX300=1 DMPZ1=0 win
 	# finally, move installer upg and exe files
 	mkdir -p release/installer/
 	cd nw-installer/installer/a50z/ && tar -czvf ../../../release/installer/a50z.tar.gz NW_WM_FW.UPG
