@@ -1004,9 +1004,8 @@ struct Skin {
         if (needRestartWalkmanOne) {
 #ifndef DESKTOP
             if (walkmanOneOptions.tuningChanged) {
-                if (ImGui::Button("Apply tuning", ImVec2(200, 60))) {
-                    walkmanOneOptions.ApplyTuning();
-                    walkmanOneOptions.tuningChanged = false;
+                if (ImGui::Button("Apply tuning and reboot", ImVec2(200, 60))) {
+                    walkmanOneOptions.Reboot();
                 }
             } else {
                 ImGui::Text("Reboot the device to apply changes");
