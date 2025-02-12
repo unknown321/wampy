@@ -74,6 +74,7 @@ namespace AppConfig {
         ini["features"]["eqPerSong"] = std::to_string(features.eqPerSong);
         ini["mpd"]["socketPath"] = MPDSocketPath;
 
+        ini["wampy"]["showFmInSettings"] = std::to_string(showFmInSettings);
         ini["w1"]["deviceColor"] = std::to_string(w1Options.deviceColor);
 
         ini["digitalClock"]["color"] = digitalClock.color;
@@ -95,6 +96,7 @@ namespace AppConfig {
         MPDSocketPath = MPDDefaultAddress;
         forceConnector = "";
         windowOffset = EWindowOffset_LEFT;
+        showFmInSettings = true;
 
         ToIni();
     }
@@ -179,6 +181,10 @@ namespace AppConfig {
         features.limitVolume = (bool)std::atoi(ini["features"]["limitVolume"].c_str());
         features.touchscreenStaysOFF = (bool)std::atoi(ini["features"]["touchscreenStaysOFF"].c_str());
         features.eqPerSong = (bool)std::atoi(ini["features"]["eqPerSong"].c_str());
+        showFmInSettings = (bool)std::atoi(ini["wampy"]["showFmInSettings"].c_str());
+        if (ini["wampy"]["showFmInSettings"].empty()) {
+            showFmInSettings = true;
+        }
 
         w1Options.deviceColor = std::atoi(ini["w1"]["deviceColor"].c_str());
         if (W1::colorByValue.count(w1Options.deviceColor) == 0) {

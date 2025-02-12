@@ -57,6 +57,7 @@ namespace AppConfig {
         std::string forceConnector{};
         EWindowOffset windowOffset = EWindowOffset_LEFT;
         std::vector<int> fmPresets{};
+        bool showFmInSettings = true;
 
         int FindConfig();
 

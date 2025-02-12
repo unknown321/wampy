@@ -581,11 +581,13 @@ struct Skin {
         }
 
         ImGui::SameLine();
-        if (ImGui::Button(" FM ")) {
-            loadStatusStr = "";
-            displayTab = SettingsTab::TabFM;
-            fmFreq = connector->soundSettings.s->fmStatus.freq;
-            sprintf(fmFreqFormat, "%.1fMHz", float(connector->soundSettings.s->fmStatus.freq) / 1000);
+        if (config->showFmInSettings) {
+            if (ImGui::Button(" FM ")) {
+                loadStatusStr = "";
+                displayTab = SettingsTab::TabFM;
+                fmFreq = connector->soundSettings.s->fmStatus.freq;
+                sprintf(fmFreqFormat, "%.1fMHz", float(connector->soundSettings.s->fmStatus.freq) / 1000);
+            }
         }
 
         auto miscSize = ImGui::CalcTextSize("Misc").x + ImGui::GetStyle().FramePadding.x * 2.f;
@@ -747,6 +749,10 @@ struct Skin {
                 config->Save();
             }
             ImGui::TableNextColumn();
+            ImGui::TableNextColumn();
+            if (ImGui::Checkbox("Show FM tab", &config->showFmInSettings)) {
+                config->Save();
+            }
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();

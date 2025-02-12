@@ -42,7 +42,10 @@ build-arm:
 			CXX=/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-g++ \
 			cmake .. && \
 			make && \
-			make install"
+			make install && \
+			/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-objcopy  --only-keep-debug ../$(INSTALL)/bin/$(PRODUCT) ../$(INSTALL)/bin/$(PRODUCT).debug && \
+			/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-objcopy  --add-gnu-debuglink ../$(INSTALL)/bin/$(PRODUCT) ../$(INSTALL)/bin/$(PRODUCT).debug \
+			"
 
 deps:
 	make -C libs
@@ -136,6 +139,8 @@ release-clean:
 	-rm -rf release
 
 release: release-clean build-arm server nw-installer/installer/userdata.tar.gz nw-installer/installer/userdata.uninstaller.tar.gz
+	mkdir -p release/
+	cp $(INSTALL)/bin/$(PRODUCT).debug release/
 	# first, build and move uninstaller upgs
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).uninstaller.exe APPNAME=$(PRODUCT)-uninstaller A30=0 WM1AZ=1 ZX300=1 DMPZ1=0 USERDATA_FILENAME=userdata.uninstaller.tar.gz build
 	mkdir -p release/uninstaller
