@@ -55,7 +55,7 @@ namespace W1 {
     uint defaultColor = 0;
 
     void SetColor(uint color) {
-        char command[23];
+        char command[30];
         if (colorByValue.find(color) == colorByValue.end()) {
             DLOG("unknown color 0x%.8x\n", color);
             return;
