@@ -2490,7 +2490,7 @@ struct Skin {
         }
 
         ImGui::SameLine();
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 9);
         ImGui::Text(effectQueueStatus.c_str());
     }
 
@@ -2952,6 +2952,7 @@ struct Skin {
             prevPlayState = connector->status.State;
             if (connector->status.State == PLAYING) {
                 effectQueueStatus.clear();
+                connector->soundSettingsFw.Update();
             }
         }
 
