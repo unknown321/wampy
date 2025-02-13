@@ -10,7 +10,7 @@ service wampy /bin/logwrapper /system/vendor/unknown321/bin/wampy
   group root
   oneshot
 
-service pstserver /bin/logwrapper /system/vendor/unknown321/bin/pstserver 10
+service pstserver /bin/logwrapper /system/vendor/unknown321/bin/pstserver 8
   user root
   group root
   oneshot
