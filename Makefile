@@ -68,6 +68,7 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 	cp $(INSTALL)/lib/libjpeg.so.62.4.0 installer/
 	cp $(INSTALL)/lib/libprotobuf.so.32.0.12 installer/
 	cp server/qt/qtbase/plugins/platforms/libqeglfs.so installer/
+	cp server/qt/qtbase/plugins/platforms/libqeglfs.so libs/sysroot/lib
 	cp nw-installer/tools/upgtool/upgtool-linux-arm5 installer/
 	$(UPX) -qqq --best installer/$(PRODUCT)
 	$(UPX) -qqq --best installer/upgtool-linux-arm5
