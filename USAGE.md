@@ -75,7 +75,7 @@ issue](https://github.com/unknown321/wampy/issues).
 Try toggling it on and off again. Perhaps device is connected to PC in Mass Storage mode? Make sure you are using
 default music player, not SensMe or Language Study.
 
-### Notes on ugly settings
+### Settings look ugly
 
 Due to unfortunate combination of font and framework quirks, all text in settings is placed slightly lower than
 expected.
@@ -87,6 +87,10 @@ Reboot the device. I suppose that happens because of opengl texture unloading (o
 ### Some buttons are not pressed after a single tap
 
 Tap that button twice. This is a rarely encountered bug, please report if you encounter it frequently.
+
+### Missing skins / wrong config
+
+Wampy stores its data on internal storage. In USB mass storage mode these files are unavailable. A reboot is required.
 
 ### Some characters are missing
 
