@@ -234,22 +234,47 @@ struct Skin {
     void WithCassetteReelDir(const std::string &d) { cassetteReelDirectories.push_back(d); }
 
     void RefreshCassetteTapeReelLists() {
-        DLOG("\n");
+        DLOG("enter\n");
         assert(config);
         if (activeSkinVariant == CASSETTE && activeSettingsTab == SkinOpts) {
             DLOG("not refreshing skin list on active winamp tab\n");
             return;
         }
 
+        std::vector<directoryEntry> fl{};
         reelListCassette.clear();
         for (const auto &d : cassetteReelDirectories) {
             listdirs(d.c_str(), &reelListCassette);
+            for (auto it = reelListCassette.begin(); it != reelListCassette.end();) {
+                listdir(it->fullPath.c_str(), &fl, ".jpg");
+                listdir(it->fullPath.c_str(), &fl, ".pkm");
+                if (fl.empty()) {
+                    DLOG("ignoring empty reel dir %s\n", it->fullPath.c_str());
+                    reelListCassette.erase(it);
+                } else {
+                    ++it;
+                }
+                fl.clear();
+            }
         }
 
         tapeListCassette.clear();
+        std::vector<int> invalid;
         for (const auto &d : cassetteTapeDirectories) {
             listdirs(d.c_str(), &tapeListCassette);
+            for (auto it = tapeListCassette.begin(); it != tapeListCassette.end();) {
+                listdir(it->fullPath.c_str(), &fl, ".jpg");
+                listdir(it->fullPath.c_str(), &fl, ".pkm");
+                if (fl.empty()) {
+                    DLOG("ignoring empty tape dir %s\n", it->fullPath.c_str());
+                    tapeListCassette.erase(it);
+                } else {
+                    ++it;
+                }
+                fl.clear();
+            }
         }
+
         DLOG("exit\n");
     }
 
@@ -1297,6 +1322,7 @@ struct Skin {
                 if (ImGui::BeginCombo(("##" + tt.second.name + "reel").c_str(), tt.second.reel.c_str(), ImGuiComboFlags_HeightSmall)) {
                     for (auto &n : reelListCassette) {
                         if (!n.valid) {
+                            DLOG("invalid %s\n", n.name.c_str());
                             continue;
                         }
 
