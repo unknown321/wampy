@@ -160,6 +160,11 @@ namespace W1 {
                 continue;
             }
 
+            if (line.empty()) {
+                outfile << line << "\n";
+                continue;
+            }
+
             if (line.at(0) == '#') {
                 outfile << line << "\n";
                 continue;
