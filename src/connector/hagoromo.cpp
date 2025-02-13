@@ -2,6 +2,7 @@
 #include "command_names.h"
 #include <cstdio>
 #include <cstdlib>
+#include <sys/epoll.h>
 #include <sys/inotify.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
@@ -295,7 +296,6 @@ namespace Hagoromo {
             if (c.code() != Command::OK) {
                 DLOG("toggle command failed\n");
                 *render = true;
-                serverReady = false;
                 enableTouchscreen();
                 // It would be nice to add restart button, but touchscreen device doesn't emit inotify events,
                 // unless there is an application reading from it.
@@ -314,7 +314,6 @@ namespace Hagoromo {
                 if (c.code() == Command::UNKNOWN) {
                     DLOG("cannot get status\n");
                     *render = true;
-                    serverReady = false;
                     enableTouchscreen();
                     stateString = "No connection, restart device";
                     status.Duration = 0;
@@ -349,10 +348,8 @@ namespace Hagoromo {
         stateString = "";
         if (visible) {
             *render = false;
-            serverReady = false;
         } else {
             *render = true;
-            serverReady = true;
 
             if (!*touchscreenStaysOFF || status.Volume == 100) {
                 enableTouchscreen();
@@ -878,6 +875,48 @@ namespace Hagoromo {
         sendCMD(&c);
     }
 
+    void HagoromoConnector::storageLoop() {
+        storagePresent = exists("/contents/MUSIC/");
+
+        int max_events = 1;
+        struct epoll_event evProc, events[max_events];
+        int procMountsFd, nfds, epollfd;
+
+        if ((procMountsFd = open(procMounts, O_RDONLY)) < 0) {
+            DLOG("cannot open %s\n", procMounts);
+            exit(EXIT_FAILURE);
+        }
+
+        epollfd = epoll_create1(0);
+        if (epollfd == -1) {
+            perror("epoll_create1");
+            exit(EXIT_FAILURE);
+        }
+
+        evProc.events = POLLERR | POLLPRI;
+        evProc.data.fd = procMountsFd;
+        if (epoll_ctl(epollfd, EPOLL_CTL_ADD, procMountsFd, &evProc) == -1) {
+            perror("epoll_ctl: procMounts");
+            exit(EXIT_FAILURE);
+        }
+
+        for (;;) {
+            nfds = epoll_wait(epollfd, events, max_events, -1);
+            if (nfds == -1) {
+                perror("epoll_wait");
+                exit(EXIT_FAILURE);
+            }
+
+            for (int n = 0; n < nfds; ++n) {
+                auto event = events[n];
+                if (event.data.fd == procMountsFd) {
+                    storagePresent = exists("/contents/MUSIC/");
+                    DLOG("storagePresent: %d\n", storagePresent);
+                }
+            }
+        }
+    }
+
     void HagoromoConnector::powerLoop(bool *render, bool *power) {
 #ifdef DESKTOP
         return;
@@ -975,6 +1014,11 @@ namespace Hagoromo {
 
     void HagoromoConnector::Start() {
         Connector::Start();
+
+        auto stor = [this]() { storageLoop(); };
+        std::thread storT(stor);
+        storT.detach();
+
         auto pwr = [this]() { powerLoop(render, &power); };
         std::thread powert(pwr);
         powert.detach();

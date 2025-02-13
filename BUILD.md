@@ -57,6 +57,15 @@ storage every 15 minutes.
 
 Check dmesg and logcat, increase log levels with PST_LOG_* variables. `getprop` shows nothing in tmux, use plain bash.
 
+Debug info is provided with each release. First, you need to unpack binary with upx: `upx -d wampy`. Then:
+
+```shell
+set solib-search-path ./libs/sysroot/lib/
+set sysroot ./libs/sysroot/
+file ./wampy
+core core....
+```
+
 #### Debugging OpenGL
 
 Modern RenderDoc fail on desktop; 1.2 works sometimes.

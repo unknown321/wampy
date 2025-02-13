@@ -94,6 +94,8 @@ namespace MPD {
         void SetVinylMode(int mode) override{};
 
         void getSongData(int entryId, SongInfo *s) override{};
+
+        void Start() override;
     };
 } // namespace MPD
 

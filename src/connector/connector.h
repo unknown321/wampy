@@ -86,8 +86,8 @@ struct Connector {
     Status status{};
     bool *render{};
     bool power = true;
-    bool serverReady{};
     bool updateVolume{};
+    bool storagePresent{};
     // it takes ~2 status calls to update current track position on hagoromo side
     // without this delay seek button will violently jump to previous position
     unsigned int updateElapsedCounter{};

@@ -207,6 +207,11 @@ struct Skin {
     void RefreshWinampSkinList() {
         DLOG("\n");
         assert(config);
+        if (activeSkinVariant == WINAMP && activeSettingsTab == SkinOpts) {
+            DLOG("not refreshing skin list on active winamp tab\n");
+            return;
+        }
+
         skinListWinamp.clear();
         for (const auto &d : winampSkinDirectories) {
             listdir(d.c_str(), &skinListWinamp, ".wsz");
@@ -227,6 +232,11 @@ struct Skin {
     void RefreshCassetteTapeReelLists() {
         DLOG("\n");
         assert(config);
+        if (activeSkinVariant == CASSETTE && activeSettingsTab == SkinOpts) {
+            DLOG("not refreshing skin list on active winamp tab\n");
+            return;
+        }
+
         reelListCassette.clear();
         for (const auto &d : cassetteReelDirectories) {
             listdirs(d.c_str(), &reelListCassette);
@@ -536,6 +546,9 @@ struct Skin {
 
         if (ImGui::Button("  W1  ")) {
             loadStatusStr = "";
+            if (connector->storagePresent) {
+                ParseSettings(&walkmanOneOptions);
+            }
             displayTab = SettingsTab::TabWalkmanOne;
         }
 
@@ -639,6 +652,10 @@ struct Skin {
 
     void Misc() {
         ImGui::NewLine();
+        if (!connector->storagePresent) {
+            ImGui::Text("Disable USB mass storage mode");
+            return;
+        }
         if (ImGui::BeginTable("##misctable", 4, ImGuiTableFlags_None)) {
             // #ifndef DESKTOP
             ImGui::TableNextRow();
@@ -871,6 +888,12 @@ struct Skin {
     }
 
     void WalkmanOne() {
+        if (!connector->storagePresent) {
+            ImGui::NewLine();
+            ImGui::Text("Disable USB mass storage mode");
+            return;
+        }
+
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10.0f, 15.0f));
         ImGui::SeparatorText("Walkman One settings");
         ImGui::PopStyleVar();
@@ -1116,30 +1139,32 @@ struct Skin {
             loadStatusStr = "";
         }
 
-        if (activeSkinVariant != activeSettingsTab) {
-            ImGui::SameLine();
-            ImGui::SetNextItemAllowOverlap();
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 10);
-            if (ImGui::Button("Set as active", ImVec2(186, 50))) {
-                switch (activeSettingsTab) {
-                case WINAMP:
-                    config->activeSkin = WINAMP;
-                    break;
-                case CASSETTE:
-                    config->activeSkin = CASSETTE;
-                    break;
-                case DIGITAL_CLOCK:
-                    config->activeSkin = DIGITAL_CLOCK;
-                    break;
-                default:
-                    break;
+        if (connector->storagePresent) {
+            if (activeSkinVariant != activeSettingsTab) {
+                ImGui::SameLine();
+                ImGui::SetNextItemAllowOverlap();
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 10);
+                if (ImGui::Button("Set as active", ImVec2(186, 50))) {
+                    switch (activeSettingsTab) {
+                    case WINAMP:
+                        config->activeSkin = WINAMP;
+                        break;
+                    case CASSETTE:
+                        config->activeSkin = CASSETTE;
+                        break;
+                    case DIGITAL_CLOCK:
+                        config->activeSkin = DIGITAL_CLOCK;
+                        break;
+                    default:
+                        break;
+                    }
+
+                    DLOG("changed active skin type to %d\n", config->activeSkin);
+
+                    config->Save();
+
+                    needLoad = true;
                 }
-
-                DLOG("changed active skin type to %d\n", config->activeSkin);
-
-                config->Save();
-
-                needLoad = true;
             }
         }
 
@@ -1155,7 +1180,10 @@ struct Skin {
     }
 
     void Winamp() {
-
+        if (!connector->storagePresent) {
+            ImGui::Text("Disable USB mass storage mode");
+            return;
+        }
         ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
         if (ImGui::BeginCombo("##", skinListWinamp.at(selectedSkinIdx).name.c_str(), ImGuiComboFlags_HeightRegular)) {
@@ -1211,6 +1239,11 @@ struct Skin {
     }
 
     void Cassette() {
+        if (!connector->storagePresent) {
+            ImGui::Text("Disable USB mass storage mode");
+            return;
+        }
+
         if (ImGui::Checkbox("Randomize?", &config->cassette.randomize)) {
             config->Save();
         }
@@ -1295,6 +1328,11 @@ struct Skin {
     }
 
     void DigitalClock() {
+        if (!connector->storagePresent) {
+            ImGui::Text("Disable USB mass storage mode");
+            return;
+        }
+
         ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
         if (ImGui::BeginCombo(
@@ -2056,6 +2094,10 @@ struct Skin {
 
     void SoundSettingsTab() {
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
+        if (!connector->storagePresent) {
+            ImGui::Text("Disable USB mass storage mode");
+            return;
+        }
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
         if (ImGui::BeginTabBar("SoundSettingsTabBar", tab_bar_flags)) {
             TabMasterVolume();
@@ -2923,7 +2965,10 @@ struct Skin {
 
     void TabEQOld() {
         ImGui::NewLine();
-
+        if (!connector->storagePresent) {
+            ImGui::Text("Disable USB mass storage mode");
+            return;
+        }
         if (!config->features.eqPerSong) {
             ImGui::Text("Feature disabled. Toggle it on 'Misc' tab or use button below.");
             ImGui::NewLine();

@@ -537,4 +537,9 @@ namespace MPD {
         Send("play\nnext\n");
         Send(commandIdle);
     }
+
+    void MPDConnector::Start() {
+        Connector::Start();
+        storagePresent = true;
+    }
 } // namespace MPD
