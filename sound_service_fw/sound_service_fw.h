@@ -157,6 +157,7 @@ struct sound_settings_fw {
     bool clearAudioPlusOn{};
     bool directSourcePresent{};
     bool directSourceOn{};
+    bool anyFilterEnabled = false;
 
     pst::services::sound::mobile::FilterChain *chain = nullptr; // pointer to filter chain. Do stupid things, win stupid prizes.
 
@@ -166,6 +167,7 @@ struct sound_settings_fw {
             FilterStatu.is_proc = false;
         }
 
+        anyFilterEnabled = false;
         for (int i = 0; i < chain->filterOrder.size(); i++) {
             auto v = chain->filters.find(chain->filterOrder.at(i));
             if (v == chain->filters.end()) {
@@ -174,6 +176,7 @@ struct sound_settings_fw {
             }
             memcpy(FilterStatus[i].name, v->first.c_str(), v->first.size());
             FilterStatus[i].is_proc = v->second->is_proc;
+            anyFilterEnabled |= v->second->is_proc;
         }
         std::string res;
         chain->GetParam("clearaudioplus", res);
@@ -181,12 +184,14 @@ struct sound_settings_fw {
         if (clearAudioPlusPresent) {
             clearAudioPlusOn = res == "on";
         }
+        anyFilterEnabled |= clearAudioPlusOn;
 
         chain->GetParam("sourcedirect", res);
         directSourcePresent = !res.empty();
         if (directSourcePresent) {
             directSourceOn = res == "on";
         }
+        anyFilterEnabled |= directSourceOn;
     }
 
     void PrintFilters() const {

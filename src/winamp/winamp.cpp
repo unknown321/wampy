@@ -562,7 +562,7 @@ namespace Winamp {
 
         Elements.ShuffleButton.Draw(connector->status.Shuffle);
         Elements.RepeatButton.Draw(connector->status.Repeat);
-        Elements.EQButton.Draw(*eqEnabled);
+        Elements.EQButton.Draw(connector->soundSettingsFw.s->anyFilterEnabled);
         Elements.PlaylistButton.Draw();
         Elements.PrevButton.Draw();
         Elements.PlayButton.Draw();
