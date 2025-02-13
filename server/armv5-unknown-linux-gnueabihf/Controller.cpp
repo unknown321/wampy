@@ -584,6 +584,8 @@ void Controller::initializeVolumeValue() {
     } else {
         DLOG("click volume fail\n");
     }
+
+    DLOG("initialized\n");
 }
 
 void Controller::connectFromModelManager() {
