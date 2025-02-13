@@ -1,7 +1,8 @@
 #ifndef WAMPY_DAC_H
 #define WAMPY_DAC_H
 
-#include "../util/util.h"
+#include "../util/direntry.h"
+#include "../util/dlog.h"
 #include "cxd3778gf_table.h"
 #include "map"
 #include "string"

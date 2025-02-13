@@ -2,6 +2,8 @@
 #define WAMPY_UTIL_H
 
 #include "GLFW/glfw3.h"
+#include "direntry.h"
+#include "dlog.h"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -11,14 +13,7 @@
 #include <string>
 #include <vector>
 
-#define DLOG(fmt, ...) fprintf(stderr, "[wampy] %s %s:%d " fmt, __FILE__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 // #define DLOG(fmt, ...) printf("[wampy] " fmt, ##__VA_ARGS__)
-
-struct directoryEntry {
-    std::string fullPath{};
-    std::string name{};
-    bool valid = true;
-};
 
 struct TextureMapEntry {
     char *data;
