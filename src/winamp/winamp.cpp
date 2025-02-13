@@ -1108,11 +1108,11 @@ namespace Winamp {
 
     void Winamp::drawTime() {
         auto s = playlist[0];
-        if (connector->status.Duration < 1) {
+        if (connector->status.Duration < 0) {
             return;
         }
 
-        if (minute1 < 1 && minute2 < 1 && second1 < 1 && second2 < 1) {
+        if (stopped) {
             return;
         }
 
@@ -1384,6 +1384,9 @@ namespace Winamp {
         auto status = &connector->status;
         if (status->Duration > 0) {
             status->PositionPercent = (int)std::ceil(float(status->Elapsed) / float(status->Duration) * 100);
+        } else if (status->Duration == 0) {
+            minute1, minute2, second1, second2 = 0;
+            return;
         } else {
             return;
         }

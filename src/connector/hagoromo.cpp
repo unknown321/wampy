@@ -656,6 +656,8 @@ namespace Hagoromo {
             getSongData(localStatus.entryId & 0xffffff, &si);
             prevEntryID = localStatus.entryId;
 
+            status.Elapsed = 0;
+            localStatus.elapsed = 0;
             status.Bits = si.BitDepth;
             status.Bitrate = si.Bitrate / 1000;
             if (status.Bitrate > 1000) {
