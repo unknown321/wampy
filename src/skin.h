@@ -49,6 +49,8 @@ enum EActiveFilterTab {
 #define BUTTON_RED ImVec4(0.98f, 0.27f, 0.26f, 0.4f)
 #define GOLD_DONATE ImVec4(0.91f, 0.72f, 0.25f, 1.0f) // #ebb943
 
+#define EFFECT_CHANGE_QUEUE_TEXT "Change enqueued"
+
 struct Skin {
     bool *render{};
     ImFont *FontRegular{};
@@ -171,6 +173,7 @@ struct Skin {
     std::string charactersInDB;
 
     std::string prevSong{};
+    PlayStateE prevPlayState = PlayStateE::PAUSED;
     std::string eqStatus{};
     bool eqSongExists{};
     bool eqSongDirExists{};
@@ -179,6 +182,7 @@ struct Skin {
 
     std::string activeFilter;
     EActiveFilterTab eActiveFilterTab = ActiveFilterTab_Invalid;
+    std::string effectQueueStatus;
 
     std::map<std::string, EActiveFilterTab> filterToTab = {
         {"dynamicnormalizer", ActiveFilterTab_DynamicNormalizer},
@@ -2362,12 +2366,24 @@ struct Skin {
                     connector->soundSettingsFw.SetDirectSource(false);
                     nanosleep(&ssfwUpdateDelay, nullptr);
                     connector->soundSettingsFw.Update();
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
             } else {
                 if (ImGui::Button("Enable", ImVec2(186, 60))) {
                     connector->soundSettingsFw.SetDirectSource(true);
                     nanosleep(&ssfwUpdateDelay, nullptr);
                     connector->soundSettingsFw.Update();
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
             }
 
@@ -2385,6 +2401,12 @@ struct Skin {
                     connector->soundSettingsFw.SetClearAudioPlus(false);
                     nanosleep(&ssfwUpdateDelay, nullptr);
                     connector->soundSettingsFw.Update();
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
                 ImGui::PopID();
             } else {
@@ -2393,6 +2415,12 @@ struct Skin {
                     connector->soundSettingsFw.SetClearAudioPlus(true);
                     nanosleep(&ssfwUpdateDelay, nullptr);
                     connector->soundSettingsFw.Update();
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
                 ImGui::PopID();
             }
@@ -2400,6 +2428,11 @@ struct Skin {
             if (isWalkmanOne) {
                 ImGui::EndDisabled();
             }
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::TableNextColumn();
+            ImGui::Text(effectQueueStatus.c_str());
 
             ImGui::EndTable();
         }
@@ -2411,14 +2444,28 @@ struct Skin {
                 connector->soundSettingsFw.SetFilter(activeFilter, false);
                 nanosleep(&ssfwUpdateDelay, nullptr);
                 connector->soundSettingsFw.Update();
+                if (connector->status.State != PLAYING) {
+                    effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                } else {
+                    effectQueueStatus.clear();
+                }
             }
         } else {
             if (ImGui::Button("Enable", ImVec2(186, 60))) {
                 connector->soundSettingsFw.SetFilter(activeFilter, true);
                 nanosleep(&ssfwUpdateDelay, nullptr);
                 connector->soundSettingsFw.Update();
+                if (connector->status.State != PLAYING) {
+                    effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                } else {
+                    effectQueueStatus.clear();
+                }
             }
         }
+
+        ImGui::SameLine();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8);
+        ImGui::Text(effectQueueStatus.c_str());
     }
 
     void TabEQ_Vinylizer() {
@@ -2439,6 +2486,11 @@ struct Skin {
                     connector->soundSettingsFw.SetVinylizerType(entry.first);
                     nanosleep(&ssfwUpdateDelay, nullptr);
                     connector->soundSettingsFw.Update();
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
             }
             ImGui::EndCombo();
@@ -2463,6 +2515,12 @@ struct Skin {
                     connector->soundSettingsFw.SetDcFilterType(entry.first);
                     nanosleep(&ssfwUpdateDelay, nullptr);
                     connector->soundSettingsFw.Update();
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
             }
             ImGui::EndCombo();
@@ -2487,6 +2545,12 @@ struct Skin {
                     connector->soundSettingsFw.SetVptMode(entry.first);
                     nanosleep(&ssfwUpdateDelay, nullptr);
                     connector->soundSettingsFw.Update();
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
             }
             ImGui::EndCombo();
@@ -2519,6 +2583,12 @@ struct Skin {
                     connector->soundSettingsFw.SetEq6Preset(entry.first);
                     nanosleep(&ssfwUpdateDelay, nullptr);
                     connector->soundSettingsFw.Update();
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
             }
             ImGui::EndCombo();
@@ -2542,6 +2612,12 @@ struct Skin {
                 ImGui::PushID(20 + i);
                 if (ImGui::VSliderInt("##int", ImVec2(40, 196), &connector->soundSettingsFw.eq6bands.at(i).second, -10, 10, "")) {
                     connector->soundSettingsFw.SetEq6Band(i, connector->soundSettingsFw.eq6bands.at(i).second);
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
                 ImGui::PopID();
             }
@@ -2576,6 +2652,12 @@ struct Skin {
                 ImGui::PushID(i);
                 if (ImGui::VSliderInt("##int", ImVec2(40, 278), &connector->soundSettingsFw.eq10bands.at(i).second, -20, 20, "")) {
                     connector->soundSettingsFw.SetEq10Band(i, connector->soundSettingsFw.eq10bands.at(i).second);
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
                 ImGui::PopID();
             }
@@ -2612,6 +2694,12 @@ struct Skin {
                 ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40);
                 if (ImGui::SliderInt("##int", &connector->soundSettingsFw.eqtone.at(i).second, -20, 20, "")) {
                     connector->soundSettingsFw.SetEqTone(i, connector->soundSettingsFw.eqtone.at(i).second);
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
                 ImGui::PopStyleVar();
                 ImGui::PopItemWidth();
@@ -2642,6 +2730,12 @@ struct Skin {
                 ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40);
                 if (ImGui::SliderInt("##int", &connector->soundSettingsFw.eqtoneFreq.at(i).second, 0, 5, "")) {
                     connector->soundSettingsFw.SetEqToneFreq(i, connector->soundSettingsFw.eqtoneFreq.at(i).second);
+
+                    if (connector->status.State != PLAYING) {
+                        effectQueueStatus = EFFECT_CHANGE_QUEUE_TEXT;
+                    } else {
+                        effectQueueStatus.clear();
+                    }
                 }
                 ImGui::PopStyleVar();
                 ImGui::PopItemWidth();
@@ -2826,6 +2920,13 @@ struct Skin {
             eqSongDirExists = SoundSettings::ExistsDir(connector->status.Filename);
             prevSong = connector->status.Filename;
             eqStatus = "Refreshed";
+        }
+
+        if (prevPlayState != connector->status.State) {
+            prevPlayState = connector->status.State;
+            if (connector->status.State == PLAYING) {
+                effectQueueStatus.clear();
+            }
         }
 
         {

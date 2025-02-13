@@ -20,8 +20,8 @@ by `+`.
 
 ## General notes
 
-Filter status updates only when music is playing. To enable filter, tap on `Enable` button and start music if it's not
-already on.
+**Filter status updates only when music is playing**. To enable filter, tap on `Enable` button and start music if it's
+not already on.
 
 All changes will **NOT** be reflected in standard interface; if you use this tab, consider it the source of truth.
 
