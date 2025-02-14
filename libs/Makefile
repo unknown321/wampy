@@ -14,6 +14,7 @@ ARM_OPTS=$(ARM_HOST) \
 patch:
 	-cd imgui && git apply ../imgui.patch
 	-cd glfw && git apply ../glfw.patch
+	-cd implot && git apply ../implot.patch
 
 alsa-lib/src:
 	make -C alsa-lib

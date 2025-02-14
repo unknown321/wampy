@@ -41,6 +41,7 @@ include_directories(
         libs/mINI/src
         libs/sqlite/build-${arch}/install/include
         libs/icu/icu4c/source/build-${arch}/install/include
+        libs/implot
         libs
         server/armv5-unknown-linux-gnueabihf
         ${PROTOBUF_INCLUDE}
@@ -107,6 +108,8 @@ add_executable(${PROJECT_NAME}
         ${IMGUI_DIR}/imgui_widgets.cpp
         ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
         ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+        libs/implot/implot.cpp
+        libs/implot/implot_items.cpp
         libs/glad/src/glad.c
         libs/GLES2/gl2platform.h
         libs/glad/include/KHR/khrplatform.h
@@ -117,6 +120,8 @@ add_executable(${PROJECT_NAME}
         libs/zlib/contrib/minizip/ioapi.c
         libs/ImageMagick/Magick++/lib/Color.cpp
         ${PROTOBUF_SOURCE}
+        src/implot_widgets.cpp
+        src/skin.cpp
         src/dac/cxd3778gf_table.cpp
         src/util/util.cpp
         src/wstring.cpp
@@ -125,7 +130,6 @@ add_executable(${PROJECT_NAME}
         src/digital_clock/digital_clock.cpp
         ${CONNECTOR_SOURCE}
         src/connector/hagoromoToString.cpp
-        src/imgui_curve.cpp
         src/imgui_widgets.cpp
         src/connector/song.cpp
         src/skinVariant.cpp
@@ -134,6 +138,7 @@ add_executable(${PROJECT_NAME}
         src/cassette/cassette.cpp
         src/config.cpp
         #        libs/imgui/imgui_demo.cpp
+        #        libs/implot/implot_demo.cpp
         src/shader.cpp
         src/sound_settings/sound_settings.cpp
         src/sound_settings_fw/sound_settings_fw.cpp

@@ -207,8 +207,8 @@ LICENSE_3rdparty:
 	@$(ECHO) -e "\n***\nDear ImGui:\n" >> $@
 	@cat libs/imgui/LICENSE.txt >> $@
 
-	@$(ECHO) -e "\n***\nLumixEngine:\n" >> $@
-	@cat libs/LumixEngine_LICENSE.txt >> $@
+	@$(ECHO) -e "\n***\nImPlot:\n" >> $@
+	@cat libs/implot/LICENSE >> $@
 
 	@$(ECHO) -e "\n***\nLLUSBDAC:\n" >> $@
 	@cat libs/llusbdac/LICENSE >> $@

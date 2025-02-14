@@ -147,8 +147,9 @@ loading them later.
 Drag point wherever you want it to be. `Reset` button resets everything that happened on editor screen (and only
 there).
 
-There is no multitouch, use zoom buttons. Panning sucks, zoom malfunctions in some cases, but hey, it works. There will
-be improvements later.
+There is no multitouch and panning, use buttons.
+
+You **will** experience rendering issues on this screen. Yes, this is a bug; it will not be fixed.
 
 ### Master volume, DSD
 

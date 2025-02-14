@@ -1,0 +1,22 @@
+diff --git a/implot.cpp b/implot.cpp
+index fd3690d..1b8ab64 100644
+--- a/implot.cpp
++++ b/implot.cpp
+@@ -1817,7 +1817,7 @@ static inline void RenderSelectionRect(ImDrawList& DrawList, const ImVec2& p_min
+ // Input Handling
+ //-----------------------------------------------------------------------------
+ 
+-static const float MOUSE_CURSOR_DRAG_THRESHOLD = 5.0f;
++static const float MOUSE_CURSOR_DRAG_THRESHOLD = 25.0f;
+ static const float BOX_SELECT_DRAG_THRESHOLD   = 4.0f;
+ 
+ bool UpdateInput(ImPlotPlot& plot) {
+@@ -3907,7 +3907,7 @@ bool DragPoint(int n_id, double* x, double* y, const ImVec4& col, float radius,
+ 
+     ImVec2 pos = PlotToPixels(*x,*y,IMPLOT_AUTO,IMPLOT_AUTO);
+     const ImGuiID id = ImGui::GetCurrentWindow()->GetID(n_id);
+-    ImRect rect(pos.x-grab_half_size,pos.y-grab_half_size,pos.x+grab_half_size,pos.y+grab_half_size);
++    ImRect rect(pos.x-grab_half_size*4,pos.y-grab_half_size*4,pos.x+grab_half_size*4,pos.y+grab_half_size*4);
+     bool hovered = false, held = false;
+ 
+     ImGui::KeepAliveID(id);

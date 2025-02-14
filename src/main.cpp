@@ -317,6 +317,7 @@ int main(int, char **) {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -483,6 +484,7 @@ int main(int, char **) {
         ImGui::SetNextWindowPos(imguiWindowPos);
 
         //        ImGui::ShowDemoWindow();
+        //        ImPlot::ShowDemoWindow();
 
         ImGui::SetNextWindowSize(imguiWindowSize);
 
@@ -521,6 +523,7 @@ int main(int, char **) {
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 
     glfwDestroyWindow(window);

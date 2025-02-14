@@ -46,3 +46,7 @@
 	path = libs/sqlite
 	url = https://github.com/sqlite/sqlite.git
     ignore = dirty
+[submodule "libs/implot"]
+	path = libs/implot
+	url = https://github.com/epezent/implot
+	ignore = dirty
