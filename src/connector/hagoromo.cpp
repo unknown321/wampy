@@ -739,6 +739,11 @@ namespace Hagoromo {
         status.Shuffle = localStatus.shuffleOn;
         status.Repeat = localStatus.repeatMode;
 
+        if (status.State == PLAYING && soundSettings.s->fmStatus.state == 2) {
+            RadioOff();
+            soundSettings.SetFM(0);
+        }
+
         status.Duration = playlist.at(0).Duration;
         if (updateElapsedCounter < 1) {
             status.Elapsed = localStatus.elapsed / 1000;
