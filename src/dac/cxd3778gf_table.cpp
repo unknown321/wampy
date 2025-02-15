@@ -548,7 +548,7 @@ int master_volume::FromBytes(const char *buf, size_t len) {
     return 0;
 }
 
-int master_volume::ToBytes(void *buf, size_t *len) {
+void master_volume::ToBytes(void *buf, size_t *len) {
     auto pos = (char *)buf;
     memcpy(pos, v, sizeof(v));
     pos = pos + sizeof(v);
@@ -558,11 +558,9 @@ int master_volume::ToBytes(void *buf, size_t *len) {
     memcpy(pos, (const char *)&sum, sizeof(sum));
     pos += sizeof(sum);
     memcpy(pos, (const char *)&xr, sizeof(xr));
-    pos += sizeof(xr);
+    //    pos += sizeof(xr);
 
     *len = sizeof v + sizeof sum + sizeof xr;
-
-    return 0;
 }
 
 int master_volume_dsd::FromFile(const std::string &path) {
@@ -620,7 +618,7 @@ int master_volume_dsd::ToFile(const std::string &path) {
     return 0;
 }
 
-int master_volume_dsd::ToBytes(void *buf, size_t *len) {
+void master_volume_dsd::ToBytes(void *buf, size_t *len) {
     auto pos = (char *)buf;
     memcpy(pos, v, sizeof(v));
     pos = pos + sizeof(v);
@@ -633,8 +631,6 @@ int master_volume_dsd::ToBytes(void *buf, size_t *len) {
     pos += sizeof(xr);
 
     *len = sizeof v + sizeof sum + sizeof xr;
-
-    return 0;
 }
 
 int master_volume_dsd::Apply(const std::string &path) {
@@ -791,7 +787,7 @@ int tone_control::FromBytes(const char *buf, size_t len) {
     return 0;
 }
 
-int tone_control::ToBytes(void *buf, size_t *len) {
+void tone_control::ToBytes(void *buf, size_t *len) {
     auto pos = (char *)buf;
     memcpy(pos, v, sizeof(v));
     pos = pos + sizeof(v);
@@ -804,6 +800,4 @@ int tone_control::ToBytes(void *buf, size_t *len) {
     pos += sizeof(xr);
 
     *len = sizeof v + sizeof sum + sizeof xr;
-
-    return 0;
 }

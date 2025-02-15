@@ -135,7 +135,7 @@ class TableLike {
   public:
     virtual int FromBytes(const char *buf, size_t len) = 0;
     virtual int ToFile(const std::string &path) = 0;
-    virtual int ToBytes(void *buf, size_t *len) = 0;
+    virtual void ToBytes(void *buf, size_t *len) = 0;
     virtual int Apply(const std::string &path) = 0;
     virtual void Reset() = 0;
 };
@@ -150,7 +150,7 @@ class master_volume : public TableLike {
     void SetValue(int tableIndex, int volumeTable, int volume, MASTER_VOLUME_VALUE valueType, unsigned int value);
     int FromFile(const std::string &path);
     int ToFile(const std::string &path) override;
-    int ToBytes(void *buf, size_t *len) override;
+    void ToBytes(void *buf, size_t *len) override;
     int Apply(const std::string &path) override;
     void Reset() override;
     int FromBytes(const char *buf, size_t len) override;
@@ -164,7 +164,7 @@ class master_volume_dsd : public TableLike {
 
     int FromFile(const std::string &path);
     int ToFile(const std::string &path) override;
-    int ToBytes(void *buf, size_t *len) override;
+    void ToBytes(void *buf, size_t *len) override;
     int Apply(const std::string &path) override;
     void Reset() override;
     int FromBytes(const char *buf, size_t len) override;
@@ -178,7 +178,7 @@ class tone_control : public TableLike {
 
     int FromFile(const std::string &path);
     int ToFile(const std::string &path) override;
-    int ToBytes(void *buf, size_t *len) override;
+    void ToBytes(void *buf, size_t *len) override;
     int Apply(const std::string &path) override;
     void Reset() override;
     int FromBytes(const char *buf, size_t len) override;

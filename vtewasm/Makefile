@@ -17,6 +17,9 @@ clean:
 serve:
 	$(MAKE) -f Makefile.emscripten serve
 
+release: build
+	cp web/index.html ../docs
+
 .DEFAULT_GOAL := build
 
 .PHONY: build serve clean

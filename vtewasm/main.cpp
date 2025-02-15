@@ -1,12 +1,3 @@
-// Dear ImGui: standalone example application for GLFW + OpenGL 3, using programmable pipeline
-// (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
-
-// Learn about Dear ImGui:
-// - FAQ                  https://dearimgui.com/faq
-// - Getting Started      https://dearimgui.com/getting-started
-// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
-// - Introduction, links and more at the top of imgui.cpp
-
 #include "editor.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -84,26 +75,32 @@ void setFile(const char *buf, size_t n, const char *name) {
 }
 
 const size_t dataSize = 1024 * 1024 * 90;
-const unsigned char data[dataSize]{0};
 
-unsigned char *saveFile(size_t *size) {
-    switch (ed.tableType) {
-    case ETableType_UNKNOWN:
-        emscripten_run_script("alert('nothing to save');");
-        break;
-    case ETableType_VOLUME:
-        memset((void *)&data, 0, dataSize);
-        ed.masterVolume.ToBytes((void *)data, size);
-        return (unsigned char *)&data;
-        break;
-    case ETableType_DSD:
-        *size = sizeof ed.masterVolumeDsd.v;
-        return (unsigned char *)&ed.masterVolumeDsd.v;
-        break;
-    case ETableType_TONE:
-        *size = sizeof ed.toneControl.v;
-        return (unsigned char *)&ed.toneControl.v;
-        break;
+void *saveFile(size_t *size) {
+    if (ed.tableType == ETableType_UNKNOWN) {
+        EM_ASM("alert('nothing to save');");
+        return malloc(1);
+    }
+
+    if (ed.tableType == ETableType_VOLUME) {
+        auto data = malloc(dataSize);
+        memset(data, 0, dataSize);
+        ed.masterVolume.ToBytes(data, size);
+        return data;
+    }
+
+    if (ed.tableType == ETableType_DSD) {
+        auto data = malloc(dataSize);
+        memset(data, 0, dataSize);
+        ed.masterVolumeDsd.ToBytes(data, size);
+        return data;
+    }
+
+    if (ed.tableType == ETableType_TONE) {
+        auto data = malloc(dataSize);
+        memset(data, 0, dataSize);
+        ed.toneControl.ToBytes(data, size);
+        return data;
     }
 
     return nullptr;

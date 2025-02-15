@@ -68,7 +68,6 @@ endif
 ##---------------------------------------------------------------------
 
 CPPFLAGS += -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(DAC_DIR) -I$(IMPLOT_DIR)
-#CPPFLAGS += -g
 CPPFLAGS += $(EMS)
 LDFLAGS += --shell-file shell_minimal.html
 LDFLAGS += $(EMS)
