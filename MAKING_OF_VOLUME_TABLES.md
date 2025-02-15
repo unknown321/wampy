@@ -104,7 +104,7 @@ shpfirst=`echo $shp | cut -c1-10`    # 0x00000002
 /system/bin/dacdat auto $PRODDEV $midupper $shpfirst
 ```
 
-What does it do?
+What does `dacdac` do?
 
 ```shell
 $ strace -e open /bin/dacdat auto BBDMP5_linux 0x250000 0x00000002
@@ -122,9 +122,10 @@ Volume tables for NW-A50, region 2, applied.
 After that script applies noise cancel tables, limiter tables, gain, ambgain and idata(?). All of those are related to
 MDR-NW750N, IER-NW500N and `something 31`. We don't use those, so let's ignore them.
 
-Volume table application changes sound significantly, making it at least louder, you can literally hear it while
-switching from `_cew` table to regular one. Could it be the secret empowering people to make those posts about "juice"
-and "dryness" in their ears?
+What are volume tables for? They are used by CXD3778GF chip, which is also known as S-Master HX™ amplifier. Basically
+they tell amplifier to amplify volume at X by value Y. Volume table application changes sound significantly, making it
+at least louder, you can literally hear it while switching from `_cew` table to regular one. Could it be the secret
+empowering people to make those posts about "juice" and "dryness" in their ears?
 
 It is not, because there is not enough files for all regions:
 
