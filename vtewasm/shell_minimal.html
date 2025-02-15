@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+    <title>Wampy volume table editor</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black
+        }
+
+        /* FIXME: with our GLFW example this block seems to break resizing and io.DisplaySize gets stuck */
+        .emscripten {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            margin: 0px;
+            border: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: block;
+            image-rendering: optimizeSpeed;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -o-crisp-edges;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            -ms-interpolation-mode: nearest-neighbor;
+        }
+    </style>
+</head>
+<body>
+<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+<script type='text/javascript'>
+    var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function () {
+            return function (text) {
+                text = Array.prototype.slice.call(arguments).join(' ');
+                console.log(text);
+            };
+        })(),
+        printErr: function (text) {
+            text = Array.prototype.slice.call(arguments).join(' ');
+            console.error(text);
+        },
+        canvas: (function () {
+            var canvas = document.getElementById('canvas');
+            //canvas.addEventListener("webglcontextlost", function(e) { alert('FIXME: WebGL context lost, please reload the page'); e.preventDefault(); }, false);
+            return canvas;
+        })(),
+        setStatus: function (text) {
+            console.log("status: " + text);
+        },
+        monitorRunDependencies: function (left) {
+            // no run dependencies to log
+        }
+    };
+    window.onerror = function () {
+        console.log("onerror: " + event);
+    };
+    var open_file = function (e) {
+        const file_reader = new FileReader();
+        file_reader.fname = e.target.files[0].name;
+        file_reader.onload = (event) => {
+            const uint8Arr = new Uint8Array(event.target.result);
+            const num_bytes = uint8Arr.length * uint8Arr.BYTES_PER_ELEMENT;
+            const data_ptr = Module._malloc(num_bytes);
+            const data_on_heap = new Uint8Array(Module.HEAPU8.buffer, data_ptr, num_bytes);
+            data_on_heap.set(uint8Arr);
+            const res = Module.ccall('setFile', 'number', ['number', 'number', 'string'], [data_on_heap.byteOffset, uint8Arr.length, event.target.fname]);
+            Module._free(data_ptr);
+        };
+        file_reader.readAsArrayBuffer(e.target.files[0]);
+    };
+
+    function saveByteArray(filename, byteArray) {
+        const blob = new Blob([byteArray], {type: 'application/octet-stream'});
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    }
+
+    var save_file = function (name) {
+        const length = Module._malloc(4);
+        const byteArrayPointer = Module._saveFile(length);
+        const byteArrayLength = Module.getValue(length, 'i32');
+        if (byteArrayLength < 1) {
+            Module._free(byteArrayPointer);
+            alert("no data");
+            return;
+        }
+        const byteArray = new Uint8Array(Module.HEAPU8.buffer, byteArrayPointer, byteArrayLength);
+
+        saveByteArray(name, byteArray);
+
+        Module._free(length);
+        Module._free(byteArrayPointer);
+    };
+
+    notify = function () {
+        Module.ccall('setHeight', 'number', ['number'], [window.visualViewport.height - 100])
+        Module.ccall('setWidth', 'number', ['number'], [window.visualViewport.width])
+    }
+
+    window.addEventListener("resize", notify);
+    Module.onRuntimeInitialized = notify;
+
+</script>
+{{{ SCRIPT }}}
+</body>
+</html>
