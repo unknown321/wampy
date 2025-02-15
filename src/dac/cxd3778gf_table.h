@@ -133,7 +133,9 @@ int checksum(const unsigned char *buf, int size, unsigned int *sum, unsigned int
 
 class TableLike {
   public:
+    virtual int FromBytes(const char *buf, size_t len) = 0;
     virtual int ToFile(const std::string &path) = 0;
+    virtual int ToBytes(void *buf, size_t *len) = 0;
     virtual int Apply(const std::string &path) = 0;
     virtual void Reset() = 0;
 };
@@ -141,39 +143,45 @@ class TableLike {
 class master_volume : public TableLike {
   public:
     cxd3778gf_master_volume v[2][MASTER_VOLUME_TABLE_MAX + 1][MASTER_VOLUME_MAX + 1]{};
-    uint sum{};
-    uint xr{};
+    unsigned int sum{};
+    unsigned int xr{};
 
-    uint GetValue(int tableIndex, int volumeTable, int volume, MASTER_VOLUME_VALUE valueType);
-    void SetValue(int tableIndex, int volumeTable, int volume, MASTER_VOLUME_VALUE valueType, uint value);
+    unsigned int GetValue(int tableIndex, int volumeTable, int volume, MASTER_VOLUME_VALUE valueType);
+    void SetValue(int tableIndex, int volumeTable, int volume, MASTER_VOLUME_VALUE valueType, unsigned int value);
     int FromFile(const std::string &path);
     int ToFile(const std::string &path) override;
+    int ToBytes(void *buf, size_t *len) override;
     int Apply(const std::string &path) override;
     void Reset() override;
+    int FromBytes(const char *buf, size_t len) override;
 };
 
 class master_volume_dsd : public TableLike {
   public:
     unsigned int v[MASTER_VOLUME_TABLE_MAX + 1][MASTER_VOLUME_MAX + 1]{};
-    uint sum{};
-    uint xr{};
+    unsigned int sum{};
+    unsigned int xr{};
 
     int FromFile(const std::string &path);
     int ToFile(const std::string &path) override;
+    int ToBytes(void *buf, size_t *len) override;
     int Apply(const std::string &path) override;
     void Reset() override;
+    int FromBytes(const char *buf, size_t len) override;
 };
 
 class tone_control : public TableLike {
   public:
     unsigned char v[TONE_CONTROL_TABLE_MAX + 1][CODEC_RAM_SIZE]{};
-    uint sum{};
-    uint xr{};
+    unsigned int sum{};
+    unsigned int xr{};
 
     int FromFile(const std::string &path);
     int ToFile(const std::string &path) override;
+    int ToBytes(void *buf, size_t *len) override;
     int Apply(const std::string &path) override;
     void Reset() override;
+    int FromBytes(const char *buf, size_t len) override;
 };
 
 #endif

@@ -2051,7 +2051,6 @@ void Skin::CurveEditor() {
 
         float radius = 10;
         for (int i = 0; i < curveElementCount; i++) {
-            ImVec2 *point = (ImVec2 *)(curveEditorTarget) + i;
             ImPlot::DragPoint(
                 i * 134, &valuesx[i], &valuesy[i], GOLD_DONATE, radius, ImPlotDragToolFlags_None, &clicked, &hovered, &held[i]
             );

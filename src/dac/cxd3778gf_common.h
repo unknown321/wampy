@@ -183,7 +183,7 @@ extern int cxd3778gf_timed_mute_ms[MUTE_ID_MAX];
 /* basic macro */
 #define minimum(_a, _b) ((_a) < (_b) ? (_a) : (_b))
 #define maximum(_a, _b) ((_a) > (_b) ? (_a) : (_b))
-#define absolute(_a) ((_a) >= 0 ? (_a) : (-(_a)))
+// #define absolute(_a) ((_a) >= 0 ? (_a) : (-(_a)))
 
 /***********/
 /* headers */

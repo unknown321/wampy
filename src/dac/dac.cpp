@@ -1,7 +1,6 @@
 #include "dac.h"
 #include "cxd3778gf_table.h"
 #include <fstream>
-#include <regex>
 
 #define TABLE_SIZE_OUTPUT_VOLUME (sizeof(struct cxd3778gf_master_volume) * (MASTER_VOLUME_MAX + 1) * (MASTER_VOLUME_TABLE_MAX + 1) * 2)
 #define TABLE_SIZE_OUTPUT_VOLUME_DSD (sizeof(unsigned int) * (MASTER_VOLUME_TABLE_MAX + 1) * (MASTER_VOLUME_MAX + 1))

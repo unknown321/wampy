@@ -19,7 +19,6 @@
  */
 
 #include "cxd3778gf_table.h"
-// #include "../util/util.h"
 #include "cxd3778gf_common.h"
 #include "fstream"
 #include <cstdio>
@@ -46,7 +45,6 @@ struct port_info {
     int width;   /* for debug */
 };
 
-// we are NOT including util.h with all gl deps
 int do_mkdir1(const char *path, mode_t mode) {
     struct stat st {};
     int status = 0;
@@ -343,7 +341,7 @@ static void dump_data(unsigned char *buf, int size, int columns, int rows, int w
     }
 }
 
-uint master_volume::GetValue(int tableIndex, int volumeTable, int volume, MASTER_VOLUME_VALUE valueType) {
+unsigned int master_volume::GetValue(int tableIndex, int volumeTable, int volume, MASTER_VOLUME_VALUE valueType) {
     unsigned char val;
 
     switch (valueType) {
@@ -392,54 +390,54 @@ uint master_volume::GetValue(int tableIndex, int volumeTable, int volume, MASTER
     //    if (val > 0) {
     //        printf("%d %d %d: %d\n", tableIndex, volumeTable, volume, val);
     //    }
-    return (uint)val;
+    return (unsigned int)val;
 }
 
-void master_volume::SetValue(int tableIndex, int volumeTable, int volume, MASTER_VOLUME_VALUE valueType, uint value) {
+void master_volume::SetValue(int tableIndex, int volumeTable, int volume, MASTER_VOLUME_VALUE valueType, unsigned int value) {
     if (value > 255) {
         value = 0;
     }
 
     switch (valueType) {
     case MASTER_VOLUME_VALUE_LINEIN:
-        v[tableIndex][volumeTable][volume].linein = (u_char)value;
+        v[tableIndex][volumeTable][volume].linein = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_SDIN1:
-        v[tableIndex][volumeTable][volume].sdin1 = (u_char)value;
+        v[tableIndex][volumeTable][volume].sdin1 = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_SDIN2:
-        v[tableIndex][volumeTable][volume].sdin2 = (u_char)value;
+        v[tableIndex][volumeTable][volume].sdin2 = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_PLAY:
-        v[tableIndex][volumeTable][volume].play = (u_char)value;
+        v[tableIndex][volumeTable][volume].play = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_LINEOUT:
-        v[tableIndex][volumeTable][volume].lineout = (u_char)value;
+        v[tableIndex][volumeTable][volume].lineout = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_HPOUT:
-        v[tableIndex][volumeTable][volume].hpout = (u_char)value;
+        v[tableIndex][volumeTable][volume].hpout = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_CMX1_500:
-        v[tableIndex][volumeTable][volume].cmx1_500 = (u_char)value;
+        v[tableIndex][volumeTable][volume].cmx1_500 = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_CMX2_500:
-        v[tableIndex][volumeTable][volume].cmx2_500 = (u_char)value;
+        v[tableIndex][volumeTable][volume].cmx2_500 = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_CMX1_750:
-        v[tableIndex][volumeTable][volume].cmx1_750 = (u_char)value;
+        v[tableIndex][volumeTable][volume].cmx1_750 = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_CMX2_750:
-        v[tableIndex][volumeTable][volume].cmx2_750 = (u_char)value;
+        v[tableIndex][volumeTable][volume].cmx2_750 = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_CMX1_31:
-        v[tableIndex][volumeTable][volume].cmx1_31 = (u_char)value;
+        v[tableIndex][volumeTable][volume].cmx1_31 = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_CMX2_31:
-        v[tableIndex][volumeTable][volume].cmx2_31 = (u_char)value;
+        v[tableIndex][volumeTable][volume].cmx2_31 = (unsigned char)value;
         break;
     case MASTER_VOLUME_VALUE_HPOUT2_CTRL3:
     case MASTER_VOLUME_VALUE_MAX:
-        v[tableIndex][volumeTable][volume].hpout2_ctrl3 = (u_char)value;
+        v[tableIndex][volumeTable][volume].hpout2_ctrl3 = (unsigned char)value;
         break;
     }
 
@@ -505,6 +503,7 @@ void master_volume::Reset() {
     sum = 0;
     xr = 0;
 }
+
 int master_volume::FromFile(const std::string &path) {
     std::ifstream f;
 
@@ -520,7 +519,7 @@ int master_volume::FromFile(const std::string &path) {
 
     auto length = buf.length();
     if (length != (TABLE_SIZE_OUTPUT_VOLUME + CHECKSUM_SIZE)) {
-        printf("invalid table size\n");
+        printf("invalid volume table size\n");
         return -1;
     }
 
@@ -530,6 +529,38 @@ int master_volume::FromFile(const std::string &path) {
         printf("bad checksum\n");
         return -1;
     }
+
+    return 0;
+}
+
+int master_volume::FromBytes(const char *buf, size_t len) {
+    if (len != (TABLE_SIZE_OUTPUT_VOLUME + CHECKSUM_SIZE)) {
+        printf("invalid table size\n");
+        return -1;
+    }
+
+    memcpy(v, buf, sizeof(v));
+
+    if (check_data((const unsigned char *)buf, (int)len - CHECKSUM_SIZE, &sum, &xr) != 0) {
+        printf("bad checksum\n");
+        return -1;
+    }
+    return 0;
+}
+
+int master_volume::ToBytes(void *buf, size_t *len) {
+    auto pos = (char *)buf;
+    memcpy(pos, v, sizeof(v));
+    pos = pos + sizeof(v);
+
+    checksum((const unsigned char *)v, sizeof(v), &sum, &xr);
+
+    memcpy(pos, (const char *)&sum, sizeof(sum));
+    pos += sizeof(sum);
+    memcpy(pos, (const char *)&xr, sizeof(xr));
+    pos += sizeof(xr);
+
+    *len = sizeof v + sizeof sum + sizeof xr;
 
     return 0;
 }
@@ -589,6 +620,23 @@ int master_volume_dsd::ToFile(const std::string &path) {
     return 0;
 }
 
+int master_volume_dsd::ToBytes(void *buf, size_t *len) {
+    auto pos = (char *)buf;
+    memcpy(pos, v, sizeof(v));
+    pos = pos + sizeof(v);
+
+    checksum((const unsigned char *)v, sizeof(v), &sum, &xr);
+
+    memcpy(pos, (const char *)&sum, sizeof(sum));
+    pos += sizeof(sum);
+    memcpy(pos, (const char *)&xr, sizeof(xr));
+    pos += sizeof(xr);
+
+    *len = sizeof v + sizeof sum + sizeof xr;
+
+    return 0;
+}
+
 int master_volume_dsd::Apply(const std::string &path) {
     auto f = open(path.c_str(), O_RDWR);
     if (f < 0) {
@@ -617,10 +665,26 @@ int master_volume_dsd::Apply(const std::string &path) {
 
     return 0;
 }
+
 void master_volume_dsd::Reset() {
     memset(&v, 0, sizeof(v));
     sum = 0;
     xr = 0;
+}
+
+int master_volume_dsd::FromBytes(const char *buf, size_t len) {
+    if (len != (TABLE_SIZE_OUTPUT_VOLUME_DSD + CHECKSUM_SIZE)) {
+        printf("invalid dsd table size\n");
+        return -1;
+    }
+
+    memcpy(v, buf, sizeof(v));
+
+    if (check_data((const unsigned char *)buf, (int)len - CHECKSUM_SIZE, &sum, &xr) != 0) {
+        printf("bad checksum\n");
+        return -1;
+    }
+    return 0;
 }
 
 int tone_control::FromFile(const std::string &path) {
@@ -710,4 +774,36 @@ void tone_control::Reset() {
     memset(&v, 0, sizeof(v));
     sum = 0;
     xr = 0;
+}
+int tone_control::FromBytes(const char *buf, size_t len) {
+    if (len != (TABLE_SIZE_TONE_CONTROL + CHECKSUM_SIZE)) {
+        printf("invalid tone control table size\n");
+        return -1;
+    }
+
+    memcpy(v, buf, sizeof(v));
+
+    if (check_data((const unsigned char *)buf, (int)len - CHECKSUM_SIZE, &sum, &xr) != 0) {
+        printf("bad checksum\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+int tone_control::ToBytes(void *buf, size_t *len) {
+    auto pos = (char *)buf;
+    memcpy(pos, v, sizeof(v));
+    pos = pos + sizeof(v);
+
+    checksum((const unsigned char *)v, sizeof(v), &sum, &xr);
+
+    memcpy(pos, (const char *)&sum, sizeof(sum));
+    pos += sizeof(sum);
+    memcpy(pos, (const char *)&xr, sizeof(xr));
+    pos += sizeof(xr);
+
+    *len = sizeof v + sizeof sum + sizeof xr;
+
+    return 0;
 }
