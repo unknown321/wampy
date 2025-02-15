@@ -18,7 +18,8 @@ serve:
 	$(MAKE) -f Makefile.emscripten serve
 
 release: build
-	cp web/index.html ../docs
+	mkdir -p ../docs/
+	cp web/index.html ../docs/
 
 .DEFAULT_GOAL := build
 
