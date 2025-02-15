@@ -15,7 +15,7 @@ Also works on Walkman One for [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [
 
 [5]: https://www.mrwalkman.com/p/walkman-one-for-wm1az.html
 
-<img src="images/promo.png">
+<img src="images/promo-github-dark-bg.png">
 
 ## Features:
 
