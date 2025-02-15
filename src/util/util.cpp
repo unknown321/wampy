@@ -344,7 +344,7 @@ void recoverDumps(const std::string &outdir) {
     struct stat sb {};
     if (stat(corePath.c_str(), &sb) == 0) {
         mkpath(outdir.c_str(), 0755);
-        out = outdir + "/core......gz" + t;
+        out = outdir + "/core......gz" + t + ".gz";
         std::ifstream src(corePath, std::ios::binary);
         std::ofstream dst(out, std::ios::binary);
 
