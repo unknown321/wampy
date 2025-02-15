@@ -3,6 +3,7 @@
 #include "emscripten.h"
 #include "imgui/imgui.h"
 #include "implot.h"
+#include <cmath>
 
 void editor::MasterVolOpts() {
     ImGui::Checkbox("Sound effect", &soundEffectOn);
@@ -136,8 +137,8 @@ void editor::CurveEditor() {
                 &held[i]
             );
             if (held[i]) {
-                auto posx = double(i);
-                ImPlot::Annotation(posx, target[i], ImVec4(0.90f, 0.90f, 0.90f, 1.00f), ImVec2(10, 10), false, true);
+                ImPlot::Annotation(double(i), target[i], ImVec4(0.90f, 0.90f, 0.90f, 1.00f), ImVec2(10, 10), false, true);
+                target[i] = std::round(target[i]);
             }
 
             if (target[i] > curveYLimit) {
