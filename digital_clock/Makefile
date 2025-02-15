@@ -3,6 +3,9 @@ DOCKER_DIGITAL_CLOCK=docker run -it --rm -v `pwd`:`pwd` -w `pwd` -u `id -u`:`id 
 
 prepare:
 	cat Dockerfile | docker image build -t $(IMAGE_DIGITAL_CLOCK) -
+	wget -O master.zip https://github.com/unknown321/ipod_theme/archive/refs/heads/master.zip
+	unzip -o master.zip
+	mv ipod_theme-master ipod_theme
 
 docker: prepare
 

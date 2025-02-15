@@ -151,6 +151,8 @@ There is no multitouch and panning, use buttons.
 
 You **will** experience rendering issues on this screen. Yes, this is a bug; it will not be fixed.
 
+There is also an online editor - https://unknown321.github.io/wampy/.
+
 ### Master volume, DSD
 
 <img src="images/settings-dsd.png">

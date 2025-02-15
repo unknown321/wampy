@@ -6,9 +6,10 @@
   * [Wampy is on screen but doesn't respond and cannot be toggled off](#wampy-is-on-screen-but-doesnt-respond-and-cannot-be-toggled-off)
   * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
   * [There is no song info](#there-is-no-song-info)
-  * [Notes on ugly settings](#notes-on-ugly-settings)
+  * [Settings look ugly](#settings-look-ugly)
   * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
   * [Some buttons are not pressed after a single tap](#some-buttons-are-not-pressed-after-a-single-tap)
+  * [Missing skins / wrong config](#missing-skins--wrong-config)
   * [Some characters are missing](#some-characters-are-missing)
 * [Using Wampy](#using-wampy)
   * [Winamp](#winamp)
@@ -41,14 +42,14 @@
 
 ## Usage
 
-Use "Hold" toggle to enable/disable Wampy.
+Use "Hold" toggle to enable/disable Wampy after a successful installation.
 
 <img src="images/switch.png" alt="here is the switch">
 
 While Wampy is running, default locking functionality is disabled - buttons and touchscreen are working.
 
 Holding volume button to rapidly change volume doesn't work. Volume is changed per button press in 1% intervals (~2
-points in default player terms).
+points in standard player terms).
 
 ## General issues and troubleshooting (read these)
 
