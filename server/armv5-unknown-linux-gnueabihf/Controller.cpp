@@ -68,6 +68,95 @@ bool Controller::goToPlayer() {
 
 bool Controller::Ready() const { return initialized; }
 
+void Controller::getAA() {
+    if (MusicPlayerSpectrumModel == nullptr) {
+        DLOG("no\n");
+        return;
+    }
+
+    auto senders = QObjectPrivate::get(MusicPlayerSpectrumModel)->senders;
+    if (senders == nullptr) {
+        DLOG("senders null\n");
+        return;
+    }
+
+    QObject *mps = nullptr;
+    while (senders) {
+        if (senders->sender != nullptr) {
+            DLOG("sender %s %s\n", senders->sender->metaObject()->className(), QString(senders->sender->objectName()).toUtf8().constData());
+            if (QString(senders->sender->objectName()) == "MusicPlayerSpectrum") {
+                mps = senders->sender;
+                break;
+            }
+        }
+        senders = senders->next;
+    }
+
+    if (mps == nullptr) {
+        DLOG("no\n");
+        return;
+    }
+
+    senders = QObjectPrivate::get(mps)->senders;
+    if (senders == nullptr) {
+        DLOG("senders null\n");
+        return;
+    }
+
+    QObject *sc = nullptr;
+    while (senders) {
+        if (senders->sender != nullptr) {
+            DLOG("sender %s\n", senders->sender->metaObject()->className());
+            if (QString(senders->sender->metaObject()->className()) == "dmpapp::SpectrumController") {
+                sc = senders->sender;
+                break;
+            }
+        }
+        senders = senders->next;
+    }
+
+    if (sc == nullptr) {
+        DLOG("no\n");
+        return;
+    }
+
+    senders = QObjectPrivate::get(sc)->senders;
+    if (senders == nullptr) {
+        DLOG("senders null\n");
+        return;
+    }
+
+    while (senders) {
+        if (senders->sender != nullptr) {
+            DLOG("sender %s\n", senders->sender->metaObject()->className());
+            if (QString(senders->sender->metaObject()->className()) == "dmpapp::AudioAnalyzer") {
+                AudioAnalyzer = senders->sender;
+                break;
+            }
+        }
+        senders = senders->next;
+    }
+
+    if (AudioAnalyzer == nullptr) {
+        DLOG("no\n");
+        return;
+    }
+    DLOG("yes\n");
+
+    if (AudioAnalyzer != nullptr) {
+        //clang-format off
+        auto res = QObject::connect(
+            AudioAnalyzer, SIGNAL(onSpectrumUpdate(QVector<int>)), this, SLOT(printSpectrum(QVector<int>)), Qt::DirectConnection
+        );
+        // clang-format on
+        DLOG("connect: %d\n", (bool)res);
+    } else {
+        DLOG("aa null\n");
+    }
+
+    aaTimer->stop();
+}
+
 int Controller::Initialize() {
     if (initialized) {
         return 0;
@@ -87,11 +176,13 @@ int Controller::Initialize() {
         return -1;
     }
 
+    DLOG("getting swipe item\n");
     auto res = jsExpression("swipeItem");
     if (!res.isValid()) {
         DLOG("cannot get swipeItem\n");
         return -1;
     }
+    DLOG("got swipe item\n");
 
     auto swipeItem = qvariant_cast<QQuickItem *>(res);
 
@@ -99,6 +190,7 @@ int Controller::Initialize() {
 
     auto gridArea = swipeItem->childItems()[0]->childItems()[0];
     int s = gridArea->childItems().size();
+    DLOG("looking for DAC and MusicPlayerModel\n");
     for (int i = 0; i < s; i++) {
         auto loader = gridArea->childItems()[i];
         for (auto kid : loader->childItems()) {
@@ -159,13 +251,33 @@ int Controller::Initialize() {
         DLOG("started timer\n");
     }
 
+    //    if (AudioAnalyzer == nullptr) {
+    //        aaTimer = new QTimer();
+    //        aaTimer->setInterval(1000);
+    //        QObject::connect(aaTimer, SIGNAL(timeout()), this, SLOT(getAA()), Qt::DirectConnection);
+    //        aaTimer->moveToThread(MusicPlayerModel->thread());
+    //        aaTimer->start();
+    //        DLOG("started timer\n");
+    //    }
+
     initialized = true;
 
     provider.Start();
 
-    provider.FromDAC(DACViewModel); // first volume pull
+    if (DACViewModel != nullptr) {
+        provider.FromDAC(DACViewModel); // first volume pull
+    } else {
+        DLOG("attempted to pull volume, but DAC is not available\n");
+    }
 
     return 0;
+}
+
+void Controller::printSpectrum(const QVector<int> &spectrum) {
+    for (auto v : spectrum) {
+        DLOG("%d\n", v);
+    }
+    DLOG("=========\n");
 }
 
 void Controller::WaitForAudioSource() {
@@ -179,6 +291,7 @@ void Controller::WaitForAudioSource() {
 }
 
 void Controller::getMusicWindow() {
+    DLOG("\n");
     if (MusicWindow != nullptr) {
         DLOG("already found\n");
         return;
@@ -454,6 +567,7 @@ void Controller::Shuffle(Command::Command *c) {
 }
 
 void Controller::getFromModelManager() {
+    DLOG("\n");
     auto w = qobject_cast<QObject *>(MusicPlayerModel);
     auto rs = QObjectPrivate::get(w)->receiverList("playMusicChanged()");
     if (rs.empty()) {
@@ -568,10 +682,12 @@ void Controller::getFromModelManager() {
 }
 
 void Controller::initializeVolumeValue() {
+    DLOG("\n");
     if (DACViewModel == nullptr) {
         DLOG("no dac view model\n");
         return;
     }
+
     if (volumeFirstPull) {
         DLOG("already initialized\n");
         return;
@@ -589,6 +705,7 @@ void Controller::initializeVolumeValue() {
 }
 
 void Controller::connectFromModelManager() {
+    DLOG("\n");
     QMetaObject::Connection h;
     if (MusicPlayerModel != nullptr) {
         h = QObject::connect(MusicPlayerModel, SIGNAL(modifyEntryId()), &provider, SLOT(UpdateEntryID()), Qt::DirectConnection);
@@ -969,6 +1086,7 @@ QObject *Controller::getActivePlayer() {
 
 // finds BasicPlayerControls from MusicWindow
 void Controller::initBasicPlayerControls() {
+    DLOG("\n");
     if (BasicPlayerControls != nullptr) {
         return;
     }
@@ -1033,6 +1151,7 @@ void Controller::initBasicPlayerControls() {
 }
 
 void Controller::connectVolumeSlot() {
+    DLOG("\n");
     if (DAC == nullptr) {
         DLOG("no dac\n");
     }
@@ -1043,6 +1162,7 @@ void Controller::connectVolumeSlot() {
 }
 
 void Controller::getAudioSourceMgr() {
+    DLOG("\n");
     if (BasicPlayerControls == nullptr) {
         DLOG("no basic player controls\n");
         return;

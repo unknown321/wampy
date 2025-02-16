@@ -61,6 +61,11 @@ void Provider::Start() {
 }
 
 void Provider::notifyUpdate() const {
+    if (status == nullptr) {
+        DLOG("status is nullpo\n");
+        return;
+    }
+
     if (sem_post(&status->sem1) == -1) {
         DLOG("sem_post: %s\n", strerror(errno));
         return;
@@ -89,7 +94,8 @@ void Provider::UpdateEntryID() {
         MusicPlayerDefaultModel = sender();
     }
 
-    status->entryId = (int)sender()->property("entry_id").toInt(nullptr);
+    bool ok;
+    status->entryId = (int)sender()->property("entry_id").toInt(&ok);
     // application is shutting down
     if (status->entryId == 0) {
         return;
@@ -118,7 +124,8 @@ void Provider::UpdateElapsed() {
         MusicPlayerDefaultModel = sender();
     }
 
-    status->elapsed = (int)sender()->property("currently_playing_time").toInt(nullptr);
+    bool ok;
+    status->elapsed = (int)sender()->property("currently_playing_time").toInt(&ok);
 
     notifyUpdate();
 }
@@ -129,8 +136,9 @@ void Provider::UpdateBasicControls() {
         return;
     }
 
-    status->shuffleOn = (int)MusicPlayerDefaultModel->property("is_shuffle").toInt(nullptr);
-    status->repeatMode = (int)MusicPlayerDefaultModel->property("repeat_mode").toInt(nullptr);
+    bool ok;
+    status->shuffleOn = (int)MusicPlayerDefaultModel->property("is_shuffle").toInt(&ok);
+    status->repeatMode = (int)MusicPlayerDefaultModel->property("repeat_mode").toInt(&ok);
 
     notifyUpdate();
 }
@@ -146,7 +154,9 @@ void Provider::FromDAC(QObject *o) const {
         DLOG("invalid\n");
         return;
     }
-    status->volumeRaw = p.toInt(nullptr);
+
+    bool ok;
+    status->volumeRaw = p.toInt(&ok);
     status->volume = status->volumeRaw * 100 / maxVolume;
 
     DLOG("volume %d%%, raw %d\n", status->volume, status->volumeRaw);
@@ -236,7 +246,7 @@ int parseTrack(QQuickItem *trackItem, Track *track) {
         return -1;
     }
 
-    if (IsPlaying.toInt() == 1) {
+    if (IsPlaying.toInt(&ok) == 1) {
         track->Active = true;
     }
 
@@ -273,13 +283,14 @@ void Provider::updatePlaylist(QObject *trackSequenceView) {
         DLOG("missing index prop\n");
         return;
     }
-    auto index = indexV.toInt(nullptr);
+    bool ok;
+    auto index = indexV.toInt(&ok);
 
-    //    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(nullptr));
+    //    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(&ok));
     trackSequenceView->setProperty("view_index", index + 1);
-    //    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(nullptr));
+    //    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(&ok));
     trackSequenceView->setProperty("view_index", index);
-    //    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(nullptr));
+    //    DLOG("index %d\n", trackSequenceView->property("view_index").toInt(&ok));
 }
 
 void Provider::GetPlaylist() {

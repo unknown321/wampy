@@ -1,5 +1,9 @@
 ## Alsa notes
 
+Winamp visualization takes data from libAudioAnalyzerService.so.
+
+Information below is still interesting.
+
 To visualize sound you need a sound stream to analyze. Device uses ALSA. Here is the issue: default output device does
 not provide capture interface, only playback one.
 

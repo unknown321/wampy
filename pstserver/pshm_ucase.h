@@ -14,6 +14,12 @@
 
 #define SHMPATH "/sound_settings"
 
+#define HAGOROMO_AUDIO_PEAKS_COUNT 12
+#define WAMPY_AUDIO_SPECTRUM_PEAKS_COUNT 19
+
+#define FM_FREQ_MIN 76000
+#define FM_FREQ_MAX 108000
+
 struct sound_settings_status {
     int vptOn;
     int vptMode;
@@ -55,15 +61,15 @@ enum EPstServerCommand {
     PSC_SET_FM = 2,
     PSC_SET_FM_FREQ = 3,
     PSC_SET_FM_STEREO = 4,
+    PSC_SET_AUDIO_ANALYZER = 5,
+    PSC_SET_AUDIO_ANALYZER_BANDS = 6,
 };
 
 struct PstServerCommand {
     EPstServerCommand id = PSC_UNKNOWN;
     int valueInt = 0;
+    int valuesInt[50];
 };
-
-#define FM_FREQ_MIN 76000
-#define FM_FREQ_MAX 108000
 
 struct FmStatus {
     int state;
@@ -78,6 +84,7 @@ struct sound_settings {
     PstServerCommand command{};
     sound_settings_status status{};
     FmStatus fmStatus{};
+    int peaks[WAMPY_AUDIO_SPECTRUM_PEAKS_COUNT]{0};
 
     void Print() {
         printf("clearAudioAvailable: %d\n", status.clearAudioAvailable);

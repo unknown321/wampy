@@ -8,6 +8,8 @@ RM="/xbin/busybox rm"
 GREP="/xbin/busybox grep"
 CP="/xbin/busybox cp"
 SED="/xbin/busybox sed"
+CHMOD="/xbin/busybox chmod"
+CHOWN="/xbin/busybox chown"
 
 log()
 {
@@ -80,12 +82,23 @@ uninstall() {
     ${SED} -i '/libsound_service_fw.so/d' ${INITRD_UNPACKED}/init.hagoromo.rc
   fi
 
+  log "removing libsound_service_fw"
+  ${RM} -f ${VENDOR}/lib/libsound_service_fw.so
+
+  test -f /system/vendor/sony/lib/libAudioAnalyzerService.so_vendor
+  if busybox test $? -eq 0; then
+    log "restoring AudioAnalyzerService from backup"
+    ${CP} -fp /system/vendor/sony/lib/libAudioAnalyzerService.so_vendor /system/vendor/sony/lib/libAudioAnalyzerService.so
+    ${CHMOD} 0755 /system/vendor/sony/lib/libAudioAnalyzerService.so
+    ${CHOWN} root:shell /system/vendor/sony/lib/libAudioAnalyzerService.so
+  fi
+
   test -f /system/vendor/sony/lib/libTunerPlayerService.so_vendor
   if busybox test $? -eq 0; then
     log "restoring libTunerPlayerService.so from backup"
     ${CP} -f /system/vendor/sony/lib/libTunerPlayerService.so_vendor /system/vendor/sony/lib/libTunerPlayerService.so
-    chown root:shell /system/vendor/sony/lib/libTunerPlayerService.so
-    chmod 0755 /system/vendor/sony/lib/libTunerPlayerService.so
+    ${CHMOD} 0755 /system/vendor/sony/lib/libTunerPlayerService.so
+    ${CHOWN} root:shell /system/vendor/sony/lib/libTunerPlayerService.so
   fi
 }
 

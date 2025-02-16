@@ -287,6 +287,8 @@ int main(int, char **) {
         v->featureShowTime = &config.features.showTime;
         v->featureLimitVolume = &config.features.limitVolume;
         v->featureEqPerSong = &config.features.eqPerSong;
+        v->visualizerWinampBands = &config.winamp.visualizerWinampBands;
+        v->visualizerEnabled = &config.winamp.visualizerEnable;
     } else {
         connector = new MPD::MPDConnector();
         connector->address = config.MPDSocketPath.c_str();
@@ -300,6 +302,8 @@ int main(int, char **) {
     v->featureShowTime = &config.features.showTime;
     v->featureLimitVolume = &config.features.limitVolume;
     v->featureEqPerSong = &config.features.eqPerSong;
+    v->visualizerWinampBands = &config.winamp.visualizerWinampBands;
+    v->visualizerEnabled = &config.winamp.visualizerEnable;
 
     socket = WAMPY_SOCKET;
 
@@ -396,7 +400,6 @@ int main(int, char **) {
     skin.cassette.connector = connector;
 
     skin.winamp.WithConfig(&config.winamp);
-    skin.winamp.eqEnabled = &config.features.eqPerSong;
     skin.cassette.WithConfig(&config.cassette);
     skin.digitalClock.WithConfig(&config.digitalClock);
 
@@ -414,6 +417,10 @@ int main(int, char **) {
     skin.ReadQR();
     skin.GetLogsDirSize();
     connector->soundSettings.Start();
+    connector->soundSettings.SetAnalyzer(config.winamp.visualizerEnable);
+    if (config.winamp.visualizerEnable && config.winamp.visualizerWinampBands) {
+        connector->soundSettings.SetAnalyzerBandsWinamp();
+    }
     connector->soundSettingsFw.Start();
     skin.Load();
 

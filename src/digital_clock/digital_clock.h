@@ -3,6 +3,7 @@
 
 #include "../skinElement.h"
 #include "../skinVariant.h"
+#include "config.h"
 #include <thread>
 #include <utility>
 
@@ -14,11 +15,6 @@ namespace DigitalClock {
     extern std::string DefaultColor;
 
     const float fontSizeTTF = 34.0f;
-
-    struct Config {
-        std::string color{};
-        void Default() { color = "silver"; };
-    };
 
     struct DigitalClockElements {
         std::vector<FlatTexture> NumbersBig;

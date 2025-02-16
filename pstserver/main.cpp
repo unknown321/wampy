@@ -2,13 +2,15 @@
 #include "dmpconfig.h"
 #include "pshm_ucase.h"
 #include <cstdio>
-#include <map>
 #include <unistd.h>
 
 #include <fcntl.h>
+#include <fstream>
 #include <semaphore.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 
+#include "string.h"
 #include "thread"
 
 void healthcheck() {
@@ -16,6 +18,9 @@ void healthcheck() {
 }
 
 pst::services::TunerPlayerServiceClient *tunerClient;
+pst::services::audioanalyzerservice::AudioAnalyzerService *analyzer;
+pst::services::audioanalyzerservice::EventListener analyzerEventListener;
+struct sound_settings *shmp;
 
 void Update(pst::dmpconfig::DmpConfig *dmpConfig, pst::dmpconfig::Key *k, pst::dmpfeature::DmpFeature *dmpFeature, sound_settings *a) {
     k->value = DMP_CONFIG_SS_VPT_ONOFF;
@@ -145,7 +150,7 @@ void Update(pst::dmpconfig::DmpConfig *dmpConfig, pst::dmpconfig::Key *k, pst::d
     a->fmStatus.state = tunerClient->GetTunerState();
 }
 
-void SetFmStereoMode(int value, sound_settings *shmp) {
+void SetFmStereoMode(int value) {
     auto stereoMode = pst::services::ITunerPlayerService::StereoMode();
     tunerClient->GetStereoMode(stereoMode);
     printf("stereo is %d, setting to %d\n", stereoMode.value, value);
@@ -154,7 +159,39 @@ void SetFmStereoMode(int value, sound_settings *shmp) {
     shmp->fmStatus.stereo = value;
 }
 
-void SetFM(int value, sound_settings *shmp) {
+void SetAudioAnalyzer(int value) {
+    if (analyzer == nullptr) {
+        printf("attempt to SetAudioAnalyzer while analyzer is nullptr\n");
+        return;
+    }
+    if (value == 1) {
+        analyzer->Start(&analyzerEventListener);
+    } else {
+        analyzer->Stop();
+    }
+}
+
+void SetAudioAnalyzerBands(const int values[50], int count) {
+    if (analyzer == nullptr) {
+        printf("attempt to SetAudioAnalyzerBands while analyzer is nullptr\n");
+        return;
+    }
+
+    if (count > 12) {
+        printf("got %d band values, set to 12\n", count);
+        count = 12;
+    }
+
+    auto bands = std::vector<pst::services::audioanalyzerservice::Passband>{};
+    for (int i = 0; i < count * 2; i = i + 2) {
+        auto v = pst::services::audioanalyzerservice::Passband{values[i], float(values[i + 1])};
+        printf("new band: %d\t%.1f\n", v.value, v.mean);
+        bands.push_back(v);
+    }
+    analyzer->SetPassband(bands);
+}
+
+void SetFM(int value) {
     if (tunerClient == nullptr) {
         auto f = pst::services::TunerPlayerServiceClientFactory();
         tunerClient = f.CreateInstance();
@@ -190,7 +227,7 @@ void SetFM(int value, sound_settings *shmp) {
     shmp->fmStatus.freq = (int)freq;
 }
 
-void SetFmFreq(int value, sound_settings *shmp) {
+void SetFmFreq(int value) {
     if (tunerClient == nullptr) {
         printf("client is nullpo\n");
         return;
@@ -200,15 +237,22 @@ void SetFmFreq(int value, sound_settings *shmp) {
     tunerClient->SetFrequency(value);
 }
 
+void pst::services::audioanalyzerservice::EventListener::OnSpectrumUpdate(std::vector<int> *values) {
+    for (int i = 0; i < values->size(); i++) {
+        shmp->peaks[i] = values->at(i);
+        //        printf("%d ", shmp->peaks[i]);
+    }
+    //    printf("\n");
+};
+
 int main(int argc, char **argv) {
     if (argc > 1) {
         auto delay = strtol(argv[1], nullptr, 0);
-        printf("sleeping for %d\n", delay);
+        printf("sleeping for %ld\n", delay);
         sleep(delay);
     }
 
     int fd;
-    struct sound_settings *shmp;
 
     printf("starting\n");
 
@@ -257,6 +301,15 @@ int main(int argc, char **argv) {
     auto k = pst::dmpconfig::Key();
     auto dmpFeature = pst::dmpfeature::DmpFeature();
 
+    printf("starting audio analyzer\n");
+    analyzer = pst::services::audioanalyzerservice::AudioAnalyzerService::GetInstance();
+    analyzerEventListener = pst::services::audioanalyzerservice::EventListener();
+    pst::services::audioanalyzerservice::mode_t m{};
+    m.value = 1;
+    analyzer->SetMode(m);
+    analyzer->Start(&analyzerEventListener);
+    printf("started audio analyzer\n");
+
     while (true) {
         if (sem_wait(&shmp->sem1) == -1)
             errExit("sem_wait");
@@ -267,13 +320,19 @@ int main(int argc, char **argv) {
             Update(dmpconfig, &k, &dmpFeature, shmp);
             break;
         case PSC_SET_FM:
-            SetFM(shmp->command.valueInt, shmp);
+            SetFM(shmp->command.valueInt);
             break;
         case PSC_SET_FM_FREQ:
-            SetFmFreq(shmp->command.valueInt, shmp);
+            SetFmFreq(shmp->command.valueInt);
             break;
         case PSC_SET_FM_STEREO:
-            SetFmStereoMode(shmp->command.valueInt, shmp);
+            SetFmStereoMode(shmp->command.valueInt);
+            break;
+        case PSC_SET_AUDIO_ANALYZER:
+            SetAudioAnalyzer(shmp->command.valueInt);
+            break;
+        case PSC_SET_AUDIO_ANALYZER_BANDS:
+            SetAudioAnalyzerBands(shmp->command.valuesInt, shmp->command.valueInt);
             break;
         default:
         case PSC_UNKNOWN:

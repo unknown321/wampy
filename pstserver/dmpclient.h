@@ -1,6 +1,7 @@
 #ifndef DMPCONFIG_DMPCLIENT_H
 #define DMPCONFIG_DMPCLIENT_H
 
+#include "stdio.h"
 #include <functional>
 #include <map>
 #include <memory>
@@ -135,6 +136,74 @@ namespace pst {
     } // namespace core
 
     namespace services {
+        namespace audioanalyzerservice {
+            class mode_t {
+              public:
+                int value;
+            };
+            class IEventListener {
+              public:
+                virtual void p1(std::vector<int> *) { printf("\n"); };
+                virtual void p2(std::vector<int> *) { printf("\n"); };
+                virtual void OnLevelUpdate(std::vector<int> *) { printf("\n"); };
+                virtual void OnSpectrumUpdate(std::vector<int> *) { printf("\n"); };
+                virtual void p5(std::vector<int> *) { printf("\n"); };
+                virtual void p6(std::vector<int> *) { printf("\n"); };
+                virtual void p7(std::vector<int> *) { printf("\n"); };
+                virtual void p8(std::vector<int> *) { printf("\n"); };
+                virtual void p9(std::vector<int> *) { printf("\n"); };
+            };
+            class EventListener : public IEventListener {
+              public:
+                void OnSpectrumUpdate(std::vector<int> *values) override;
+                void OnLevelUpdate(std::vector<int> *values) override{};
+            };
+
+            class Passband {
+              public:
+                int value;
+                float mean; // probably mean
+            };
+            class AudioAnalyzerServiceCore {
+              public:
+                char data[0x38];
+                int p;
+            };
+            class AudioAnalyzerService {
+              public:
+                AudioAnalyzerServiceCore *core; // core
+                int p2;                         // eventListener?
+                int hmm;
+                static AudioAnalyzerService *GetInstance();
+                int Start(pst::services::audioanalyzerservice::IEventListener *);
+                int Stop();
+                int Terminate();
+                int SetMode(pst::services::audioanalyzerservice::mode_t); // 1 or 0
+                int SetCalcSamples(unsigned int);
+                void SetUpdateRate(float);
+                void SetPassband(std::vector<pst::services::audioanalyzerservice::Passband> const &);
+            };
+            //            class AudioAnalyzerServiceCore {
+            //              public:
+            //                int AudioAnalyzerService_OnSpectrumUpdate(std::vector<int> const &);
+            //            };
+            class Lvdet {
+              public:
+                int GetAmplitude(uint param_1, int *param_2);
+            };
+            class StreamMonitorThread {
+              public:
+                void SetUpdateRate(float);
+            };
+
+            class SpectrumAnalyzer {
+              public:
+                SpectrumAnalyzer();
+                int GetSpectrumData(std::vector<int> &);
+                void SetPassband(std::vector<pst::services::audioanalyzerservice::Passband> const &);
+            };
+        } // namespace audioanalyzerservice
+
         class ITunerPlayerService {
           public:
             class StereoMode {

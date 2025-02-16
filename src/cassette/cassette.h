@@ -3,6 +3,7 @@
 
 #include "../skinElement.h"
 #include "../skinVariant.h"
+#include "config.h"
 #include "tape.h"
 #include <thread>
 
@@ -12,47 +13,6 @@
 
 namespace Cassette {
     const float fontSizeTTF = 34.0f;
-
-    struct ConfigEntry {
-        std::string tape;
-        std::string reel;
-        std::string name;
-    };
-
-    typedef std::map<Tape::TapeType, ConfigEntry> configInternal;
-
-    class Config {
-      public:
-        Config() = default;
-
-        configInternal data{};
-        bool randomize{};
-
-        ConfigEntry *Get(const Tape::TapeType t) { return &data.at(t); };
-
-        void Set(const Tape::TapeType t, ConfigEntry v) { data[t] = std::move(v); };
-
-        void Default();
-
-        static std::map<Tape::TapeType, ConfigEntry> GetDefault();
-
-        void SetOrDefault(const Tape::TapeType t, ConfigEntry e) {
-            auto def = GetDefault();
-            if (e.name.empty()) {
-                e.name = def[t].name;
-            }
-
-            if (e.reel.empty()) {
-                e.reel = def[t].reel;
-            }
-
-            if (e.tape.empty()) {
-                e.tape = def[t].tape;
-            }
-
-            Set(t, e);
-        }
-    };
 
     struct AtlasConfig {
         int delayMS = REEL_DELAY_MS;

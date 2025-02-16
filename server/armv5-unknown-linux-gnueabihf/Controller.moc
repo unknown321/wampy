@@ -89,7 +89,9 @@ class Controller : public QObject {
     QObject *AudioSourceMgr = nullptr;         // dmpapp::AudioSourceMgr
     QObject *ToneControlViewModel = nullptr;   // dmpapp::ToneControlViewModel
     QObject *DseeHxViewModel = nullptr;        // dmpapp::DseeHxViewModel, this one allows changing mode, wm1a/z+?
+    QObject *AudioAnalyzer = nullptr;          // dmpapp::AudioAnalyzer
     QTimer *bpcTimer = nullptr;
+    QTimer *aaTimer = nullptr;
 
     QObject *MusicPlayerDigitalLevelMeterModel = nullptr; // dmpapp::MusicPlayerDigitalLevelMeterViewModel
     QObject *MusicPlayerLevelMeterModel = nullptr;        // dmpapp::MusicPlayerLevelMeterViewModel
@@ -200,4 +202,8 @@ class Controller : public QObject {
     void WaitForAudioSource();
 
     void StopRunning();
+
+    static void printSpectrum(const QVector<int> &spectrum);
+
+    void getAA();
 };

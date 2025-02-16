@@ -12,11 +12,13 @@ build:
 		$(IMAGE) \
 			clang++ \
 			-v \
-			-mthumb \
+			-mfpu=vfp \
+			-mfloat-abi=hard \
 			-target arm-linux-gnueabihf \
 			--sysroot=/sysroot \
 			-std=c++11 \
 			-stdlib=libc++ \
+			-fpic \
 			-ldl \
 			-lrt \
 			-lpthread \
@@ -28,6 +30,7 @@ build:
 			-lPlayerServiceClient \
 			-lConfigurationService \
 			-lTunerPlayerService \
+			-lAudioAnalyzerServiceClient \
 			-I/usr/arm-linux-gnueabihf/include/ \
 			-Wl,-rpath,. \
 			-Wl,-rpath,/system/vendor/sony/lib \
@@ -91,7 +94,9 @@ test:
 		adb push test /tmp
 
 push:
-	adb wait-for-device push pstserver /tmp
+	adb wait-for-device shell mount -o remount,rw /system
+	adb wait-for-device push pstserver /system/vendor/unknown321/bin/
+	adb wait-for-device shell chmod 0755 /system/vendor/unknown321/bin/pstserver
 	adb wait-for-device push client /tmp
 
 r: build client push

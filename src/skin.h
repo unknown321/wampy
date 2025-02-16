@@ -86,7 +86,7 @@ struct Skin {
     AppConfig::AppConfig *config{};
     bool onlyFont{};
 
-    bool needRestartWalkmanOne{};
+    bool needRestart{};
 
     std::string license{};
     std::string license3rd{};
@@ -256,6 +256,8 @@ struct Skin {
 
     static void RandomizeTape(void *skin, void *);
 
+    static void SaveConfig(void *skin);
+
     void Header();
 
     void Misc();
@@ -299,8 +301,6 @@ struct Skin {
     void TabSoundStatus();
 
     void SoundSettingsTab();
-
-    void CurveEditorSmall(const int *volume, ImVec2 size);
 
     void CurveEditor();
 

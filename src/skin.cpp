@@ -366,6 +366,12 @@ void Skin::RandomizeTape(void *skin, void *) {
     }
 }
 
+void Skin::SaveConfig(void *skin) {
+    auto s = (Skin *)skin;
+    assert(s);
+    s->config->Save();
+}
+
 void Skin::Header() {
     float offset = 15.0f;
     ImGui::Indent(offset);
@@ -542,34 +548,13 @@ void Skin::Misc() {
 
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
-        if (ImGui::Button("DB char count")) {
-            std::vector<uint32_t> chars;
-            getCharRange(&chars);
-            charactersInDB = std::to_string(chars.size());
-        }
-
-        ImGui::TableNextColumn();
-        ImGui::Text(charactersInDB.c_str());
-        ImGui::SameLine(20);
-        if (ImGui::InvisibleButton("##charactersInDBCount", ImVec2(246, 30))) {
-            charactersInDB = "";
-        }
+        ImGui::Text("Window position");
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
         if (ImGui::Checkbox("Limit max volume", &config->features.limitVolume)) {
             config->Save();
             connector->FeatureSetMaxVolume(config->features.limitVolume);
-        }
-
-        ImGui::TableNextColumn();
-        ImGui::TableNextColumn();
-        ImGui::Text("Window position");
-
-        ImGui::TableNextRow();
-        ImGui::TableNextColumn();
-        if (ImGui::Checkbox("Enable EQ per song", &config->features.eqPerSong)) {
-            config->Save();
         }
 
         ImGui::TableNextColumn();
@@ -588,12 +573,19 @@ void Skin::Misc() {
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
+        if (ImGui::Checkbox("Enable EQ per song", &config->features.eqPerSong)) {
             config->Save();
         }
+
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
         if (ImGui::Checkbox("Show FM tab", &config->showFmInSettings)) {
+            config->Save();
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
             config->Save();
         }
 
@@ -751,7 +743,7 @@ void Skin::WalkmanOne() {
                     walkmanOneOptions.color = entry.second;
                     DLOG("selected color %s\n", W1::colorByValueWalkmanOne.at(walkmanOneOptions.color).c_str());
                     walkmanOneOptions.Save();
-                    needRestartWalkmanOne = true;
+                    needRestart = true;
                 }
             }
             ImGui::EndCombo();
@@ -775,7 +767,7 @@ void Skin::WalkmanOne() {
                     walkmanOneOptions.signature = entry.second;
                     DLOG("selected signature %s\n", W1::signatureByValueWalkmanOne.at(walkmanOneOptions.signature).c_str());
                     walkmanOneOptions.Save();
-                    needRestartWalkmanOne = true;
+                    needRestart = true;
                     walkmanOneOptions.tuningChanged = true;
                 }
             }
@@ -796,7 +788,7 @@ void Skin::WalkmanOne() {
                     strncpy(walkmanOneOptions.region, entry.c_str(), sizeof walkmanOneOptions.region);
                     DLOG("selected region %s\n", entry.c_str());
                     walkmanOneOptions.Save();
-                    needRestartWalkmanOne = true;
+                    needRestart = true;
                 }
             }
             ImGui::EndCombo();
@@ -810,7 +802,7 @@ void Skin::WalkmanOne() {
         if (ImGui::Checkbox("##remote", &walkmanOneOptions.remote)) {
             DLOG("Set remote option to %d\n", walkmanOneOptions.remote);
             walkmanOneOptions.Save();
-            needRestartWalkmanOne = true;
+            needRestart = true;
         }
 
         ImGui::TableNextRow();
@@ -820,7 +812,7 @@ void Skin::WalkmanOne() {
         if (ImGui::Checkbox("##plusv2", &walkmanOneOptions.plusModeVersionBOOL)) {
             DLOG("Set plus mode v2 to %d\n", walkmanOneOptions.plusModeVersionBOOL);
             walkmanOneOptions.Save();
-            needRestartWalkmanOne = true;
+            needRestart = true;
         }
 
         ImGui::TableNextRow();
@@ -830,7 +822,7 @@ void Skin::WalkmanOne() {
         if (ImGui::Checkbox("##plusdefault", &walkmanOneOptions.plusModeByDefault)) {
             DLOG("Set plus mode default to %d\n", walkmanOneOptions.plusModeByDefault);
             walkmanOneOptions.Save();
-            needRestartWalkmanOne = true;
+            needRestart = true;
         }
 
         ImGui::TableNextRow();
@@ -840,7 +832,7 @@ void Skin::WalkmanOne() {
         if (ImGui::Checkbox("##gainmode", &walkmanOneOptions.gainMode)) {
             DLOG("Set gain mode to %d\n", walkmanOneOptions.gainMode);
             walkmanOneOptions.Save();
-            needRestartWalkmanOne = true;
+            needRestart = true;
         }
 
         ImGui::TableNextRow();
@@ -850,14 +842,14 @@ void Skin::WalkmanOne() {
         if (ImGui::Checkbox("##dacinitmode", &walkmanOneOptions.dacInitializationMode)) {
             DLOG("Set gain mode to %d\n", walkmanOneOptions.dacInitializationMode);
             walkmanOneOptions.Save();
-            needRestartWalkmanOne = true;
+            needRestart = true;
         }
 
         ImGui::EndTable();
     }
 
     ImGui::NewLine();
-    if (needRestartWalkmanOne) {
+    if (needRestart) {
 #ifndef DESKTOP
         if (walkmanOneOptions.tuningChanged) {
             if (ImGui::Button("Apply tuning and reboot", ImVec2(300, 60))) {
@@ -897,10 +889,10 @@ void Skin::Wee1() {
     ImGui::SameLine();
     if (ImGui::Button("Change color")) {
         W1::SetColor(w1Options.deviceColor);
-        needRestartWalkmanOne = true;
+        needRestart = true;
     }
 
-    if (needRestartWalkmanOne) {
+    if (needRestart) {
         ImGui::NewLine();
         ImGui::Text("Reboot the device to apply changes");
         //            if (ImGui::Button("Reboot device", ImVec2(200, 60))) {
@@ -1037,31 +1029,91 @@ void Skin::Winamp() {
     ImGui::Text("%s", loadStatusStr.c_str());
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8);
 
-    if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
-        config->Save();
-        if (activeSkinVariant == WINAMP) {
-            winamp.Format(true);
+    static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchProp;
+
+    ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 7);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+    if (ImGui::BeginTable("winampConfigTable", 2, flags, outer_size)) {
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Use bitmap font", &config->winamp.useBitmapFont)) {
+            config->Save();
+            if (activeSkinVariant == WINAMP) {
+                winamp.Format(true);
+            }
         }
-    }
-
-    if (ImGui::Checkbox("Use bitmap font in playlist", &config->winamp.useBitmapFontInPlaylist)) {
-        config->Save();
-        if (activeSkinVariant == WINAMP) {
-            winamp.Format(true);
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Enable visualizer", &config->winamp.visualizerEnable)) {
+            config->Save();
+            if (config->winamp.visualizerEnable) {
+                connector->soundSettings.SetAnalyzer(1);
+                if (config->winamp.visualizerWinampBands) {
+                    connector->soundSettings.SetAnalyzerBandsWinamp();
+                } else {
+                    connector->soundSettings.SetAnalyzerBandsOrig();
+                }
+            } else {
+                connector->soundSettings.SetAnalyzer(0);
+            }
         }
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Use bitmap font in playlist", &config->winamp.useBitmapFontInPlaylist)) {
+            config->Save();
+            if (activeSkinVariant == WINAMP) {
+                winamp.Format(true);
+            }
+        }
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Visualizer Winamp mode", &config->winamp.visualizerWinampBands)) {
+            config->Save();
+            if (config->winamp.visualizerWinampBands) {
+                connector->soundSettings.SetAnalyzerBandsWinamp();
+            } else {
+                connector->soundSettings.SetAnalyzerBandsOrig();
+            }
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Prefer time remaining", &config->winamp.preferTimeRemaining)) {
+            config->Save();
+        }
+        ImGui::TableNextColumn();
+        ImGui::Text("Visualizer sensitivity");
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Show clutterbar", &config->winamp.showClutterbar)) {
+            config->Save();
+        }
+
+        ImGui::TableNextColumn();
+        if (ImGui::SliderFloat(
+                "##sensslider", &config->winamp.visualizerSensitivity, WINAMP_VISUALIZER_SENS_MIN, WINAMP_VISUALIZER_SENS_MAX, ""
+            )) {
+            config->winamp.visualizerSensitivity *= 100;
+            config->winamp.visualizerSensitivity = round(config->winamp.visualizerSensitivity) / 100;
+            config->Save();
+        }
+        ImGui::SameLine();
+        ImGui::Text("%.02f", config->winamp.visualizerSensitivity);
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Skin transparency", &config->winamp.skinTransparency)) {
+            config->Save();
+        }
+
+        ImGui::TableNextColumn();
+
+        ImGui::EndTable();
     }
 
-    if (ImGui::Checkbox("Prefer time remaining", &config->winamp.preferTimeRemaining)) {
-        config->Save();
-    }
-
-    if (ImGui::Checkbox("Show clutterbar", &config->winamp.showClutterbar)) {
-        config->Save();
-    }
-
-    if (ImGui::Checkbox("Skin transparency", &config->winamp.skinTransparency)) {
-        config->Save();
-    }
+    ImGui::PopStyleVar(2);
 }
 
 void Skin::Cassette() {

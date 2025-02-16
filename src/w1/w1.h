@@ -1,25 +1,26 @@
 #ifndef WAMPY_W1_H
 #define WAMPY_W1_H
 
-#include "../util/util.h"
 #include "map"
+#include "string"
+#include <vector>
 
 namespace W1 {
 
     struct W1Options {
-        uint deviceColor{};
+        unsigned int deviceColor{};
     };
 
     struct WalkmanOneOptions {
-        uint signature;           // SIG
-        char region[4];           // REG
-        bool remote;              // REM
-        uint plusModeVersion;     // PMV, save as uint 1/2
+        unsigned int signature;       // SIG
+        char region[4];               // REG
+        bool remote;                  // REM
+        unsigned int plusModeVersion; // PMV, save as unsigned int 1/2
         bool plusModeVersionBOOL; // config file suggests that you can select v1 or v2. boot script has 4 possible values (normal+normal_nt)
         bool plusModeByDefault;   // PMD
         bool gainMode;            // GMD
         bool dacInitializationMode; // DIM
-        uint color;                 // COL
+        unsigned int color;         // COL
 
         bool configFound;
         bool tuningChanged;
@@ -31,17 +32,17 @@ namespace W1 {
 
     int ParseSettings(WalkmanOneOptions *w);
 
-    extern uint defaultColor;
-    extern std::map<std::string, uint> colorByName;
-    extern std::map<uint, std::string> colorByValue;
-    extern std::map<std::string, uint> colorByNameWalkmanOne;
-    extern std::map<uint, std::string> colorByValueWalkmanOne;
-    extern std::map<std::string, uint> signatureByNameWalkmanOne;
-    extern std::map<uint, std::string> signatureByValueWalkmanOne;
+    extern unsigned int defaultColor;
+    extern std::map<std::string, unsigned int> colorByName;
+    extern std::map<unsigned int, std::string> colorByValue;
+    extern std::map<std::string, unsigned int> colorByNameWalkmanOne;
+    extern std::map<unsigned int, std::string> colorByValueWalkmanOne;
+    extern std::map<std::string, unsigned int> signatureByNameWalkmanOne;
+    extern std::map<unsigned int, std::string> signatureByValueWalkmanOne;
     extern std::vector<std::string> regionWalkmanOne;
-    extern std::map<uint, std::string> signatureToPathWalkmanOne;
+    extern std::map<unsigned int, std::string> signatureToPathWalkmanOne;
 
-    void SetColor(uint color);
+    void SetColor(unsigned int color);
 
 } // namespace W1
 

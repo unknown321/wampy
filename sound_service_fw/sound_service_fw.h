@@ -1,5 +1,5 @@
-#ifndef PRELOAD_H
-#define PRELOAD_H
+#ifndef SSFW_PRELOAD_H
+#define SSFW_PRELOAD_H
 
 #define DLOGG(fmt, ...) fprintf(stderr, "[wampySSFW] %s %s:%d " fmt, __FILE__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 #include "unistd.h"
@@ -235,4 +235,4 @@ struct sound_settings_fw {
     }
 };
 
-#endif // PRELOAD_H
+#endif // SSFW_PRELOAD_H

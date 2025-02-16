@@ -13,6 +13,10 @@ LN="/xbin/busybox ln"
 GREP="/xbin/busybox grep"
 TAR="/xbin/busybox tar"
 SED="/xbin/busybox sed"
+MD5="/xbin/busybox md5sum"
+AWK="/xbin/busybox awk"
+PRINTF="/xbin/busybox printf"
+DD="/xbin/busybox dd"
 
 log()
 {
@@ -147,6 +151,36 @@ install() {
     log "adding LD_PRELOAD entry for SoundServiceFw"
     ${SED} -i '/SoundServiceFw/a \ setenv LD_PRELOAD /system/vendor/unknown321/lib/libsound_service_fw.so' ${INITRD_UNPACKED}/init.hagoromo.rc
   fi
+
+  # patch to prevent "an error has occurred" message in standard interface
+  log "patching AudioAnalyzerService library"
+  test -f /system/vendor/sony/lib/libAudioAnalyzerService.so_vendor
+  if test $? -ne 0; then
+    ${CP} -fp /system/vendor/sony/lib/libAudioAnalyzerService.so /system/vendor/sony/lib/libAudioAnalyzerService.so_vendor
+  fi
+  aaMD5=$(${MD5} /system/vendor/sony/lib/libAudioAnalyzerService.so | ${AWK} '{print $1}')
+  case "${aaMD5}" in
+  "7637071b1e542f429d52ec73a21cef49")
+    log "libAudioAnalyzerService.so already patched"
+    ;;
+  "9bde2430bcf44298c650744416bc4e9d")
+    log "patching libAudioAnalyzerService.so"
+    ${PRINTF} "\x00" > /tmp/zero
+    ${DD} if=/tmp/zero of=/system/vendor/sony/lib/libAudioAnalyzerService.so obs=1 seek=115788 conv=notrunc
+    aaMD5=$(${MD5} /system/vendor/sony/lib/libAudioAnalyzerService.so | ${AWK} '{print $1}')
+    log "patched, new hash is ${aaMD5}"
+    if test "${aaMD5}" == "7637071b1e542f429d52ec73a21cef49"; then
+      log "success"
+    else
+      log "failure, rolling back"
+      ${CP} -p /system/vendor/sony/lib/libAudioAnalyzerService.so_vendor /system/vendor/sony/lib/libAudioAnalyzerService.so
+      ${CHMOD} 0755 /system/vendor/sony/lib/libAudioAnalyzerService.so
+    fi
+    ;;
+  *)
+    log "unexpected hash ${aaMD5}"
+    ;;
+  esac
 
   log "installing tuner library"
   test -f /system/vendor/sony/lib/libTunerPlayerService.so_vendor

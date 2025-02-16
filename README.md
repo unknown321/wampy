@@ -25,7 +25,7 @@ Also works on Walkman One for [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [
 - Volume table editor
 - Per-song audio options
 - All audio filters are available regardless of firmware
-- Default player enhancements (add clock and increase cover art size)
+- Standard interface enhancements (add clock and increase cover art size)
 - Digital clock skin (pretty!)
 - [Low latency USB DAC module](https://github.com/zhangboyang/llusbdac)
 - FM radio on devices with FM chip and Walkman One (A40/50, A30 doesn't work)
@@ -59,7 +59,7 @@ See [USAGE.md](./USAGE.md).
 You should read [USAGE.md](./USAGE.md) beforehand to get acquainted with quirks and bugs.
 
 Check [Device support](#device-support) table, find your device and select supported version for currently installed
-firmware.
+firmware. Make sure you have at least 100MB free on internal storage.
 
 ### Windows
 
@@ -104,6 +104,8 @@ submission to Last.fm.
 [Making of equalizer / audio filters](./MAKING_OF_EQUALIZER_FILTERS.md)
 
 [Making of FM radio](./MAKING_OF_FM.md)
+
+[Making of visualizer](./MAKING_OF_VIS.md)
 
 ## Support me
 

@@ -4,6 +4,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "imgui_impl_glfw.h"
 #include "imgui_internal.h"
+#include "pshm_ucase.h"
 #include "sqlite3.h"
 #include "unicode/unistr.h"
 #include <algorithm>
@@ -141,6 +142,12 @@ std::string parseColor(const std::string &in) {
     }
 
     return color;
+}
+
+std::string ImVec4ToColor(ImVec4 v) {
+    char res[8];
+    sprintf(res, "#%02X%02X%02X", (int)v.x, (int)v.y, (int)v.z);
+    return {res};
 }
 
 std::vector<std::string> split(const std::string &s, const std::string &delimiter) {

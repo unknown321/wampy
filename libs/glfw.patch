@@ -280,7 +280,7 @@ index a9b528f0..681df56f 100644
  }
  
 diff --git a/src/null_window.c b/src/null_window.c
-index f0e1dcc9..bdb6acae 100644
+index f0e1dcc9..82fd78e9 100644
 --- a/src/null_window.c
 +++ b/src/null_window.c
 @@ -30,6 +30,16 @@
@@ -300,7 +300,7 @@ index f0e1dcc9..bdb6acae 100644
  static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
  {
      if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
-@@ -485,8 +495,265 @@ GLFWbool _glfwWindowVisibleNull(_GLFWwindow* window)
+@@ -485,8 +495,273 @@ GLFWbool _glfwWindowVisibleNull(_GLFWwindow* window)
      return window->null.visible;
  }
  
@@ -381,6 +381,14 @@ index f0e1dcc9..bdb6acae 100644
 +        _glfw.touchscreen.x = ((_glfw.touchscreen.bufX - originX) * cosr - (_glfw.touchscreen.bufY - originY)*sinr) + originX;
 +        _glfw.touchscreen.y = ((_glfw.touchscreen.bufX - originX) * sinr + (-_glfw.touchscreen.bufY - originY) * cosr) + originY + screenWidth*2;
 +
++        if (_glfw.touchscreen.x < 0) {
++                _glfw.touchscreen.x = 0;
++        }
++
++        if (_glfw.touchscreen.y < 0) {
++                _glfw.touchscreen.y = 0;
++        }
++
 +
 +//        _glfw.touchscreen.x = _glfw.touchscreen.bufX;
 +//        _glfw.touchscreen.y = _glfw.touchscreen.bufY;
@@ -416,7 +424,7 @@ index f0e1dcc9..bdb6acae 100644
 +// man inotify
 +static void
 +handle_events(int fd, int *wd)
-+{
+ {
 +   /* Some systems cannot read integer variables if they are not
 +      properly aligned. On other systems, incorrect alignment may
 +      decrease performance. Hence, the buffer used for reading from
@@ -543,7 +551,7 @@ index f0e1dcc9..bdb6acae 100644
 +}
 +
 +void _glfwPollEventsNull_old(void)
- {
++{
 +    // Read all queued events (non-blocking)
 +    struct input_event e;
 +    memset(&e, 0, sizeof e);

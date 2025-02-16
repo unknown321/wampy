@@ -41,6 +41,8 @@ namespace Hagoromo {
         bool *featureShowTime{};
         bool *featureLimitVolume{};
         bool *featureEqPerSong{};
+        bool *visualizerEnabled{};
+        bool *visualizerWinampBands{};
         int prevEntryID{};
         std::string prevFilename{};
 

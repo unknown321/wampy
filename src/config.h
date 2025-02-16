@@ -1,11 +1,11 @@
 #ifndef WAMPY_CONFIG_H
 #define WAMPY_CONFIG_H
 
-#include "cassette/cassette.h"
-#include "digital_clock/digital_clock.h"
+#include "cassette/config.h"
+#include "digital_clock/config.h"
 #include "mini/ini.h"
 #include "w1/w1.h"
-#include "winamp/winamp.h"
+#include "winamp/config.h"
 #include <string>
 
 enum ESkinVariant {

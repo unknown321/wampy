@@ -157,6 +157,7 @@ namespace Winamp {
         FlatTexture t;
         t.FromPair(textures["text.bmp"]);
         colors.trackTitleBackground = t.GetColor(150, 5);
+        t.Release();
     }
 
     int Winamp::Load(std::string filename, ImFont **fontRegular) {
@@ -188,6 +189,7 @@ namespace Winamp {
 
         readPlEdit();
         readRegionTxt();
+        readVisColorTxt();
 
         probeTrackTitleBackgroundColor();
 
@@ -379,6 +381,82 @@ namespace Winamp {
                 DLOG("NumPoints and points found do not match, ignoring\n");
                 pointList.clear();
             }
+        }
+    }
+
+    void Winamp::readVisColorTxt() {
+        visColors.clear();
+
+        if (textures["viscolor.txt"].len == 0) {
+            DLOG("viscolor.txt missing\n");
+            return;
+        }
+
+        auto text = std::string(textures["viscolor.txt"].data, textures["viscolor.txt"].len);
+
+        auto lines = split(text, "\n");
+        if (lines.empty()) {
+            lines = split(text, "\r\n");
+        }
+
+        if (lines.empty()) {
+            DLOG("no lines in viscolor.txt found\n");
+            return;
+        }
+
+        for (auto &line : lines) {
+            if (line.empty()) {
+                continue;
+            }
+
+            if (line.at(0) == '/') {
+                continue;
+            }
+
+            //            DLOG("line: %s\n", line.c_str());
+
+            auto parts = split(line, ",");
+            if (parts.size() < 3) {
+                DLOG("not enough values in line: %s\n", line.c_str());
+                continue;
+            }
+
+            std::string curchar;
+            int i = 0;
+            int values[3]{0};
+
+            for (const auto &part : parts) {
+                for (const auto &c : part) {
+                    if (c >= '0' && c <= '9') {
+                        curchar += c;
+                    } else {
+                        if (curchar.empty()) {
+                            continue;
+                        }
+
+                        values[i] = std::atoi(curchar.c_str());
+                        curchar.clear();
+                    }
+                }
+
+                if (!curchar.empty()) {
+                    values[i] = std::atoi(curchar.c_str());
+                    curchar.clear();
+                }
+
+                i++;
+                if (i == 3) {
+                    //                    DLOG("%d %d %d\n", values[0], values[1], values[2]);
+                    visColors.emplace_back((float)values[0], (float)values[1], (float)values[2], 255.0f);
+                    auto c = visColors.at(visColors.size() - 1);
+                    //                    DLOG("color %f %f %f %f\n", c.x, c.y, c.z, c.w);
+                    break;
+                }
+            }
+        }
+
+        if (visColors.size() == 24) {
+            colors.VisBarPeakColor = ImVec4ToColor(visColors.at(23));
         }
     }
 
@@ -623,11 +701,209 @@ namespace Winamp {
             blinkTrackTime();
         }
 
-        Elements.TrackTimeToggle.Draw();
+        ImGui::SetCursorPos(ImVec2(105, 76));
+        if (ImGui::InvisibleButton("##tracktimeToggle", ImVec2(183, 37))) {
+            timeRemaining = !timeRemaining;
+            DLOG("track time toggled to %d\n", timeRemaining);
+            formatDuration();
+        }
+
+        ImGui::SetCursorPos(ImVec2(64, 122));
+        if (ImGui::InvisibleButton("##visToggle", ImVec2(230, 56))) {
+            config->visualizerEnable = !config->visualizerEnable;
+            DLOG("visualization toggled to %d\n", config->visualizerEnable);
+            Skin::Skin::SaveConfig(skin);
+            if (config->visualizerEnable) {
+                connector->soundSettings.SetAnalyzer(1);
+                if (config->visualizerWinampBands) {
+                    connector->soundSettings.SetAnalyzerBandsWinamp();
+                } else {
+                    connector->soundSettings.SetAnalyzerBandsOrig();
+                }
+                for (auto &v : peakValues) {
+                    v.first = 0;
+                    v.second = 0;
+                }
+                for (auto &v : connector->soundSettings.peaks) {
+                    v = 0;
+                }
+                connector->soundSettings.StartShark();
+            } else {
+                connector->soundSettings.SetAnalyzer(0);
+            }
+        }
+
+        if (config->visualizerEnable) {
+            drawVis();
+        }
 
         if (config->skinTransparency) {
             Elements.RegionMask.Draw();
         }
+    }
+
+    void Winamp::drawVis() {
+        if (connector->status.State != STOPPED) {
+            Elements.VisBackground.DrawAt({70, 122});
+        } else {
+            return;
+        }
+
+        if (connector->status.State == PLAYING) {
+            if (connector->soundSettings.sharkCalls == SHARK_CALLS) {
+                for (auto &v : peakValues) {
+                    v.first = 100;
+                    v.second = 3;
+                }
+            }
+            barUpdateFC++;
+            connector->soundSettings.RefreshAnalyzerPeaks(config->visualizerSensitivity);
+        }
+
+        int hp = 0;
+        int fakeVal = 0;
+        bool shark = connector->soundSettings.sharkCalls > 0;
+
+        for (int i = 0; i < PEAKS_COUNT; i++) {
+            if (withFakeBars) {
+                switch (i) {
+                case 0:
+                    if (shark) {
+                        drawVisBar(i, connector->soundSettings.peaks[hp]);
+                        hp++;
+                    } else {
+                        drawVisBar(i, connector->soundSettings.peaks[hp] * 70 / 100);
+                    }
+                    break;
+                case 18:
+                    if (shark) {
+                        drawVisBar(i, connector->soundSettings.peaks[hp]);
+                        hp++;
+                    } else {
+                        drawVisBar(i, connector->soundSettings.peaks[hp - 1] * 70 / 100);
+                    }
+                    break;
+                case 3:
+                case 6:
+                case 9:
+                case 12:
+                case 15:
+                    if (shark) {
+                        drawVisBar(i, connector->soundSettings.peaks[hp]);
+                        hp++;
+                    } else {
+                        fakeVal = int(float(connector->soundSettings.peaks[hp - 1] + connector->soundSettings.peaks[hp]) / 2 * 0.78);
+                        drawVisBar(i, fakeVal);
+                    }
+                    break;
+                default:
+                    drawVisBar(i, connector->soundSettings.peaks[hp]);
+                    hp++;
+                    break;
+                }
+            } else {
+                drawVisBar(i, connector->soundSettings.peaks[hp]);
+                hp++;
+            }
+        }
+    }
+
+    void Winamp::drawVisBar(int index, int value) {
+        auto coeff = (float)(100 - value) / 100;
+        auto uvx = 1.0f;
+        float space = 2.75f;
+        float decayRate = 0.957f;
+        int decayDelay = 60;
+        if (connector->soundSettings.sharkCalls > 0) {
+            decayDelay = SHARK_DECAY_DELAY;
+            decayRate = 0.90;
+        }
+
+        if (index > 16) {
+            uvx = 0.9f;
+        }
+
+        if ((float)value >= peakValues[index].first) {
+            //            DLOG("value up index%d: %d %d\n", index, value, peakValues[index].first);
+            peakValues[index].first = (float)value;
+            peakValues[index].second = decayDelay;
+        } else {
+            if (peakValues[index].second > 0) {
+                if (connector->status.State == PLAYING) {
+                    //                    DLOG("wait for index%d: %d\n", index, peakValues[index].second);
+                    peakValues[index].second--;
+                }
+            }
+        }
+
+        if (peakValues[index].second < 1) {
+            if (connector->status.State == PLAYING) {
+                //                DLOG("decay index%d:\n", index);
+                peakValues[index].first *= decayRate;
+                if (peakValues[index].first < 2) {
+                    peakValues[index].first = 0;
+                }
+                if (connector->soundSettings.sharkCalls > 0) {
+                    // destroy shark trail faster
+                    if (peakValues[index].first < 9) {
+                        peakValues[index].first = 0;
+                    }
+                }
+            }
+        }
+
+        if (value >= 1) {
+            // bar
+            ImGui::SetCursorPos(
+                ImVec2(70 + Elements.VisBarPeak.upscaled.width * index + space * index, 128 + Elements.VisBar.upscaled.height * coeff)
+            );
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+            auto tid = (ImTextureID)Elements.VisBar.textureID;
+            switch (index) {
+            case 0:
+            case 18:
+            case 3:
+            case 6:
+            case 9:
+            case 12:
+            case 15:
+                tid = (ImTextureID)Elements.FakeBar.textureID;
+                break;
+            default:
+                break;
+            }
+            ImGui::Image(
+                tid,
+                ImVec2(Elements.VisBar.upscaled.width * uvx, Elements.VisBar.upscaled.height * (1 - coeff)),
+                ImVec2(0, coeff),
+                ImVec2(1 * uvx, 1)
+            );
+        }
+
+        auto coeffPeak = (float)(100 - peakValues[index].first) / 100;
+        int offset = 50.0f * coeffPeak - Elements.VisBarPeak.upscaled.height;
+        if (offset < 0) {
+            offset = 2;
+        }
+
+        if (peakValues[index].second == SHARK_DECAY_DELAY && connector->soundSettings.sharkCalls > 0) {
+            peakValues[index].first -= 5;
+        }
+
+        if (offset < 46 && offset >= 0) {
+            // peak
+            ImGui::SetCursorPos(ImVec2(70 + Elements.VisBarPeak.upscaled.width * index + space * index, 125 + offset));
+
+            ImGui::Image(
+                (ImTextureID)Elements.VisBarPeak.textureID,
+                ImVec2(Elements.VisBarPeak.upscaled.width * uvx, Elements.VisBarPeak.upscaled.height),
+                ImVec2(0, 0),
+                ImVec2(1 * uvx, 1)
+            );
+        }
+#pragma GCC diagnostic pop
     }
 
     void Winamp::drawPlaylist() const {
@@ -740,6 +1016,10 @@ namespace Winamp {
         this->initializeButtons();
         this->initializePlaylist();
         this->initializeSliders();
+        this->createVisBar();
+        this->createFakeBar();
+        this->createVisBarPeak();
+        this->createVisBG();
     }
 
     void Winamp::initializePlaylist() {
@@ -972,18 +1252,6 @@ namespace Winamp {
             ->WithTextures(bts)
             ->WithCallback(Skin::Skin::ToggleDrawSettings, skin, nullptr)
             ->WithID("eject");
-
-        //=========
-        bts.clear();
-        flatTexture.Reset();
-        bt.active = flatTexture.FromColor({183, 37}, {255.0f, 0.0f, 0.0f, 0.0f});
-        bt.size = flatTexture.GetSize();
-        bt.pressed = bt.active;
-        bts[0] = bt;
-        Elements.TrackTimeToggle.WithID("trackTimeToggle")
-            ->WithPosition(105.0f, 76.0f)
-            ->WithTextures(bts)
-            ->WithCallback(toggleTrackTime, this, nullptr);
     }
 
     void Winamp::initializeSliders() {
@@ -1101,6 +1369,39 @@ namespace Winamp {
             ->WithCallbackReleased(Winamp::BalanceReleased, this);
     }
 
+    void Winamp::createVisBar() {
+        std::vector<std::string> barColors{};
+        barColors.reserve(visColors.size());
+        for (auto q : visColors) {
+            barColors.emplace_back(ImVec4ToColor(q));
+        }
+        Elements.VisBar.BarFromColors({9, 44, 0, 0}, barColors);
+        //        Elements.VisBar.FromColor({9, 44, 0, 0}, Magick::Color(colors.VisBarColor));
+    }
+
+    void Winamp::createFakeBar() {
+        //        Elements.FakeBar.FromColor({9, 44, 0, 0}, Magick::Color("#ff0000"));
+        Elements.FakeBar.textureID = Elements.VisBar.textureID;
+    }
+
+    void Winamp::createVisBarPeak() { Elements.VisBarPeak.FromColor({9, 3, 0, 0}, Magick::Color(colors.VisBarPeakColor)); }
+
+    void Winamp::createVisBG() {
+        Magick::Geometry size(224, 50, 0, 0);
+        if (visColors.size() < 2) {
+            Elements.VisBackground.FromColor(size, Magick::Color("#00000000"));
+            return;
+        }
+
+        if (visColors.at(0) == visColors.at(1)) {
+            Elements.VisBackground.FromColor(size, Magick::Color(ImVec4ToColor(visColors.at(0))));
+            return;
+        } else {
+            // instead of drawing grid just make it transparent
+            Elements.VisBackground.FromColor(size, Magick::Color("#00000000"));
+        }
+    }
+
     void Winamp::notImplemented(void *winampSkin, void *) {
         //        auto w = (Winamp *)winampSkin;
         //        w->MarqueeRunning = false;
@@ -1162,15 +1463,6 @@ namespace Winamp {
         }
 
         drawTime();
-    }
-
-    void Winamp::toggleTrackTime(void *arg, void *i) {
-        auto *w = (Winamp *)arg;
-        if (w->timeRemaining) {
-            w->timeRemaining = false;
-        } else {
-            w->timeRemaining = true;
-        }
     }
 
     void Winamp::togglePlaylistFullscreen(void *arg, void *) {
@@ -1302,6 +1594,10 @@ namespace Winamp {
             RegionMask.Unload();
             RegionMask.Reset();
         }
+        VisBar.Unload();
+        FakeBar.Unload();
+        VisBarPeak.Unload();
+        VisBackground.Unload();
 
         ClutterBar.Unload();
         MonoOffIndicator.Unload();
@@ -1324,8 +1620,6 @@ namespace Winamp {
         StopButton.Unload();
         NextButton.Unload();
         EjectButton.Unload();
-
-        TrackTimeToggle.Unload();
 
         PlaylistTitleBarLeftCorner.Unload();
         PlaylistTitleBarFiller.Unload();
@@ -1372,6 +1666,9 @@ namespace Winamp {
         showClutterbar = true;
         skinTransparency = true;
         filename = "base-2.91.wsz";
+        visualizerWinampBands = true;
+        visualizerEnable = true;
+        visualizerSensitivity = 0.03;
     }
 
     Config Config::GetDefault() {

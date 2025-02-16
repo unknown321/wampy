@@ -175,6 +175,8 @@ set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/libs/icu/icu4c/source/build-${arch}/i
 find_package(ICU REQUIRED COMPONENTS data i18n uc)
 target_link_libraries(${PROJECT_NAME} "${ICU_DATA_LIBRARIES}" "${ICU_LIBRARIES}")
 
+target_link_libraries(${PROJECT_NAME} m)
+
 add_custom_target(version
         ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/src/Version.h.in
         -D DST=${CMAKE_SOURCE_DIR}/src/Version.h

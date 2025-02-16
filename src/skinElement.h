@@ -202,6 +202,46 @@ struct FlatTexture {
         return this;
     }
 
+    ImTextureID BarFromColors(const Magick::Geometry &g, const std::vector<std::string> &colors) {
+        Magick::Color color;
+        if (colors.empty()) {
+            color = "#ffffff";
+        }
+        this->image = new Magick::Image(g, color);
+        this->image->magick("RGBA");
+        this->image->fillColor(color);
+        this->image->draw(Magick::DrawableRectangle(0, 0, g.width(), g.height()));
+        this->upscaled = {g.width(), g.height()};
+        auto yPos = 0;
+        auto barHeight = 3;
+        int i = 0;
+        for (const auto &c : colors) {
+            i++;
+            if (i < 3) { // skip two first colors
+                continue;
+            }
+            this->image->fillColor(c);
+            if (yPos == 21) {
+                barHeight = 2;
+            } else {
+                barHeight = 3;
+            }
+            //            DLOG("%s %d %d\n", c.c_str(), yPos, barHeight);
+            this->image->draw(Magick::DrawableRectangle(0, yPos, g.width(), yPos + barHeight));
+            yPos += barHeight;
+            if (yPos > g.height()) {
+                break;
+            }
+        }
+        this->LoadTexture();
+        this->Release();
+//        DLOG("tid %d\n", this->textureID);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+        return (ImTextureID)this->textureID;
+#pragma GCC diagnostic pop
+    }
+
     ImTextureID FromColor(const Magick::Geometry &g, const Magick::Color &color) {
         this->image = new Magick::Image(g, color);
         this->image->magick("RGBA");

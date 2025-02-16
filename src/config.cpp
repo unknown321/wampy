@@ -64,6 +64,9 @@ namespace AppConfig {
         ini["winamp"]["preferTimeRemaining"] = std::to_string(winamp.preferTimeRemaining);
         ini["winamp"]["showClutterbar"] = std::to_string(winamp.showClutterbar);
         ini["winamp"]["skinTransparency"] = std::to_string(winamp.skinTransparency);
+        ini["winamp"]["visualizerEnable"] = std::to_string(winamp.visualizerEnable);
+        ini["winamp"]["visualizerWinampMode"] = std::to_string(winamp.visualizerWinampBands);
+        ini["winamp"]["visualizerSensitivity"] = std::to_string(winamp.visualizerSensitivity);
 
         ini["misc"]["swapTrackButtons"] = std::to_string(misc.swapTrackButtons);
 
@@ -164,8 +167,27 @@ namespace AppConfig {
         winamp.preferTimeRemaining = (bool)std::atoi(ini["winamp"]["preferTimeRemaining"].c_str());
         winamp.showClutterbar = (bool)std::atoi(ini["winamp"]["showClutterbar"].c_str());
         winamp.skinTransparency = (bool)std::atoi(ini["winamp"]["skinTransparency"].c_str());
+        if (ini["winamp"]["visualizerEnable"].empty()) {
+            winamp.visualizerEnable = true;
+        } else {
+            winamp.visualizerEnable = (bool)std::atoi(ini["winamp"]["visualizerEnable"].c_str());
+        }
+
+        if (ini["winamp"]["visualizerWinampMode"].empty()) {
+            winamp.visualizerWinampBands = true;
+        } else {
+            winamp.visualizerWinampBands = (bool)std::atoi(ini["winamp"]["visualizerWinampMode"].c_str());
+        }
         cassette.randomize = (bool)std::atoi(ini["cassette"]["randomize"].c_str());
         // NOLINTEND
+        if (ini["winamp"]["visualizerSensitivity"].empty()) {
+            winamp.visualizerSensitivity = 0.03f;
+        } else {
+            winamp.visualizerSensitivity = std::atof(ini["winamp"]["visualizerSensitivity"].c_str());
+            if (winamp.visualizerSensitivity < WINAMP_VISUALIZER_SENS_MIN || winamp.visualizerSensitivity > WINAMP_VISUALIZER_SENS_MAX) {
+                winamp.visualizerSensitivity = WINAMP_VISUALIZER_SENS_DEFAULT;
+            }
+        }
 
         auto activeSkinString = ini["wampy"]["activeSkin"];
         if (NameToESkin.count(activeSkinString) == 0) {

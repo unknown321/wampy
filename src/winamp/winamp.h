@@ -5,12 +5,14 @@
 
 #include "../playlist.h"
 #include "../skinElement.h"
+#include "config.h"
 #include "imgui.h"
 #include <map>
 #include <string>
 
 #define PLAYLIST_SONG_SIZE 2048
 #define PLAYLIST_DURATION_SIZE 10
+#define PEAKS_COUNT 19
 
 namespace Stopwatch {
     template <typename Clock = std::chrono::high_resolution_clock> class Stopwatch {
@@ -54,6 +56,8 @@ namespace Winamp {
         std::string PlaylistCurrentText;
         std::string PlaylistNormalBG;
         std::string PlaylistSelectedBG;
+        std::string VisBarColor = "#3355ff";
+        std::string VisBarPeakColor = "#cccccc";
         ImU32 PlaylistNormalTextU32;
         ImU32 PlaylistCurrentTextU32;
 
@@ -83,6 +87,11 @@ namespace Winamp {
         FlatTexture PlaylistScrollButton;
         FlatTexture PlaylistBG;
 
+        FlatTexture VisBar;
+        FlatTexture FakeBar;
+        FlatTexture VisBarPeak;
+        FlatTexture VisBackground;
+
         Button ShuffleButton;
         Button EQButton;
         Button RepeatButton;
@@ -96,26 +105,11 @@ namespace Winamp {
 
         Button PlaylistTitleBarRightCornerButton;
 
-        Button TrackTimeToggle;
-
         Slider PositionSlider;
         Slider VolumeSlider;
         Slider BalanceSlider;
 
         void Unload();
-    };
-
-    struct Config {
-        bool useBitmapFontInPlaylist{};
-        bool useBitmapFont{};
-        bool preferTimeRemaining{};
-        bool showClutterbar = true;
-        bool skinTransparency = true;
-        std::string filename{};
-
-        void Default();
-
-        static Config GetDefault();
     };
 
     struct PlaylistSong {
@@ -126,8 +120,13 @@ namespace Winamp {
 
     class Winamp : public SkinVariant, public INotifiable {
       public:
+        int barUpdateFC = 0;
+        int barFalloff = 16;
+        float peakFalloff = 1.1f;
+        bool withFakeBars = true;
+        std::pair<float, int> peakValues[PEAKS_COUNT]{{0, 0}}; // value, stay duration
+
         Config *config{};
-        bool *eqEnabled{};
 
         Winamp();
         Winamp(Winamp const &other);
@@ -229,6 +228,8 @@ namespace Winamp {
 
         std::vector<int> pointList{};
 
+        std::vector<ImVec4> visColors{};
+
         int volumeTextureIsBalance();
 
         void probeTrackTitleBackgroundColor();
@@ -241,8 +242,13 @@ namespace Winamp {
 
         void readPlEdit();
         void readRegionTxt();
+        void readVisColorTxt();
 
         void drawPlaylist() const;
+
+        void drawVis();
+
+        void drawVisBar(int index, int value);
 
         void initializeElements();
 
@@ -252,13 +258,19 @@ namespace Winamp {
 
         void initializeSliders();
 
+        void createVisBar();
+
+        void createFakeBar();
+
+        void createVisBarPeak();
+
+        void createVisBG();
+
         static void notImplemented(void *winampSkin, void *);
 
         void drawTime();
 
         void blinkTrackTime();
-
-        static void toggleTrackTime(void *arg, void *i);
 
         static void togglePlaylistFullscreen(void *arg, void *);
 

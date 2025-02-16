@@ -118,11 +118,12 @@ All buttons and sliders work just like you expect them to (except EQ, repeat, pl
 
 Not implemented:
 
-- Visualization: technical reasons. See [ALSA.md](./ALSA.md).
 - Title scrolling by dragging it with cursor/finger: framework limitations/lack of knowledge
 - Scrolling playlist (backend doesn't provide enough data)
 - Editing playlist, not possible with current default player integration level
 - Playlist bottom buttons (which do nothing, because playlist is not editable)
+- Spectrum analyzer: thin bands, fire style, line style, fps/speed options
+- Oscillator visualizer
 - Easter eggs (not important)
 
 #### UI Buttons
@@ -155,6 +156,15 @@ Use dropdown and "Load skin" button to change skin. Upload new skins to `wampy/s
 
 `Skin transparency` enables skin transparency (`region.txt`). Background color is black.
 
+`Enable visualizer` enables visualizer in both Wampy and standard interface. If you want visualizer only in standard
+interface, change interface screen there to something else and then back to spectrum.
+
+`Visualizer Winamp mode` changes bands from `50, 100, 160, 250, 500, 750, 1000, 2000, 4000, 8000, 16000, 28000`
+to `1166, 2332, 3498, 4664, 5830, 6996, 8162, 9328, 10494, 11660, 12826, 13992` attempting to replicate Winamp's
+behaviour and filling last two bars with data.
+
+`Visualizer sensitivity` makes small changes in amplitude more significant. Higher value = bigger impact.
+
 #### Known issues and quirks
 
 Issues:
@@ -167,10 +177,10 @@ Issues:
 Quirks:
 
 - Playlist is never full. Default player keeps up to 15 songs in memory, some of those have already been played,
-  reducing playlist size further
+  reducing playlist size further.
 - Some elements may look slightly off (if you look hard enough) due to upscaling (800/275 = 2.90909...).
 - Skin transparency is not pixel perfect (irrational upscaling ratio).
-- There might be small delay between clicking button and getting response (noticeable on shuffle button)
+- Visualization data is taken from Walkman; it doesn't match Winamp's behaviour.
 
 Improvements (compared to Winamp v2.95):
 
@@ -432,9 +442,9 @@ this mode, set volume to 120 in default player app and toggle Wampy on.
 
 `Remove Wampy logs` button removes logs from `wampy/log/` directory.
 
-`DB char count` shows amount of unique characters in your database, which impacts loading time.
-
 `Window position` sets window position on devices with bigger screen (WM1A/Z).
+
+`Show FM tab` shows/hides FM tab, useful for those without FM chip on board (WM1A/Z, ZX300).
 
 `Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is
 cassette.
@@ -489,7 +499,7 @@ Random crashes/slowdowns after turning module off. Reboot if needed.
 
 ## Volume tables (VolT)
 
-See [VOLUME_TABLES.md](./VOLUME_TABLES.md)
+See [VOLUME_TABLES.md](./VOLUME_TABLES.md).
 
 ## Equalizer / audio filters (EQ)
 

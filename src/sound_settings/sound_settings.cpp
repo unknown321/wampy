@@ -761,3 +761,115 @@ void SoundSettings::SetFMStereo(bool v) const {
     s->command.valueInt = (int)v;
     Send();
 }
+
+void SoundSettings::RefreshAnalyzerPeaks(float sensitivity) {
+    if (sharkCalls > 0) {
+        DoShark();
+        return;
+    }
+#ifdef DESKTOP
+    for (int i = 0; i < HAGOROMO_AUDIO_PEAKS_COUNT; i++) {
+        auto v = std::rand() % 100;
+        s->peaks[i] = v;
+    }
+
+    for (int i = 0; i < HAGOROMO_AUDIO_PEAKS_COUNT; i++) {
+        peaks[i] = s->peaks[i];
+    }
+#else
+    bool empty = true;
+    for (auto v : s->peaks) {
+        if (v != 0) {
+            empty = false;
+            break;
+        }
+    }
+
+    // attempt to avoid flicker on resume (doesn't help that much, but still reduced)
+    if (empty) {
+        printf("empty\n");
+        return;
+    }
+
+    for (int i = 0; i < HAGOROMO_AUDIO_PEAKS_COUNT; i++) {
+        auto v = s->peaks[i];
+        auto q = 10 * std::log10((double)v / (double)2147483647);
+        auto o = q * 2;
+        if (q < -81) {
+            peaks[i] = 0;
+            continue;
+        }
+
+        auto pretty = 100 + (o * 150 / 100);
+        auto discrete = pretty - (int(pretty) % 5);
+        peaks[i] = 100 * std::atan(sensitivity * discrete) / std::atan(sensitivity * 100);
+    }
+#endif
+}
+
+void SoundSettings::DoShark() {
+    sharkCalls--;
+
+    int total_steps = SHARK_CALLS - sharkCalls - 1;                                // Calls completed
+    int group = total_steps / SHARK_PEAK_DELAY;                                    // Group of 4 calls
+    int lap = total_steps / (WAMPY_AUDIO_SPECTRUM_PEAKS_COUNT * SHARK_PEAK_DELAY); // 0 or 1
+
+    int base_index = group % WAMPY_AUDIO_SPECTRUM_PEAKS_COUNT;
+
+    int index;
+    if (lap == 0) {
+        index = base_index;
+    } else {
+        index = (WAMPY_AUDIO_SPECTRUM_PEAKS_COUNT - 1) - base_index;
+    }
+
+    for (int i = 0; i < WAMPY_AUDIO_SPECTRUM_PEAKS_COUNT; i++) {
+        if (i == index) {
+            peaks[i] = SHARK_PEAK_VALUE;
+        } else {
+            peaks[i] = 0;
+        }
+    }
+}
+
+void SoundSettings::StartShark() { sharkCalls = SHARK_CALLS; }
+
+void SoundSettings::SetAnalyzerBandsWinamp() const {
+    // winamp does 76 measurements with same step of 150  = 11400 * 2 channels = 22800
+    // hagoromo does only 12 for spectrum:
+    // 50, 100, 160, 250, 500, 750, 1000, 2000, 4000, 8000, 16000, 28000
+    // winamp mode makes steps even and reduces width in half
+    int step = 28000 / 2 / 12;
+
+    int mean = MEAN_REGULAR;
+    for (int i = 0; i < HAGOROMO_AUDIO_PEAKS_COUNT * 2; i = i + 2) {
+        s->command.valuesInt[i] = step * (i / 2 + 1);
+        s->command.valuesInt[i + 1] = mean;
+    }
+
+    s->command.valueInt = HAGOROMO_AUDIO_PEAKS_COUNT;
+    s->command.id = PSC_SET_AUDIO_ANALYZER_BANDS;
+    Send();
+}
+
+void SoundSettings::SetAnalyzerBandsOrig() const {
+    std::vector<int> vals = {50, 100, 160, 250, 500, 750, 1000, 2000, 4000, 8000, 16000, 28000};
+    int mean = MEAN_REGULAR;
+    for (int i = 0; i < HAGOROMO_AUDIO_PEAKS_COUNT * 2; i = i + 2) {
+        s->command.valuesInt[i] = vals.at(i / 2);
+        if (i / 2 == 11) {
+            mean = MEAN_HR;
+        }
+        s->command.valuesInt[i + 1] = mean;
+    }
+
+    s->command.valueInt = HAGOROMO_AUDIO_PEAKS_COUNT;
+    s->command.id = PSC_SET_AUDIO_ANALYZER_BANDS;
+    Send();
+}
+
+void SoundSettings::SetAnalyzer(int v) const {
+    s->command.id = PSC_SET_AUDIO_ANALYZER;
+    s->command.valueInt = v;
+    Send();
+}

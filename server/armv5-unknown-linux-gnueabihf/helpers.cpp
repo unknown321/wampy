@@ -76,12 +76,18 @@ static void dump_props(QObject *o) {
 }
 
 QVariant jsExpr(const char *text, QQmlContext *context, QObject *window) {
-    QQmlExpression *expr = new QQmlExpression(context, window, text);
+    if (context == nullptr) {
+        DLOG("tried to execute %s, but context is null\n", text);
+        return {};
+    }
+
+    auto expr = new QQmlExpression(context, window, text);
+
     auto res = expr->evaluate();
 
     if (expr->hasError()) {
         DLOG("err: %s\n", qPrintable(expr->error().toString()));
-        return QVariant(); // invalid
+        return {}; // invalid
     }
 
     return res;
