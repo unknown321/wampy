@@ -1,8 +1,10 @@
+#include "algorithm"
 #include "editor.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "implot.h"
+#include "vector"
 #include <cstdio>
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -46,6 +48,7 @@ void setFile(const char *buf, size_t n, const char *name) {
 
         return;
     }
+
     if (ed.masterVolumeDsd.FromBytes(buf, n) == 0) {
         ed.tableType = ETableType_DSD;
         ed.curveYLimit = (1 << 15) - 1; // 32767
@@ -60,6 +63,7 @@ void setFile(const char *buf, size_t n, const char *name) {
         ed.legendName = "DSD, " + std::string(name);
         return;
     }
+
     if (ed.toneControl.FromBytes(buf, n) == 0) {
         ed.tableType = ETableType_TONE;
         ed.curveYLimit = 255;
@@ -74,7 +78,107 @@ void setFile(const char *buf, size_t n, const char *name) {
     emscripten_run_script("alert('unrecognized file format');");
 }
 
+void loadCSV(const char *buf, size_t n, const char *name) {
+    printf("Loaded file of size %zu bytes, name %s\n", n, name);
+    std::string file(buf, n);
+    auto lines = std::count(file.begin(), file.end(), '\n');
+    printf("lines %d\n", lines);
+    ed.name = name;
+
+    auto tcSize = (TONE_CONTROL_TABLE_MAX + 1) * CODEC_RAM_SIZE + (TONE_CONTROL_TABLE_MAX + 1); // values + headers
+    if ((tcSize == lines) || (tcSize + 1 == lines)) {
+        printf("tone control csv\n");
+        ed.toneControl.FromCsv(file);
+
+        ed.tableType = ETableType_TONE;
+        ed.curveYLimit = 255;
+        ed.curveElementCount = 320;
+        ed.ToneToDouble();
+        memcpy(ed.valuesyCopy, ed.toneControlValues[ed.toneControlTableType], sizeof(ed.toneControlValues[ed.toneControlTableType]));
+        ed.cond = ImPlotCond_Always;
+        ed.legendName = "Tone Control, " + std::string(name);
+
+        return;
+    }
+
+    auto dsdSize = (MASTER_VOLUME_TABLE_MAX + 1) * (MASTER_VOLUME_MAX + 1) + (MASTER_VOLUME_TABLE_MAX + 1);
+    if ((dsdSize == lines) || (dsdSize + 1 == lines)) {
+        printf("dsd csv\n");
+
+        ed.masterVolumeDsd.FromCsv(file);
+
+        ed.tableType = ETableType_DSD;
+        ed.curveYLimit = (1 << 15) - 1; // 32767
+        ed.curveElementCount = 121;
+        ed.DSDToDouble();
+        memcpy(
+            ed.valuesyCopy,
+            ed.masterVolumeDSDValues[ed.MasterVolumeDSDTableType],
+            sizeof(ed.masterVolumeDSDValues[ed.MasterVolumeDSDTableType])
+        );
+        ed.cond = ImPlotCond_Always;
+        ed.legendName = "DSD, " + std::string(name);
+
+        return;
+    }
+
+    auto masterSize = MASTER_VOLUME_VALUE_MAX * 2 * (MASTER_VOLUME_TABLE_MAX + 1) * (MASTER_VOLUME_MAX + 1) +
+                      (MASTER_VOLUME_TABLE_MAX + 1) * 2 * (MASTER_VOLUME_VALUE_MAX);
+    if ((masterSize == lines) || (masterSize + 1 == lines)) {
+        printf("master csv\n");
+
+        ed.masterVolume.FromCsv(file);
+
+        ed.curveYLimit = 255;
+        ed.curveElementCount = 121;
+        ed.tableType = ETableType_VOLUME;
+        ed.MasterToDouble();
+        memcpy(
+            ed.valuesyCopy,
+            ed.masterVolumeValues[(int)ed.soundEffectOn][ed.MasterVolumeTableType][ed.MasterVolumeValueType],
+            sizeof(ed.masterVolumeValues[(int)ed.soundEffectOn][ed.MasterVolumeTableType][ed.MasterVolumeValueType])
+        );
+        ed.cond = ImPlotCond_Always;
+        ed.legendName = "Master Volume, " + std::string(name);
+
+        return;
+    }
+
+    emscripten_run_script("alert('unrecognized csv format');");
+}
+
 const size_t dataSize = 1024 * 1024 * 90;
+
+void *saveCsv(size_t *size) {
+    if (ed.tableType == ETableType_TONE) {
+        auto data = malloc(dataSize);
+        memset(data, 0, dataSize);
+        auto res = ed.toneControl.ToCsv();
+        memcpy(data, res.c_str(), res.length());
+        *size = res.length();
+        return data;
+    }
+
+    if (ed.tableType == ETableType_DSD) {
+        auto data = malloc(dataSize);
+        memset(data, 0, dataSize);
+        auto res = ed.masterVolumeDsd.ToCsv();
+        memcpy(data, res.c_str(), res.length());
+        *size = res.length();
+        return data;
+    }
+
+    if (ed.tableType == ETableType_VOLUME) {
+        auto data = malloc(dataSize);
+        memset(data, 0, dataSize);
+        auto res = ed.masterVolume.ToCsv();
+        memcpy(data, res.c_str(), res.length());
+        *size = res.length();
+        return data;
+    }
+
+    return nullptr;
+}
 
 void *saveFile(size_t *size) {
     if (ed.tableType == ETableType_UNKNOWN) {
