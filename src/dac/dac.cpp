@@ -70,12 +70,12 @@ namespace Dac {
     };
 
     std::map<int, std::string> MasterVolumeValueTypeToString = {
-        {MASTER_VOLUME_VALUE_HPOUT, "Headphones (HpOut)"},
-        {MASTER_VOLUME_VALUE_PLAY, "Play"},
         {MASTER_VOLUME_VALUE_LINEIN, "LineIn"},
         {MASTER_VOLUME_VALUE_SDIN1, "SdIn1"},
         {MASTER_VOLUME_VALUE_SDIN2, "SdIn2"},
+        {MASTER_VOLUME_VALUE_PLAY, "Play"},
         {MASTER_VOLUME_VALUE_LINEOUT, "LineOut"},
+        {MASTER_VOLUME_VALUE_HPOUT, "Headphones (HpOut)"},
         {MASTER_VOLUME_VALUE_CMX1_500, "CMX1_500"},
         {MASTER_VOLUME_VALUE_CMX2_500, "CMX2_500"},
         {MASTER_VOLUME_VALUE_CMX1_750, "CMX1_750"},

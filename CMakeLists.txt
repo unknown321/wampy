@@ -123,6 +123,7 @@ add_executable(${PROJECT_NAME}
         src/implot_widgets.cpp
         src/skin.cpp
         src/dac/cxd3778gf_table.cpp
+        src/util/util_string.cpp
         src/util/util.cpp
         src/wstring.cpp
         src/w1/w1.cpp
