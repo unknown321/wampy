@@ -268,9 +268,8 @@ void Skin::LoadUpdatedSkin() {
 
 void Skin::MasterVolumeTableToImVec2() {
     for (int index = 0; index < 2; index++) {
-        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX + 1; tableID++) {
             for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
-
                 for (int valType = MASTER_VOLUME_VALUE_MIN; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
                     auto val = masterVolume.GetValue(index, tableID, i, (MASTER_VOLUME_VALUE)valType);
                     //                        if (val != 0) {
@@ -285,7 +284,7 @@ void Skin::MasterVolumeTableToImVec2() {
 }
 
 void Skin::MasterVolumeDSDTableToImVec2() {
-    for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+    for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX + 1; tableID++) {
         for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
             auto val = masterVolumeDSD.v[tableID][i];
             masterVolumeDSDValues[tableID][i] = ImVec2((float)i, (float)val);
@@ -294,7 +293,7 @@ void Skin::MasterVolumeDSDTableToImVec2() {
 }
 
 void Skin::ToneControlToImVec2() {
-    for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX; tableID++) {
+    for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX + 1; tableID++) {
         for (int i = 0; i < CODEC_RAM_SIZE; i++) {
             auto val = toneControl.v[tableID][i];
             toneControlValues[tableID][i] = ImVec2((float)i, (float)val);
@@ -304,7 +303,7 @@ void Skin::ToneControlToImVec2() {
 
 void Skin::MasterVolumeImVec2ToTable() {
     for (int index = 0; index < 2; index++) {
-        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX + 1; tableID++) {
             for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
                 for (int valType = 1; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
                     auto val = masterVolumeValues[index][tableID][valType][i].y;
@@ -316,9 +315,9 @@ void Skin::MasterVolumeImVec2ToTable() {
 }
 
 void Skin::MasterVolumeDSDImVec2ToTable() {
-    for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+    for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX + 1; tableID++) {
         for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
-            for (int valType = 1; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
+            for (int valType = 1; valType < MASTER_VOLUME_VALUE_MAX + 1; valType++) {
                 auto val = masterVolumeDSDValues[tableID][i];
                 masterVolumeDSD.v[tableID][i] = (int)val.y;
             }
@@ -327,7 +326,7 @@ void Skin::MasterVolumeDSDImVec2ToTable() {
 }
 
 void Skin::ToneControlImVec2ToTable() {
-    for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX; tableID++) {
+    for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX + 1; tableID++) {
         for (int i = 0; i < CODEC_RAM_SIZE; i++) {
             auto val = toneControlValues[tableID][i];
             toneControl.v[tableID][i] = (int)val.y;

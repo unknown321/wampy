@@ -7,6 +7,7 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "util_string.h"
 #include <dirent.h>
 #include <glad/glad.h>
 #include <map>
@@ -38,11 +39,7 @@ ImU32 colorToImCol32(const std::string &color);
 
 std::string parseColor(const std::string &in);
 
-std::vector<std::string> split(const std::string &s, const std::string &delimiter);
-
-std::string join(const std::vector<std::string> &v, int start);
-
-std::string join(const std::vector<std::string> &v, int start, std::string sep);
+std::string ImVec4ToColor(ImVec4 v);
 
 void printFPS();
 

@@ -138,6 +138,8 @@ class TableLike {
     virtual void ToBytes(void *buf, size_t *len) = 0;
     virtual int Apply(const std::string &path) = 0;
     virtual void Reset() = 0;
+    virtual std::string ToCsv() = 0;
+    virtual int FromCsv(std::string) = 0;
 };
 
 class master_volume : public TableLike {
@@ -154,6 +156,8 @@ class master_volume : public TableLike {
     int Apply(const std::string &path) override;
     void Reset() override;
     int FromBytes(const char *buf, size_t len) override;
+    std::string ToCsv() override;
+    int FromCsv(std::string) override;
 };
 
 class master_volume_dsd : public TableLike {
@@ -168,6 +172,8 @@ class master_volume_dsd : public TableLike {
     int Apply(const std::string &path) override;
     void Reset() override;
     int FromBytes(const char *buf, size_t len) override;
+    std::string ToCsv() override;
+    int FromCsv(std::string) override;
 };
 
 class tone_control : public TableLike {
@@ -182,6 +188,8 @@ class tone_control : public TableLike {
     int Apply(const std::string &path) override;
     void Reset() override;
     int FromBytes(const char *buf, size_t len) override;
+    std::string ToCsv() override;
+    int FromCsv(std::string) override;
 };
 
 #endif

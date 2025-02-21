@@ -19,7 +19,9 @@
  */
 
 #include "cxd3778gf_table.h"
+#include "../util/util_string.h"
 #include "cxd3778gf_common.h"
+#include "dac.h"
 #include "fstream"
 #include <cstdio>
 #include <cstring>
@@ -563,6 +565,87 @@ void master_volume::ToBytes(void *buf, size_t *len) {
     *len = sizeof v + sizeof sum + sizeof xr;
 }
 
+std::string master_volume::ToCsv() {
+    std::string res;
+    std::string separator = ";";
+
+    for (int soundEffect = 0; soundEffect < 2; soundEffect++) {
+        for (int table = 0; table < (MASTER_VOLUME_TABLE_MAX + 1); table++) {
+            for (int valType = MASTER_VOLUME_VALUE_MIN; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
+                res += separator + "SoundEffect " + std::to_string(soundEffect) + ", " + Dac::MasterVolumeTableTypeToString.at(table) +
+                       ", " + Dac::MasterVolumeValueTypeToString.at(valType) + "\n";
+                for (int volume = 0; volume < MASTER_VOLUME_MAX + 1; volume++) {
+                    auto val = GetValue(soundEffect, table, volume, (MASTER_VOLUME_VALUE)valType);
+                    res += std::to_string(val) + separator + "\n";
+                }
+            }
+        }
+    }
+
+    return res;
+}
+
+int master_volume::FromCsv(std::string file) {
+    int soundEffect = 0;
+    int table = 0;
+    int valueType = -1;
+    int valueNo = 0;
+    auto lines = split(file, "\n");
+
+    //    ;SoundEffect 0, No output device (OFF), LineIn
+    for (const auto &line : lines) {
+        auto parts = split(line, ";");
+        if (parts.empty()) {
+            continue;
+        }
+
+        if (parts.size() != 2) {
+            continue;
+        }
+
+        // table start
+        if (parts[0].empty()) {
+            //            printf("new entry\n");
+            valueType++;
+            valueNo = 0;
+
+            if (valueType >= MASTER_VOLUME_VALUE_MAX) {
+                valueType = 0;
+                table++;
+            }
+            //            printf("%d %d\n", valueType, table);
+
+            if (table > MASTER_VOLUME_TABLE_MAX) {
+                soundEffect++;
+                table = 0;
+            }
+            //            printf("%d %d %d\n", soundEffect, valueType, table);
+
+            if (soundEffect > 1) {
+                printf("too much data?\n");
+                return 1;
+            }
+
+            //            printf(
+            //                "%d %s %s\n",
+            //                soundEffect,
+            //                Dac::MasterVolumeTableTypeToString.at(table).c_str(),
+            //                Dac::MasterVolumeValueTypeToString.at(valueType).c_str()
+            //            );
+        }
+
+        if (parts[1].empty()) {
+            //            printf("setting %d %d %d\n", soundEffect, table, valueType);
+            auto val = std::atoi(parts[0].c_str());
+            SetValue(soundEffect, table, valueNo, (MASTER_VOLUME_VALUE)valueType, val);
+            valueNo++;
+            //            printf("set\n");
+        }
+    }
+
+    return 0;
+}
+
 int master_volume_dsd::FromFile(const std::string &path) {
     std::ifstream f;
 
@@ -682,6 +765,51 @@ int master_volume_dsd::FromBytes(const char *buf, size_t len) {
     }
     return 0;
 }
+int master_volume_dsd::FromCsv(std::string file) {
+    int table = -1;
+    int valueNo = 0;
+    auto lines = split(file, "\n");
+    for (const auto &line : lines) {
+        auto parts = split(line, ";");
+        if (parts.empty()) {
+            continue;
+        }
+
+        if (parts.size() != 2) {
+            continue;
+        }
+
+        // table start
+        if (parts[0].empty()) {
+            table++;
+            valueNo = 0;
+        }
+
+        if (parts[1].empty()) {
+            if (table >= 0 && table < (MASTER_VOLUME_TABLE_MAX + 1)) {
+                v[table][valueNo] = std::atoi(parts[0].c_str());
+            }
+            valueNo++;
+        }
+    }
+
+    return 0;
+}
+
+std::string master_volume_dsd::ToCsv() {
+    std::string res;
+    char separator = ';';
+
+    //    unsigned int v[MASTER_VOLUME_TABLE_MAX + 1][MASTER_VOLUME_MAX + 1]{};
+    for (int i = 0; i < MASTER_VOLUME_TABLE_MAX + 1; i++) {
+        res += separator + Dac::MasterVolumeTableTypeToString.at(i) + '\n';
+        for (int k = 0; k < MASTER_VOLUME_MAX + 1; k++) {
+            res += std::to_string(v[i][k]) + separator + '\n';
+        }
+    }
+
+    return res;
+}
 
 int tone_control::FromFile(const std::string &path) {
     std::ifstream f;
@@ -766,11 +894,13 @@ int tone_control::Apply(const std::string &path) {
 
     return 0;
 }
+
 void tone_control::Reset() {
     memset(&v, 0, sizeof(v));
     sum = 0;
     xr = 0;
 }
+
 int tone_control::FromBytes(const char *buf, size_t len) {
     if (len != (TABLE_SIZE_TONE_CONTROL + CHECKSUM_SIZE)) {
         printf("invalid tone control table size\n");
@@ -800,4 +930,51 @@ void tone_control::ToBytes(void *buf, size_t *len) {
     pos += sizeof(xr);
 
     *len = sizeof v + sizeof sum + sizeof xr;
+}
+
+std::string tone_control::ToCsv() {
+    std::string res;
+    char separator = ';';
+    for (int i = 0; i < TONE_CONTROL_TABLE_MAX + 1; i++) {
+        res += separator + Dac::ToneControlTableTypeToString.at(i) + '\n';
+        for (int k = 0; k < CODEC_RAM_SIZE; k++) {
+            res += std::to_string(v[i][k]) + separator + '\n';
+        }
+    }
+
+    return res;
+}
+
+int tone_control::FromCsv(std::string file) {
+    Reset();
+
+    int table = -1;
+    int valueNo = 0;
+    auto lines = split(file, "\n");
+
+    for (const auto &line : lines) {
+        auto parts = split(line, ";");
+        if (parts.empty()) {
+            continue;
+        }
+
+        if (parts.size() != 2) {
+            continue;
+        }
+
+        // table start
+        if (parts[0].empty()) {
+            table++;
+            valueNo = 0;
+        }
+
+        if (parts[1].empty()) {
+            if (table >= 0 && table < (TONE_CONTROL_TABLE_MAX + 1)) {
+                v[table][valueNo] = std::atoi(parts[0].c_str());
+            }
+            valueNo++;
+        }
+    }
+
+    return 0;
 }
