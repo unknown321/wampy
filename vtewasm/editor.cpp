@@ -173,8 +173,18 @@ void editor::CurveEditor() {
         emscripten_run_script(run);
     }
 
+    ImGui::SameLine();
+    if (ImGui::Button("From CSV", ImVec2(230, 60))) {
+        auto run = "var input = document.createElement('input'); "
+                   "input.type = 'file'; "
+                   "input.onchange = e => { "
+                   "      open_csv(e)"
+                   "};"
+                   "input.click();";
+        emscripten_run_script(run);
+    }
+
     if (tableType != ETableType_UNKNOWN) {
-        ImGui::SameLine();
         if (ImGui::Button("Save", ImVec2(230, 60))) {
             switch (tableType) {
             case ETableType_UNKNOWN:
@@ -191,9 +201,92 @@ void editor::CurveEditor() {
             }
 
             char run[256];
+            auto pos = name.find_last_of(".");
+            if (pos == std::string::npos) {
+                printf("no extension found, adding\n");
+                name = name + ".tbl";
+            } else {
+                auto ext = name.substr(pos, name.length() - pos);
+                printf("ext: %s\n", ext.c_str());
+                if (ext == ".tbl") {
+                    printf("ext ok\n");
+                } else {
+                    auto basename = name.substr(0, pos);
+                    printf("basename %s\n", basename.c_str());
+                    pos = basename.find_last_of(".");
+                    if (pos == std::string::npos) {
+                        printf("no extension found in basename, adding\n");
+                        name = basename + ".tbl";
+                    } else {
+                        ext = basename.substr(pos, basename.length() - pos);
+                        if (ext == ".tbl") {
+                            printf("extension found in basename (%s), tbl\n", ext.c_str());
+                            name = basename;
+                        } else {
+                            printf("extension found in basename (%s), not tbl, adding\n", ext.c_str());
+                            name = basename + ".tbl";
+                        }
+                    }
+                }
+            }
+
             sprintf(run, "save_file(\"%s\");", name.c_str());
             emscripten_run_script(run);
         }
+
+        ImGui::SameLine();
+        if (ImGui::Button("To CSV", ImVec2(230, 60))) {
+            switch (tableType) {
+            case ETableType_UNKNOWN:
+                break;
+            case ETableType_VOLUME:
+                MasterFromDouble();
+                break;
+            case ETableType_DSD:
+                DSDFromDouble();
+                break;
+            case ETableType_TONE:
+                ToneFromDouble();
+                break;
+            }
+
+            auto csvName = name + ".csv";
+
+            auto pos = name.find_last_of(".");
+            if (pos == std::string::npos) {
+                printf("no extension found, adding\n");
+                name = name + ".csv";
+            } else {
+                auto ext = name.substr(pos, name.length() - pos);
+                printf("ext: %s\n", ext.c_str());
+                if (ext == ".csv") {
+                    printf("ext ok\n");
+                } else {
+                    auto basename = name.substr(0, pos);
+                    printf("basename %s\n", basename.c_str());
+                    pos = basename.find_last_of(".");
+                    if (pos == std::string::npos) {
+                        printf("no extension found in basename, adding\n");
+                        name = basename + ".csv";
+                    } else {
+                        ext = basename.substr(pos, basename.length() - pos);
+                        if (ext == ".csv") {
+                            printf("extension found in basename (%s), csv\n", ext.c_str());
+                            name = basename;
+                        } else {
+                            printf("extension found in basename (%s), not csv, adding\n", ext.c_str());
+                            name = basename + ".csv";
+                        }
+                    }
+                }
+            }
+
+            char run[256];
+            sprintf(run, "save_csv(\"%s\");", name.c_str());
+            emscripten_run_script(run);
+        }
+
+        ImGui::SameLine();
     }
     ImGui::NewLine();
     ImGui::Separator();
@@ -274,7 +367,7 @@ void editor::ToneOpts() {
 }
 
 void editor::DSDToDouble() {
-    for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+    for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX + 1; tableID++) {
         for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
             masterVolumeDSDValues[tableID][i] = double(masterVolumeDsd.v[tableID][i]);
         }
@@ -282,7 +375,7 @@ void editor::DSDToDouble() {
 }
 
 void editor::DSDFromDouble() {
-    for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+    for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX + 1; tableID++) {
         for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
             for (int valType = 1; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
                 masterVolumeDsd.v[tableID][i] = (int)masterVolumeDSDValues[tableID][i];
@@ -293,7 +386,7 @@ void editor::DSDFromDouble() {
 
 void editor::MasterToDouble() {
     for (int index = 0; index < 2; index++) {
-        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX + 1; tableID++) {
             for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
                 for (int valType = MASTER_VOLUME_VALUE_MIN; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
                     auto val = masterVolume.GetValue(index, tableID, i, (MASTER_VOLUME_VALUE)valType);
@@ -306,7 +399,7 @@ void editor::MasterToDouble() {
 
 void editor::MasterFromDouble() {
     for (int index = 0; index < 2; index++) {
-        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX; tableID++) {
+        for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX + 1; tableID++) {
             for (int i = MASTER_VOLUME_MIN; i < MASTER_VOLUME_MAX + 1; i++) {
                 for (int valType = 1; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
                     auto val = masterVolumeValues[index][tableID][valType][i];
@@ -316,8 +409,9 @@ void editor::MasterFromDouble() {
         }
     }
 }
+
 void editor::ToneToDouble() {
-    for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX; tableID++) {
+    for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX + 1; tableID++) {
         for (int i = 0; i < CODEC_RAM_SIZE; i++) {
             auto val = toneControl.v[tableID][i];
             toneControlValues[tableID][i] = (double)val;
@@ -326,7 +420,7 @@ void editor::ToneToDouble() {
 }
 
 void editor::ToneFromDouble() {
-    for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX; tableID++) {
+    for (int tableID = 0; tableID < TONE_CONTROL_TABLE_MAX + 1; tableID++) {
         for (int i = 0; i < CODEC_RAM_SIZE; i++) {
             auto val = toneControlValues[tableID][i];
             toneControl.v[tableID][i] = (int)val;

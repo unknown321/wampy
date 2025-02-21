@@ -20,11 +20,13 @@ EXE = $(WEB_DIR)/index.html
 IMGUI_DIR = ./imgui
 IMPLOT_DIR=./implot
 DAC_DIR=../src/dac
+UTIL_DIR=../src/util
 SOURCES = main.cpp editor.cpp
 SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
 SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 SOURCES += $(IMPLOT_DIR)/implot.cpp $(IMPLOT_DIR)/implot_items.cpp
 SOURCES += $(DAC_DIR)/cxd3778gf_table.cpp $(DAC_DIR)/dac.cpp
+SOURCES += $(UTIL_DIR)/util_string.cpp
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 CPPFLAGS =
@@ -41,7 +43,7 @@ LDFLAGS += -s USE_GLFW=3 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0
 
 #Build as single file(binary text encoded in.html file)
 LDFLAGS += -sSINGLE_FILE  -sALLOW_MEMORY_GROWTH=1 \
--s EXPORTED_FUNCTIONS='["_setFile", "_main", "_malloc", "_free", "_setHeight", "_setWidth", "_saveFile"]' \
+-s EXPORTED_FUNCTIONS='["_setFile", "_main", "_malloc", "_free", "_setHeight", "_setWidth", "_saveFile", "_saveCsv", "_loadCSV"]' \
 -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap", "writeArrayToMemory", "getValue"]'
 
 #Uncomment next line to fix possible rendering bugs with Emscripten version older then 1.39.0(https                                        \
@@ -67,7 +69,7 @@ endif
 ## FINAL BUILD FLAGS
 ##---------------------------------------------------------------------
 
-CPPFLAGS += -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(DAC_DIR) -I$(IMPLOT_DIR)
+CPPFLAGS += -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(DAC_DIR) -I$(IMPLOT_DIR) -I$(UTIL_DIR)
 CPPFLAGS += $(EMS)
 LDFLAGS += --shell-file shell_minimal.html
 LDFLAGS += $(EMS)
@@ -86,6 +88,9 @@ LDFLAGS += $(EMS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 %.o:$(DAC_DIR)/%.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+
+%.o:$(UTIL_DIR)/%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 %.o:$(IMGUI_DIR)/backends/%.cpp
