@@ -159,11 +159,27 @@ void SetFmStereoMode(int value) {
     shmp->fmStatus.stereo = value;
 }
 
+void startAnalyzer() {
+    printf("starting audio analyzer\n");
+    analyzer = pst::services::audioanalyzerservice::AudioAnalyzerService::GetInstance();
+    analyzerEventListener = pst::services::audioanalyzerservice::EventListener();
+    pst::services::audioanalyzerservice::mode_t m{};
+    m.value = 1;
+    analyzer->SetMode(m);
+    analyzer->Start(&analyzerEventListener);
+    printf("started audio analyzer\n");
+}
+
 void SetAudioAnalyzer(int value) {
+    if (analyzer == nullptr) {
+        startAnalyzer();
+    }
+
     if (analyzer == nullptr) {
         printf("attempt to SetAudioAnalyzer while analyzer is nullptr\n");
         return;
     }
+
     if (value == 1) {
         analyzer->Start(&analyzerEventListener);
     } else {
@@ -172,6 +188,10 @@ void SetAudioAnalyzer(int value) {
 }
 
 void SetAudioAnalyzerBands(const int values[50], int count) {
+    if (analyzer == nullptr) {
+        startAnalyzer();
+    }
+
     if (analyzer == nullptr) {
         printf("attempt to SetAudioAnalyzerBands while analyzer is nullptr\n");
         return;
@@ -300,15 +320,6 @@ int main(int argc, char **argv) {
     auto dmpconfig = new pst::dmpconfig::DmpConfig();
     auto k = pst::dmpconfig::Key();
     auto dmpFeature = pst::dmpfeature::DmpFeature();
-
-    printf("starting audio analyzer\n");
-    analyzer = pst::services::audioanalyzerservice::AudioAnalyzerService::GetInstance();
-    analyzerEventListener = pst::services::audioanalyzerservice::EventListener();
-    pst::services::audioanalyzerservice::mode_t m{};
-    m.value = 1;
-    analyzer->SetMode(m);
-    analyzer->Start(&analyzerEventListener);
-    printf("started audio analyzer\n");
 
     while (true) {
         if (sem_wait(&shmp->sem1) == -1)
