@@ -2396,7 +2396,7 @@ void Skin::TabEQ_Misc() {
         ImGui::Text("ClearAudio+");
 
         ImGui::TableNextColumn();
-        if (isWalkmanOne) {
+        if (isWalkmanOne || !connector->soundSettings.s->status.clearAudioAvailable) {
             ImGui::BeginDisabled();
         }
         if (connector->soundSettingsFw.s->clearAudioPlusOn) {
@@ -2429,7 +2429,7 @@ void Skin::TabEQ_Misc() {
             ImGui::PopID();
         }
 
-        if (isWalkmanOne) {
+        if (isWalkmanOne || !connector->soundSettings.s->status.clearAudioAvailable) {
             ImGui::EndDisabled();
         }
 
@@ -2938,42 +2938,48 @@ void Skin::TabEQ() {
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
         ImGui::BeginChild("ChildL", ImVec2(580, 425), ImGuiChildFlags_Border, window_flags);
 
-        switch (eActiveFilterTab) {
-
-        case ActiveFilterTab_Invalid:
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 580 / 2 - ImGui::CalcTextSize("Select filter").x / 2);
-            ImGui::SetCursorPosY(
-                ImGui::GetCursorPosY() + 425 / 2 - ImGui::CalcTextSize("Select filter").y / 2 - ImGui::GetTextLineHeightWithSpacing()
-            );
-            ImGui::Text("Select filter");
-            break;
-        case ActiveFilterTab_DynamicNormalizer:
-            TabEQ_DynamicNormalizer();
-            break;
-        case ActiveFilterTab_Eq6Band:
-            TabEQ_Eq6Band();
-            break;
-        case ActiveFilterTab_Vpt:
-            TabEQ_Vpt();
-            break;
-        case ActiveFilterTab_DCPhaseLinearizer:
-            TabEQ_DCPhase();
-            break;
-        case ActiveFilterTab_Vinylizer:
-            TabEQ_Vinylizer();
-            break;
-        case ActiveFilterTab_Eq10Band:
-            TabEQ_Eq10Band();
-            break;
-        case ActiveFilterTab_EqTone:
-            TabEQ_EqTone();
-            break;
-        case ActiveFilterTab_Donate:
-            TabEQ_Donate();
-            break;
-        case ActiveFilterTab_Misc:
+        if (connector->soundSettingsFw.s->directSourceOn) {
+            ImGui::Text("Direct Source is on, filters disabled");
+            ImGui::NewLine();
             TabEQ_Misc();
-            break;
+        } else {
+            switch (eActiveFilterTab) {
+
+            case ActiveFilterTab_Invalid:
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 580 / 2 - ImGui::CalcTextSize("Select filter").x / 2);
+                ImGui::SetCursorPosY(
+                    ImGui::GetCursorPosY() + 425 / 2 - ImGui::CalcTextSize("Select filter").y / 2 - ImGui::GetTextLineHeightWithSpacing()
+                );
+                ImGui::Text("Select filter");
+                break;
+            case ActiveFilterTab_DynamicNormalizer:
+                TabEQ_DynamicNormalizer();
+                break;
+            case ActiveFilterTab_Eq6Band:
+                TabEQ_Eq6Band();
+                break;
+            case ActiveFilterTab_Vpt:
+                TabEQ_Vpt();
+                break;
+            case ActiveFilterTab_DCPhaseLinearizer:
+                TabEQ_DCPhase();
+                break;
+            case ActiveFilterTab_Vinylizer:
+                TabEQ_Vinylizer();
+                break;
+            case ActiveFilterTab_Eq10Band:
+                TabEQ_Eq10Band();
+                break;
+            case ActiveFilterTab_EqTone:
+                TabEQ_EqTone();
+                break;
+            case ActiveFilterTab_Donate:
+                TabEQ_Donate();
+                break;
+            case ActiveFilterTab_Misc:
+                TabEQ_Misc();
+                break;
+            }
         }
 
         ImGui::EndChild();
