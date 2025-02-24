@@ -13,8 +13,8 @@ namespace Winamp {
         bool preferTimeRemaining{};
         bool showClutterbar = true;
         bool skinTransparency = true;
-        bool visualizerEnable = true;
-        bool visualizerWinampBands = true;
+        bool visualizerEnable = false;
+        bool visualizerWinampBands = false;
         float visualizerSensitivity = WINAMP_VISUALIZER_SENS_DEFAULT;
         std::string filename{};
 
