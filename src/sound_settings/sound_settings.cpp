@@ -787,7 +787,6 @@ void SoundSettings::RefreshAnalyzerPeaks(float sensitivity) {
 
     // attempt to avoid flicker on resume (doesn't help that much, but still reduced)
     if (empty) {
-        printf("empty\n");
         return;
     }
 
