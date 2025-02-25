@@ -709,7 +709,6 @@ namespace Winamp {
         }
 
         ImGui::SetCursorPos(ImVec2(64, 122));
-        ImGui::BeginDisabled();
         if (ImGui::InvisibleButton("##visToggle", ImVec2(230, 56))) {
             config->visualizerEnable = !config->visualizerEnable;
             DLOG("visualization toggled to %d\n", config->visualizerEnable);
@@ -733,7 +732,6 @@ namespace Winamp {
                 connector->soundSettings.SetAnalyzer(0);
             }
         }
-        ImGui::EndDisabled();
 
         if (config->visualizerEnable) {
             drawVis();
@@ -1668,8 +1666,8 @@ namespace Winamp {
         showClutterbar = true;
         skinTransparency = true;
         filename = "base-2.91.wsz";
-        visualizerWinampBands = false;
-        visualizerEnable = false;
+        visualizerWinampBands = true;
+        visualizerEnable = true;
         visualizerSensitivity = 0.03;
     }
 

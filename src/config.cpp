@@ -168,13 +168,13 @@ namespace AppConfig {
         winamp.showClutterbar = (bool)std::atoi(ini["winamp"]["showClutterbar"].c_str());
         winamp.skinTransparency = (bool)std::atoi(ini["winamp"]["skinTransparency"].c_str());
         if (ini["winamp"]["visualizerEnable"].empty()) {
-            winamp.visualizerEnable = false;
+            winamp.visualizerEnable = true;
         } else {
             winamp.visualizerEnable = (bool)std::atoi(ini["winamp"]["visualizerEnable"].c_str());
         }
 
         if (ini["winamp"]["visualizerWinampMode"].empty()) {
-            winamp.visualizerWinampBands = false;
+            winamp.visualizerWinampBands = true;
         } else {
             winamp.visualizerWinampBands = (bool)std::atoi(ini["winamp"]["visualizerWinampMode"].c_str());
         }

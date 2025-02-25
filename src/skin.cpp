@@ -1044,7 +1044,6 @@ void Skin::Winamp() {
             }
         }
         ImGui::TableNextColumn();
-        ImGui::BeginDisabled();
         if (ImGui::Checkbox("Enable visualizer", &config->winamp.visualizerEnable)) {
             config->Save();
             if (config->winamp.visualizerEnable) {
@@ -1058,7 +1057,6 @@ void Skin::Winamp() {
                 connector->soundSettings.SetAnalyzer(0);
             }
         }
-        ImGui::EndDisabled();
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
@@ -1069,8 +1067,6 @@ void Skin::Winamp() {
             }
         }
         ImGui::TableNextColumn();
-
-        ImGui::BeginDisabled();
         if (ImGui::Checkbox("Visualizer Winamp mode", &config->winamp.visualizerWinampBands)) {
             config->Save();
             if (config->winamp.visualizerWinampBands) {
@@ -1079,7 +1075,6 @@ void Skin::Winamp() {
                 connector->soundSettings.SetAnalyzerBandsOrig();
             }
         }
-        ImGui::EndDisabled();
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
@@ -1096,8 +1091,6 @@ void Skin::Winamp() {
         }
 
         ImGui::TableNextColumn();
-
-        ImGui::BeginDisabled();
         if (ImGui::SliderFloat(
                 "##sensslider", &config->winamp.visualizerSensitivity, WINAMP_VISUALIZER_SENS_MIN, WINAMP_VISUALIZER_SENS_MAX, ""
             )) {
@@ -1107,7 +1100,6 @@ void Skin::Winamp() {
         }
         ImGui::SameLine();
         ImGui::Text("%.02f", config->winamp.visualizerSensitivity);
-        ImGui::EndDisabled();
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
