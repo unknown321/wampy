@@ -63,7 +63,8 @@ firmware. Make sure you have at least 100MB free on internal storage.
 
 ### Windows
 
-Download exe from [releases](https://github.com/unknown321/wampy/releases), run and follow instructions. Make sure that
+Download exe from [releases](https://github.com/unknown321/wampy/releases/latest), run and follow instructions. Make
+sure that
 your internal storage is named "WALKMAN":
 
 <img src="images/explorer.png">
