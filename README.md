@@ -64,8 +64,7 @@ firmware. Make sure you have at least 100MB free on internal storage.
 ### Windows
 
 Download exe from [releases](https://github.com/unknown321/wampy/releases/latest), run and follow instructions. Make
-sure that
-your internal storage is named "WALKMAN":
+sure that your internal storage is named "WALKMAN":
 
 <img src="images/explorer.png">
 
@@ -74,6 +73,10 @@ Device will restart twice.
 ### Linux/OSX
 
 See [INSTALL.md](./INSTALL.md)
+
+### Post-install
+
+Toggle Hold switch after device fully loads (post "creating database" progressbar).
 
 ## Upgrade
 

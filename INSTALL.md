@@ -14,7 +14,7 @@
 
 ### Windows
 
-Download exe from [releases](https://github.com/unknown321/wampy/releases), run and follow instructions.
+Download exe from [releases](https://github.com/unknown321/wampy/releases/latest), run and follow instructions.
 
 Device will restart twice.
 
@@ -59,4 +59,4 @@ See Linux section. You'll have to build `scsitool` yourself, good luck!
 ## Uninstalling
 
 Download `*.uninstaller.*` file for your platform and firmware
-from [releases](https://github.com/unknown321/wampy/releases), follow instructions from `install` section above.
+from [releases](https://github.com/unknown321/wampy/releases/latest), follow instructions from `install` section above.
