@@ -373,8 +373,8 @@ void Skin::ToggleDrawSettings(void *skin, void *) {
     assert(s);
 
     if (s->displaySettings == 0) {
-        s->ToggleAudioAnalyzerOff();
         s->displaySettings = 1;
+        s->ToggleAudioAnalyzerOff();
         s->RefreshWinampSkinList();
         s->RefreshCassetteTapeReelLists();
     } else {
