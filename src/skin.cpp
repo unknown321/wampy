@@ -334,15 +334,52 @@ void Skin::ToneControlImVec2ToTable() {
     }
 }
 
+void Skin::ToggleAudioAnalyzerOn() const {
+    DLOG("enter\n");
+    if (activeSkinVariant != WINAMP) {
+        return;
+    }
+
+    connector->soundSettings.SetAnalyzer(1);
+    if (config->winamp.visualizerWinampBands) {
+        connector->soundSettings.SetAnalyzerBandsWinamp();
+    } else {
+        connector->soundSettings.SetAnalyzerBandsOrig();
+    }
+
+    for (auto &v : connector->soundSettings.peaks) {
+        v = 0;
+    }
+
+    DLOG("exit\n");
+}
+
+void Skin::ToggleAudioAnalyzerOff() const {
+    DLOG("enter\n");
+
+    if (activeSkinVariant != WINAMP) {
+        return;
+    }
+
+    if (config->winamp.visualizerEnable) {
+        connector->soundSettings.SetAnalyzer(0);
+    }
+
+    DLOG("exit\n");
+}
+
 void Skin::ToggleDrawSettings(void *skin, void *) {
     auto s = (Skin *)skin;
     assert(s);
+
     if (s->displaySettings == 0) {
+        s->ToggleAudioAnalyzerOff();
         s->displaySettings = 1;
         s->RefreshWinampSkinList();
         s->RefreshCassetteTapeReelLists();
     } else {
         s->displaySettings = 0;
+        s->ToggleAudioAnalyzerOn();
     }
 }
 
@@ -350,9 +387,11 @@ void Skin::ToggleDrawEQTab(void *skin, void *) {
     auto s = (Skin *)skin;
     assert(s);
     if (s->displaySettings == 0) {
+        s->ToggleAudioAnalyzerOff();
         s->displaySettings = 1;
         s->displayTab = SettingsTab::TabEQ;
     } else {
+        s->ToggleAudioAnalyzerOn();
         s->displaySettings = 0;
     }
 }
@@ -1046,16 +1085,6 @@ void Skin::Winamp() {
         ImGui::TableNextColumn();
         if (ImGui::Checkbox("Enable visualizer", &config->winamp.visualizerEnable)) {
             config->Save();
-            if (config->winamp.visualizerEnable) {
-                connector->soundSettings.SetAnalyzer(1);
-                if (config->winamp.visualizerWinampBands) {
-                    connector->soundSettings.SetAnalyzerBandsWinamp();
-                } else {
-                    connector->soundSettings.SetAnalyzerBandsOrig();
-                }
-            } else {
-                connector->soundSettings.SetAnalyzer(0);
-            }
         }
 
         ImGui::TableNextRow();
@@ -1069,11 +1098,6 @@ void Skin::Winamp() {
         ImGui::TableNextColumn();
         if (ImGui::Checkbox("Visualizer Winamp mode", &config->winamp.visualizerWinampBands)) {
             config->Save();
-            if (config->winamp.visualizerWinampBands) {
-                connector->soundSettings.SetAnalyzerBandsWinamp();
-            } else {
-                connector->soundSettings.SetAnalyzerBandsOrig();
-            }
         }
 
         ImGui::TableNextRow();
@@ -2247,6 +2271,22 @@ void Skin::KeyHandler() {
         connector->soundSettings.Update();
         connector->soundSettingsFw.Update();
         eqStatus = "Refreshed";
+
+        if (activeSkinVariant == WINAMP) {
+            if (action == Hide) {
+                if (config->winamp.visualizerEnable) {
+                    ToggleAudioAnalyzerOn();
+                } else {
+                    ToggleAudioAnalyzerOff();
+                }
+            } else {
+                if (config->winamp.visualizerEnable) {
+                    ToggleAudioAnalyzerOff();
+                } else {
+                    ToggleAudioAnalyzerOn();
+                }
+            }
+        }
 
         ImGui::GetIO().AddMousePosEvent(0.0f, 0.0f);
     }

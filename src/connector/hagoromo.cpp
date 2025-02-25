@@ -362,15 +362,6 @@ namespace Hagoromo {
 
         soundSettings.Update();
         soundSettingsFw.Update();
-
-        if (*visualizerEnabled) {
-            soundSettings.SetAnalyzer(*visualizerEnabled);
-            if (*visualizerWinampBands) {
-                soundSettings.SetAnalyzerBandsWinamp();
-            } else {
-                soundSettings.SetAnalyzerBandsOrig();
-            }
-        }
     }
 
     void HagoromoConnector::Connect() {}

@@ -250,6 +250,10 @@ struct Skin {
 
     void ToneControlImVec2ToTable();
 
+    void ToggleAudioAnalyzerOn() const;
+
+    void ToggleAudioAnalyzerOff() const;
+
     static void ToggleDrawSettings(void *skin, void *);
 
     static void ToggleDrawEQTab(void *skin, void *);

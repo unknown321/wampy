@@ -417,10 +417,6 @@ int main(int, char **) {
     skin.ReadQR();
     skin.GetLogsDirSize();
     connector->soundSettings.Start();
-    connector->soundSettings.SetAnalyzer(config.winamp.visualizerEnable);
-    if (config.winamp.visualizerEnable && config.winamp.visualizerWinampBands) {
-        connector->soundSettings.SetAnalyzerBandsWinamp();
-    }
     connector->soundSettingsFw.Start();
     skin.Load();
 
