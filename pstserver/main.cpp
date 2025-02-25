@@ -181,6 +181,7 @@ void SetAudioAnalyzer(int value) {
     }
 
     if (value == 1) {
+        analyzer->SetUpdateRate(30.0f);
         analyzer->Start(&analyzerEventListener);
     } else {
         analyzer->Stop();
