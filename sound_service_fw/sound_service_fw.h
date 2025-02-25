@@ -38,7 +38,7 @@ namespace pst {
               public:
                 class PreFilters {
                   public:
-                    void Create(const std::vector<std::string> &param_1);
+                    int Create(const std::vector<std::string> &param_1);
                 };
                 class Filter {
                   public:
@@ -52,49 +52,49 @@ namespace pst {
                     char data[0x10];
                     bool is_proc;
                     char data2[0x39];
-                    void UpdateProcCond(bool, bool);
+                    int UpdateProcCond(bool, bool);
                 };
 
                 class Eq6band {
                     char data[0x10];
                     bool is_proc;
                     char data2[0x39];
-                    void UpdateProcCond(bool, bool);
+                    int UpdateProcCond(bool, bool);
                 };
 
                 class EqTone {
                     char data[0x10];
                     bool is_proc;
                     char data2[0x39];
-                    void UpdateProcCond(bool, bool);
+                    int UpdateProcCond(bool, bool);
                 };
 
                 class Vpt {
                     char data[0x10];
                     bool is_proc;
                     char data2[0x39];
-                    void UpdateProcCond(bool, bool);
+                    int UpdateProcCond(bool, bool);
                 };
 
                 class DynamicNormalizer {
                     char data[0x10];
                     bool is_proc;
                     char data2[0x39];
-                    void UpdateProcCond(bool, bool);
+                    int UpdateProcCond(bool, bool);
                 };
 
                 class DcPhaseLinearizer {
                     char data[0x10];
                     bool is_proc;
                     char data2[0x39];
-                    void UpdateProcCond(bool, bool);
+                    int UpdateProcCond(bool, bool);
                 };
 
                 class ClearPhase {
                     char data[0x10];
                     bool is_proc;
                     char data2[0x39];
-                    void UpdateProcCond(bool, bool);
+                    int UpdateProcCond(bool, bool);
                 };
 
                 class FilterChain {
@@ -102,12 +102,12 @@ namespace pst {
                     char data[0x54];
                     std::map<std::string, Filter *> filters;
                     std::vector<std::string> filterOrder;
-                    void Create(pst::services::sound::DynamicAllocPacketPool const *, std::vector<std::string> const &);
-                    void ExecEffectParam(const std::string &, bool const &);
-                    void SetEnable(std::string const &, bool const &);
+                    int Create(pst::services::sound::DynamicAllocPacketPool const *, std::vector<std::string> const &);
+                    int ExecEffectParam(const std::string &, bool const &);
+                    int SetEnable(std::string const &, bool const &);
                     bool CheckNeeded(std::string const &);
                     void EnqueueEffectParam(std::string const &);
-                    void GetParam(const std::string &, std::string &);
+                    int GetParam(const std::string &, std::string &);
                 };
             }; // namespace mobile
         }      // namespace sound

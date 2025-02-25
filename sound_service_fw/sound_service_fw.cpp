@@ -12,20 +12,20 @@
 
 std::map<std::string, bool> procDesired = {};
 
-using CreateFuncType = void (pst::services::sound::mobile::PreFilters::*)(const std::vector<std::string> &);
+using CreateFuncType = int (pst::services::sound::mobile::PreFilters::*)(const std::vector<std::string> &);
 CreateFuncType original_Create = nullptr;
 
 using CreateFilterFuncType = int (pst::services::sound::mobile::*)(const std::string &);
 CreateFilterFuncType original_CreateFilter = nullptr;
 
 using CreateFilterChainType =
-    void (pst::services::sound::mobile::FilterChain::*)(pst::services::sound::DynamicAllocPacketPool *, const std::vector<std::string> &);
+    int (pst::services::sound::mobile::FilterChain::*)(pst::services::sound::DynamicAllocPacketPool *, const std::vector<std::string> &);
 CreateFilterChainType original_FilterChainCreate = nullptr;
 
-using FilterExecEffectParam = void (pst::services::sound::mobile::FilterChain::*)(const std::string &, const bool &);
+using FilterExecEffectParam = int (pst::services::sound::mobile::FilterChain::*)(const std::string &, const bool &);
 FilterExecEffectParam original_FilterExecEffectParam = nullptr;
 
-using FilterChainSetEnable = void (pst::services::sound::mobile::FilterChain::*)(const std::string &, const bool &);
+using FilterChainSetEnable = int (pst::services::sound::mobile::FilterChain::*)(const std::string &, const bool &);
 FilterChainSetEnable original_FilterChainSetEnable = nullptr;
 
 using FilterChainCheckNeeded = bool (pst::services::sound::mobile::FilterChain::*)(const std::string &);
@@ -34,25 +34,25 @@ FilterChainCheckNeeded original_FilterChainCheckNeeded = nullptr;
 using FilterChainGetParam = bool (pst::services::sound::mobile::FilterChain::*)(const std::string &, std::string &);
 FilterChainGetParam original_FilterChainGetParam = nullptr;
 
-using Eq10bandUpdateProcCond = bool (pst::services::sound::mobile::Eq10band::*)(bool, bool);
+using Eq10bandUpdateProcCond = int (pst::services::sound::mobile::Eq10band::*)(bool, bool);
 Eq10bandUpdateProcCond original_eq10BandUpdateProcCond = nullptr;
 
-using Eq6bandUpdateProcCond = bool (pst::services::sound::mobile::Eq6band::*)(bool, bool);
+using Eq6bandUpdateProcCond = int (pst::services::sound::mobile::Eq6band::*)(bool, bool);
 Eq6bandUpdateProcCond original_eq6BandUpdateProcCond = nullptr;
 
-using EqToneUpdateProcCond = bool (pst::services::sound::mobile::EqTone::*)(bool, bool);
+using EqToneUpdateProcCond = int (pst::services::sound::mobile::EqTone::*)(bool, bool);
 EqToneUpdateProcCond original_eqToneUpdateProcCond = nullptr;
 
-using VptUpdateProcCond = bool (pst::services::sound::mobile::Vpt::*)(bool, bool);
+using VptUpdateProcCond = int (pst::services::sound::mobile::Vpt::*)(bool, bool);
 VptUpdateProcCond original_vptUpdateProcCond = nullptr;
 
-using DynamicNormalizerUpdateProcCond = bool (pst::services::sound::mobile::DynamicNormalizer::*)(bool, bool);
+using DynamicNormalizerUpdateProcCond = int (pst::services::sound::mobile::DynamicNormalizer::*)(bool, bool);
 DynamicNormalizerUpdateProcCond original_DynamicNormalizerUpdateProcCond = nullptr;
 
-using DcPhaseLinearizerUpdateProcCond = bool (pst::services::sound::mobile::DcPhaseLinearizer::*)(bool, bool);
+using DcPhaseLinearizerUpdateProcCond = int (pst::services::sound::mobile::DcPhaseLinearizer::*)(bool, bool);
 DcPhaseLinearizerUpdateProcCond original_DcPhaseLinearizerUpdateProcCond = nullptr;
 
-using ClearPhaseUpdateProcCond = bool (pst::services::sound::mobile::ClearPhase::*)(bool, bool);
+using ClearPhaseUpdateProcCond = int (pst::services::sound::mobile::ClearPhase::*)(bool, bool);
 ClearPhaseUpdateProcCond original_ClearPhaseUpdateProcCond = nullptr;
 
 pst::services::sound::mobile::FilterChain *filterChain = nullptr;
@@ -137,7 +137,7 @@ std::vector<std::string> WM1ZFullFilters = {
     "f2i",
 };
 
-void pst::services::sound::mobile::PreFilters::Create(const std::vector<std::string> &param_1) {
+int pst::services::sound::mobile::PreFilters::Create(const std::vector<std::string> &param_1) {
     if (!original_Create) {
         union h {
             void *void_ptr;
@@ -151,7 +151,7 @@ void pst::services::sound::mobile::PreFilters::Create(const std::vector<std::str
         );
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_Create = helper.member_func_ptr;
     }
@@ -160,10 +160,10 @@ void pst::services::sound::mobile::PreFilters::Create(const std::vector<std::str
         DLOGG("prefilter ->> %s\n", v.c_str());
     }
 
-    (this->*original_Create)(param_1);
+    return (this->*original_Create)(param_1);
 }
 
-void pst::services::sound::mobile::FilterChain::Create(
+int pst::services::sound::mobile::FilterChain::Create(
     const pst::services::sound::DynamicAllocPacketPool *param_1, const std::vector<std::string> &param_2
 ) {
     DLOGG("start\n");
@@ -189,7 +189,7 @@ void pst::services::sound::mobile::FilterChain::Create(
         );
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_FilterChainCreate = helper.member_func_ptr;
     }
@@ -216,12 +216,10 @@ void pst::services::sound::mobile::FilterChain::Create(
 
     DLOGG("calling original\n");
 
-    (this->*original_FilterChainCreate)(const_cast<DynamicAllocPacketPool *>(param_1), pp);
-
-    DLOGG("end\n");
+    return (this->*original_FilterChainCreate)(const_cast<DynamicAllocPacketPool *>(param_1), pp);
 }
 
-void pst::services::sound::mobile::FilterChain::ExecEffectParam(const std::string &s, const bool &b) {
+int pst::services::sound::mobile::FilterChain::ExecEffectParam(const std::string &s, const bool &b) {
     if (!original_FilterExecEffectParam) {
         union h {
             void *void_ptr;
@@ -235,17 +233,17 @@ void pst::services::sound::mobile::FilterChain::ExecEffectParam(const std::strin
         );
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_FilterExecEffectParam = helper.member_func_ptr;
     }
 
     DLOGG("effect param %s\n", s.c_str());
 
-    (this->*original_FilterExecEffectParam)(s, b);
+    return (this->*original_FilterExecEffectParam)(s, b);
 }
 
-void pst::services::sound::mobile::FilterChain::SetEnable(const std::string &s, const bool &b) {
+int pst::services::sound::mobile::FilterChain::SetEnable(const std::string &s, const bool &b) {
     if (!original_FilterChainSetEnable) {
         union h {
             void *void_ptr;
@@ -258,40 +256,42 @@ void pst::services::sound::mobile::FilterChain::SetEnable(const std::string &s, 
         );
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_FilterChainSetEnable = helper.member_func_ptr;
     }
 
     //    DLOGG("set enable %s %d\n", s.c_str(), b);
 
-    (this->*original_FilterChainSetEnable)(s, b);
+    return (this->*original_FilterChainSetEnable)(s, b);
 }
 
-bool pst::services::sound::mobile::FilterChain::CheckNeeded(const std::string &s) {
-    if (!original_FilterChainCheckNeeded) {
-        union h {
-            void *void_ptr;
-            FilterChainCheckNeeded member_func_ptr;
-        };
-        h helper{};
-        helper.void_ptr = dlsym(
-            RTLD_NEXT,
-            "_ZN3pst8services5sound6mobile11FilterChain11CheckNeededERKNSt3__112basic_stringIcNS4_11char_traitsIcEENS4_9allocatorIcEEEE"
-        );
-        if (!helper.void_ptr) {
-            DLOGG("dlsym fail\n");
-            return false;
-        }
-        original_FilterChainCheckNeeded = helper.member_func_ptr;
-    }
+// FIXME?
+// invalid signature, will break spectrum???
+// bool pst::services::sound::mobile::FilterChain::CheckNeeded(const std::string &s) {
+//     if (!original_FilterChainCheckNeeded) {
+//         union h {
+//             void *void_ptr;
+//             FilterChainCheckNeeded member_func_ptr;
+//         };
+//         h helper{};
+//         helper.void_ptr = dlsym(
+//             RTLD_NEXT,
+//             "_ZN3pst8services5sound6mobile11FilterChain11CheckNeededERKNSt3__112basic_stringIcNS4_11char_traitsIcEENS4_9allocatorIcEEEE"
+//         );
+//         if (!helper.void_ptr) {
+//             DLOGG("dlsym fail\n");
+//             return false;
+//         }
+//         original_FilterChainCheckNeeded = helper.member_func_ptr;
+//     }
+//
+//     //    DLOGG("check needed %s\n", s.c_str());
+//
+//     return (this->*original_FilterChainCheckNeeded)(s);
+// }
 
-    //    DLOGG("check needed %s\n", s.c_str());
-
-    return (this->*original_FilterChainCheckNeeded)(s);
-}
-
-void pst::services::sound::mobile::FilterChain::GetParam(const std::string &s1, std::string &s2) {
+int pst::services::sound::mobile::FilterChain::GetParam(const std::string &s1, std::string &s2) {
     if (!original_FilterChainGetParam) {
         union h {
             void *void_ptr;
@@ -304,17 +304,17 @@ void pst::services::sound::mobile::FilterChain::GetParam(const std::string &s1, 
         );
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_FilterChainGetParam = helper.member_func_ptr;
     }
 
-    (this->*original_FilterChainGetParam)(s1, s2);
+    return (this->*original_FilterChainGetParam)(s1, s2);
 
     //    DLOGG("Get param %s, result %s\n", s1.c_str(), s2.c_str());
 }
 
-void pst::services::sound::mobile::Eq10band::UpdateProcCond(bool b1, bool b2) {
+int pst::services::sound::mobile::Eq10band::UpdateProcCond(bool b1, bool b2) {
     if (!original_eq10BandUpdateProcCond) {
         union h {
             void *void_ptr;
@@ -324,23 +324,25 @@ void pst::services::sound::mobile::Eq10band::UpdateProcCond(bool b1, bool b2) {
         helper.void_ptr = dlsym(RTLD_NEXT, "_ZN3pst8services5sound6mobile8Eq10band14UpdateProcCondEbb");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_eq10BandUpdateProcCond = helper.member_func_ptr;
     }
 
-    (this->*original_eq10BandUpdateProcCond)(b1, b2);
+    int res = (this->*original_eq10BandUpdateProcCond)(b1, b2);
     DLOGG("isproc is %d\n", this->is_proc);
     auto p = procDesired.find("eq10band");
     if (p == procDesired.end()) {
         DLOGG("no desired value, skip\n");
-        return;
+        return res;
     }
     this->is_proc = p->second;
     DLOGG("isproc set to %d\n", this->is_proc);
+
+    return res;
 }
 
-void pst::services::sound::mobile::Eq6band::UpdateProcCond(bool b1, bool b2) {
+int pst::services::sound::mobile::Eq6band::UpdateProcCond(bool b1, bool b2) {
     if (!original_eq6BandUpdateProcCond) {
         union h {
             void *void_ptr;
@@ -350,23 +352,24 @@ void pst::services::sound::mobile::Eq6band::UpdateProcCond(bool b1, bool b2) {
         helper.void_ptr = dlsym(RTLD_NEXT, "_ZN3pst8services5sound6mobile7Eq6band14UpdateProcCondEbb");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_eq6BandUpdateProcCond = helper.member_func_ptr;
     }
 
-    (this->*original_eq6BandUpdateProcCond)(b1, b2);
+    int res = (this->*original_eq6BandUpdateProcCond)(b1, b2);
     DLOGG("isproc is %d\n", this->is_proc);
     auto p = procDesired.find("eq6band");
     if (p == procDesired.end()) {
         DLOGG("no desired value, skip\n");
-        return;
+        return res;
     }
     this->is_proc = p->second;
     DLOGG("isproc set to %d\n", this->is_proc);
+    return res;
 }
 
-void pst::services::sound::mobile::EqTone::UpdateProcCond(bool b1, bool b2) {
+int pst::services::sound::mobile::EqTone::UpdateProcCond(bool b1, bool b2) {
     if (!original_eqToneUpdateProcCond) {
         union h {
             void *void_ptr;
@@ -376,23 +379,24 @@ void pst::services::sound::mobile::EqTone::UpdateProcCond(bool b1, bool b2) {
         helper.void_ptr = dlsym(RTLD_NEXT, "_ZN3pst8services5sound6mobile6EqTone14UpdateProcCondEbb");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_eqToneUpdateProcCond = helper.member_func_ptr;
     }
 
-    (this->*original_eqToneUpdateProcCond)(b1, b2);
+    int res = (this->*original_eqToneUpdateProcCond)(b1, b2);
     DLOGG("isproc is %d\n", this->is_proc);
     auto p = procDesired.find("eqtone");
     if (p == procDesired.end()) {
         DLOGG("no desired value, skip\n");
-        return;
+        return res;
     }
     this->is_proc = p->second;
     DLOGG("isproc set to %d\n", this->is_proc);
+    return res;
 }
 
-void pst::services::sound::mobile::Vpt::UpdateProcCond(bool b1, bool b2) {
+int pst::services::sound::mobile::Vpt::UpdateProcCond(bool b1, bool b2) {
     if (!original_vptUpdateProcCond) {
         union h {
             void *void_ptr;
@@ -402,23 +406,24 @@ void pst::services::sound::mobile::Vpt::UpdateProcCond(bool b1, bool b2) {
         helper.void_ptr = dlsym(RTLD_NEXT, "_ZN3pst8services5sound6mobile3Vpt14UpdateProcCondEbb");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_vptUpdateProcCond = helper.member_func_ptr;
     }
 
-    (this->*original_vptUpdateProcCond)(b1, b2);
+    int res = (this->*original_vptUpdateProcCond)(b1, b2);
     DLOGG("isproc is %d\n", this->is_proc);
     auto p = procDesired.find("vpt");
     if (p == procDesired.end()) {
         DLOGG("no desired value, skip\n");
-        return;
+        return res;
     }
     this->is_proc = p->second;
     DLOGG("isproc set to %d\n", this->is_proc);
+    return res;
 }
 
-void pst::services::sound::mobile::DynamicNormalizer::UpdateProcCond(bool b1, bool b2) {
+int pst::services::sound::mobile::DynamicNormalizer::UpdateProcCond(bool b1, bool b2) {
     if (!original_DynamicNormalizerUpdateProcCond) {
         union h {
             void *void_ptr;
@@ -428,23 +433,24 @@ void pst::services::sound::mobile::DynamicNormalizer::UpdateProcCond(bool b1, bo
         helper.void_ptr = dlsym(RTLD_NEXT, "_ZN3pst8services5sound6mobile17DynamicNormalizer14UpdateProcCondEbb");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_DynamicNormalizerUpdateProcCond = helper.member_func_ptr;
     }
 
-    (this->*original_DynamicNormalizerUpdateProcCond)(b1, b2);
+    int res = (this->*original_DynamicNormalizerUpdateProcCond)(b1, b2);
     DLOGG("isproc is %d\n", this->is_proc);
     auto p = procDesired.find("dynamicnormalizer");
     if (p == procDesired.end()) {
         DLOGG("no desired value, skip\n");
-        return;
+        return res;
     }
     this->is_proc = p->second;
     DLOGG("isproc set to %d\n", this->is_proc);
+    return res;
 }
 
-void pst::services::sound::mobile::DcPhaseLinearizer::UpdateProcCond(bool b1, bool b2) {
+int pst::services::sound::mobile::DcPhaseLinearizer::UpdateProcCond(bool b1, bool b2) {
     if (!original_DcPhaseLinearizerUpdateProcCond) {
         union h {
             void *void_ptr;
@@ -454,23 +460,24 @@ void pst::services::sound::mobile::DcPhaseLinearizer::UpdateProcCond(bool b1, bo
         helper.void_ptr = dlsym(RTLD_NEXT, "_ZN3pst8services5sound6mobile17DcPhaseLinearizer14UpdateProcCondEbb");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_DcPhaseLinearizerUpdateProcCond = helper.member_func_ptr;
     }
 
-    (this->*original_DcPhaseLinearizerUpdateProcCond)(b1, b2);
+    int res = (this->*original_DcPhaseLinearizerUpdateProcCond)(b1, b2);
     DLOGG("isproc is %d\n", this->is_proc);
     auto p = procDesired.find("dcphaselinear");
     if (p == procDesired.end()) {
         DLOGG("no desired value, skip\n");
-        return;
+        return res;
     }
     this->is_proc = p->second;
     DLOGG("isproc set to %d\n", this->is_proc);
+    return res;
 }
 
-void pst::services::sound::mobile::ClearPhase::UpdateProcCond(bool b1, bool b2) {
+int pst::services::sound::mobile::ClearPhase::UpdateProcCond(bool b1, bool b2) {
     if (!original_ClearPhaseUpdateProcCond) {
         union h {
             void *void_ptr;
@@ -480,20 +487,21 @@ void pst::services::sound::mobile::ClearPhase::UpdateProcCond(bool b1, bool b2) 
         helper.void_ptr = dlsym(RTLD_NEXT, "_ZN3pst8services5sound6mobile10ClearPhase14UpdateProcCondEbb");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
-            return;
+            return 0;
         }
         original_ClearPhaseUpdateProcCond = helper.member_func_ptr;
     }
 
-    (this->*original_ClearPhaseUpdateProcCond)(b1, b2);
+    int res = (this->*original_ClearPhaseUpdateProcCond)(b1, b2);
     DLOGG("isproc is %d\n", this->is_proc);
     auto p = procDesired.find("clearphase");
     if (p == procDesired.end()) {
         DLOGG("no desired value, skip\n");
-        return;
+        return res;
     }
     this->is_proc = p->second;
     DLOGG("isproc set to %d\n", this->is_proc);
+    return res;
 }
 
 void StartServer() {
