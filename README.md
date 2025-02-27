@@ -97,6 +97,8 @@ See [BUILD.md](./BUILD.md)
 [Scrobbler](https://github.com/unknown321/scrobbler) - keeps tracks of played songs in .scrobbler.log for further
 submission to Last.fm.
 
+[tpp-wampy](https://github.com/unknown321/tpp-wampy) - MGSV:TPP cassette skin
+
 ## Development stories
 
 [Making of](./MAKING_OF.md)
