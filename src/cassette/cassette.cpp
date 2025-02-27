@@ -837,6 +837,8 @@ namespace Cassette {
             }
         }
 
+        ActiveTape->DrawSongInfo();
+
         if (debug) {
             drawCodecInfo();
         }

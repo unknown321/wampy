@@ -159,8 +159,6 @@ namespace Tape {
         Elements.Main.Draw();
         Elements.ToggleSettings.Draw();
         Elements.RandomizeTape.Draw();
-
-        DrawSongInfo();
     }
 
     void Tape::DrawSongInfo() const {
