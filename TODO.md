@@ -68,11 +68,11 @@
 
 # want
 
-- [ ] mgsv tapes - there is a huge texture/model in menu - https://www.youtube.com/watch?v=XBrV5XuICK0&t=25s
 - [ ] compressed winamp (increased loading time (bad), better memory usage (good), reduced quality(maybe?))
 - [ ] winamp: reduce texture amount by atlassing (but increase memory usage?)
 - [ ] single connection over socket?
 - [ ] enqueue?
+- [x] mgsv tapes - there is a huge texture/model in menu - https://www.youtube.com/watch?v=XBrV5XuICK0&t=25s
 - [x] visualization from NW-WM1Z spectrum analyzer
 - [x] eq button custom action - too small?
 - [x] walkman One settings in wampy settings
