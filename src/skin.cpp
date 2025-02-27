@@ -1205,7 +1205,9 @@ void Skin::Cassette() {
 
                         if (activeSkinVariant == CASSETTE) {
                             cassette.UnloadUnused();
-                            cassette.LoadReel(n.name);
+                            if (cassette.LoadReelAtlas(n.name) != Tape::ERR_OK) {
+                                cassette.LoadReel(n.name);
+                            }
                             cassette.SelectTape();
                         }
                     }
