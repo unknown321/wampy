@@ -359,12 +359,12 @@ File naming:
 wampy/
 ├── config.ini
 └── skins
-    ├── reels
+    ├── reel
     │   └── awesomeReel
     │       ├── atlas.pkm
     │       ├── atlas.txt
     │       └── config.txt
-    └── tapes
+    └── tape
         └── myCoolTape
             ├── config.txt
             └── tape.pkm
