@@ -59,6 +59,8 @@ namespace Cassette {
 
         void SelectTape();
 
+        bool useDirectoryConfig(const std::string &filename);
+
         void Notify() override;
 
       private:
@@ -72,6 +74,11 @@ namespace Cassette {
         Tape::Tape *ActiveTape = nullptr;
         Tape::Reel *ActiveReel = nullptr;
         ReelAtlas *ActiveAtlas = nullptr;
+        bool needLoadTapeReel = false;
+        struct needLoad {
+            std::string tape;
+            std::string reel;
+        } needLoad;
 
         char artist[FIELD_SIZE]{};
         char title[FIELD_SIZE]{};
@@ -99,6 +106,8 @@ namespace Cassette {
         void processUpdate();
 
         void changed(bool *changed);
+
+        void loadNeeded();
     };
 } // namespace Cassette
 #endif // WAMPY_CASSETTE_H

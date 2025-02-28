@@ -100,6 +100,10 @@ struct FlatTexture {
         s.close();
         delete[] b;
 
+        if (textureID == 0) {
+            DLOG("texture id is 0\n");
+        }
+
         if (textureID > 0) {
             this->upscaled.width = header.width;
             this->upscaled.height = header.height;

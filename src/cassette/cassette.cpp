@@ -26,7 +26,9 @@ namespace Cassette {
         Tape::AIFF,
         Tape::PCM,
         Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES,
-        Tape::DSD};
+        Tape::DSD,
+        Tape::DIRECTORY_CONFIG,
+    };
 
     Cassette::Cassette(Cassette const &other) : SkinVariant(other) {
         // copy constructor implementation
@@ -57,6 +59,7 @@ namespace Cassette {
         ret[Tape::PCM] = {"duad", "other", "PCM"};
         ret[Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES] = {"metal", "other", "Hi-Res"};
         ret[Tape::DSD] = {"metal_master", "metal_master", "DSD"};
+        ret[Tape::DIRECTORY_CONFIG] = {"chf", "chf", hiddenEntry};
         return ret;
     }
 
@@ -361,6 +364,7 @@ namespace Cassette {
             }
         }
 
+        std::vector<std::string> toUnload;
         for (auto &r : Reels) {
             bool used = false;
             for (const auto &v : config->data) {
@@ -373,12 +377,42 @@ namespace Cassette {
             if (used) {
                 continue;
             } else {
-                DLOG("reel %s is unused, unloading\n", r.first.c_str());
-                for (auto &tex : r.second) {
-                    tex.Unload();
-                }
-                r.second.clear();
+                toUnload.emplace_back(r.first);
             }
+        }
+
+        for (const auto &s : toUnload) {
+            DLOG("reel %s is unused, unloading\n", s.c_str());
+            auto r = Reels.at(s);
+            for (auto &tex : r) {
+                tex.Unload();
+            }
+            Reels.erase(s);
+        }
+
+        toUnload.clear();
+        for (auto &r : ReelsAtlas) {
+            bool used = false;
+            for (const auto &v : config->data) {
+                if (v.second.reel == r.first) {
+                    used = true;
+                    break;
+                }
+            }
+
+            if (used) {
+                continue;
+            } else {
+                toUnload.emplace_back(r.first);
+            }
+        }
+
+        for (const auto &s : toUnload) {
+            DLOG("reel atlas %s is unused, unloading\n", s.c_str());
+            auto v = ReelsAtlas.at(s);
+            UnloadTexture(v.atlas.textureID);
+            v.atlas.images.clear();
+            ReelsAtlas.erase(s);
         }
     }
 
@@ -519,7 +553,7 @@ namespace Cassette {
         int retries = 8;
 
         for (int i = 0; i < retries; i++) {
-            index = std::rand() % tapeTypes.size();
+            index = std::rand() % (tapeTypes.size() - 1); // minus hidden!
             newType = tapeTypes[index];
             DLOG("old %d, new %d\n", oldType, newType);
             if (newType != oldType) {
@@ -599,9 +633,9 @@ namespace Cassette {
         icu::UnicodeString((song.Album.empty() ? connector->status.Album : song.Album).c_str()).toUpper().toUTF8String(upperAlbum);
         icu::UnicodeString(song.Title.c_str()).toUpper().toUTF8String(upperTitle);
         icu::UnicodeString(song.Artist.c_str()).toUpper().toUTF8String(upperArtist);
-        char croppedArtist[FIELD_SIZE];
-        char croppedTitle[FIELD_SIZE];
-        char croppedAlbum[FIELD_SIZE];
+        char croppedArtist[FIELD_SIZE]{0};
+        char croppedTitle[FIELD_SIZE]{0};
+        char croppedAlbum[FIELD_SIZE]{0};
 
         auto tapeConfig = Tapes[config->Get(tapeType)->tape];
 
@@ -680,10 +714,127 @@ namespace Cassette {
         strncpy(album, croppedAlbum, FIELD_SIZE);
     }
 
+    bool Cassette::useDirectoryConfig(const std::string &filename) {
+        UnloadUnused();
+
+        auto parts = split(filename, "/");
+        parts.erase(parts.end());
+        if (parts[0] == "internal") {
+            parts[0] = "/contents";
+        }
+        if (parts[0] == "external") {
+            parts[0] = "/contents_ext";
+        }
+
+#ifdef DESKTOP
+        parts[0] = "/media/nfs/raidvolume/music/" + parts[0];
+#endif
+
+        auto fName = join(parts, 0, "/");
+        fName += "cassette.txt";
+
+        if (!exists(fName)) {
+            return false;
+        }
+
+        DLOG("found custom config file %s\n", fName.c_str());
+
+        auto text = ReadFile(fName);
+
+        std::string tape;
+        std::string reel;
+        for (const auto &line : split(text, "\n")) {
+            parts = split(line, ": ");
+            if (parts.size() < 2) {
+                continue;
+            }
+            switch (hash(parts[0].c_str())) {
+            case hash("tape"): {
+                tape = parts[1];
+                break;
+            }
+            case hash("reel"): {
+                reel = parts[1];
+                break;
+            }
+            default:
+                break;
+            }
+        }
+
+        if (tape.empty() || reel.empty()) {
+            DLOG("cassette.txt invalid data\n");
+            return false;
+        }
+
+        DLOG("cassette.txt, tape %s, reel %s\n", tape.c_str(), reel.c_str());
+
+        tapeType = Tape::DIRECTORY_CONFIG;
+        needLoadTapeReel = true;
+        needLoad.tape = tape;
+        needLoad.reel = reel;
+
+        return true;
+    }
+
+    void Cassette::loadNeeded() {
+        LoadTape(needLoad.tape);
+        config->Set(Tape::DIRECTORY_CONFIG, {needLoad.tape, needLoad.reel, hiddenEntry});
+        if (Tapes.find(needLoad.tape) != Tapes.end()) {
+            ActiveTape = &Tapes[needLoad.tape];
+        } else {
+            ActiveTape = nullptr;
+        }
+
+        if (!ActiveTape) {
+            DLOG("cannot find tape %s\n", needLoad.tape.c_str());
+            if (Tapes.find(needLoad.tape) != Tapes.end()) {
+                Tapes[needLoad.tape].valid = false;
+            }
+            validateConfig();
+            defaultTape();
+            format();
+            return;
+        }
+
+        LoadReelAtlas(needLoad.reel);
+        if (ReelsAtlas.find(needLoad.reel) != ReelsAtlas.end()) {
+            ActiveAtlas = &ReelsAtlas.at(needLoad.reel);
+            ActiveReel = nullptr;
+        } else {
+            ActiveAtlas = nullptr;
+        }
+
+        if (ActiveAtlas == nullptr) {
+            LoadReel(needLoad.reel);
+            if (Reels.find(needLoad.reel) != Reels.end()) {
+                ActiveReel = &Reels.at(needLoad.reel);
+            } else {
+                ActiveReel = nullptr;
+            }
+        }
+
+        if (ActiveReel == nullptr && ActiveAtlas == nullptr) {
+            DLOG("failed to load reel %s\n", needLoad.tape.c_str(), needLoad.reel.c_str());
+            validateConfig();
+            defaultTape();
+            format();
+            return;
+        }
+
+        ActiveTape->name = needLoad.tape;
+        validateConfig();
+        format();
+    }
+
     void Cassette::SelectTape() {
         if (connector->playlist.empty()) {
             DLOG("no songs in playlist\n");
             defaultTape();
+            return;
+        }
+
+        if (useDirectoryConfig(connector->status.Filename)) {
             return;
         }
 
@@ -801,6 +952,11 @@ namespace Cassette {
     void Cassette::Draw() {
         if (loading) {
             return;
+        }
+
+        if (needLoadTapeReel) {
+            loadNeeded();
+            needLoadTapeReel = false;
         }
 
         ActiveTape->Draw();

@@ -12,6 +12,7 @@ namespace Tape {
         PCM,
         FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES,
         DSD,
+        DIRECTORY_CONFIG,
         TAPE_OTHER,
     };
 }

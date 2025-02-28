@@ -1164,6 +1164,9 @@ void Skin::Cassette() {
         ImGui::TableHeadersRow();
 
         for (auto &tt : config->cassette.data) {
+            if (tt.second.name == Cassette::hiddenEntry) {
+                continue;
+            }
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::Text("%s", tt.second.name.c_str());

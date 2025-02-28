@@ -15,6 +15,8 @@ namespace Cassette {
 
     typedef std::map<Tape::TapeType, ConfigEntry> configInternal;
 
+    extern std::string hiddenEntry;
+
     class Config {
       public:
         Config() = default;

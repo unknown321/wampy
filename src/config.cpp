@@ -150,6 +150,9 @@ namespace AppConfig {
             Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES, {ini["cassette:hires"]["tape"], ini["cassette:hires"]["reel"], "Hi-Res"}
         );
         cassette.SetOrDefault(Tape::DSD, {ini["cassette:dsd"]["tape"], ini["cassette:dsd"]["reel"], "DSD"});
+        cassette.SetOrDefault(
+            Tape::DIRECTORY_CONFIG, {ini["cassette:directory"]["tape"], ini["cassette:directory"]["reel"], Cassette::hiddenEntry}
+        );
 
         winamp.filename = ini["winamp"]["filename"];
         auto winampDefault = Winamp::Config::GetDefault();

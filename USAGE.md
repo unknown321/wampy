@@ -25,6 +25,7 @@
     * [Winamp skins](#winamp-skins)
     * [Cassette skins](#cassette-skins)
     * [Cassette skins, advanced](#cassette-skins-advanced)
+    * [Cassette skins per directory](#cassette-skins-per-directory)
 * [Misc](#misc)
   * [Issues](#issues)
 * [Walkman One](#walkman-one)
@@ -417,6 +418,24 @@ Contents:
 
 ```text
 delayMS: 100
+```
+
+#### Cassette skins per directory
+
+You can force a tape/reel combination for a specific directory by placing `cassette.txt` in that directory with
+contents:
+
+```text
+tape: <tape name>
+reel: <reel name>
+```
+
+For example, if you want to display tape `chf` with reel `other` when a track from directory `2000 - Into the Abyss`
+plays, you put `cassette.txt` into that directory. Contents:
+
+```text
+tape: chf
+reel: other
 ```
 
 ## Misc
