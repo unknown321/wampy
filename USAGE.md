@@ -5,6 +5,7 @@
   * [⚠️What to do if device crashes / Wampy doesn't start?⚠️](#what-to-do-if-device-crashes--wampy-doesnt-start)
   * [Wampy is on screen but doesn't respond and cannot be toggled off](#wampy-is-on-screen-but-doesnt-respond-and-cannot-be-toggled-off)
   * [Wampy is not showing when "Hold" is toggled](#wampy-is-not-showing-when-hold-is-toggled)
+  * [Wampy is not showing after turning display off and on](#wampy-is-not-showing-after-turning-display-off-and-on)
   * [There is no song info](#there-is-no-song-info)
   * [Settings look ugly](#settings-look-ugly)
   * [Everything lags after changing skins/tapes too much](#everything-lags-after-changing-skinstapes-too-much)
