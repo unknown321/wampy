@@ -72,6 +72,10 @@ for a minute.
 Otherwise, it might've crashed. Check for logs in `wampy/logs` directory on internal storage; [report the
 issue](https://github.com/unknown321/wampy/issues).
 
+### Wampy is not showing after turning display off and on
+
+Due to technical issues it is not possible to reliably show Wampy after turning screen off and on.
+
 ### There is no song info
 
 Try toggling it on and off again. Perhaps device is connected to PC in Mass Storage mode? Make sure you are using
