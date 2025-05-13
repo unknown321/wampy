@@ -15,8 +15,10 @@
 
 <!-- TOC -->
 
-NW-* series support adjusting volume tables on the fly. These tables impact sound signature and are loaded on boot. On
-Walkman One these are known as "Gain mode".
+NW-* series have digital amplifier S-Master HX™ technology powered by CXD3778GF chip. 
+Amplification rate depends on current volume value; you can change that rate by tuning chip configuration 
+using `volume->amplify rate` tables (or simply, volume tables).
+They impact sound signature and are loaded on boot. On Walkman One these are known as "Gain mode".
 
 Wampy provides interface for manipulating those tables.
 
