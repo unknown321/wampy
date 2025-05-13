@@ -154,7 +154,7 @@ release: release-clean build-arm server nw-installer/installer/userdata.tar.gz n
 	# second, build installer upgs
 	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) A30=0 WM1AZ=1 ZX300=1 DMPZ1=0 build
 	# next, build Windows installer (with uninstaller included)
-	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) A30=0 A40MOD_ONLY=1 WM1AZ=1 ZX300=1 DMPZ1=0 win
+	$(MAKE) -C nw-installer OUTFILE=$(PRODUCT).exe APPNAME=$(PRODUCT) A30=1 A40MOD_ONLY=1 A30MOD_ONLY=1 WM1AZ=1 ZX300=1 DMPZ1=0 win
 	# finally, move installer upg and exe files
 	mkdir -p release/installer/
 	cd nw-installer/installer/a50z/ && tar -czvf ../../../release/installer/a50z.tar.gz NW_WM_FW.UPG
