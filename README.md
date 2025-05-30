@@ -24,11 +24,11 @@ Also works on Walkman One for [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [
 - On-the-fly skin change
 - Volume table editor
 - Per-song audio options
-- All audio filters are available regardless of firmware
-- Standard interface enhancements (add clock and increase cover art size)
+- All audio filters are available (EQ 6/10 band, EQ Tone etc.)
+- Standard interface enhancements (clock and cover art size)
 - Digital clock skin (pretty!)
 - [Low latency USB DAC module](https://github.com/zhangboyang/llusbdac)
-- FM radio on devices with FM chip and Walkman One (A40/50, A30 doesn't work)
+- FM radio on devices with FM chip and Walkman One (A40/50 only)
 
 See [USAGE.md](./USAGE.md).
 
@@ -58,8 +58,8 @@ See [USAGE.md](./USAGE.md).
 
 You should read [USAGE.md](./USAGE.md) beforehand to get acquainted with quirks and bugs.
 
-Check [Device support](#device-support) table, find your device and select supported version for currently installed
-firmware. Make sure you have at least 100MB free on internal storage.
+Check [Device support](#device-support) table (the one above), find your device and currently installed firmware. Make
+sure you have at least 100MB free on internal storage.
 
 ### Windows
 
@@ -68,7 +68,7 @@ sure that your internal storage is named "WALKMAN":
 
 <img src="images/explorer.png">
 
-Device will restart twice.
+Device will restart twice during installation.
 
 ### Linux/OSX
 
@@ -76,7 +76,7 @@ See [INSTALL.md](./INSTALL.md)
 
 ### Post-install
 
-Toggle Hold switch after device fully loads (post "creating database" progressbar).
+Toggle Hold switch to start Wampy after device fully loads (post "creating database" progressbar).
 
 ## Upgrade
 
@@ -84,7 +84,7 @@ Just install new version, no need to uninstall previous version.
 
 ## Uninstall
 
-Run installer, select your model, installed firmware version and check "Uninstall" action.
+Run installer, select "Uninstall" action, follow instructions.
 
 ## Build from source
 
