@@ -85,6 +85,15 @@ uninstall() {
   log "removing libsound_service_fw"
   ${RM} -f ${VENDOR}/lib/libsound_service_fw.so
 
+  ${GREP} -q "libdmp_feature.so" ${INITRD_UNPACKED}/init.hagoromo.rc
+  if test $? -eq 0; then
+    log "removing LD_PRELOAD entry for PlayerService"
+    ${SED} -i '/libdmp_feature.so/d' ${INITRD_UNPACKED}/init.hagoromo.rc
+  fi
+
+  log "removing libdmp_feature.so"
+  ${RM} -f ${VENDOR}/lib/libdmp_feature.so
+
   test -f /system/vendor/sony/lib/libAudioAnalyzerService.so_vendor
   if busybox test $? -eq 0; then
     log "restoring AudioAnalyzerService from backup"

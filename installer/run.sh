@@ -152,6 +152,16 @@ install() {
     ${SED} -i '/SoundServiceFw/a \ setenv LD_PRELOAD /system/vendor/unknown321/lib/libsound_service_fw.so' ${INITRD_UNPACKED}/init.hagoromo.rc
   fi
 
+  log "installing DmpFeature preload library"
+  ${CP} libdmp_feature.so ${VENDOR}/lib/
+  ${CHMOD} 0755 ${VENDOR}/lib/libdmp_feature.so
+
+  ${GREP} -q "LD_PRELOAD /system/vendor/unknown321/lib/libdmp_feature.so" ${INITRD_UNPACKED}/init.hagoromo.rc
+  if test $? -ne 0; then
+    log "adding LD_PRELOAD entry for PlayerService"
+    ${SED} -i '/ PlayerService/a \ setenv LD_PRELOAD /system/vendor/unknown321/lib/libdmp_feature.so' ${INITRD_UNPACKED}/init.hagoromo.rc
+  fi
+
   # patch to prevent "an error has occurred" message in standard interface
   log "patching AudioAnalyzerService library"
   test -f /system/vendor/sony/lib/libAudioAnalyzerService.so_vendor

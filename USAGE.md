@@ -38,6 +38,7 @@
 * [Equalizer / audio filters (EQ)](#equalizer--audio-filters-eq)
 * [Equalizer per song settings (EQ/Song)](#equalizer-per-song-settings-eqsong)
 * [FM radio](#fm-radio)
+* [ATRAC support](#atrac-support)
 * [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
@@ -548,6 +549,11 @@ useful when signal is flapping between mono and stereo.
 Radio will stop for up to a second after hitting power button.
 
 [Developer notes](./MAKING_OF_FM.md)
+
+## ATRAC support
+
+By default, [ATRAC](https://en.wikipedia.org/wiki/ATRAC) is locked to JP region (0x0). Wampy disables that restriction
+during installation.
 
 ## Providing debug information
 

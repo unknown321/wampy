@@ -29,6 +29,7 @@ Also works on Walkman One for [NW-A50][1] / [A40][2] / [A30][3] / [ZX300][4] / [
 - Digital clock skin (pretty!)
 - [Low latency USB DAC module](https://github.com/zhangboyang/llusbdac)
 - FM radio on devices with FM chip and Walkman One (A40/50 only)
+- Region-free ATRAC support
 
 See [USAGE.md](./USAGE.md).
 
