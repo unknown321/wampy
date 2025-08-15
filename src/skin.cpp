@@ -878,7 +878,7 @@ void Skin::WalkmanOne() {
         ImGui::Text("Different DAC init mode");
         ImGui::TableNextColumn();
         if (ImGui::Checkbox("##dacinitmode", &walkmanOneOptions.dacInitializationMode)) {
-            DLOG("Set gain mode to %d\n", walkmanOneOptions.dacInitializationMode);
+            DLOG("Set dac init mode to %d\n", walkmanOneOptions.dacInitializationMode);
             walkmanOneOptions.Save();
             needRestart = true;
         }
