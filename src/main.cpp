@@ -238,7 +238,7 @@ void my_handler(int s) {
 }
 
 void setupProfiling() {
-    struct sigaction sigUSR1Handler {};
+    struct sigaction sigUSR1Handler{};
 
     sigUSR1Handler.sa_handler = my_handler;
     sigemptyset(&sigUSR1Handler.sa_mask);
@@ -327,8 +327,7 @@ int main(int, char **) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
-                                    ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
-                                    ImGuiWindowFlags_NoNav;
+                                    ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoNav;
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
@@ -427,7 +426,7 @@ int main(int, char **) {
 
     auto now = std::time(nullptr);
     while (true) {
-        struct stat st {};
+        struct stat st{};
         if (stat(socket.c_str(), &st) == 0) {
             break;
         } else {
@@ -517,7 +516,7 @@ int main(int, char **) {
         skin.LoadUpdatedSkin();
 
         if (config.limitFPS) {
-            //        https://github.com/glfw/glfw/issues/1308
+            // https://github.com/glfw/glfw/issues/1308
             while (glfwGetTime() < lastTime + (1.0 / TARGET_FPS)) {
             }
             lastTime += 1.0 / TARGET_FPS;
