@@ -593,6 +593,16 @@ void Skin::Misc() {
             config->volumeTables.MasterVolumeTableDSD = "";
             config->Save();
             resetVolTablesStatus = "OK!";
+
+            std::vector<std::vector<directoryEntry> *> tables = {&masterVolumeFiles, &masterVolumeDSDFiles, &toneControlFiles};
+            for (auto &table : tables) {
+                for (int i = 0; i < table->size(); i++) {
+                    auto entry = table->at(i);
+                    if (entry.name.rfind(defaultMark, 0) == 0) {
+                        table->at(i).name.erase(0, defaultMark.length());
+                    }
+                }
+            }
         }
 
         ImGui::TableNextColumn();
@@ -1613,7 +1623,7 @@ void Skin::TabMasterVolume() {
 
                     for (int i = 0; i < masterVolumeFiles.size(); i++) {
                         if (masterVolumeFiles.at(i).name.rfind(defaultMark, 0) == 0) {
-                            masterVolumeFiles.at(i).name = masterVolumeFiles.at(i).name.erase(0, defaultMark.length());
+                            masterVolumeFiles.at(i).name.erase(0, defaultMark.length());
                         }
                         if (i == masterVolumeFileSelected) {
                             masterVolumeFiles.at(i).name = defaultMark + masterVolumeFiles.at(i).name;
@@ -1820,7 +1830,7 @@ void Skin::TabMasterDSDVolume() {
 
                     for (int i = 0; i < masterVolumeDSDFiles.size(); i++) {
                         if (masterVolumeDSDFiles.at(i).name.rfind(defaultMark, 0) == 0) {
-                            masterVolumeDSDFiles.at(i).name = masterVolumeDSDFiles.at(i).name.erase(0, defaultMark.length());
+                            masterVolumeDSDFiles.at(i).name.erase(0, defaultMark.length());
                         }
                         if (i == masterVolumeDSDFileSelected) {
                             masterVolumeDSDFiles.at(i).name = defaultMark + masterVolumeDSDFiles.at(i).name;
@@ -2025,7 +2035,7 @@ void Skin::TabToneControl() {
 
                     for (int i = 0; i < toneControlFiles.size(); i++) {
                         if (toneControlFiles.at(i).name.rfind(defaultMark, 0) == 0) {
-                            toneControlFiles.at(i).name = toneControlFiles.at(i).name.erase(0, defaultMark.length());
+                            toneControlFiles.at(i).name.erase(0, defaultMark.length());
                         }
                         if (i == toneControlFileSelected) {
                             toneControlFiles.at(i).name = defaultMark + toneControlFiles.at(i).name;
