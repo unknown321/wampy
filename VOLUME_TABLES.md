@@ -101,7 +101,8 @@ stock priority over mods.
 
 <img src="images/settings-master-volume-table.png">
 
-System files are marked by Ⓢ symbol; you cannot save these, but you can make a copy.
+System files are marked by Ⓢ symbol; you cannot save these, but you can make a copy. Star symbol (☆) indicates that
+this table was set as default by user.
 
 Master volume table structure:
 
@@ -135,8 +136,8 @@ is, the louder is output.
 Use buttons `Copy val` and `Paste val` to copy and paste values from/to currently selected value type (everything on
 graph). Press `Edit` to edit values. `Apply` immediately applies changes. Press `Save` to save file
 to `internal storage/wampy/sound_settings/master_volume/` directory. `Set as default` makes currently shown table
-default - it will apply after toggling wampy for the first time after booting the device. To reset default tables, use
-`Set default volume tables` button in `Misc` tab.
+default - it will apply after toggling wampy for the first time after booting the device. User-set default tables are
+marked with ☆ symbol. To reset default tables, use `Set default volume tables` button in `Misc` tab.
 
 There are 26 table types and 13 value types specified by codec; you usually want to change `Play` and `Headphones` types
 for `Headphones, high gain` table. Feel free to experiment.
