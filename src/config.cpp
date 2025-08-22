@@ -77,6 +77,10 @@ namespace AppConfig {
 
         ini["digitalClock"]["color"] = digitalClock.color;
 
+        ini["volumeTables"]["masterVolumeTable"] = volumeTables.MasterVolumeTable;
+        ini["volumeTables"]["masterVolumeTableDSD"] = volumeTables.MasterVolumeTableDSD;
+        ini["volumeTables"]["toneControl"] = volumeTables.ToneControl;
+
         std::string presets;
         for (auto v : fmPresets) {
             presets += std::to_string(v) + ",";
@@ -211,6 +215,10 @@ namespace AppConfig {
         MPDSocketPath = ini["mpd"]["socketPath"];
 
         digitalClock.color = ini["digitalClock"]["color"];
+
+        volumeTables.MasterVolumeTable = ini["volumeTables"]["masterVolumeTable"];
+        volumeTables.MasterVolumeTableDSD = ini["volumeTables"]["masterVolumeTableDSD"];
+        volumeTables.ToneControl = ini["volumeTables"]["toneControl"];
 
         for (const auto &p : split(ini["wampy"]["fmPresets"], ",")) {
             auto r = std::atoi(p.c_str());

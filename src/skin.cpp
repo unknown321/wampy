@@ -587,13 +587,29 @@ void Skin::Misc() {
 
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
-        ImGui::Text("Window position");
+        if (ImGui::Button("Set default volume tables")) {
+            config->volumeTables.ToneControl = "";
+            config->volumeTables.MasterVolumeTable = "";
+            config->volumeTables.MasterVolumeTableDSD = "";
+            config->Save();
+            logCleanupStatus = "Tables reset!";
+        }
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
         if (ImGui::Checkbox("Limit max volume", &config->features.limitVolume)) {
             config->Save();
             connector->FeatureSetMaxVolume(config->features.limitVolume);
+        }
+
+        ImGui::TableNextColumn();
+        ImGui::TableNextColumn();
+        ImGui::Text("Window position");
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Enable EQ per song", &config->features.eqPerSong)) {
+            config->Save();
         }
 
         ImGui::TableNextColumn();
@@ -612,19 +628,13 @@ void Skin::Misc() {
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        if (ImGui::Checkbox("Enable EQ per song", &config->features.eqPerSong)) {
+        if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
             config->Save();
         }
 
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
         if (ImGui::Checkbox("Show FM tab", &config->showFmInSettings)) {
-            config->Save();
-        }
-
-        ImGui::TableNextRow();
-        ImGui::TableNextColumn();
-        if (ImGui::Checkbox("Disable touchscreen", &config->features.touchscreenStaysOFF)) {
             config->Save();
         }
 
@@ -1525,7 +1535,7 @@ void Skin::TabMasterVolume() {
                     ImGui::BeginDisabled();
                 }
 
-                if (ImGui::Button("Save", ImVec2(246, 60))) {
+                if (ImGui::Button("Save", ImVec2(121, 60))) {
                     auto out = masterVolumeFiles.at(masterVolumeFileSelected).fullPath;
                     DLOG("Saving to %s\n", out.c_str());
                     MasterVolumeImVec2ToTable();
@@ -1540,7 +1550,10 @@ void Skin::TabMasterVolume() {
                     ImGui::EndDisabled();
                 }
 
-                if (ImGui::Button("Apply", ImVec2(246, 60))) {
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
+                ImGui::SameLine();
+
+                if (ImGui::Button("Apply", ImVec2(121, 60))) {
                     DLOG("Applying\n");
                     MasterVolumeImVec2ToTable();
                     if (masterVolume.Apply(Dac::volumeTableOutPath) == 0) {
@@ -1556,7 +1569,6 @@ void Skin::TabMasterVolume() {
                         sizeof(masterVolumeValueBuffer));
                     statusStringMasterVolume = "Copied";
                 }
-                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
 
                 ImGui::SameLine();
                 if (ImGui::Button("Paste val", ImVec2(121, 60))) {
@@ -1565,6 +1577,14 @@ void Skin::TabMasterVolume() {
                         sizeof(masterVolumeValueBuffer));
                     statusStringMasterVolume = "Pasted";
                 }
+
+                if (ImGui::Button("Set as default", ImVec2(246, 60))) {
+                    DLOG("Setting master volume table %s as default\n", masterVolumeFiles.at(masterVolumeFileSelected).fullPath.c_str());
+                    config->volumeTables.MasterVolumeTable = masterVolumeFiles.at(masterVolumeFileSelected).fullPath;
+                    config->Save();
+                    statusStringMasterVolume = "Set as default";
+                }
+
                 ImGui::PopStyleVar();
             }
             ImGui::EndTable();
@@ -1717,7 +1737,7 @@ void Skin::TabMasterDSDVolume() {
                     ImGui::BeginDisabled();
                 }
 
-                if (ImGui::Button("Save", ImVec2(246, 60))) {
+                if (ImGui::Button("Save", ImVec2(121, 60))) {
                     auto out = masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath;
                     DLOG("Saving to %s\n", out.c_str());
                     MasterVolumeDSDImVec2ToTable();
@@ -1731,8 +1751,10 @@ void Skin::TabMasterDSDVolume() {
                 if (masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).name.rfind(systemMark, 0) == 0) {
                     ImGui::EndDisabled();
                 }
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
+                ImGui::SameLine();
 
-                if (ImGui::Button("Apply", ImVec2(246, 60))) {
+                if (ImGui::Button("Apply", ImVec2(121, 60))) {
                     DLOG("Applying to %s\n", Dac::volumeTableDSDOutPath.c_str());
                     MasterVolumeDSDImVec2ToTable();
                     if (masterVolumeDSD.Apply(Dac::volumeTableDSDOutPath) == 0) {
@@ -1746,13 +1768,20 @@ void Skin::TabMasterDSDVolume() {
                     memcpy(masterVolumeDSDValueBuffer, masterVolumeDSDValues[MasterVolumeDSDTableType], sizeof(masterVolumeDSDValueBuffer));
                     statusStringMasterVolumeDSD = "Copied";
                 }
-                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
 
                 ImGui::SameLine();
                 if (ImGui::Button("Paste val", ImVec2(121, 60))) {
                     memcpy(masterVolumeDSDValues[MasterVolumeDSDTableType], masterVolumeDSDValueBuffer, sizeof(masterVolumeDSDValueBuffer));
                     statusStringMasterVolumeDSD = "Pasted";
                 }
+
+                if (ImGui::Button("Set as default", ImVec2(246, 60))) {
+                    DLOG("Setting master volume DSD table %s as default\n", masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath.c_str());
+                    config->volumeTables.MasterVolumeTableDSD = masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath;
+                    config->Save();
+                    statusStringMasterVolumeDSD = "Set as default";
+                }
+
                 ImGui::PopStyleVar();
             }
 
@@ -1902,7 +1931,7 @@ void Skin::TabToneControl() {
                     ImGui::BeginDisabled();
                 }
 
-                if (ImGui::Button("Save", ImVec2(246, 60))) {
+                if (ImGui::Button("Save", ImVec2(121, 60))) {
                     auto out = toneControlFiles.at(toneControlFileSelected).fullPath;
                     DLOG("Saving to %s\n", out.c_str());
                     ToneControlImVec2ToTable();
@@ -1917,7 +1946,10 @@ void Skin::TabToneControl() {
                     ImGui::EndDisabled();
                 }
 
-                if (ImGui::Button("Apply", ImVec2(246, 60))) {
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
+                ImGui::SameLine();
+
+                if (ImGui::Button("Apply", ImVec2(121, 60))) {
                     DLOG("Applying to %s\n", Dac::toneControlOutPath.c_str());
                     ToneControlImVec2ToTable();
                     if (toneControl.Apply(Dac::toneControlOutPath) == 0) {
@@ -1931,13 +1963,20 @@ void Skin::TabToneControl() {
                     memcpy(toneControlValueBuffer, toneControlValues[toneControlTableType], sizeof(toneControlValueBuffer));
                     statusStringToneControl = "Copied";
                 }
-                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
 
                 ImGui::SameLine();
                 if (ImGui::Button("Paste val", ImVec2(121, 60))) {
                     memcpy(toneControlValues[toneControlTableType], toneControlValueBuffer, sizeof(toneControlValueBuffer));
                     statusStringToneControl = "Pasted";
                 }
+
+                if (ImGui::Button("Set as default", ImVec2(246, 60))) {
+                    DLOG("Setting tone control table %s as default\n", toneControlFiles.at(toneControlFileSelected).fullPath.c_str());
+                    config->volumeTables.ToneControl = toneControlFiles.at(toneControlFileSelected).fullPath;
+                    config->Save();
+                    statusStringToneControl = "Set as default";
+                }
+
                 ImGui::PopStyleVar();
             }
 

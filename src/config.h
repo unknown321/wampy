@@ -37,6 +37,12 @@ namespace AppConfig {
         bool eqPerSong = false;
     };
 
+    struct VolumeTables {
+        std::string MasterVolumeTable;
+        std::string MasterVolumeTableDSD;
+        std::string ToneControl;
+    };
+
     class AppConfig {
       public:
         AppConfig() = default;
@@ -57,6 +63,7 @@ namespace AppConfig {
         std::string forceConnector{};
         EWindowOffset windowOffset = EWindowOffset_LEFT;
         std::vector<int> fmPresets{};
+        VolumeTables volumeTables;
         bool showFmInSettings = true;
 
         int FindConfig();
