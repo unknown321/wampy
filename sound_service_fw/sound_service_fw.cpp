@@ -18,8 +18,8 @@ CreateFuncType original_Create = nullptr;
 using CreateFilterFuncType = int (pst::services::sound::mobile::*)(const std::string &);
 CreateFilterFuncType original_CreateFilter = nullptr;
 
-using CreateFilterChainType =
-    int (pst::services::sound::mobile::FilterChain::*)(pst::services::sound::DynamicAllocPacketPool *, const std::vector<std::string> &);
+using CreateFilterChainType = int (pst::services::sound::mobile::FilterChain::*)(
+    pst::services::sound::DynamicAllocPacketPool *, const std::vector<std::string> &);
 CreateFilterChainType original_FilterChainCreate = nullptr;
 
 using FilterExecEffectParam = int (pst::services::sound::mobile::FilterChain::*)(const std::string &, const bool &);
@@ -144,11 +144,9 @@ int pst::services::sound::mobile::PreFilters::Create(const std::vector<std::stri
             CreateFuncType member_func_ptr;
         };
         h helper{};
-        helper.void_ptr = dlsym(
-            RTLD_NEXT,
+        helper.void_ptr = dlsym(RTLD_NEXT,
             "_ZN3pst8services5sound6mobile10PreFilters6CreateERKNSt3__16vectorINS4_12basic_stringIcNS4_11char_traitsIcEENS4_"
-            "9allocatorIcEEEENS9_ISB_EEEE"
-        );
+            "9allocatorIcEEEENS9_ISB_EEEE");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
             return 0;
@@ -163,9 +161,7 @@ int pst::services::sound::mobile::PreFilters::Create(const std::vector<std::stri
     return (this->*original_Create)(param_1);
 }
 
-int pst::services::sound::mobile::FilterChain::Create(
-    const pst::services::sound::DynamicAllocPacketPool *param_1, const std::vector<std::string> &param_2
-) {
+int pst::services::sound::mobile::FilterChain::Create(const pst::services::sound::DynamicAllocPacketPool *param_1, const std::vector<std::string> &param_2) {
     DLOGG("start\n");
     if (filterChain == nullptr) {
         filterChain = this;
@@ -182,11 +178,9 @@ int pst::services::sound::mobile::FilterChain::Create(
         };
 
         h helper{};
-        helper.void_ptr = dlsym(
-            RTLD_NEXT,
+        helper.void_ptr = dlsym(RTLD_NEXT,
             "_ZN3pst8services5sound6mobile11FilterChain6CreateEPKNS1_22DynamicAllocPacketPoolERKNSt3__16vectorINS7_12basic_stringIcNS7_"
-            "11char_traitsIcEENS7_9allocatorIcEEEENSC_ISE_EEEE"
-        );
+            "11char_traitsIcEENS7_9allocatorIcEEEENSC_ISE_EEEE");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
             return 0;
@@ -226,11 +220,9 @@ int pst::services::sound::mobile::FilterChain::ExecEffectParam(const std::string
             FilterExecEffectParam member_func_ptr;
         };
         h helper{};
-        helper.void_ptr = dlsym(
-            RTLD_NEXT,
+        helper.void_ptr = dlsym(RTLD_NEXT,
             "_ZN3pst8services5sound6mobile11FilterChain15ExecEffectParamERKNSt3__112basic_stringIcNS4_11char_traitsIcEENS4_"
-            "9allocatorIcEEEERKb"
-        );
+            "9allocatorIcEEEERKb");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
             return 0;
@@ -250,10 +242,8 @@ int pst::services::sound::mobile::FilterChain::SetEnable(const std::string &s, c
             FilterChainSetEnable member_func_ptr;
         };
         h helper{};
-        helper.void_ptr = dlsym(
-            RTLD_NEXT,
-            "_ZN3pst8services5sound6mobile11FilterChain9SetEnableERKNSt3__112basic_stringIcNS4_11char_traitsIcEENS4_9allocatorIcEEEERKb"
-        );
+        helper.void_ptr =
+            dlsym(RTLD_NEXT, "_ZN3pst8services5sound6mobile11FilterChain9SetEnableERKNSt3__112basic_stringIcNS4_11char_traitsIcEENS4_9allocatorIcEEEERKb");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
             return 0;
@@ -298,10 +288,8 @@ int pst::services::sound::mobile::FilterChain::GetParam(const std::string &s1, s
             FilterChainGetParam member_func_ptr;
         };
         h helper{};
-        helper.void_ptr = dlsym(
-            RTLD_NEXT,
-            "_ZN3pst8services5sound6mobile11FilterChain8GetParamERKNSt3__112basic_stringIcNS4_11char_traitsIcEENS4_9allocatorIcEEEERSA_"
-        );
+        helper.void_ptr =
+            dlsym(RTLD_NEXT, "_ZN3pst8services5sound6mobile11FilterChain8GetParamERKNSt3__112basic_stringIcNS4_11char_traitsIcEENS4_9allocatorIcEEEERSA_");
         if (!helper.void_ptr) {
             DLOGG("dlsym fail\n");
             return 0;

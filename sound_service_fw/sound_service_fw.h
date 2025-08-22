@@ -11,10 +11,10 @@
 
 #define SSFW_SHMPATH "/sound_service_fw"
 
-#define errExit(msg)                                                                                                                       \
-    do {                                                                                                                                   \
-        perror(msg);                                                                                                                       \
-        exit(EXIT_FAILURE);                                                                                                                \
+#define errExit(msg)                                                                                                                                           \
+    do {                                                                                                                                                       \
+        perror(msg);                                                                                                                                           \
+        exit(EXIT_FAILURE);                                                                                                                                    \
     } while (0)
 
 void StartServer();
@@ -110,8 +110,8 @@ namespace pst {
                     int GetParam(const std::string &, std::string &);
                 };
             }; // namespace mobile
-        }      // namespace sound
-    }          // namespace services
+        } // namespace sound
+    } // namespace services
 } // namespace pst
 
 enum ESoundServiceFwCommand {
@@ -120,7 +120,7 @@ enum ESoundServiceFwCommand {
     SSFW_SET_FILTER = 2,
     SSFW_UPDATE = 3,
     SSFW_SET_PARAM = 4,
-    SSFW_GET_PARAM = 5
+    SSFW_GET_PARAM = 5,
 };
 
 struct SoundServiceFwCommand {
