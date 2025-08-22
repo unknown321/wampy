@@ -124,8 +124,7 @@ struct Skin {
     int MasterVolumeTableType = MASTER_VOLUME_TABLE_SMASTER_SE_HG;
     int MasterVolumeValueType = MASTER_VOLUME_VALUE_HPOUT;
     master_volume masterVolume{};
-    ImVec2 masterVolumeValues[2][MASTER_VOLUME_TABLE_MAX + 1][MASTER_VOLUME_VALUE_MAX][MASTER_VOLUME_MAX + 1 + 1] = {
-        {{{{-FLT_MIN, -FLT_MIN}}}}};
+    ImVec2 masterVolumeValues[2][MASTER_VOLUME_TABLE_MAX + 1][MASTER_VOLUME_VALUE_MAX][MASTER_VOLUME_MAX + 1 + 1] = {{{{{-FLT_MIN, -FLT_MIN}}}}};
     ImVec2 masterVolumeValueBuffer[MASTER_VOLUME_MAX + 1 + 1] = {{0, 0}};
     std::string statusStringMasterVolume;
 
