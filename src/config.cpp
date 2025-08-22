@@ -4,8 +4,7 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-std::map<EWindowOffset, std::string> WindowOffsetToString = {
-    {EWindowOffset_LEFT, "Left"}, {EWindowOffset_CENTER, "Center"}, {EWindowOffset_RIGHT, "Right"}};
+std::map<EWindowOffset, std::string> WindowOffsetToString = {{EWindowOffset_LEFT, "Left"}, {EWindowOffset_CENTER, "Center"}, {EWindowOffset_RIGHT, "Right"}};
 
 namespace AppConfig {
 
@@ -43,16 +42,12 @@ namespace AppConfig {
         ini["cassette:mp3_256"].set({{"tape", cassette.Get(Tape::MP3_256)->tape}, {"reel", cassette.Get(Tape::MP3_256)->reel}});
         ini["cassette:mp3_320"].set({{"tape", cassette.Get(Tape::MP3_320)->tape}, {"reel", cassette.Get(Tape::MP3_320)->reel}});
 
-        ini["cassette:flac"].set(
-            {{"tape", cassette.Get(Tape::FLAC_ALAC_APE_MQA)->tape}, {"reel", cassette.Get(Tape::FLAC_ALAC_APE_MQA)->reel}}
-        );
+        ini["cassette:flac"].set({{"tape", cassette.Get(Tape::FLAC_ALAC_APE_MQA)->tape}, {"reel", cassette.Get(Tape::FLAC_ALAC_APE_MQA)->reel}});
 
         ini["cassette:aiff"].set({{"tape", cassette.Get(Tape::AIFF)->tape}, {"reel", cassette.Get(Tape::AIFF)->reel}});
         ini["cassette:pcm"].set({{"tape", cassette.Get(Tape::PCM)->tape}, {"reel", cassette.Get(Tape::PCM)->reel}});
         ini["cassette:hires"].set(
-            {{"tape", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->tape},
-             {"reel", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->reel}}
-        );
+            {{"tape", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->tape}, {"reel", cassette.Get(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES)->reel}});
 
         ini["cassette:dsd"].set({{"tape", cassette.Get(Tape::DSD)->tape}, {"reel", cassette.Get(Tape::DSD)->reel}});
 
@@ -146,13 +141,9 @@ namespace AppConfig {
         cassette.SetOrDefault(Tape::FLAC_ALAC_APE_MQA, {ini["cassette:flac"]["tape"], ini["cassette:flac"]["reel"], "FLAC"});
         cassette.SetOrDefault(Tape::AIFF, {ini["cassette:aiff"]["tape"], ini["cassette:aiff"]["reel"], "AIFF"});
         cassette.SetOrDefault(Tape::PCM, {ini["cassette:pcm"]["tape"], ini["cassette:pcm"]["reel"], "PCM"});
-        cassette.SetOrDefault(
-            Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES, {ini["cassette:hires"]["tape"], ini["cassette:hires"]["reel"], "Hi-Res"}
-        );
+        cassette.SetOrDefault(Tape::FLAC_MQA_ALAC_PCM_AIFF_APE_HIRES, {ini["cassette:hires"]["tape"], ini["cassette:hires"]["reel"], "Hi-Res"});
         cassette.SetOrDefault(Tape::DSD, {ini["cassette:dsd"]["tape"], ini["cassette:dsd"]["reel"], "DSD"});
-        cassette.SetOrDefault(
-            Tape::DIRECTORY_CONFIG, {ini["cassette:directory"]["tape"], ini["cassette:directory"]["reel"], Cassette::hiddenEntry}
-        );
+        cassette.SetOrDefault(Tape::DIRECTORY_CONFIG, {ini["cassette:directory"]["tape"], ini["cassette:directory"]["reel"], Cassette::hiddenEntry});
 
         winamp.filename = ini["winamp"]["filename"];
         auto winampDefault = Winamp::Config::GetDefault();
@@ -262,7 +253,7 @@ namespace AppConfig {
             return FS_MOUNTED;
         }
 
-        struct stat sb {};
+        struct stat sb{};
 
         for (const auto &f : configPaths) {
             if (stat(f, &sb) == 0) {
