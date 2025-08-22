@@ -1,6 +1,7 @@
 #ifndef WAMPY_HAGOROMO_H
 #define WAMPY_HAGOROMO_H
 
+#include "../dac/cxd3778gf_table.h"
 #include "asoundlib.h"
 #include "command.pb.h"
 #include "connector.h"
@@ -45,6 +46,14 @@ namespace Hagoromo {
         bool *visualizerWinampBands{};
         int prevEntryID{};
         std::string prevFilename{};
+
+        master_volume masterVolume{};
+        std::string masterVolumePath;
+        master_volume_dsd masterVolumeDSD{};
+        std::string masterVolumeDSDPath;
+        tone_control toneControl{};
+        std::string toneControlPath;
+        bool tablesApplied = false;
 
         HagoromoStatus *hagoromoStatus = nullptr;
 

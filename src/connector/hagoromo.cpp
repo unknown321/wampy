@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 // #include "alsa/asoundlib.h"
+#include "../dac/dac.h"
 #include "asoundlib.h"
 #include "hagoromo.h"
 #include "sqlite3.h"
@@ -358,6 +359,37 @@ namespace Hagoromo {
             FeatureBigCover(*featureBigCover);
             FeatureShowTime(*featureShowTime);
             FeatureSetMaxVolume(*featureLimitVolume);
+
+            if (!tablesApplied) {
+                if (!masterVolumePath.empty()) {
+                    DLOG("applying master volume table %s\n", masterVolumePath.c_str());
+                    if (masterVolume.FromFile(masterVolumePath) == 0) {
+                        masterVolume.Apply(Dac::volumeTableOutPath);
+                    } else {
+                        DLOG("refusing to apply volume table %s\n", masterVolumePath.c_str());
+                    }
+                }
+
+                if (!masterVolumeDSDPath.empty()) {
+                    DLOG("applying master volume DSD table %s\n", masterVolumeDSDPath.c_str());
+                    if (masterVolumeDSD.FromFile(masterVolumeDSDPath) == 0) {
+                        masterVolumeDSD.Apply(Dac::volumeTableDSDOutPath);
+                    } else {
+                        DLOG("refusing to apply dsd volume table %s\n", masterVolumeDSDPath.c_str());
+                    }
+                }
+
+                if (!toneControlPath.empty()) {
+                    DLOG("applying tone control table %s\n", toneControlPath.c_str());
+                    if (toneControl.FromFile(toneControlPath) == 0) {
+                        toneControl.Apply(Dac::toneControlOutPath);
+                    } else {
+                        DLOG("refusing to apply tone control table %s\n", toneControlPath.c_str());
+                    }
+                }
+
+                tablesApplied = true;
+            }
         }
 
         soundSettings.Update();

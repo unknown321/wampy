@@ -592,7 +592,14 @@ void Skin::Misc() {
             config->volumeTables.MasterVolumeTable = "";
             config->volumeTables.MasterVolumeTableDSD = "";
             config->Save();
-            logCleanupStatus = "Tables reset!";
+            resetVolTablesStatus = "OK!";
+        }
+
+        ImGui::TableNextColumn();
+        ImGui::Text(resetVolTablesStatus.c_str());
+        ImGui::SameLine(20);
+        if (ImGui::InvisibleButton("##resetVolTablesStatus", ImVec2(246, 30))) {
+            resetVolTablesStatus = "";
         }
 
         ImGui::TableNextRow();
@@ -1338,6 +1345,27 @@ void Skin::PreprocessTableFilenames() {
             }
         }
     }
+
+    for (int i = 0; i < masterVolumeFiles.size(); i++) {
+        if (masterVolumeFiles.at(i).fullPath == config->volumeTables.MasterVolumeTable) {
+            masterVolumeFiles.at(i).name = defaultMark + masterVolumeFiles.at(i).name;
+            break;
+        }
+    }
+
+    for (int i = 0; i < masterVolumeDSDFiles.size(); i++) {
+        if (masterVolumeDSDFiles.at(i).fullPath == config->volumeTables.MasterVolumeTableDSD) {
+            masterVolumeDSDFiles.at(i).name = defaultMark + masterVolumeDSDFiles.at(i).name;
+            break;
+        }
+    }
+
+    for (int i = 0; i < toneControlFiles.size(); i++) {
+        if (toneControlFiles.at(i).fullPath == config->volumeTables.ToneControl) {
+            toneControlFiles.at(i).name = defaultMark + toneControlFiles.at(i).name;
+            break;
+        }
+    }
 }
 
 void Skin::CopyTableEntry(TableLike *table, std::vector<directoryEntry> *fileList, int *selectedIndex, const std::string &outDir) {
@@ -1582,6 +1610,16 @@ void Skin::TabMasterVolume() {
                     DLOG("Setting master volume table %s as default\n", masterVolumeFiles.at(masterVolumeFileSelected).fullPath.c_str());
                     config->volumeTables.MasterVolumeTable = masterVolumeFiles.at(masterVolumeFileSelected).fullPath;
                     config->Save();
+
+                    for (int i = 0; i < masterVolumeFiles.size(); i++) {
+                        if (masterVolumeFiles.at(i).name.rfind(defaultMark, 0) == 0) {
+                            masterVolumeFiles.at(i).name = masterVolumeFiles.at(i).name.erase(0, defaultMark.length());
+                        }
+                        if (i == masterVolumeFileSelected) {
+                            masterVolumeFiles.at(i).name = defaultMark + masterVolumeFiles.at(i).name;
+                        }
+                    }
+
                     statusStringMasterVolume = "Set as default";
                 }
 
@@ -1779,6 +1817,16 @@ void Skin::TabMasterDSDVolume() {
                     DLOG("Setting master volume DSD table %s as default\n", masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath.c_str());
                     config->volumeTables.MasterVolumeTableDSD = masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath;
                     config->Save();
+
+                    for (int i = 0; i < masterVolumeDSDFiles.size(); i++) {
+                        if (masterVolumeDSDFiles.at(i).name.rfind(defaultMark, 0) == 0) {
+                            masterVolumeDSDFiles.at(i).name = masterVolumeDSDFiles.at(i).name.erase(0, defaultMark.length());
+                        }
+                        if (i == masterVolumeDSDFileSelected) {
+                            masterVolumeDSDFiles.at(i).name = defaultMark + masterVolumeDSDFiles.at(i).name;
+                        }
+                    }
+
                     statusStringMasterVolumeDSD = "Set as default";
                 }
 
@@ -1974,6 +2022,16 @@ void Skin::TabToneControl() {
                     DLOG("Setting tone control table %s as default\n", toneControlFiles.at(toneControlFileSelected).fullPath.c_str());
                     config->volumeTables.ToneControl = toneControlFiles.at(toneControlFileSelected).fullPath;
                     config->Save();
+
+                    for (int i = 0; i < toneControlFiles.size(); i++) {
+                        if (toneControlFiles.at(i).name.rfind(defaultMark, 0) == 0) {
+                            toneControlFiles.at(i).name = toneControlFiles.at(i).name.erase(0, defaultMark.length());
+                        }
+                        if (i == toneControlFileSelected) {
+                            toneControlFiles.at(i).name = defaultMark + toneControlFiles.at(i).name;
+                        }
+                    }
+
                     statusStringToneControl = "Set as default";
                 }
 

@@ -117,6 +117,7 @@ struct Skin {
 
     std::string systemMark = "Ⓢ ";
     std::string systemMarkHagoromo = "Ⓗ ";
+    std::string defaultMark = "☆ ";
 
     std::vector<directoryEntry> masterVolumeFiles;
     int masterVolumeFileSelected = 0;
@@ -174,6 +175,7 @@ struct Skin {
     std::string logCleanupStatus;
     std::string logCleanupButtonLabel;
     std::string refreshStatus;
+    std::string resetVolTablesStatus;
     std::string charactersInDB;
 
     std::string prevSong{};

@@ -289,6 +289,9 @@ int main(int, char **) {
         v->featureEqPerSong = &config.features.eqPerSong;
         v->visualizerWinampBands = &config.winamp.visualizerWinampBands;
         v->visualizerEnabled = &config.winamp.visualizerEnable;
+        v->masterVolumePath = config.volumeTables.MasterVolumeTable;
+        v->masterVolumeDSDPath = config.volumeTables.MasterVolumeTableDSD;
+        v->toneControlPath = config.volumeTables.ToneControl;
     } else {
         connector = new MPD::MPDConnector();
         connector->address = config.MPDSocketPath.c_str();
@@ -304,6 +307,9 @@ int main(int, char **) {
     v->featureEqPerSong = &config.features.eqPerSong;
     v->visualizerWinampBands = &config.winamp.visualizerWinampBands;
     v->visualizerEnabled = &config.winamp.visualizerEnable;
+    v->masterVolumePath = config.volumeTables.MasterVolumeTable;
+    v->masterVolumeDSDPath = config.volumeTables.MasterVolumeTableDSD;
+    v->toneControlPath = config.volumeTables.ToneControl;
 
     socket = WAMPY_SOCKET;
 
