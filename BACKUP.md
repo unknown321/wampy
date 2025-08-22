@@ -1,16 +1,40 @@
 ## Backing up your device
 
+<!-- TOC -->
+
+* [Backing up your device](#backing-up-your-device)
+  * [Why?](#why)
+  * [Windows](#windows)
+  * [Linux](#linux)
+  * [mtkclient](#mtkclient)
+    * [Restoring](#restoring)
+    * [Example `mtkclient` backup output](#example-mtkclient-backup-output)
+    * [Issues](#issues)
+
+<!-- TOC -->
+
 ### Why?
 
 It is **always** nice to have a backup file in case installation goes horribly wrong (very unlikely). Don't forget, this
 software is provided as is without any warranty.
 
-### Backing up
+### Windows
+
+Use [Walkman Backup/Restore Tool](https://github.com/unknown321/wbrt).
+
+### Linux
+
+Use [MediaTek Flash Tool](https://github.com/unknown321/mediatek_flash_tool/) (build it yourself).
+
+Alternatively, use mtkclient:
+
+### mtkclient
 
 Install version [1.63](https://github.com/bkerler/mtkclient/releases/tag/1.63) of https://github.com/bkerler/mtkclient.
 
 > [!NOTE]
-> Make sure your operating system got the required `udev` rules/device permissions - mtkclient includes useful resources for this
+> Make sure your operating system got the required `udev` rules/device permissions - mtkclient includes useful resources
+> for this
 
 > [!TIP]
 > Perform factory reset on device to reduce backup image size
@@ -18,12 +42,12 @@ Install version [1.63](https://github.com/bkerler/mtkclient/releases/tag/1.63) o
 > Songs won't compress as good as empty space. You may skip it if you don't care
 > about hard drive space.
 
-
 ```shell
 mtk rf <path to backup file>
 ```
 
 Command waits for device, repeatedly printing:
+
 ```
 ...........
 
@@ -42,6 +66,7 @@ If it is already connected and on, hold power for 10 seconds to reset.
 4. Insert USB cable.
 
 Which shoud result in:
+
 ```
 ....Port - Device detected :)
 
@@ -52,7 +77,7 @@ Dumps whole device to file (~20 minutes for 16Gb model)
 Output file will be as big as your device's capacity (16 GB). You can compress it to about 800 MB using zip/rar/whatever
 and decompress when needed.
 
-### Restoring
+#### Restoring
 
 Make sure you use **w**f command, which writes to device.
 
@@ -60,7 +85,7 @@ Make sure you use **w**f command, which writes to device.
 mtk wf <path to backup file>
 ```
 
-### Example `mtkclient` backup output
+#### Example `mtkclient` backup output
 
 <details>
 <summary>Output of command mtk rf a50-sonyone.backup</summary>
@@ -138,9 +163,9 @@ mtkclient on  v1.63 [?] via 🐍 v3.13.2 (venv) took 2h25m39s
 
 </details>
 
-### Issues
+#### Issues
 
-* Double check that you see the MTxyz Preloader
+* Double check that you see the MTxyz Preloader (`sudo dmesg -T -w`)
 
 ```
 kernel: usb 1-2.1.4: new high-speed USB device number 40 using xhci_hcd
@@ -155,14 +180,17 @@ kernel: cdc_acm 1-2.1.4:1.1: ttyACM0: USB ACM device
 
 * udev rules / permissions
 
-* [There are reports on this method not working for NW-A40][mtkclienterror] and NW-A50 using 
-version 2.0.x of mtkclient with
+* [There are reports on this method not working for NW-A40][mtkclienterror] and NW-A50 using
+  version 2.0.x of mtkclient with
+
 ```
 DeviceClass - [LIB]: USB Overflow
 ```
 
-
 [mtkclienterror]: https://github.com/unknown321/wampy/issues/1#issuecomment-2599157714
+
+Consider using [MediaTek Flash Tool](https://github.com/unknown321/mediatek_flash_tool/).
+
 <details>
 <summary>Full mtkclient error message failing to unpack bytes</summary>
 
