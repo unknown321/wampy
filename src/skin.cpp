@@ -102,6 +102,7 @@ void Skin::RefreshMasterVolumeTableDSDFiles() {
 }
 
 void Skin::WithToneControlTableDirs(const std::string &d) { toneControlTableDirectories.push_back(d); };
+
 void Skin::RefreshToneControlFiles() {
     DLOG("\n");
     toneControlFiles.clear();
@@ -759,8 +760,7 @@ void Skin::WalkmanOne() {
         return;
     }
 
-    static ImGuiTableFlags flags =
-        ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchSame;
+    static ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchSame;
 
     ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 3);
 
@@ -773,9 +773,7 @@ void Skin::WalkmanOne() {
         ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
         ImGui::PushItemWidth(-FLT_MIN);
-        if (ImGui::BeginCombo(
-                "##walkmanOneColor", W1::colorByValueWalkmanOne.at(walkmanOneOptions.color).c_str(), ImGuiComboFlags_HeightRegular
-            )) {
+        if (ImGui::BeginCombo("##walkmanOneColor", W1::colorByValueWalkmanOne.at(walkmanOneOptions.color).c_str(), ImGuiComboFlags_HeightRegular)) {
             for (const auto &entry : W1::colorByNameWalkmanOne) {
                 if (ImGui::Selectable(entry.first.c_str(), false)) {
                     walkmanOneOptions.color = entry.second;
@@ -795,11 +793,7 @@ void Skin::WalkmanOne() {
         ImGui::TableNextColumn();
         ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-        if (ImGui::BeginCombo(
-                "##walkmanOneSignature",
-                W1::signatureByValueWalkmanOne.at(walkmanOneOptions.signature).c_str(),
-                ImGuiComboFlags_HeightRegular
-            )) {
+        if (ImGui::BeginCombo("##walkmanOneSignature", W1::signatureByValueWalkmanOne.at(walkmanOneOptions.signature).c_str(), ImGuiComboFlags_HeightRegular)) {
             for (const auto &entry : W1::signatureByNameWalkmanOne) {
                 if (ImGui::Selectable(entry.first.c_str(), false)) {
                     walkmanOneOptions.signature = entry.second;
@@ -1115,9 +1109,7 @@ void Skin::Winamp() {
         }
 
         ImGui::TableNextColumn();
-        if (ImGui::SliderFloat(
-                "##sensslider", &config->winamp.visualizerSensitivity, WINAMP_VISUALIZER_SENS_MIN, WINAMP_VISUALIZER_SENS_MAX, ""
-            )) {
+        if (ImGui::SliderFloat("##sensslider", &config->winamp.visualizerSensitivity, WINAMP_VISUALIZER_SENS_MIN, WINAMP_VISUALIZER_SENS_MAX, "")) {
             config->winamp.visualizerSensitivity *= 100;
             config->winamp.visualizerSensitivity = round(config->winamp.visualizerSensitivity) / 100;
             config->Save();
@@ -1149,8 +1141,8 @@ void Skin::Cassette() {
         config->Save();
     }
 
-    static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
-                                   ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
+    static ImGuiTableFlags flags =
+        ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
 
     ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 7);
 
@@ -1242,11 +1234,7 @@ void Skin::DigitalClock() {
 
     ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-    if (ImGui::BeginCombo(
-            "##digiClockColor",
-            DigitalClock::DigitalClock::GetColorPreview(config->digitalClock.color).c_str(),
-            ImGuiComboFlags_HeightRegular
-        )) {
+    if (ImGui::BeginCombo("##digiClockColor", DigitalClock::DigitalClock::GetColorPreview(config->digitalClock.color).c_str(), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : DigitalClock::colorsDigitalClock) {
             if (ImGui::Selectable(entry.first.c_str(), false)) {
                 DLOG("selected color %s\n", entry.second.c_str());
@@ -1387,9 +1375,7 @@ void Skin::TabMasterVolume() {
             ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
             ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
             ImGui::PushItemWidth(-FLT_MIN);
-            if (ImGui::BeginCombo(
-                    "##masterVolumeFileCombo", masterVolumeFiles.at(masterVolumeFileSelected).name.c_str(), ImGuiComboFlags_HeightRegular
-                )) {
+            if (ImGui::BeginCombo("##masterVolumeFileCombo", masterVolumeFiles.at(masterVolumeFileSelected).name.c_str(), ImGuiComboFlags_HeightRegular)) {
                 for (int idx = 0; idx < masterVolumeFiles.size(); idx++) {
                     auto entry = masterVolumeFiles.at(idx);
                     if (ImGui::Selectable(entry.name.c_str(), false)) {
@@ -1452,10 +1438,7 @@ void Skin::TabMasterVolume() {
             ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
             ImGui::PushItemWidth(-FLT_MIN);
             if (ImGui::BeginCombo(
-                    "##masterVolumeValueTypeCombo",
-                    Dac::MasterVolumeValueTypeToString.at(MasterVolumeValueType).c_str(),
-                    ImGuiComboFlags_HeightRegular
-                )) {
+                    "##masterVolumeValueTypeCombo", Dac::MasterVolumeValueTypeToString.at(MasterVolumeValueType).c_str(), ImGuiComboFlags_HeightRegular)) {
                 for (const auto &entry : Dac::MasterVolumeValueTypeToString) {
                     if (ImGui::Selectable(entry.second.c_str(), false)) {
                         MasterVolumeValueType = entry.first;
@@ -1482,9 +1465,7 @@ void Skin::TabMasterVolume() {
                 ImGui::NewLine();
                 if (ImGui::Button("Load", ImVec2(512, 150))) {
                     if (masterVolume.FromFile(masterVolumeFiles.at(masterVolumeFileSelected).fullPath) != 0) {
-                        DLOG(
-                            "failed to load master volume table file %s\n", masterVolumeFiles.at(masterVolumeFileSelected).fullPath.c_str()
-                        );
+                        DLOG("failed to load master volume table file %s\n", masterVolumeFiles.at(masterVolumeFileSelected).fullPath.c_str());
                         statusStringMasterVolume = "Failed";
                     } else {
                         MasterVolumeTableToImVec2();
@@ -1495,11 +1476,7 @@ void Skin::TabMasterVolume() {
                 auto flags = ImPlotFlags_None;
                 if (ImPlot::BeginPlot("##lines", ImVec2(512, 270), ImPlotFlags_NoMouseText | ImPlotFlags_NoInputs)) {
                     ImPlot::SetupAxesLimits(
-                        curveElementCount * -0.05,
-                        curveElementCount + curveElementCount * 0.05,
-                        curveYLimit * -0.05,
-                        curveYLimit + curveYLimit * 0.1
-                    );
+                        curveElementCount * -0.05, curveElementCount + curveElementCount * 0.05, curveYLimit * -0.05, curveYLimit + curveYLimit * 0.1);
                     ImPlot::SetNextLineStyle(GOLD_DONATE, 2.0f);
                     ImPlot::PlotInfLines("##volline", &connector->status.VolumeRaw, 1);
                     ImPlot::SetNextLineStyle(IMPLOT_AUTO_COL, 2.0f);
@@ -1574,22 +1551,18 @@ void Skin::TabMasterVolume() {
                 }
 
                 if (ImGui::Button("Copy val", ImVec2(121, 60))) {
-                    memcpy(
-                        masterVolumeValueBuffer,
+                    memcpy(masterVolumeValueBuffer,
                         masterVolumeValues[(int)soundEffectOn][MasterVolumeTableType][MasterVolumeValueType],
-                        sizeof(masterVolumeValueBuffer)
-                    );
+                        sizeof(masterVolumeValueBuffer));
                     statusStringMasterVolume = "Copied";
                 }
                 ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
 
                 ImGui::SameLine();
                 if (ImGui::Button("Paste val", ImVec2(121, 60))) {
-                    memcpy(
-                        masterVolumeValues[(int)soundEffectOn][MasterVolumeTableType][MasterVolumeValueType],
+                    memcpy(masterVolumeValues[(int)soundEffectOn][MasterVolumeTableType][MasterVolumeValueType],
                         masterVolumeValueBuffer,
-                        sizeof(masterVolumeValueBuffer)
-                    );
+                        sizeof(masterVolumeValueBuffer));
                     statusStringMasterVolume = "Pasted";
                 }
                 ImGui::PopStyleVar();
@@ -1620,10 +1593,7 @@ void Skin::TabMasterDSDVolume() {
             ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
             ImGui::PushItemWidth(-FLT_MIN);
             if (ImGui::BeginCombo(
-                    "##masterVolumeDSDFileCombo",
-                    masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).name.c_str(),
-                    ImGuiComboFlags_HeightRegular
-                )) {
+                    "##masterVolumeDSDFileCombo", masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).name.c_str(), ImGuiComboFlags_HeightRegular)) {
                 for (int idx = 0; idx < masterVolumeDSDFiles.size(); idx++) {
                     auto entry = masterVolumeDSDFiles.at(idx);
                     if (ImGui::Selectable(entry.name.c_str(), false)) {
@@ -1688,10 +1658,7 @@ void Skin::TabMasterDSDVolume() {
                 ImGui::NewLine();
                 if (ImGui::Button("Load", ImVec2(512, 150))) {
                     if (masterVolumeDSD.FromFile(masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath) != 0) {
-                        DLOG(
-                            "failed to load master volume DSD table file %s\n",
-                            masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath.c_str()
-                        );
+                        DLOG("failed to load master volume DSD table file %s\n", masterVolumeDSDFiles.at(masterVolumeDSDFileSelected).fullPath.c_str());
                         statusStringMasterVolumeDSD = "Failed";
                     } else {
                         MasterVolumeDSDTableToImVec2();
@@ -1701,11 +1668,7 @@ void Skin::TabMasterDSDVolume() {
             } else {
                 if (ImPlot::BeginPlot("##lines", ImVec2(512, 305), ImPlotFlags_NoMouseText | ImPlotFlags_NoInputs)) {
                     ImPlot::SetupAxesLimits(
-                        curveElementCount * -0.05,
-                        curveElementCount + curveElementCount * 0.05,
-                        curveYLimit * -0.05,
-                        curveYLimit + curveYLimit * 0.1
-                    );
+                        curveElementCount * -0.05, curveElementCount + curveElementCount * 0.05, curveYLimit * -0.05, curveYLimit + curveYLimit * 0.1);
                     ImPlot::SetNextLineStyle(GOLD_DONATE, 2.0f);
                     ImPlot::PlotInfLines("##volline", &connector->status.VolumeRaw, 1);
                     ImPlot::SetNextLineStyle(IMPLOT_AUTO_COL, 2.0f);
@@ -1818,9 +1781,7 @@ void Skin::TabToneControl() {
             ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
             ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
             ImGui::PushItemWidth(-FLT_MIN);
-            if (ImGui::BeginCombo(
-                    "##toneControlFileCombo", toneControlFiles.at(toneControlFileSelected).name.c_str(), ImGuiComboFlags_HeightRegular
-                )) {
+            if (ImGui::BeginCombo("##toneControlFileCombo", toneControlFiles.at(toneControlFileSelected).name.c_str(), ImGuiComboFlags_HeightRegular)) {
                 for (int idx = 0; idx < toneControlFiles.size(); idx++) {
                     auto entry = toneControlFiles.at(idx);
                     if (ImGui::Selectable(entry.name.c_str(), false)) {
@@ -1895,11 +1856,7 @@ void Skin::TabToneControl() {
             } else {
                 if (ImPlot::BeginPlot("##lines", ImVec2(512, 305), ImPlotFlags_NoMouseText | ImPlotFlags_NoInputs)) {
                     ImPlot::SetupAxesLimits(
-                        curveElementCount * -0.05,
-                        curveElementCount + curveElementCount * 0.05,
-                        curveYLimit * -0.05,
-                        curveYLimit + curveYLimit * 0.1
-                    );
+                        curveElementCount * -0.05, curveElementCount + curveElementCount * 0.05, curveYLimit * -0.05, curveYLimit + curveYLimit * 0.1);
                     ImPlot::SetNextLineStyle(GOLD_DONATE, 2.0f);
                     ImPlot::PlotLineG("##curvaSmall", ImPlot::ImVec2Getter, curveEditorTarget, curveElementCount);
                     ImPlot::EndPlot();
@@ -2110,12 +2067,10 @@ void Skin::SoundSettingsTab() {
 
 void Skin::CurveEditor() {
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
-    ImGui::BeginChild(
-        "##curvaBig",
+    ImGui::BeginChild("##curvaBig",
         ImVec2(windowSize.x - 15 * 2 - (ImGui::GetStyle().FramePadding.x * 2.0f + 98 * 2 + ImGui::GetStyle().ItemSpacing.x * 2), 480),
         ImGuiChildFlags_None,
-        window_flags
-    );
+        window_flags);
 
     bool clicked = false;
     bool hovered = false;
@@ -2131,9 +2086,7 @@ void Skin::CurveEditor() {
 
         float radius = 10;
         for (int i = 0; i < curveElementCount; i++) {
-            ImPlot::DragPoint(
-                i * 134, &valuesx[i], &valuesy[i], GOLD_DONATE, radius, ImPlotDragToolFlags_None, &clicked, &hovered, &held[i]
-            );
+            ImPlot::DragPoint(i * 134, &valuesx[i], &valuesy[i], GOLD_DONATE, radius, ImPlotDragToolFlags_None, &clicked, &hovered, &held[i]);
             if (held[i]) {
                 auto posx = double(((ImVec2 *)curveEditorTarget + i)->x);
                 float offset = 70;
@@ -2344,7 +2297,7 @@ void Skin::GetLogsDirSize() {
     listdir("/contents/wampy/log/", &files, "*");
 
     int res = 0;
-    struct stat sb {};
+    struct stat sb{};
     for (const auto &e : files) {
         if (stat(e.fullPath.c_str(), &sb) != 0) {
             DLOG("cannot stat %s\n", e.fullPath.c_str());
@@ -2524,9 +2477,7 @@ void Skin::TabEQ_Vinylizer() {
     ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
     ImGui::PushItemWidth(-FLT_MIN);
-    if (ImGui::BeginCombo(
-            "##vinylizerValues", vinylTypeToString.at(connector->soundSettingsFw.vinylizerValue).c_str(), ImGuiComboFlags_HeightRegular
-        )) {
+    if (ImGui::BeginCombo("##vinylizerValues", vinylTypeToString.at(connector->soundSettingsFw.vinylizerValue).c_str(), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : vinylTypeToString) {
             if (entry.second == "?") {
                 continue;
@@ -2553,9 +2504,7 @@ void Skin::TabEQ_DCPhase() {
     ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
     ImGui::PushItemWidth(-FLT_MIN);
-    if (ImGui::BeginCombo(
-            "##DcPhaseValues", dcFilterToString.at(connector->soundSettingsFw.dcValue).c_str(), ImGuiComboFlags_HeightRegular
-        )) {
+    if (ImGui::BeginCombo("##DcPhaseValues", dcFilterToString.at(connector->soundSettingsFw.dcValue).c_str(), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : dcFilterToString) {
             if (entry.second == "?") {
                 continue;
@@ -2583,9 +2532,7 @@ void Skin::TabEQ_Vpt() {
     ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
     ImGui::PushItemWidth(-FLT_MIN);
-    if (ImGui::BeginCombo(
-            "##vptValues", vptA50SmallToString.at(connector->soundSettingsFw.vptValue).c_str(), ImGuiComboFlags_HeightRegular
-        )) {
+    if (ImGui::BeginCombo("##vptValues", vptA50SmallToString.at(connector->soundSettingsFw.vptValue).c_str(), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : vptA50SmallToString) {
             if (entry.second == "?") {
                 continue;
@@ -2610,9 +2557,7 @@ void Skin::TabEQ_Vpt() {
 void Skin::TabEQ_DynamicNormalizer() {
     TabEq_EnableDisableFilter();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 580 / 2 - ImGui::CalcTextSize("No options").x / 2);
-    ImGui::SetCursorPosY(
-        ImGui::GetCursorPosY() + 425 / 2 - ImGui::CalcTextSize("No options").y / 2 - ImGui::GetTextLineHeightWithSpacing() - 60
-    );
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 425 / 2 - ImGui::CalcTextSize("No options").y / 2 - ImGui::GetTextLineHeightWithSpacing() - 60);
     ImGui::Text("No options");
 }
 
@@ -2624,9 +2569,7 @@ void Skin::TabEQ_Eq6Band() {
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
     ImGui::SeparatorText("Preset:");
     ImGui::PushItemWidth(-FLT_MIN);
-    if (ImGui::BeginCombo(
-            "##eq6preset", eq6PresetToString.at(connector->soundSettingsFw.eq6Value).c_str(), ImGuiComboFlags_HeightRegular
-        )) {
+    if (ImGui::BeginCombo("##eq6preset", eq6PresetToString.at(connector->soundSettingsFw.eq6Value).c_str(), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : eq6PresetToString) {
             if (ImGui::Selectable(entry.second.c_str(), false)) {
                 connector->soundSettingsFw.SetEq6Preset(entry.first);
@@ -2936,15 +2879,12 @@ void Skin::TabFM() {
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
     ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-    ImGui::BeginChild(
-        "##fmpresets", ImVec2(windowSize.x - 15 * 2 - ImGui::GetStyle().FramePadding.x * 2.0f, 145), ImGuiChildFlags_None, window_flags
-    );
+    ImGui::BeginChild("##fmpresets", ImVec2(windowSize.x - 15 * 2 - ImGui::GetStyle().FramePadding.x * 2.0f, 145), ImGuiChildFlags_None, window_flags);
     ImVec2 button_sz(88, 60);
     float window_visible_x2 = ImGui::GetCursorScreenPos().x + ImGui::GetContentRegionAvail().x;
     for (int i = 0; i < config->fmPresets.size(); i++) {
         float last_button_x2 = ImGui::GetItemRectMax().x;
-        float next_button_x2 =
-            last_button_x2 + ImGui::GetStyle().ItemSpacing.x + button_sz.x; // Expected position if next button was on same line
+        float next_button_x2 = last_button_x2 + ImGui::GetStyle().ItemSpacing.x + button_sz.x; // Expected position if next button was on same line
         if (i < config->fmPresets.size() && next_button_x2 < window_visible_x2)
             ImGui::SameLine();
         char label[20];
@@ -2992,9 +2932,7 @@ void Skin::TabEQ() {
 
             case ActiveFilterTab_Invalid:
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 580 / 2 - ImGui::CalcTextSize("Select filter").x / 2);
-                ImGui::SetCursorPosY(
-                    ImGui::GetCursorPosY() + 425 / 2 - ImGui::CalcTextSize("Select filter").y / 2 - ImGui::GetTextLineHeightWithSpacing()
-                );
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 425 / 2 - ImGui::CalcTextSize("Select filter").y / 2 - ImGui::GetTextLineHeightWithSpacing());
                 ImGui::Text("Select filter");
                 break;
             case ActiveFilterTab_DynamicNormalizer:
@@ -3146,8 +3084,8 @@ void Skin::TabEQOld() {
     ImGui::EndChild();
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
 
-    static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
-                                   ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
+    static ImGuiTableFlags flags =
+        ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_SizingStretchProp;
 
     ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 7);
 
@@ -3156,21 +3094,17 @@ void Skin::TabEQOld() {
         ImGui::TableNextColumn();
         ImGui::Text("ClearAudio+");
         ImGui::TableNextColumn();
-        ImGui::Text(
-            "%s (%s)",
+        ImGui::Text("%s (%s)",
             connector->soundSettings.s->status.clearAudioOn == 1 ? "On" : "Off",
-            connector->soundSettings.s->status.clearAudioAvailable == 1 ? "available" : "unavailable"
-        );
+            connector->soundSettings.s->status.clearAudioAvailable == 1 ? "available" : "unavailable");
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
         ImGui::Text("Direct Source");
         ImGui::TableNextColumn();
-        ImGui::Text(
-            "%s (%s)",
+        ImGui::Text("%s (%s)",
             connector->soundSettings.s->status.directSourceOn == 1 ? "On" : "Off",
-            connector->soundSettings.s->status.directSourceAvailable == 1 ? "available" : "unavailable"
-        );
+            connector->soundSettings.s->status.directSourceAvailable == 1 ? "available" : "unavailable");
 
         if ((connector->soundSettings.s->status.clearAudioOn == 1 && connector->soundSettings.s->status.clearAudioAvailable) ||
             (connector->soundSettings.s->status.directSourceOn == 1 && connector->soundSettings.s->status.directSourceAvailable)) {
@@ -3194,15 +3128,13 @@ void Skin::TabEQOld() {
         ImGui::Text("EQ6 Bands");
         ImGui::TableNextColumn();
 
-        ImGui::Text(
-            "%d, %d, %d, %d, %d, %d",
+        ImGui::Text("%d, %d, %d, %d, %d, %d",
             connector->soundSettings.s->status.eq6Bands[0],
             connector->soundSettings.s->status.eq6Bands[1],
             connector->soundSettings.s->status.eq6Bands[2],
             connector->soundSettings.s->status.eq6Bands[3],
             connector->soundSettings.s->status.eq6Bands[4],
-            connector->soundSettings.s->status.eq6Bands[5]
-        );
+            connector->soundSettings.s->status.eq6Bands[5]);
         //
         //            ImGui::TableNextRow();
         //            ImGui::TableNextColumn();
@@ -3220,8 +3152,7 @@ void Skin::TabEQOld() {
         ImGui::TableNextColumn();
         ImGui::Text("EQ10 Bands");
         ImGui::TableNextColumn();
-        ImGui::Text(
-            "%.1f, %.1f, %.1f, %.1f, %.1f,\n%.1f, %.1f, %.1f, %.1f, %.1f",
+        ImGui::Text("%.1f, %.1f, %.1f, %.1f, %.1f,\n%.1f, %.1f, %.1f, %.1f, %.1f",
             float(connector->soundSettings.s->status.eq10Bands[0]) / 2,
             float(connector->soundSettings.s->status.eq10Bands[1]) / 2,
             float(connector->soundSettings.s->status.eq10Bands[2]) / 2,
@@ -3231,8 +3162,7 @@ void Skin::TabEQOld() {
             float(connector->soundSettings.s->status.eq10Bands[6]) / 2,
             float(connector->soundSettings.s->status.eq10Bands[7]) / 2,
             float(connector->soundSettings.s->status.eq10Bands[8]) / 2,
-            float(connector->soundSettings.s->status.eq10Bands[9]) / 2
-        );
+            float(connector->soundSettings.s->status.eq10Bands[9]) / 2);
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
