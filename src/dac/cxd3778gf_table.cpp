@@ -48,7 +48,7 @@ struct port_info {
 };
 
 int do_mkdir1(const char *path, mode_t mode) {
-    struct stat st {};
+    struct stat st{};
     int status = 0;
 
     if (stat(path, &st) != 0) {
@@ -148,47 +148,18 @@ struct cxd3778gf_device_gain cxd3778gf_device_gain_table[INPUT_DEVICE_MAX + 1] =
 
 unsigned char cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_MAX + 1][CODEC_RAM_SIZE] = {{0x00}};
 
-static struct port_info port_info_table[] = {
-    {"ovt", nullptr, -1, TABLE_SIZE_OUTPUT_VOLUME, (unsigned char *)cxd3778gf_master_volume_table, 13, 121, 1},
+static struct port_info port_info_table[] = {{"ovt", nullptr, -1, TABLE_SIZE_OUTPUT_VOLUME, (unsigned char *)cxd3778gf_master_volume_table, 13, 121, 1},
     {"dgt", nullptr, -1, TABLE_SIZE_DEVICE_GAIN, (unsigned char *)cxd3778gf_device_gain_table, 2, 5, 1},
     {"tct", nullptr, -1, TABLE_SIZE_TONE_CONTROL, (unsigned char *)cxd3778gf_tone_control_table, 20, 8, 1},
     {"ovt_dsd", nullptr, -1, TABLE_SIZE_OUTPUT_VOLUME_DSD, (unsigned char *)cxd3778gf_master_volume_dsd_table, 1, 121, 4},
     {"tct_nh", nullptr, -1, CODEC_RAM_SIZE, (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_NO_HP], 20, 6, 1},
     {"tct_ng", nullptr, -1, CODEC_RAM_SIZE, (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_NAMP_GENERAL_HP], 20, 6, 1},
-    {"tct_nnw500",
-     nullptr,
-     -1,
-     CODEC_RAM_SIZE,
-     (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_NAMP_NW500N_NCHP],
-     20,
-     6,
-     1},
-    {"tct_nnw750",
-     nullptr,
-     -1,
-     CODEC_RAM_SIZE,
-     (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_NAMP_NW750N_NCHP],
-     20,
-     6,
-     1},
+    {"tct_nnw500", nullptr, -1, CODEC_RAM_SIZE, (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_NAMP_NW500N_NCHP], 20, 6, 1},
+    {"tct_nnw750", nullptr, -1, CODEC_RAM_SIZE, (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_NAMP_NW750N_NCHP], 20, 6, 1},
     {"tct_nnc31", nullptr, -1, CODEC_RAM_SIZE, (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_NAMP_NC31_NCHP], 20, 6, 1},
     {"tct_sg", nullptr, -1, CODEC_RAM_SIZE, (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_SAMP_GENERAL_HP], 20, 6, 1},
-    {"tct_snw500",
-     nullptr,
-     -1,
-     CODEC_RAM_SIZE,
-     (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_SAMP_NW500N_NCHP],
-     20,
-     6,
-     1},
-    {"tct_snw750",
-     nullptr,
-     -1,
-     CODEC_RAM_SIZE,
-     (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_SAMP_NW750N_NCHP],
-     20,
-     6,
-     1},
+    {"tct_snw500", nullptr, -1, CODEC_RAM_SIZE, (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_SAMP_NW500N_NCHP], 20, 6, 1},
+    {"tct_snw750", nullptr, -1, CODEC_RAM_SIZE, (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_SAMP_NW750N_NCHP], 20, 6, 1},
     {"tct_snc31", nullptr, -1, CODEC_RAM_SIZE, (unsigned char *)cxd3778gf_tone_control_table[TONE_CONTROL_TABLE_SAMP_NC31_NCHP], 20, 6, 1},
     {nullptr, nullptr, -1, 0, nullptr, 0, 0, 0}};
 
@@ -215,13 +186,11 @@ static ssize_t write_table(const std::string &data, const char *buf, size_t size
             return (-1);
         }
 
-        dump_data(
-            (unsigned char *)port_info_table[index].table,
+        dump_data((unsigned char *)port_info_table[index].table,
             port_info_table[index].size,
             port_info_table[index].columns,
             port_info_table[index].rows,
-            port_info_table[index].width
-        );
+            port_info_table[index].width);
         //        cxd3778gf_apply_table_change(index);
 
         printf("done\n");
@@ -267,7 +236,7 @@ int checksum(const unsigned char *buf, int size, unsigned int *sum, unsigned int
     //    printf("sum = 0x%08X, xor = 0x%08X\n", sum, xr);
 
     if (*sum == 0) {
-        printf("all zero\n");
+        printf("volume table checksum failed: all zero\n");
         return (-1);
     }
 
@@ -572,8 +541,8 @@ std::string master_volume::ToCsv() {
     for (int soundEffect = 0; soundEffect < 2; soundEffect++) {
         for (int table = 0; table < (MASTER_VOLUME_TABLE_MAX + 1); table++) {
             for (int valType = MASTER_VOLUME_VALUE_MIN; valType < MASTER_VOLUME_VALUE_MAX; valType++) {
-                res += separator + "SoundEffect " + std::to_string(soundEffect) + ", " + Dac::MasterVolumeTableTypeToString.at(table) +
-                       ", " + Dac::MasterVolumeValueTypeToString.at(valType) + "\n";
+                res += separator + "SoundEffect " + std::to_string(soundEffect) + ", " + Dac::MasterVolumeTableTypeToString.at(table) + ", " +
+                       Dac::MasterVolumeValueTypeToString.at(valType) + "\n";
                 for (int volume = 0; volume < MASTER_VOLUME_MAX + 1; volume++) {
                     auto val = GetValue(soundEffect, table, volume, (MASTER_VOLUME_VALUE)valType);
                     res += std::to_string(val) + separator + "\n";
