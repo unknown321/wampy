@@ -1,6 +1,7 @@
 #ifndef WAMPY_HAGOROMO_H
 #define WAMPY_HAGOROMO_H
 
+#include "../config.h"
 #include "../dac/cxd3778gf_table.h"
 #include "asoundlib.h"
 #include "command.pb.h"
@@ -54,6 +55,9 @@ namespace Hagoromo {
         tone_control toneControl{};
         std::string toneControlPath;
         bool tablesApplied = false;
+        bool filtersApplied = false;
+        AppConfig::Filters *filters;
+        bool *controlFilters{};
 
         HagoromoStatus *hagoromoStatus = nullptr;
 

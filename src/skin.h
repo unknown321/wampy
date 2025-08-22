@@ -321,6 +321,8 @@ struct Skin {
 
     void TabEQ_Misc();
 
+    void SetConfigFilter(std::string name, bool value);
+
     void TabEq_EnableDisableFilter();
 
     void TabEQ_Vinylizer();

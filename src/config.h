@@ -43,6 +43,16 @@ namespace AppConfig {
         std::string ToneControl;
     };
 
+    struct Filters {
+        bool eq6Band;
+        bool eq10Band;
+        bool dcphaselinear;
+        bool dynamicnormalizer;
+        bool eqtone;
+        bool vinylizer;
+        bool vpt;
+    };
+
     class AppConfig {
       public:
         AppConfig() = default;
@@ -63,8 +73,10 @@ namespace AppConfig {
         std::string forceConnector{};
         EWindowOffset windowOffset = EWindowOffset_LEFT;
         std::vector<int> fmPresets{};
-        VolumeTables volumeTables;
+        VolumeTables volumeTables{};
+        Filters filters{};
         bool showFmInSettings = true;
+        bool controlFilters = false;
 
         int FindConfig();
 

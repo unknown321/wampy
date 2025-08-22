@@ -394,6 +394,44 @@ namespace Hagoromo {
 
         soundSettings.Update();
         soundSettingsFw.Update();
+
+        if (*controlFilters) {
+            if (!filtersApplied) {
+                for (auto v : soundSettingsFw.s->FilterStatus) {
+                    bool state = false;
+                    switch (hash(v.name)) {
+                    case hash("vpt"):
+                        state = filters->vpt;
+                        break;
+                    case hash("vinylizer"):
+                        state = filters->vinylizer;
+                        break;
+                    case hash("eqtone"):
+                        state = filters->eqtone;
+                        break;
+                    case hash("eq6band"):
+                        state = filters->eq6Band;
+                        break;
+                    case hash("eq10band"):
+                        state = filters->eq10Band;
+                        break;
+                    case hash("dcphaselinear"):
+                        state = filters->dcphaselinear;
+                        break;
+                    case hash("dynamicnormalizer"):
+                        state = filters->dynamicnormalizer;
+                        break;
+                    }
+
+                    if (state != v.is_proc) {
+                        DLOG("applying filter on startup: %s -> %d\n", v.name, state);
+                        soundSettingsFw.SetFilter(v.name, state);
+                    }
+                }
+
+                filtersApplied = true;
+            }
+        }
     }
 
     void HagoromoConnector::Connect() {}

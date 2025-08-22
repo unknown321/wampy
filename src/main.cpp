@@ -292,6 +292,8 @@ int main(int, char **) {
         v->masterVolumePath = config.volumeTables.MasterVolumeTable;
         v->masterVolumeDSDPath = config.volumeTables.MasterVolumeTableDSD;
         v->toneControlPath = config.volumeTables.ToneControl;
+        v->filters = &config.filters;
+        v->controlFilters = &config.controlFilters;
     } else {
         connector = new MPD::MPDConnector();
         connector->address = config.MPDSocketPath.c_str();
@@ -310,6 +312,8 @@ int main(int, char **) {
     v->masterVolumePath = config.volumeTables.MasterVolumeTable;
     v->masterVolumeDSDPath = config.volumeTables.MasterVolumeTableDSD;
     v->toneControlPath = config.volumeTables.ToneControl;
+    v->filters = &config.filters;
+    v->controlFilters = &config.controlFilters;
 
     socket = WAMPY_SOCKET;
 

@@ -657,7 +657,14 @@ void Skin::Misc() {
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        ImGui::Text("");
+        ImGui::TableNextColumn();
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Control filters", &config->controlFilters)) {
+            for (auto f : connector->soundSettingsFw.s->FilterStatus) {
+                SetConfigFilter(f.name, f.is_proc);
+            }
+            config->Save();
+        }
 
         ImGui::TableNextColumn();
         ImGui::TableNextRow();
@@ -2547,10 +2554,41 @@ void Skin::TabEQ_Misc() {
     }
 }
 
+void Skin::SetConfigFilter(std::string name, bool value) {
+    switch (hash(name.c_str())) {
+    case hash("vpt"):
+        config->filters.vpt = value;
+        break;
+    case hash("vinylizer"):
+        config->filters.vinylizer = value;
+        break;
+    case hash("eqtone"):
+        config->filters.eqtone = value;
+        break;
+    case hash("eq6band"):
+        config->filters.eq6Band = value;
+        break;
+    case hash("eq10band"):
+        config->filters.eq10Band = value;
+        break;
+    case hash("dcphaselinear"):
+        config->filters.dcphaselinear = value;
+        break;
+    case hash("dynamicnormalizer"):
+        config->filters.dynamicnormalizer = value;
+        break;
+    default:
+        break;
+    }
+
+    config->Save();
+}
+
 void Skin::TabEq_EnableDisableFilter() {
     if (connector->soundSettingsFw.filters.at(activeFilter)) {
         if (ImGui::Button("Disable", ImVec2(186, 60))) {
             connector->soundSettingsFw.SetFilter(activeFilter, false);
+            SetConfigFilter(activeFilter, false);
             nanosleep(&ssfwUpdateDelay, nullptr);
             connector->soundSettingsFw.Update();
             if (connector->status.State != PLAYING) {
@@ -2562,6 +2600,7 @@ void Skin::TabEq_EnableDisableFilter() {
     } else {
         if (ImGui::Button("Enable", ImVec2(186, 60))) {
             connector->soundSettingsFw.SetFilter(activeFilter, true);
+            SetConfigFilter(activeFilter, true);
             nanosleep(&ssfwUpdateDelay, nullptr);
             connector->soundSettingsFw.Update();
             if (connector->status.State != PLAYING) {

@@ -81,6 +81,15 @@ namespace AppConfig {
         ini["volumeTables"]["masterVolumeTableDSD"] = volumeTables.MasterVolumeTableDSD;
         ini["volumeTables"]["toneControl"] = volumeTables.ToneControl;
 
+        ini["wampy"]["controlFilters"] = std::to_string(controlFilters);
+        ini["filters"]["eq6Band"] = std::to_string(filters.eq6Band);
+        ini["filters"]["eq10Band"] = std::to_string(filters.eq10Band);
+        ini["filters"]["dcphaselinear"] = std::to_string(filters.dcphaselinear);
+        ini["filters"]["dynamicnormalizer"] = std::to_string(filters.dynamicnormalizer);
+        ini["filters"]["eqtone"] = std::to_string(filters.eqtone);
+        ini["filters"]["vinylizer"] = std::to_string(filters.vinylizer);
+        ini["filters"]["vpt"] = std::to_string(filters.vpt);
+
         std::string presets;
         for (auto v : fmPresets) {
             presets += std::to_string(v) + ",";
@@ -219,6 +228,15 @@ namespace AppConfig {
         volumeTables.MasterVolumeTable = ini["volumeTables"]["masterVolumeTable"];
         volumeTables.MasterVolumeTableDSD = ini["volumeTables"]["masterVolumeTableDSD"];
         volumeTables.ToneControl = ini["volumeTables"]["toneControl"];
+
+        controlFilters = (bool)std::atoi(ini["wampy"]["controlFilters"].c_str());
+        filters.eq6Band = (bool)std::atoi(ini["filters"]["eq6Band"].c_str());
+        filters.eq10Band = (bool)std::atoi(ini["filters"]["eq10Band"].c_str());
+        filters.dcphaselinear = (bool)std::atoi(ini["filters"]["dcphaselinear"].c_str());
+        filters.dynamicnormalizer = (bool)std::atoi(ini["filters"]["dynamicnormalizer"].c_str());
+        filters.eqtone = (bool)std::atoi(ini["filters"]["eqtone"].c_str());
+        filters.vinylizer = (bool)std::atoi(ini["filters"]["vinylizer"].c_str());
+        filters.vpt = (bool)std::atoi(ini["filters"]["vpt"].c_str());
 
         for (const auto &p : split(ini["wampy"]["fmPresets"], ",")) {
             auto r = std::atoi(p.c_str());

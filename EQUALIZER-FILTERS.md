@@ -23,13 +23,19 @@ by `+`.
 **Filter status updates only when music is playing**. To enable filter, tap on `Enable` button and start music if it's
 not already on.
 
-All changes will **NOT** be reflected in standard interface; if you use this tab, consider it the source of truth.
+All changes will **NOT** be reflected in standard interface; this tab is the source of truth.
 
 DSEE is available only in standard interface; there is a software difference not allowing all variants everywhere.
 
 Clear Phase is available only in standard interface on supported devices.
 
 All filters are compatible with "EQ per song" options (except Dynamic Normalizer).
+
+Filters that have no interface on your current firmware (like VPT on Walkman One or EQTone on stock A50) are
+automatically disabled by standard interface on startup. To automatically enable them back on startup, use
+`Control filters` checkbox in `Settings->Misc`. When checked, filters will be set on or off on first wampy
+toggle according to your config. Standard interface changes are not saved to that config automatically; you will have
+to change it in wampy manually.
 
 ## Filters
 
