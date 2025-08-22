@@ -89,7 +89,7 @@ namespace Hagoromo {
 
     void HagoromoConnector::sendData(char *data, size_t len, std::string *res) {
         int server_socket;
-        struct sockaddr_un server_addr {};
+        struct sockaddr_un server_addr{};
         int connection_result;
 
         server_socket = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -459,12 +459,7 @@ namespace Hagoromo {
         }
 
         if (soundSettings.s->status.vptMode != ss.status.vptMode) {
-            DLOG(
-                "vpt mode %d -> %d (index %d)\n",
-                soundSettings.s->status.vptMode,
-                ss.status.vptMode,
-                vptA50SmallToHgrmIndex.at(ss.status.vptMode)
-            );
+            DLOG("vpt mode %d -> %d (index %d)\n", soundSettings.s->status.vptMode, ss.status.vptMode, vptA50SmallToHgrmIndex.at(ss.status.vptMode));
             pauseIfNeeded();
             SetVPTPreset(vptA50SmallToHgrmIndex.at(ss.status.vptMode));
         }
@@ -475,20 +470,13 @@ namespace Hagoromo {
         }
 
         if (soundSettings.s->status.eq6Preset != ss.status.eq6Preset) {
-            DLOG(
-                "eq6preset %d -> %d (index %d)\n",
-                soundSettings.s->status.eq6Preset,
-                ss.status.eq6Preset,
-                eq6PresetToHgrmIndex.at(ss.status.eq6Preset)
-            );
+            DLOG("eq6preset %d -> %d (index %d)\n", soundSettings.s->status.eq6Preset, ss.status.eq6Preset, eq6PresetToHgrmIndex.at(ss.status.eq6Preset));
             pauseIfNeeded();
             SetEqPreset(eq6PresetToHgrmIndex.at(ss.status.eq6Preset));
             soundSettings.Update();
         }
 
-        if (!std::equal(
-                std::begin(soundSettings.s->status.eq6Bands), std::end(soundSettings.s->status.eq6Bands), std::begin(ss.status.eq6Bands)
-            )) {
+        if (!std::equal(std::begin(soundSettings.s->status.eq6Bands), std::end(soundSettings.s->status.eq6Bands), std::begin(ss.status.eq6Bands))) {
             std::vector<double> bands;
             for (auto v : ss.status.eq6Bands) {
                 bands.push_back(v);
@@ -505,11 +493,7 @@ namespace Hagoromo {
         }
 
         if (ss.status.eqUse == 2) {
-            if (!std::equal(
-                    std::begin(soundSettings.s->status.eq10Bands),
-                    std::end(soundSettings.s->status.eq10Bands),
-                    std::begin(ss.status.eq10Bands)
-                )) {
+            if (!std::equal(std::begin(soundSettings.s->status.eq10Bands), std::end(soundSettings.s->status.eq10Bands), std::begin(ss.status.eq10Bands))) {
                 std::vector<double> bands;
                 for (auto v : ss.status.eq10Bands) {
                     bands.push_back(int(v / 2));
@@ -519,22 +503,19 @@ namespace Hagoromo {
             }
         }
 
-        if (soundSettings.s->status.toneControlLow != ss.status.toneControlLow ||
-            soundSettings.s->status.toneControlMid != ss.status.toneControlMid ||
+        if (soundSettings.s->status.toneControlLow != ss.status.toneControlLow || soundSettings.s->status.toneControlMid != ss.status.toneControlMid ||
             soundSettings.s->status.toneControlHigh != ss.status.toneControlHigh) {
             std::vector<int> values;
             values.push_back(ss.status.toneControlLow);
             values.push_back(ss.status.toneControlMid);
             values.push_back(ss.status.toneControlHigh);
-            DLOG(
-                "tone low: %d -> %d\ntone mid: %d -> %d\ntone high: %d -> %d\n",
+            DLOG("tone low: %d -> %d\ntone mid: %d -> %d\ntone high: %d -> %d\n",
                 soundSettings.s->status.toneControlLow,
                 ss.status.toneControlLow,
                 soundSettings.s->status.toneControlMid,
                 ss.status.toneControlMid,
                 soundSettings.s->status.toneControlHigh,
-                ss.status.toneControlHigh
-            );
+                ss.status.toneControlHigh);
             pauseIfNeeded();
             SetToneControlValues(values);
         }
@@ -568,23 +549,19 @@ namespace Hagoromo {
             if (soundSettings.s->status.dcLinearOn == true) {
                 if (soundSettings.s->status.dcLinearFilter != ss.status.dcLinearFilter) {
                     // just change mode
-                    DLOG(
-                        "dc phase preset: %d -> %d (index %d)\n",
+                    DLOG("dc phase preset: %d -> %d (index %d)\n",
                         soundSettings.s->status.dcLinearFilter,
                         ss.status.dcLinearFilter,
-                        dcFilterToHgrmIndex.at(ss.status.dcLinearFilter)
-                    );
+                        dcFilterToHgrmIndex.at(ss.status.dcLinearFilter));
                     pauseIfNeeded();
                     SetDCPhasePreset(dcFilterToHgrmIndex.at(ss.status.dcLinearFilter));
                 }
             } else {
                 // changing mode will turn dc on
-                DLOG(
-                    "dc phase preset: %d -> %d (index %d)\n",
+                DLOG("dc phase preset: %d -> %d (index %d)\n",
                     soundSettings.s->status.dcLinearFilter,
                     ss.status.dcLinearFilter,
-                    dcFilterToHgrmIndex.at(ss.status.dcLinearFilter)
-                );
+                    dcFilterToHgrmIndex.at(ss.status.dcLinearFilter));
                 pauseIfNeeded();
                 SetDCPhasePreset(dcFilterToHgrmIndex.at(ss.status.dcLinearFilter));
             }
@@ -603,12 +580,10 @@ namespace Hagoromo {
             if (soundSettings.s->status.vinylOn == true) {
                 if (soundSettings.s->status.vinylType != ss.status.vinylType) {
                     // just change mode
-                    DLOG(
-                        "vinyl mode: %d -> %d (index %d)\n",
+                    DLOG("vinyl mode: %d -> %d (index %d)\n",
                         soundSettings.s->status.vinylType,
                         ss.status.vinylType,
-                        vinylTypeToHgrmIndex.at(ss.status.vinylType)
-                    );
+                        vinylTypeToHgrmIndex.at(ss.status.vinylType));
                     if (ss.status.vinylType == 7) {
                         DLOG("ignoring vinyl type 7\n");
                     } else {
@@ -618,12 +593,7 @@ namespace Hagoromo {
                 }
             } else {
                 // changing mode will turn vinyl on
-                DLOG(
-                    "vinyl mode: %d -> %d (index %d)\n",
-                    soundSettings.s->status.vinylType,
-                    ss.status.vinylType,
-                    vinylTypeToHgrmIndex.at(ss.status.vinylType)
-                );
+                DLOG("vinyl mode: %d -> %d (index %d)\n", soundSettings.s->status.vinylType, ss.status.vinylType, vinylTypeToHgrmIndex.at(ss.status.vinylType));
                 pauseIfNeeded();
                 SetVinylMode(vinylTypeToHgrmIndex.at(ss.status.vinylType));
             }
@@ -1157,68 +1127,67 @@ namespace Hagoromo {
 #else
         auto path = "/db/MTPDB.dat";
 #endif
-        const char *query =
-            "WITH RECURSIVE path_cte AS (\n"
-            "    SELECT\n"
-            "        ob.object_id,\n"
-            "        parent_id,\n"
-            "        filename,\n"
-            "\t\ttitle,\n"
-            "\t\tCOALESCE(a.value, \"\") as artist,\n"
-            "\t\tCOALESCE(alb.value, \"\") as album,\n"
-            "\t\tCOALESCE(ob.series_no, -1) as track,\n"
-            "\t\tCOALESCE(duration.value, -1) as duration,\n"
-            "\t\tCOALESCE(sample_rate.value, -1) as sample_rate,\n"
-            "\t\tCOALESCE(bit_depth.value, -1) as bit_depth,\n"
-            "\t\tCOALESCE(bitrate.value, -1) as bitrate,\n"
-            "\t\tCOALESCE(total_tracks.value, -1) as total_tracks,\n"
-            "\t\tCOALESCE(codec.value, -1) as codec,\t\t\n"
-            "\t\tCOALESCE(releaseyear.value, -1) as release_year\t"
-            "    FROM\n"
-            "        object_body ob\n"
-            "\tjoin artists a on a.id = ob.artist_id \n"
-            "\tjoin albums alb on alb.id = ob.album_id \n"
-            "\tleft join object_ext_int duration on duration.object_id = ob.object_id and duration.akey = 12\n"
-            "\tleft join object_ext_int sample_rate on sample_rate.object_id = ob.object_id and sample_rate.akey = 16\n"
-            "\tleft join object_ext_int bitrate on bitrate.object_id = ob.object_id and bitrate.akey = 19\n"
-            "\tleft join object_ext_int bit_depth on bit_depth.object_id = ob.object_id and bit_depth.akey = 78\n"
-            "\tleft join object_ext_int total_tracks on total_tracks.object_id = ob.object_id and total_tracks.akey = 81\n"
-            "\tleft join object_ext_int codec on codec.object_id = ob.object_id and codec.akey = 41\n"
-            "\tleft join releaseyears releaseyear on releaseyear.id = ob.releaseyear_id\n"
-            "    WHERE\n"
-            "        ob.object_id = ?\n"
-            "\tAND\n"
-            "\t\tob.object_type = 2\n"
-            "    \n"
-            "    UNION ALL\n"
-            "    \n"
-            "    SELECT\n"
-            "        t.object_id,\n"
-            "        t.parent_id,\n"
-            "        t.filename || '/' || p.filename AS filename,\n"
-            "\t\tp.title,\n"
-            "\t\tp.artist,\n"
-            "\t\tp.album,\n"
-            "\t\tp.track,\n"
-            "\t\tp.duration,\n"
-            "\t\tp.sample_rate,\n"
-            "\t\tp.bit_depth,\n"
-            "\t\tp.bitrate,\n"
-            "\t\tp.total_tracks,\n"
-            "\t\tp.codec,\n"
-            "\t\tp.release_year\n"
-            "    FROM\n"
-            "        object_body t\n"
-            "    INNER JOIN\n"
-            "        path_cte p ON t.object_id = p.parent_id\n"
-            ")\n"
-            "\n"
-            "SELECT\n"
-            "    filename, title, artist, album, track, duration, sample_rate, bit_depth, bitrate, total_tracks, codec, release_year\n"
-            "FROM\n"
-            "    path_cte\n"
-            "WHERE\n"
-            "    parent_id == 0;";
+        const char *query = "WITH RECURSIVE path_cte AS (\n"
+                            "    SELECT\n"
+                            "        ob.object_id,\n"
+                            "        parent_id,\n"
+                            "        filename,\n"
+                            "\t\ttitle,\n"
+                            "\t\tCOALESCE(a.value, \"\") as artist,\n"
+                            "\t\tCOALESCE(alb.value, \"\") as album,\n"
+                            "\t\tCOALESCE(ob.series_no, -1) as track,\n"
+                            "\t\tCOALESCE(duration.value, -1) as duration,\n"
+                            "\t\tCOALESCE(sample_rate.value, -1) as sample_rate,\n"
+                            "\t\tCOALESCE(bit_depth.value, -1) as bit_depth,\n"
+                            "\t\tCOALESCE(bitrate.value, -1) as bitrate,\n"
+                            "\t\tCOALESCE(total_tracks.value, -1) as total_tracks,\n"
+                            "\t\tCOALESCE(codec.value, -1) as codec,\t\t\n"
+                            "\t\tCOALESCE(releaseyear.value, -1) as release_year\t"
+                            "    FROM\n"
+                            "        object_body ob\n"
+                            "\tjoin artists a on a.id = ob.artist_id \n"
+                            "\tjoin albums alb on alb.id = ob.album_id \n"
+                            "\tleft join object_ext_int duration on duration.object_id = ob.object_id and duration.akey = 12\n"
+                            "\tleft join object_ext_int sample_rate on sample_rate.object_id = ob.object_id and sample_rate.akey = 16\n"
+                            "\tleft join object_ext_int bitrate on bitrate.object_id = ob.object_id and bitrate.akey = 19\n"
+                            "\tleft join object_ext_int bit_depth on bit_depth.object_id = ob.object_id and bit_depth.akey = 78\n"
+                            "\tleft join object_ext_int total_tracks on total_tracks.object_id = ob.object_id and total_tracks.akey = 81\n"
+                            "\tleft join object_ext_int codec on codec.object_id = ob.object_id and codec.akey = 41\n"
+                            "\tleft join releaseyears releaseyear on releaseyear.id = ob.releaseyear_id\n"
+                            "    WHERE\n"
+                            "        ob.object_id = ?\n"
+                            "\tAND\n"
+                            "\t\tob.object_type = 2\n"
+                            "    \n"
+                            "    UNION ALL\n"
+                            "    \n"
+                            "    SELECT\n"
+                            "        t.object_id,\n"
+                            "        t.parent_id,\n"
+                            "        t.filename || '/' || p.filename AS filename,\n"
+                            "\t\tp.title,\n"
+                            "\t\tp.artist,\n"
+                            "\t\tp.album,\n"
+                            "\t\tp.track,\n"
+                            "\t\tp.duration,\n"
+                            "\t\tp.sample_rate,\n"
+                            "\t\tp.bit_depth,\n"
+                            "\t\tp.bitrate,\n"
+                            "\t\tp.total_tracks,\n"
+                            "\t\tp.codec,\n"
+                            "\t\tp.release_year\n"
+                            "    FROM\n"
+                            "        object_body t\n"
+                            "    INNER JOIN\n"
+                            "        path_cte p ON t.object_id = p.parent_id\n"
+                            ")\n"
+                            "\n"
+                            "SELECT\n"
+                            "    filename, title, artist, album, track, duration, sample_rate, bit_depth, bitrate, total_tracks, codec, release_year\n"
+                            "FROM\n"
+                            "    path_cte\n"
+                            "WHERE\n"
+                            "    parent_id == 0;";
 
         rc = sqlite3_open_v2(path, &db, SQLITE_OPEN_READONLY, nullptr);
         if (rc) {
