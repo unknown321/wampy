@@ -70,7 +70,7 @@ namespace Hagoromo {
 
         void PollStatus() override;
 
-        __attribute__((unused)) void setVolumeALSA(int i){};
+        __attribute__((unused)) void setVolumeALSA(int i) {};
 
         void SetVolume(int i, bool relative) override;
 
