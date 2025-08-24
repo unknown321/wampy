@@ -36,6 +36,7 @@ namespace AppConfig {
         ini["wampy"]["debug"] = std::to_string(debug);
         ini["wampy"]["forceConnector"] = forceConnector;
         ini["wampy"]["windowOffset"] = std::to_string(windowOffset);
+        ini["wampy"]["disableKeysWhenPowerOff"] = std::to_string(disableKeysWhenPowerOff);
 
         ini["cassette:mp3_128"].set({{"tape", cassette.Get(Tape::MP3_128)->tape}, {"reel", cassette.Get(Tape::MP3_128)->reel}});
         ini["cassette:mp3_160"].set({{"tape", cassette.Get(Tape::MP3_160)->tape}, {"reel", cassette.Get(Tape::MP3_160)->reel}});
@@ -125,6 +126,7 @@ namespace AppConfig {
         auto f = mINI::INIFile(filePath);
         f.read(ini);
 
+        // Clang-Tidy: 'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead
         // NOLINTBEGIN
         badBoots = std::atoi(ini["wampy"]["badBoots"].c_str());
         if (ini["wampy"]["limitFPS"].empty()) {
@@ -133,11 +135,10 @@ namespace AppConfig {
             limitFPS = (bool)std::atoi(ini["wampy"]["limitFPS"].c_str());
         }
         debug = (bool)std::atoi(ini["debug"]["enabled"].c_str());
+        disableKeysWhenPowerOff = (bool)std::atoi(ini["wampy"]["disableKeysWhenPowerOff"].c_str());
+        auto windowOffsetTemp = std::atoi(ini["wampy"]["windowOffset"].c_str());
         // NOLINTEND
 
-        forceConnector = ini["wampy"]["forceConnector"];
-
-        auto windowOffsetTemp = std::atoi(ini["wampy"]["windowOffset"].c_str());
         switch (windowOffsetTemp) {
         case EWindowOffset_LEFT:
         case EWindowOffset_RIGHT:
@@ -146,6 +147,8 @@ namespace AppConfig {
         default:
             windowOffset = EWindowOffset_LEFT;
         }
+
+        forceConnector = ini["wampy"]["forceConnector"];
 
         cassette.SetOrDefault(Tape::MP3_128, {ini["cassette:mp3_128"]["tape"], ini["cassette:mp3_128"]["reel"], "MP3 128kbps"});
         cassette.SetOrDefault(Tape::MP3_160, {ini["cassette:mp3_160"]["tape"], ini["cassette:mp3_160"]["reel"], "MP3 160kbps"});

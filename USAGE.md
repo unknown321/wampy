@@ -469,6 +469,10 @@ this mode, set volume to 120 in default player app and toggle Wampy on.
 
 `Window position` sets window position on devices with bigger screen (WM1A/Z).
 
+`Lock when screen is off` - ignore keypresses after screen was turned off by power button or timer.
+
+`Control filters` - see [EQUALIZER-FILTERS.md](./EQUALIZER-FILTERS.md).
+
 `Show FM tab` shows/hides FM tab, useful for those without FM chip on board (WM1A/Z, ZX300).
 
 `Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is

@@ -651,7 +651,7 @@ void Skin::Misc() {
 
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
-        if (ImGui::Checkbox("Show FM tab", &config->showFmInSettings)) {
+        if (ImGui::Checkbox("Lock when screen is off", &config->disableKeysWhenPowerOff)) {
             config->Save();
         }
 
@@ -667,6 +667,7 @@ void Skin::Misc() {
         }
 
         ImGui::TableNextColumn();
+
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
         if (ImGui::Checkbox("Debug", &config->debug)) {
@@ -675,6 +676,10 @@ void Skin::Misc() {
             config->Save();
         }
         ImGui::TableNextColumn();
+        ImGui::TableNextColumn();
+        if (ImGui::Checkbox("Show FM tab", &config->showFmInSettings)) {
+            config->Save();
+        }
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
@@ -2369,6 +2374,10 @@ void Skin::KeyHandler() {
         if (*render) {
             *render = false;
         }
+    }
+
+    if ((config->disableKeysWhenPowerOff) && (!connector->power)) {
+        return;
     }
 
     if (ImGui::IsKeyReleased(ImGuiKey_Prev)) {

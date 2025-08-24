@@ -77,6 +77,7 @@ namespace AppConfig {
         Filters filters{};
         bool showFmInSettings = true;
         bool controlFilters = false;
+        bool disableKeysWhenPowerOff = false;
 
         int FindConfig();
 
