@@ -1425,7 +1425,7 @@ void Skin::TabMasterVolume() {
 
         if (ImGui::BeginTable("##mvtable", 3, ImGuiTableFlags_None)) {
             ImGui::TableSetupColumn("", ImGuiTableColumnFlags_None);
-            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, 384);
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, 388);
             ImGui::TableSetupColumn("", ImGuiTableColumnFlags_None);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
