@@ -1,7 +1,7 @@
 #ifndef WSTRING_H
 #define WSTRING_H
 
-#include <iostream>
+#include <cstdint>
 #include <string>
 #include <vector>
 
