@@ -352,7 +352,7 @@ namespace Hagoromo {
         } else {
             *render = true;
 
-            if (!*touchscreenStaysOFF || status.Volume == 100) {
+            if (!*touchscreenStaysOFF || status.Volume == 100 || status.VolumeRaw == HAGOROMO_DEFAULT_VOLUME_MAX) {
                 enableTouchscreen();
             }
 

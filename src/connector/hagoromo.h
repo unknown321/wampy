@@ -10,6 +10,7 @@
 
 #define ALSA_ANALOG_INPUT_OFF 0
 #define ALSA_ANALOG_INPUT_TUNER 1
+#define HAGOROMO_DEFAULT_VOLUME_MAX 120
 
 namespace Hagoromo {
     // lconvert HgrmMediaPlayerApp_en_US.qm
