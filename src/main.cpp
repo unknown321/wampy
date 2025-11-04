@@ -444,7 +444,7 @@ int main(int, char **) {
             DLOG("waiting for socket %s\n", socket.c_str());
         }
 
-        if (std::time(nullptr) - now > 120) {
+        if (std::time(nullptr) - now > WAMPY_TIMEOUT_SECONDS) {
             DLOG("wampy socket timeout, %s\n", socket.c_str());
             createDump();
             exit(1);
