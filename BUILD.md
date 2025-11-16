@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-- Linux with Docker
+- Linux with Docker ([running as non-root](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user))
 - stock firmware file for NW-A50, `NW_WM_FW.UPG`
 - [abootimg](https://github.com/ggrandou/abootimg)
 - [guestmount](https://libguestfs.org/)
