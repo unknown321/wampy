@@ -893,6 +893,7 @@ namespace Cassette {
             }
             break;
         case hash("dsd"):
+        case hash("dsf"):
             tapeType = Tape::DSD;
             break;
         case hash("aiff"):
