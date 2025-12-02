@@ -153,7 +153,7 @@ load_sony_driver:shp=`nvpflag -x shp`
 
 There is nothing else that changes sound at this stage, there is only one region-dependant point of interest and that's
 `dacdat` binary. Decompilation showed that there are 5 table variations total and region does not matter. Check out
-handy table connecting regions, products and model ids at [./SOUND_SETTINGS.md](./SOUND_SETTINGS.md).
+handy table connecting regions, products and model ids at [./VOLUME_TABLES.md](./VOLUME_TABLES.md).
 
 At this point I started adding volume table functionality to Wampy because I had all info to do so, but it there was no
 answer to claims by those snake oil consumers. There is also another motive to investigate further: people like to
