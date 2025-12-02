@@ -706,11 +706,11 @@ namespace Hagoromo {
                 status.BitrateString = std::to_string(status.Bitrate);
             }
 
-            status.SampleRate = si.SampleRate / 1000;
-            if (status.SampleRate > 100) {
+            status.SampleRate = si.SampleRate;
+            if (status.SampleRate / 1000 >= 100) {
                 status.SampleRateString = "HR";
             } else {
-                status.SampleRateString = std::to_string(status.SampleRate);
+                status.SampleRateString = std::to_string(status.SampleRate / 1000);
             }
 
             if (codecToStr.find(si.Codec) == codecToStr.end()) {

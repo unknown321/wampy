@@ -904,7 +904,12 @@ namespace Cassette {
             break;
         }
 
-        DLOG("tape: %s, reel %s\n", config->Get(tapeType)->tape.c_str(), config->Get(tapeType)->reel.c_str());
+        DLOG("tape: %s, reel %s (codec %s, sample rate %d, bits %d)\n",
+            config->Get(tapeType)->tape.c_str(),
+            config->Get(tapeType)->reel.c_str(),
+            codec,
+            connector->status.SampleRate,
+            connector->status.Bits);
 
         if (Tapes.find(config->Get(tapeType)->tape) != Tapes.end()) {
             ActiveTape = &Tapes[config->Get(tapeType)->tape];
