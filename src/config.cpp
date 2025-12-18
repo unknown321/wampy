@@ -1,5 +1,7 @@
 #include "config.h"
+
 #include "connector/mpd.h"
+#include "mkpath.h"
 #include "util/util.h"
 #include <libgen.h>
 #include <sys/stat.h>

@@ -57,10 +57,6 @@ void DrawWindowRects();
 
 bool IsMounted();
 
-static int do_mkdir(const char *path, mode_t mode);
-
-int mkpath(const char *path, mode_t mode);
-
 void recoverDumps(const std::string &outdir);
 
 void createDump();

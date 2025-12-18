@@ -1,5 +1,6 @@
 #include "skin.h"
 #include "implot_widgets.h"
+#include "mkpath.h"
 
 void Skin::WithWinampSkinDir(const std::string &d) { winampSkinDirectories.push_back(d); }
 
