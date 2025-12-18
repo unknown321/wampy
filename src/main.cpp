@@ -251,7 +251,7 @@ void setupProfiling() {
 
 int main(int, char **) {
     DLOG("starting, commit %s\n", SOFTWARE_VERSION);
-    DLOG("\n    wampy  Copyright (C) 2024-2025  unknown321\n"
+    DLOG("\n    wampy  Copyright (C) 2024-2026  unknown321\n"
          "    This program comes with ABSOLUTELY NO WARRANTY; for details see Settings->Misc->License.\n"
          "    This is free software, and you are welcome to redistribute it\n"
          "    under certain conditions; see Settings->Misc->License for details.\n");
