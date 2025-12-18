@@ -114,6 +114,19 @@ icu/icu4c/source/build-arm:
 		../configure $(ARM_CC) $(ARM_CXX) --host arm-unknown-linux --with-cross-build=`pwd`/$@/../build-x86 --prefix=`pwd`/$@/install  && \
 		 make && make install"
 
+shine/build-x86:
+	mkdir -p $@
+	$(DOCKER) bash -c "\
+		cd $@/.. && \
+		pwd && \
+		make PREFIX=$(shell pwd)/$@"
+
+shine/build-arm:
+	mkdir -p $@
+	$(DOCKER) bash -c "\
+		cd $@/.. && \
+		pwd && \
+		make PREFIX=$(shell pwd)/$@ FLAGS='--host arm-unknown-linux CC=/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-gcc'"
 
 icu: icu_get icu/icu4c/source/build-x86 icu/icu4c/source/build-arm
 
@@ -123,6 +136,7 @@ magick: ImageMagick/build-x86 ImageMagick/build-arm
 
 sqlite: sqlite/build-arm sqlite/build-x86
 
+shine: shine/build-arm shine/build-x86
 
 protobuf:
 	$(DOCKER) bash -c "\
@@ -136,7 +150,7 @@ sysroot:
 	cd ../ && make -C nw-installer prepare
 	$(MAKE) -f Makefile.sysroot
 
-all: patch alsa-lib/src libjpeg magick protobuf llusbdac sqlite sysroot icu
+all: patch alsa-lib/src libjpeg magick protobuf llusbdac sqlite sysroot icu shine
 
 clean:
 	rm -rf libjpeg-turbo/build-*
@@ -147,8 +161,9 @@ clean:
 	rm -rf sqlite/build-*
 	$(MAKE) -f Makefile.sysroot clean
 	$(MAKE) -f Makefile.llusbdac clean
+	rm -rf shine/build-*
 
 
 .DEFAULT_GOAL := all
 
-.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch llusbdac sqlite sysroot icu
+.PHONY: libjpeg-turbo/build-arm libjpeg-turbo/build-x86 protobuf patch llusbdac sqlite sysroot icu shine

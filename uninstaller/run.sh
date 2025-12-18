@@ -48,6 +48,8 @@ uninstall() {
   ${RM} -f ${VENDOR}/lib/libjpeg.so.62.4.0
   ${RM} -f ${VENDOR}/lib/libjpeg.so.62
 
+  ${RM} -f ${VENDOR}/lib/libshine.so.3
+
   log "uninstalling server"
   busybox test -f /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
   if busybox test $? -eq 0; then
@@ -70,7 +72,7 @@ uninstall() {
     log "no valid libqeglfs backup found, leaving as is"
   fi
 
-  log "removing skins, licenses, qr code, tunings"
+  log "removing skins, licenses, qr code, tunings, icons"
   ${RM} -rf ${VENDOR}/usr/share/${BINARY}/
 
   log "removing modules"

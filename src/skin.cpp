@@ -228,6 +228,9 @@ void Skin::Load() {
     activeSkinVariant = config->activeSkin;
     activeSettingsTab = activeSkinVariant;
 
+    fm_codec = config->fmRecording.Codec == "wav" ? RecordCodec::WAV : RecordCodec::MP3;
+    fm_storage = config->fmRecording.Storage == "sdcard" ? RecordStorage::SD_CARD : RecordStorage::INTERNAL;
+
     connector->soundSettings.Update();
     connector->soundSettingsFw.Update();
 }
@@ -413,8 +416,7 @@ void Skin::SaveConfig(void *skin) {
 }
 
 void Skin::Header() {
-    float offset = 15.0f;
-    ImGui::Indent(offset);
+    ImGui::Indent(indent);
 
     if (ImGui::Button("  W1  ")) {
         loadStatusStr = "";
@@ -486,7 +488,7 @@ void Skin::Header() {
     const auto timeinfo = localtime(&rawtime);
     strftime(buffer, sizeof(buffer), "%H:%M", timeinfo);
 
-    auto skinButtonPos = 800.0f - closeSize - miscSize - skinSize - offset * 3;
+    auto skinButtonPos = 800.0f - closeSize - miscSize - skinSize - indent * 3;
 
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((skinButtonPos - ImGui::GetCursorPosX()) / 2) - ImGui::CalcTextSize(buffer).x / 2);
@@ -509,13 +511,13 @@ void Skin::Header() {
         }
     }
 
-    ImGui::SameLine(800.0f - closeSize - miscSize - offset * 2);
+    ImGui::SameLine(800.0f - closeSize - miscSize - indent * 2);
     if (ImGui::Button("Misc")) {
         loadStatusStr = "";
         displayTab = SettingsTab::Misc;
     }
 
-    ImGui::SameLine(800.0f - closeSize - offset);
+    ImGui::SameLine(800.0f - closeSize - indent);
     if (ImGui::Button("Close")) {
         loadStatusStr = "";
         ToggleDrawSettings(this, nullptr);
@@ -2918,141 +2920,6 @@ void Skin::TabDac() {
             llusbdacStatus = llusbdacLoaded ? "Loaded" : "Failure";
         }
     }
-}
-
-void Skin::TabFM() {
-    ImGui::NewLine();
-    if (!radioAvailable) {
-        ImGui::Text("FM radio is unavailable on this device");
-        ImGui::NewLine();
-        if (ImGui::Button("Hide this tab", ImVec2(200, 60))) {
-            config->showFmInSettings = false;
-            displayTab = SettingsTab::SkinOpts;
-            config->Save();
-        }
-        return;
-    }
-
-    if (connector->soundSettings.s->fmStatus.state == 2) {
-        if (ImGui::Button("Disable", ImVec2(186, 60))) {
-            RadioOff();
-            connector->soundSettings.SetFM(0);
-        }
-    } else {
-        if (ImGui::Button("Enable", ImVec2(186, 60))) {
-            if (connector->status.State == PlayStateE::PLAYING) {
-                connector->Pause();
-            }
-            RadioOn();
-            connector->soundSettings.SetFM(1);
-        }
-    }
-
-    if (connector->soundSettings.s->fmStatus.state != 2) {
-        return;
-    }
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(windowSize.x - ImGui::CalcTextSize("Stereo").x - 50);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
-    if (ImGui::Checkbox("Stereo", &connector->soundSettings.s->fmStatus.stereo)) {
-        connector->soundSettings.SetFMStereo(connector->soundSettings.s->fmStatus.stereo);
-    }
-
-    ImGui::PushItemWidth(windowSize.x - 15 * 2 - ImGui::GetStyle().FramePadding.x * 2.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(40.0f, 40.0f));
-    if (ImGui::SliderInt("##fmfreq", &fmFreq, 76000, 108000, fmFreqFormat, ImGuiSliderFlags_NoInput)) {
-        if (fmFreq % 100 > 0) {
-            fmFreq = fmFreq - fmFreq % 100;
-        }
-        connector->soundSettings.SetFMFreq(fmFreq);
-        sprintf(fmFreqFormat, "%.1fMHz", float(fmFreq) / 1000);
-    }
-    ImGui::PopStyleVar(2);
-    ImGui::PopItemWidth();
-
-    if (ImGui::Button("<<", ImVec2(80, 80))) {
-        fmFreq -= 500;
-        if (fmFreq < FM_FREQ_MIN) {
-            fmFreq = FM_FREQ_MIN;
-        }
-        connector->soundSettings.SetFMFreq(fmFreq);
-        sprintf(fmFreqFormat, "%.1fMHz", float(fmFreq) / 1000);
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("<", ImVec2(80, 80))) {
-        fmFreq -= 100;
-        if (fmFreq < FM_FREQ_MIN) {
-            fmFreq = FM_FREQ_MIN;
-        }
-        connector->soundSettings.SetFMFreq(fmFreq);
-        sprintf(fmFreqFormat, "%.1fMHz", float(fmFreq) / 1000);
-    }
-
-    ImGui::SameLine();
-    ImGui::SetCursorPosX((windowSize.x / 2) - 100 - 1);
-    if (ImGui::Button("Save", ImVec2(100, 80))) {
-        if (std::find(config->fmPresets.begin(), config->fmPresets.end(), fmFreq) == config->fmPresets.end()) {
-            config->fmPresets.emplace_back(fmFreq);
-            std::sort(config->fmPresets.begin(), config->fmPresets.end());
-            config->Save();
-        }
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Remove", ImVec2(100, 80))) {
-        auto pos = std::find(config->fmPresets.begin(), config->fmPresets.end(), fmFreq);
-        if (pos != config->fmPresets.end()) {
-            config->fmPresets.erase(pos);
-            std::sort(config->fmPresets.begin(), config->fmPresets.end());
-            config->Save();
-        }
-    }
-
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(windowSize.x - 15 * 2 - 80 * 2 + ImGui::GetStyle().ItemSpacing.x - 1);
-    if (ImGui::Button(">", ImVec2(80, 80))) {
-        fmFreq += 100;
-        if (fmFreq > FM_FREQ_MAX) {
-            fmFreq = FM_FREQ_MAX;
-        }
-        connector->soundSettings.SetFMFreq(fmFreq);
-        sprintf(fmFreqFormat, "%.1fMHz", float(fmFreq) / 1000);
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button(">>", ImVec2(80, 80))) {
-        fmFreq += 500;
-        if (fmFreq > FM_FREQ_MAX) {
-            fmFreq = FM_FREQ_MAX;
-        }
-        connector->soundSettings.SetFMFreq(fmFreq);
-        sprintf(fmFreqFormat, "%.1fMHz", float(fmFreq) / 1000);
-    }
-
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
-    ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-    ImGui::BeginChild("##fmpresets", ImVec2(windowSize.x - 15 * 2 - ImGui::GetStyle().FramePadding.x * 2.0f, 145), ImGuiChildFlags_None, window_flags);
-    ImVec2 button_sz(88, 60);
-    float window_visible_x2 = ImGui::GetCursorScreenPos().x + ImGui::GetContentRegionAvail().x;
-    for (int i = 0; i < config->fmPresets.size(); i++) {
-        float last_button_x2 = ImGui::GetItemRectMax().x;
-        float next_button_x2 = last_button_x2 + ImGui::GetStyle().ItemSpacing.x + button_sz.x; // Expected position if next button was on same line
-        if (i < config->fmPresets.size() && next_button_x2 < window_visible_x2)
-            ImGui::SameLine();
-        char label[20];
-        sprintf(label, "%.1f", (float)(config->fmPresets.at(i)) / 1000);
-        if (ImGui::Button(label, button_sz)) {
-            fmFreq = config->fmPresets.at(i);
-            connector->soundSettings.SetFMFreq(config->fmPresets.at(i));
-            sprintf(fmFreqFormat, "%.1fMHz", float(fmFreq) / 1000);
-        }
-    }
-    ImGui::EndChild();
-    ImGui::PopStyleVar(2);
 }
 
 void Skin::TabEQ() {

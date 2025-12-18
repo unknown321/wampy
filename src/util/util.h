@@ -155,4 +155,6 @@ void RadioOn();
 
 void RadioOff();
 
+unsigned long GetFreeSpace(const std::string &path);
+
 #endif // WAMPY_UTIL_H

@@ -8,6 +8,7 @@
 #include "dac/dac.h"
 #include "digital_clock/digital_clock.h"
 #include "implot.h"
+#include "rec/rec.h"
 #include "skinVariant.h"
 #include "sound_settings/sound_settings.h"
 #include "w1/w1.h"
@@ -48,6 +49,7 @@ enum EActiveFilterTab {
 #define GOLD_HIRES_WALKMAN ImVec4(0.75f, 0.64f, 0.39f, 1.0f) // #c0a565
 #define BUTTON_RED ImVec4(0.98f, 0.27f, 0.26f, 0.4f)
 #define GOLD_DONATE ImVec4(0.91f, 0.72f, 0.25f, 1.0f) // #ebb943
+#define TEXT_RECORDING ImVec4(0.99f, 0.33f, 0.49f, 1.0f)
 
 #define EFFECT_CHANGE_QUEUE_TEXT "Change enqueued"
 
@@ -91,6 +93,13 @@ struct Skin {
     std::string license{};
     std::string license3rd{};
 
+    RecordCodec fm_codec = RecordCodec::MP3;
+    RecordStorage fm_storage = RecordStorage::INTERNAL;
+    unsigned long fm_storage_internal_free = 0;
+    unsigned long fm_storage_sd_card_free = 0;
+    std::string fm_storage_internal_free_label;
+    std::string fm_storage_sd_card_free_label;
+
 #ifdef DESKTOP
     std::string licensePath = "../LICENSE";
     std::string license3rdPath = "../LICENSE_3rdparty";
@@ -99,6 +108,14 @@ struct Skin {
     std::string soundSettingsPathSystemWampy = "../ss/system/";
     std::string soundSettingsPathSystemHagoromo = "../ss/system/";
     std::string soundSettingsPathUser = "../ss/user/";
+    std::string fmLeftDouble = "../icons/fmLeftDouble.gif";
+    std::string fmLeft = "../icons/fmLeft.gif";
+    std::string fmRightDouble = "../icons/fmRightDouble.gif";
+    std::string fmRight = "../icons/fmRight.gif";
+    std::string fmSave = "../icons/fmSave.gif";
+    std::string fmDelete = "../icons/fmDelete.gif";
+    std::string fmRecord = "../icons/fmRecord.gif";
+    std::string fmSettings = "../icons/fmSettings.gif";
 #else
     std::string licensePath = "/system/vendor/unknown321/usr/share/wampy/doc/LICENSE";
     std::string license3rdPath = "/system/vendor/unknown321/usr/share/wampy/doc/LICENSE_3rdparty";
@@ -107,9 +124,26 @@ struct Skin {
     std::string soundSettingsPathUser = "/contents/wampy/sound_settings/";
     std::string soundSettingsPathSystemWampy = "/system/vendor/unknown321/usr/share/wampy/sound_settings/";
     std::string soundSettingsPathSystemHagoromo = "/system/usr/share/audio_dac/";
+    std::string fmLeftDouble = "/system/vendor/unknown321/usr/share/wampy/icons/fmLeftDouble.gif";
+    std::string fmLeft = "/system/vendor/unknown321/usr/share/wampy/icons/fmLeft.gif";
+    std::string fmRightDouble = "/system/vendor/unknown321/usr/share/wampy/icons/fmRightDouble.gif";
+    std::string fmRight = "/system/vendor/unknown321/usr/share/wampy/icons/fmRight.gif";
+    std::string fmSave = "/system/vendor/unknown321/usr/share/wampy/icons/fmSave.gif";
+    std::string fmDelete = "/system/vendor/unknown321/usr/share/wampy/icons/fmDelete.gif";
+    std::string fmRecord = "/system/vendor/unknown321/usr/share/wampy/icons/fmRecord.gif";
+    std::string fmSettings = "/system/vendor/unknown321/usr/share/wampy/icons/fmSettings.gif";
 #endif
     GLuint qrTexture{};
     GLuint qrDonateTexture{};
+
+    GLuint fmLeftDoubleTexture{};
+    GLuint fmLeftTexture{};
+    GLuint fmRightDoubleTexture{};
+    GLuint fmRightTexture{};
+    GLuint fmSaveTexture{};
+    GLuint fmDeleteTexture{};
+    GLuint fmRecordTexture{};
+    GLuint fmSettingsTexture{};
     float qrSide{};
     bool isWalkmanOne{};
 
@@ -209,6 +243,10 @@ struct Skin {
     bool radioAvailable;
     int fmFreq;
     char fmFreqFormat[11];
+
+    float indent = 15.0f;
+    bool fmRecordingActive = false;
+    bool fmRecordingStop = false;
 
     struct timespec ssfwUpdateDelay = {0, 500000000};
 
@@ -342,6 +380,10 @@ struct Skin {
     void TabDac();
 
     void TabFM();
+
+    void ReadFMButtons();
+
+    void calcFMStorageLabels();
 
     void TabEQ();
 

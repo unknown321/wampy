@@ -52,6 +52,15 @@ Finally, radio works just like it supposed to.
 
 Or not, A30 Walkman One fails to load all drivers I provided.
 
+#### Recording audio
+
+Implementation is straightforward, but chip doesn't support [compress offloading][3];
+raw pcm data is encoded to mp3 using [shine][4] library.
+
 [1]: https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-power
 
-[2]: https://git.alsa-project.org/?p=alsa-utils.git;a=blob;f=alsactl/monitor.c;hb=HEAD. 
+[2]: https://git.alsa-project.org/?p=alsa-utils.git;a=blob;f=alsactl/monitor.c;hb=HEAD.
+
+[3]: https://docs.kernel.org/sound/designs/compress-offload.html
+
+[4]: https://github.com/toots/shine

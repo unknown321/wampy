@@ -86,6 +86,10 @@ install() {
   ${CHOWN} -h ${user}:${group} ${VENDOR}/lib/libprotobuf.so.32
   ${CHOWN} -h ${user}:${group} /system/vendor/sony/lib/libprotobuf.so.32
 
+  ${CP} libshine.so.3 ${VENDOR}/lib/
+  ${CHMOD} 0755 ${VENDOR}/lib/libshine.so.3
+  ${CHOWN} ${user}:${group} ${VENDOR}/lib/libshine.so.3
+
   log "installing server"
   test -f /system/vendor/sony/plugins/platforms/libqeglfs.so_vendor
   if test $? -ne 0; then
@@ -115,6 +119,10 @@ install() {
   log "installing cassettes"
   ${MKDIR} -p ${VENDOR}/usr/share/${BINARY}/skins/cassette/
   ${TAR} -C ${VENDOR}/usr/share/${BINARY}/skins/cassette/ -xf cassette.tar.gz
+
+  log "installing icons"
+  ${MKDIR} -p ${VENDOR}/usr/share/${BINARY}/icons/
+  ${TAR} -C ${VENDOR}/usr/share/${BINARY}/icons/ -xf icons.tar.gz
 
   log "wiping old digital clock"
   ${RM} -r ${VENDOR}/usr/share/${BINARY}/skins/digital_clock/

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.25)
 project(wampy)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_FIND_DEBUG_MODE OFF)
+# add -Wl,--verbose=3 for linking
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
 
 if (DESKTOP EQUAL 1)
@@ -22,6 +24,7 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install/${arch})
 
 set(PROTOBUF_INCLUDE libs/protobuf/build-${arch}/include/)
 set(PROTOBUF_SOURCE server/armv5-unknown-linux-gnueabihf/command.pb.cc)
+find_package(PkgConfig REQUIRED)
 
 include_directories(
         libs/imgui
@@ -42,6 +45,7 @@ include_directories(
         libs/sqlite/build-${arch}/install/include
         libs/icu/icu4c/source/build-${arch}/install/include
         libs/implot
+        libs/shine/build-${arch}/include
         libs
         server/armv5-unknown-linux-gnueabihf
         ${PROTOBUF_INCLUDE}
@@ -60,6 +64,8 @@ include_directories(
 
         pstserver/
         sound_service_fw/
+        src/util/
+        src/
 )
 
 set(GLFW_BUILD_WAYLAND false)
@@ -73,7 +79,6 @@ if (DESKTOP EQUAL 1)
 endif ()
 
 add_subdirectory(libs/glfw)
-link_libraries(glfw)
 
 set(ZLIB_BUILD_EXAMPLES FALSE)
 add_subdirectory(libs/zlib)
@@ -121,9 +126,11 @@ add_executable(${PROJECT_NAME}
         libs/ImageMagick/Magick++/lib/Color.cpp
         ${PROTOBUF_SOURCE}
         src/implot_widgets.cpp
+        src/skin/fm.cpp
         src/skin.cpp
         src/dac/cxd3778gf_table.cpp
         src/util/util_string.cpp
+        src/util/mkpath.cpp
         src/util/util.cpp
         src/wstring.cpp
         src/w1/w1.cpp
@@ -139,6 +146,9 @@ add_executable(${PROJECT_NAME}
         src/winamp/winamp.cpp
         src/cassette/cassette.cpp
         src/config.cpp
+        src/rec/wav.cpp
+        src/rec/mp3.cpp
+        src/rec/rec.cpp
         #        libs/imgui/imgui_demo.cpp
         #        libs/implot/implot_demo.cpp
         src/shader.cpp
@@ -154,6 +164,8 @@ add_executable(${PROJECT_NAME}
 
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install/${arch})
+
+target_link_libraries(${PROJECT_NAME} glfw)
 
 find_library(JPEG jpeg PATHS libs/libjpeg-turbo/build-${arch}/release/lib REQUIRED NO_DEFAULT_PATH)
 target_link_libraries(${PROJECT_NAME} "${JPEG}")
@@ -226,3 +238,36 @@ foreach (Library ${ICU_LIBRARIES})
     get_filename_component(LibnameWLE ${Libname} NAME_WLE)
     install(FILES ${Libname} DESTINATION lib RENAME ${LibnameWLE})
 endforeach ()
+
+set(ENV{PKG_CONFIG_PATH} "${CMAKE_SOURCE_DIR}/libs/shine/build-${arch}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+pkg_check_modules(SHINE REQUIRED IMPORTED_TARGET shine)
+target_link_libraries(${PROJECT_NAME} PkgConfig::SHINE)
+
+foreach (Library ${SHINE_LINK_LIBRARIES})
+    get_filename_component(Libname ${Library} REALPATH)
+    get_filename_component(Libdir ${Libname} DIRECTORY)
+    get_filename_component(LibnameWLE ${Libname} NAME_WLE)
+    install(FILES ${Libname} DESTINATION lib RENAME ${LibnameWLE})
+endforeach ()
+
+add_executable(rec
+        src/util/mkpath.cpp
+        src/rec/wav.cpp
+        src/rec/mp3.cpp
+        src/rec/rec.cpp
+        src/rec/main.cpp
+)
+target_link_libraries(rec PkgConfig::SHINE)
+
+target_link_libraries(rec "${ICU_DATA_LIBRARIES}" "${ICU_LIBRARIES}")
+
+set_target_properties(rec PROPERTIES
+        BUILD_WITH_INSTALL_RPATH FALSE
+        INSTALL_RPATH_USE_LINK_PATH FALSE
+        INSTALL_RPATH " ./;../lib/;/system/lib;/system/vendor/unknown321/lib;/lib;/system/vendor/sony/lib")
+
+if (DESKTOP EQUAL 1)
+    target_compile_definitions(rec PRIVATE DESKTOP=1)
+endif ()
+
+target_link_libraries(rec ${ASOUND})

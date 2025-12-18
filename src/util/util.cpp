@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <fstream>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <unistd.h>
 
 bool dirComp(const directoryEntry &a, const directoryEntry &b) { return b.name >= a.name; }
@@ -924,4 +925,14 @@ void RadioOff() {
     auto ddf = open(powerWakeUnlock, O_RDWR);
     write(ddf, "wampy_fm_lock", sizeof "wampy_fm_lock");
     close(ddf);
+}
+
+unsigned long GetFreeSpace(const std::string &path) {
+    struct statvfs fiData{};
+
+    if (statvfs(path.c_str(), &fiData) < 0) {
+        return 0;
+    }
+
+    return fiData.f_bfree * fiData.f_bsize;
 }

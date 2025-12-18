@@ -542,15 +542,22 @@ See [EQUALIZER_PER_SONG_SETTINGS.md](./EQUALIZER_PER_SONG_SETTINGS.md)
 
 <img src="images/settings-fm.png">
 
-Radio works only on devices with FM chip: A40, A50. A30 does not work.
+Radio works only on devices with FM chip: A40 and A50. A30 does not work.
 
 Range: 76-108 MHz.
 
-Press Save to save preset, press Remove to remove current value from presets. Amount of presets is unlimited (unlike 30
+Press save icon to save preset, press trash icon to remove current value from presets. Amount of presets is unlimited (
+unlike 30
 in standard application). Arrow buttons change current value by 0.1 and 0.5. "Stereo" checkbox toggles stereo mode;
 useful when signal is flapping between mono and stereo.
 
 Radio will stop for up to a second after hitting power button.
+
+Press gear button to open recording settings. Use record button to start recording.
+Recordings are saved to `<storage>/MUSIC/RECORDINGS/<date>.<codec>`. You will need to rebuild database or reboot
+the device to play them.
+
+<img src="images/settings-fm-recording.png">
 
 [Developer notes](./MAKING_OF_FM.md)
 

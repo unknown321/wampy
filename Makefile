@@ -67,6 +67,7 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 	bash -c "cp $(INSTALL)/lib/libMagick{++,Core,Wand}-7.Q8HDRI.so installer/"
 	cp $(INSTALL)/lib/libjpeg.so.62.4.0 installer/
 	cp $(INSTALL)/lib/libprotobuf.so.32.0.12 installer/
+	cp $(INSTALL)/lib/libshine.so.3.0 installer/libshine.so.3
 	cp server/qt/qtbase/plugins/platforms/libqeglfs.so installer/
 	cp server/qt/qtbase/plugins/platforms/libqeglfs.so libs/sysroot/lib
 	cp nw-installer/tools/upgtool/upgtool-linux-arm5 installer/
@@ -74,6 +75,8 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 	$(UPX) -qqq --best installer/upgtool-linux-arm5
 	$(DOCKER) /x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-strip installer/lib*
 	cp base-2.91.wsz installer/
+	$(MAKE) -C icons
+	cp icons/icons.tar.gz installer/
 	$(MAKE) -C cassette
 	cp cassette/cassette.tar.gz installer/
 	$(MAKE) -C digital_clock
@@ -104,9 +107,11 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 		libMagickWand-7.Q8HDRI.so \
 		libjpeg.so.62.4.0 \
 		libprotobuf.so.32.0.12 \
+		libshine.so.3 \
 		libqeglfs.so \
 		base-2.91.wsz \
 		cassette.tar.gz \
+		icons.tar.gz \
 		digital_clock.tar.gz \
 		tunings.tar.gz \
 		llusbdac.ko_bbdmp2 \
@@ -216,6 +221,9 @@ LICENSE_3rdparty:
 	@$(ECHO) -e "\n***\nLLUSBDAC:\n" >> $@
 	@cat libs/llusbdac/LICENSE >> $@
 
+	@$(ECHO) -e "\n***\nshine:\n" >> $@
+	@cat libs/shine/LICENSE >> $@
+
 # https://github.com/fukuchi/libqrencode
 qr.bmp:
 	@qrencode -o qr.png -m 1 -s 7 https://github.com/unknown321/$(PRODUCT)
@@ -236,3 +244,23 @@ fastinstall:
 	$(ADB) shell reboot
 
 .PHONY: build build-arm docker docker_digital_clock push profile profile-arm valgrind deps release release-clean LICENSE_3rdparty server userdata fastinstall docker_pstserver
+
+build-rec:
+	docker run -it --rm \
+		-v `pwd`:`pwd` -w `pwd` \
+		$(IMAGE) bash -c " \
+			mkdir -p cmake-build-debug-rec && \
+			cd cmake-build-debug-rec && \
+			CC=/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-gcc \
+            CXX=/x-tools/armv5-unknown-linux-gnueabihf/bin/armv5-unknown-linux-gnueabihf-g++ \
+            cmake .. && \
+			cmake --build . -v --target rec"
+
+build-rec-x86:
+	docker run -it --rm \
+		-v `pwd`:`pwd` -w `pwd` \
+		$(IMAGE) bash -c " \
+			mkdir -p cmake-build-debug-rec && \
+			cd cmake-build-debug-rec && \
+            cmake -DDESKTOP=1 .. && \
+			cmake --build . -v --target rec"

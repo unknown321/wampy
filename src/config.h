@@ -52,6 +52,10 @@ namespace AppConfig {
         bool vinylizer;
         bool vpt;
     };
+ struct FMRecording {
+        std::string Storage;
+        std::string Codec;
+    };
 
     class AppConfig {
       public:
@@ -75,6 +79,7 @@ namespace AppConfig {
         std::vector<int> fmPresets{};
         VolumeTables volumeTables{};
         Filters filters{};
+        FMRecording fmRecording{};
         bool showFmInSettings = true;
         bool controlFilters = false;
         bool disableKeysWhenPowerOff = false;

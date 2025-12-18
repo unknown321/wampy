@@ -425,6 +425,7 @@ int main(int, char **) {
 
     skin.ReadLicense();
     skin.ReadQR();
+    skin.ReadFMButtons();
     skin.GetLogsDirSize();
     connector->soundSettings.Start();
     connector->soundSettingsFw.Start();

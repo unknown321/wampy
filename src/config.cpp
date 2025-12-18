@@ -99,6 +99,9 @@ namespace AppConfig {
         }
         rstrip(&presets, ',');
         ini["wampy"]["fmPresets"] = presets;
+
+        ini["fmrecording"]["codec"] = fmRecording.Codec;
+        ini["fmrecording"]["storage"] = fmRecording.Storage;
     }
 
     void AppConfig::Default() {
@@ -111,6 +114,8 @@ namespace AppConfig {
         forceConnector = "";
         windowOffset = EWindowOffset_LEFT;
         showFmInSettings = true;
+        fmRecording.Codec = "mp3";
+        fmRecording.Storage = "internal";
 
         ToIni();
     }
@@ -234,6 +239,7 @@ namespace AppConfig {
         volumeTables.MasterVolumeTableDSD = ini["volumeTables"]["masterVolumeTableDSD"];
         volumeTables.ToneControl = ini["volumeTables"]["toneControl"];
 
+        // NOLINTBEGIN
         controlFilters = (bool)std::atoi(ini["wampy"]["controlFilters"].c_str());
         filters.eq6Band = (bool)std::atoi(ini["filters"]["eq6Band"].c_str());
         filters.eq10Band = (bool)std::atoi(ini["filters"]["eq10Band"].c_str());
@@ -250,6 +256,10 @@ namespace AppConfig {
             }
             fmPresets.emplace_back(r);
         }
+        // NOLINTEND
+
+        fmRecording.Codec = ini["fmrecording"]["codec"];
+        fmRecording.Storage = ini["fmrecording"]["storage"];
 
         return 0;
     }
