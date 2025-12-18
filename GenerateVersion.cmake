@@ -16,7 +16,7 @@ if (GIT_EXECUTABLE)
         string(CONCAT WAMPY_VERSION ${WAMPY_VERSION} ", " ${date})
     else ()
         execute_process(
-                COMMAND ${GIT_EXECUTABLE} log -1 "--format=%h, %ad" "--date=format:%Y-%m-%d %H:%M"
+                COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
                 OUTPUT_VARIABLE WAMPY_VERSION
                 RESULT_VARIABLE ERROR_CODE
                 OUTPUT_STRIP_TRAILING_WHITESPACE
