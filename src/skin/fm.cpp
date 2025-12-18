@@ -144,7 +144,6 @@ void Skin::TabFM() {
         ImGui::OpenPopup("Recording settings");
     }
 
-    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(ImVec2(windowSize.x / 2, windowSize.y / 2), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
     if (ImGui::BeginPopupModal("Recording settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
@@ -190,7 +189,7 @@ void Skin::TabFM() {
 
     ImGui::SameLine();
 
-    ImGui::SetCursorPosX(windowSize.x - buttonSize * 2 - ImGui::GetStyle().ItemSpacing.x - indent * 2);
+    ImGui::SetCursorPosX(windowSize.x - buttonSize * 2 - ImGui::GetStyle().ItemSpacing.x - indent * 2 - 1);
     if (ImGui::ImageButton(">", reinterpret_cast<ImTextureID>(fmRightTexture), ImVec2(buttonSize, buttonSize))) {
         fmFreq += 100;
         if (fmFreq > FM_FREQ_MAX) {
