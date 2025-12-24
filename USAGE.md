@@ -546,10 +546,9 @@ Radio works only on devices with FM chip: A40 and A50. A30 does not work.
 
 Range: 76-108 MHz.
 
-Press save icon to save preset, press trash icon to remove current value from presets. Amount of presets is unlimited (
-unlike 30
-in standard application). Arrow buttons change current value by 0.1 and 0.5. "Stereo" checkbox toggles stereo mode;
-useful when signal is flapping between mono and stereo.
+Press save icon to save preset, press trash icon to remove current value from presets. Amount of presets is unlimited
+(unlike 30 in standard application). Arrow buttons change current value by 0.1 and 0.5.
+"Stereo" checkbox toggles stereo mode; useful when signal is flapping between mono and stereo.
 
 Radio will stop for up to a second after hitting power button.
 
