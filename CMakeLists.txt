@@ -196,7 +196,7 @@ add_custom_target(version
         ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/src/Version.h.in
         -D DST=${CMAKE_SOURCE_DIR}/src/Version.h
         -P ${CMAKE_SOURCE_DIR}/GenerateVersion.cmake
-        )
+)
 
 add_dependencies(${PROJECT_NAME} version)
 
@@ -259,16 +259,18 @@ add_executable(rec
         src/rec/main.cpp
 )
 target_link_libraries(rec PkgConfig::SHINE)
-
 target_link_libraries(rec "${ICU_DATA_LIBRARIES}" "${ICU_LIBRARIES}")
+
+
+if (DESKTOP EQUAL 1)
+    target_compile_definitions(rec PRIVATE DESKTOP=1)
+    find_package(ALSA REQUIRED)
+    target_link_libraries(rec ${ALSA_LIBRARIES})
+else ()
+    target_link_libraries(rec ${ASOUND})
+endif ()
 
 set_target_properties(rec PROPERTIES
         BUILD_WITH_INSTALL_RPATH FALSE
         INSTALL_RPATH_USE_LINK_PATH FALSE
         INSTALL_RPATH " ./;../lib/;/system/lib;/system/vendor/unknown321/lib;/lib;/system/vendor/sony/lib")
-
-if (DESKTOP EQUAL 1)
-    target_compile_definitions(rec PRIVATE DESKTOP=1)
-endif ()
-
-target_link_libraries(rec ${ASOUND})
