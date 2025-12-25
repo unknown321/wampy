@@ -4,9 +4,11 @@
 #include "mkpath.h"
 #include "util/util.h"
 #include <libgen.h>
+#include <libintl.h>
 #include <sys/stat.h>
 
-std::map<EWindowOffset, std::string> WindowOffsetToString = {{EWindowOffset_LEFT, "Left"}, {EWindowOffset_CENTER, "Center"}, {EWindowOffset_RIGHT, "Right"}};
+std::map<EWindowOffset, std::string> WindowOffsetToString = {
+    {EWindowOffset_LEFT, gettext("Left")}, {EWindowOffset_CENTER, gettext("Center")}, {EWindowOffset_RIGHT, gettext("Right")}};
 
 namespace AppConfig {
 
