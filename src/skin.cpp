@@ -1247,8 +1247,6 @@ void Skin::DrawSettings() {
     ImGui::PopFont();
 }
 
-
-
 void Skin::Draw() {
     if (displaySettings == 0) {
         switch (activeSkinVariant) {
@@ -1845,30 +1843,6 @@ void Skin::TabEQ_EqTone() {
         }
 
         ImGui::EndTable();
-    }
-}
-
-void Skin::TabDac() {
-    if (connector->status.State == PlayStateE::PLAYING) {
-        ImGui::NewLine();
-        ImGui::Text("Stop music first.");
-        ImGui::NewLine();
-        if (ImGui::Button("Stop music", ImVec2(186, 60))) {
-            connector->Pause();
-        }
-        return;
-    }
-
-    ImGui::Text(llusbdacStatus.c_str());
-    auto label = llusbdacLoaded ? "Disable" : "Enable";
-    if (ImGui::Button(label, ImVec2(756, 350))) {
-        if (llusbdacLoaded) {
-            llusbdacLoaded = !DisableLLUSBDAC();
-            llusbdacStatus = !llusbdacLoaded ? "Unloaded" : "Failure";
-        } else {
-            llusbdacLoaded = EnableLLUSBDAC();
-            llusbdacStatus = llusbdacLoaded ? "Loaded" : "Failure";
-        }
     }
 }
 

@@ -128,6 +128,7 @@ add_executable(${PROJECT_NAME}
         src/implot_widgets.cpp
         src/skin/fm.cpp
         src/skin/volumeTables.cpp
+        src/skin/dac.cpp
         src/skin.cpp
         src/dac/cxd3778gf_table.cpp
         src/util/util_string.cpp

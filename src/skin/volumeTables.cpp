@@ -21,7 +21,6 @@ void Skin::SoundSettingsTab() {
     }
 }
 
-
 void Skin::MasterVolumeTableToImVec2() {
     for (int index = 0; index < 2; index++) {
         for (int tableID = 0; tableID < MASTER_VOLUME_TABLE_MAX + 1; tableID++) {
