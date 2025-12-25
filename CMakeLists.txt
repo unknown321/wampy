@@ -135,6 +135,10 @@ add_executable(${PROJECT_NAME}
         src/skin/misc.cpp
         src/skin/website.cpp
         src/skin/w1.cpp
+        src/skin/eq.cpp
+        src/skin/eqTabs.cpp
+        src/skin/license.cpp
+        src/skin/eqPerSong.cpp
         src/skin.cpp
         src/dac/cxd3778gf_table.cpp
         src/util/util_string.cpp

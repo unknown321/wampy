@@ -51,7 +51,7 @@ enum EActiveFilterTab {
 #define GOLD_DONATE ImVec4(0.91f, 0.72f, 0.25f, 1.0f) // #ebb943
 #define TEXT_RECORDING ImVec4(0.99f, 0.33f, 0.49f, 1.0f)
 
-#define EFFECT_CHANGE_QUEUE_TEXT "Change enqueued"
+#define EFFECT_CHANGE_QUEUE_TEXT gettext("Change enqueued")
 
 struct Skin {
     bool *render{};
