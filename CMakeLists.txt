@@ -134,6 +134,7 @@ add_executable(${PROJECT_NAME}
         src/skin/winamp.cpp
         src/skin/misc.cpp
         src/skin/website.cpp
+        src/skin/w1.cpp
         src/skin.cpp
         src/dac/cxd3778gf_table.cpp
         src/util/util_string.cpp
