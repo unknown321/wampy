@@ -17,6 +17,7 @@ namespace Winamp {
         bool visualizerWinampBands = true;
         float visualizerSensitivity = WINAMP_VISUALIZER_SENS_DEFAULT;
         std::string filename{};
+        std::string language{};
 
         void Default();
 

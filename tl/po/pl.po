@@ -1,0 +1,903 @@
+# Polskie tłumaczenie dla pakietu wampy.
+# Copyright (C) 2025 POSIADACZ PRAW AUTORSKICH wampy
+# Ten plik jest rozpowszechniany na tej samej licencji, co pakiet wampy.
+# Wygenerowano automatycznie, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: wampy 1.0\n"
+"Report-Msgid-Bugs-To: unknown.at.github@yandex.com\n"
+"POT-Creation-Date: 2025-12-26 09:48+0300\n"
+"PO-Revision-Date: 2025-12-26 09:20+0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+#: ../src/connector/hagoromoToString.cpp:8 ../src/skin/eqPerSong.cpp:42
+#: ../src/skin/eqPerSong.cpp:50 ../src/skin/eqPerSong.cpp:115
+#: ../src/skin/eqPerSong.cpp:127 ../src/skin/eqPerSong.cpp:139
+#: ../src/skin/eqPerSong.cpp:151 ../src/skin/eqPerSong.cpp:211
+#: ../src/skin/eqPerSong.cpp:235
+msgid "Off"
+msgstr "Wył."
+
+#: ../src/connector/hagoromoToString.cpp:9 ../src/langToString/main.cpp:24
+msgid "Bright"
+msgstr "Jasny"
+
+#: ../src/connector/hagoromoToString.cpp:10
+msgid "Excited"
+msgstr "Energetyczny"
+
+#: ../src/connector/hagoromoToString.cpp:11
+msgid "Mellow"
+msgstr "Łagodny"
+
+#: ../src/connector/hagoromoToString.cpp:12
+msgid "Relaxed"
+msgstr "Relaksujący"
+
+#: ../src/connector/hagoromoToString.cpp:13
+msgid "Vocal"
+msgstr "Wokalny"
+
+#: ../src/connector/hagoromoToString.cpp:14
+msgid "Custom 1"
+msgstr "Niestandardowy 1"
+
+#: ../src/connector/hagoromoToString.cpp:15
+msgid "Custom 2"
+msgstr "Niestandardowy 2"
+
+#: ../src/connector/hagoromoToString.cpp:20
+msgid "Studio"
+msgstr "Studio"
+
+#: ../src/connector/hagoromoToString.cpp:21
+msgid "Club"
+msgstr "Klub"
+
+#: ../src/connector/hagoromoToString.cpp:22
+msgid "Concert hall"
+msgstr "Sala koncertowa"
+
+#: ../src/connector/hagoromoToString.cpp:23
+msgid "Matrix"
+msgstr "Matryca"
+
+#: ../src/connector/hagoromoToString.cpp:28
+msgid "A Low"
+msgstr "A Niski"
+
+#: ../src/connector/hagoromoToString.cpp:29
+msgid "A Standard"
+msgstr "A Standardowy"
+
+#: ../src/connector/hagoromoToString.cpp:30
+msgid "A High"
+msgstr "A Wysoki"
+
+#: ../src/connector/hagoromoToString.cpp:31
+msgid "B Low"
+msgstr "B Niski"
+
+#: ../src/connector/hagoromoToString.cpp:32
+msgid "B Standard"
+msgstr "B Standardowy"
+
+#: ../src/connector/hagoromoToString.cpp:33
+msgid "B High"
+msgstr "B Wysoki"
+
+#: ../src/connector/hagoromoToString.cpp:38
+msgid "Standard"
+msgstr "Standardowy"
+
+#: ../src/connector/hagoromoToString.cpp:39
+msgid "Arm resonance"
+msgstr "Rezonans ramienia"
+
+#: ../src/connector/hagoromoToString.cpp:40
+msgid "Turntable resonance"
+msgstr "Rezonans gramofonu"
+
+#: ../src/connector/hagoromoToString.cpp:41
+msgid "Surface noise"
+msgstr "Szum powierzchniowy"
+
+#: ../src/connector/hagoromoToString.cpp:44
+msgid "NW-A50 default mode?"
+msgstr "Tryb domyślny NW-A50?"
+
+#: ../src/connector/hagoromoToString.cpp:49
+msgid "AI"
+msgstr "SI"
+
+#: ../src/connector/hagoromoToString.cpp:50
+msgid "Female vocal"
+msgstr "Wokal żeński"
+
+#: ../src/connector/hagoromoToString.cpp:51
+msgid "Male vocal"
+msgstr "Wokal męski"
+
+#: ../src/connector/hagoromoToString.cpp:52
+msgid "Percussion"
+msgstr "Perkusja"
+
+#: ../src/connector/hagoromoToString.cpp:53
+msgid "Strings"
+msgstr "Strunowe"
+
+#: ../src/dac/dac.cpp:24
+msgid "Master volume"
+msgstr "Głośność główna"
+
+#: ../src/dac/dac.cpp:26 ../src/skin/volumeTables.cpp:913
+msgid "Tone control"
+msgstr "Korektor tonu"
+
+#: ../src/dac/dac.cpp:27
+msgid "Master volume (DSD)"
+msgstr "Głośność główna (DSD)"
+
+#: ../src/skin/cassette.cpp:6 ../src/skin/digiclock.cpp:7
+#: ../src/skin/eqPerSong.cpp:7 ../src/skin/misc.cpp:9
+#: ../src/skin/volumeTables.cpp:10 ../src/skin/w1.cpp:7
+#: ../src/skin/winamp.cpp:7
+msgid "Disable USB mass storage mode"
+msgstr "Wyłącz tryb pamięci masowej USB"
+
+#: ../src/skin/cassette.cpp:10
+msgid "Randomize?"
+msgstr "Losowo?"
+
+#: ../src/skin/cassette.cpp:23
+msgid "Codec"
+msgstr "Kodek"
+
+#: ../src/skin/cassette.cpp:24
+msgid "Tape"
+msgstr "Taśma"
+
+#: ../src/skin/cassette.cpp:25
+msgid "Reel"
+msgstr "Szpula"
+
+#: ../src/skin/cassette.cpp:87 ../src/skin/volumeTables.cpp:1041
+msgid "Reset"
+msgstr "Resetuj"
+
+#: ../src/skin/dac.cpp:8
+msgid "Stop music first."
+msgstr "Najpierw zatrzymaj muzykę."
+
+#: ../src/skin/dac.cpp:10
+msgid "Stop music"
+msgstr "Zatrzymaj muzykę"
+
+#: ../src/skin/dac.cpp:17 ../src/skin/eqTabs.cpp:248 ../src/skin/eqTabs.cpp:328
+#: ../src/skin/eqTabs.cpp:363 ../src/skin/fm.cpp:47
+msgid "Disable"
+msgstr "Wyłącz"
+
+#: ../src/skin/dac.cpp:17 ../src/skin/eqPerSong.cpp:14
+#: ../src/skin/eqTabs.cpp:340 ../src/skin/eqTabs.cpp:377 ../src/skin/fm.cpp:52
+msgid "Enable"
+msgstr "Włącz"
+
+#: ../src/skin/dac.cpp:21
+msgid "Unloaded"
+msgstr "Niezapisany"
+
+#: ../src/skin/dac.cpp:21 ../src/skin/dac.cpp:24
+msgid "Failure"
+msgstr "Błąd"
+
+#: ../src/skin/dac.cpp:24 ../src/skin/volumeTables.cpp:230
+#: ../src/skin/volumeTables.cpp:310 ../src/skin/volumeTables.cpp:467
+#: ../src/skin/volumeTables.cpp:522 ../src/skin/volumeTables.cpp:673
+#: ../src/skin/volumeTables.cpp:729
+msgid "Loaded"
+msgstr "Zapisany"
+
+#: ../src/skin/debug.cpp:5 ../src/skin/misc.cpp:184
+msgid "Debug"
+msgstr "Debugowanie"
+
+#: ../src/skin/debug.cpp:7
+msgid "Skin debug"
+msgstr "Debugowanie skórek"
+
+#: ../src/skin/debug.cpp:16
+msgid "Start ADB daemon (next boot)"
+msgstr "Uruchom demona ADB (przy następnym rozruchu)"
+
+#: ../src/skin/debug.cpp:22
+msgid "Create log file"
+msgstr "Utwórz plik dziennika"
+
+#: ../src/skin/debug.cpp:27
+msgid "Limit fps"
+msgstr "Ogranicz klatki na sekundę"
+
+#: ../src/skin/eq.cpp:13 ../src/skin/eqPerSong.cpp:279
+#: ../src/skin/volumeTables.cpp:868 ../src/skin.cpp:339 ../src/skin.cpp:352
+msgid "Refreshed"
+msgstr "Odświeżono"
+
+#: ../src/skin/eq.cpp:29
+msgid "Direct Source is on, filters disabled"
+msgstr "Direct Source jest włączony, filtry wyłączone"
+
+#: ../src/skin/eq.cpp:36 ../src/skin/eq.cpp:38 ../src/skin/eq.cpp:39
+msgid "Select filter"
+msgstr "Wybierz filtr"
+
+#: ../src/skin/eq.cpp:83
+msgid "Filter"
+msgstr "Filtr"
+
+#: ../src/skin/eq.cpp:137 ../src/skin/eq.cpp:142 ../src/skin.cpp:371
+#: ../src/skin.cpp:406
+msgid "Misc"
+msgstr "Różne"
+
+#: ../src/skin/eq.cpp:152 ../src/skin/website.cpp:10 ../src/skin/website.cpp:16
+#: ../src/skin/website.cpp:17
+msgid "Donate"
+msgstr "Wesprzyj"
+
+#: ../src/skin/eqPerSong.cpp:12
+msgid "Feature disabled. Toggle it on 'Misc' tab or use button below."
+msgstr "Funkcja wyłączona. Włącz ją w zakładce 'Różne' lub użyj przycisku poniżej."
+
+#: ../src/skin/eqPerSong.cpp:26
+#, c-format
+msgid "File: %s\n"
+msgstr "Plik: %s\n"
+
+#: ../src/skin/eqPerSong.cpp:42 ../src/skin/eqPerSong.cpp:50
+#: ../src/skin/eqPerSong.cpp:115 ../src/skin/eqPerSong.cpp:127
+#: ../src/skin/eqPerSong.cpp:139 ../src/skin/eqPerSong.cpp:151
+#: ../src/skin/eqPerSong.cpp:211 ../src/skin/eqPerSong.cpp:235
+msgid "On"
+msgstr "Wł."
+
+#: ../src/skin/eqPerSong.cpp:43 ../src/skin/eqPerSong.cpp:51
+msgid "available"
+msgstr "dostępny"
+
+#: ../src/skin/eqPerSong.cpp:43 ../src/skin/eqPerSong.cpp:51
+msgid "unavailable"
+msgstr "niedostępny"
+
+#: ../src/skin/eqPerSong.cpp:66
+msgid "EQ6 Preset"
+msgstr "Preset EQ6"
+
+#: ../src/skin/eqPerSong.cpp:72
+msgid "EQ6 Bands"
+msgstr "Pasma EQ6"
+
+#: ../src/skin/eqPerSong.cpp:91
+msgid "EQ10 Preset"
+msgstr "Preset EQ10"
+
+#: ../src/skin/eqPerSong.cpp:97
+msgid "EQ10 Bands"
+msgstr "Pasma EQ10"
+
+#: ../src/skin/eqPerSong.cpp:125
+msgid "DSEE custom"
+msgstr "Niestandardowy DSEE"
+
+#: ../src/skin/eqPerSong.cpp:131
+msgid "DSEE custom mode"
+msgstr "Tryb niestandardowy DSEE"
+
+#: ../src/skin/eqPerSong.cpp:137
+msgid "DC Phase"
+msgstr "Faza DC"
+
+#: ../src/skin/eqPerSong.cpp:143
+msgid "DC Phase Filter"
+msgstr "Filtr fazy DC"
+
+#: ../src/skin/eqPerSong.cpp:155
+msgid "VPT Mode"
+msgstr "Tryb VPT"
+
+#: ../src/skin/eqPerSong.cpp:161
+msgid "Tone Control or 10 band EQ?"
+msgstr "Korektor tonu czy 10-pasmowy EQ?"
+
+#: ../src/skin/eqPerSong.cpp:163
+msgid "10 band EQ"
+msgstr "10-pasmowy EQ"
+
+#: ../src/skin/eqPerSong.cpp:163
+msgid "Tone Control"
+msgstr "Korektor tonu"
+
+#: ../src/skin/eqPerSong.cpp:173
+msgid "Tone Control Low"
+msgstr "Korektor tonu - niskie"
+
+#: ../src/skin/eqPerSong.cpp:179
+msgid "Tone Control Mid"
+msgstr "Korektor tonu - średnie"
+
+#: ../src/skin/eqPerSong.cpp:185
+msgid "Tone Control High"
+msgstr "Korektor tonu - wysokie"
+
+#: ../src/skin/eqPerSong.cpp:209
+msgid "Vinyl Processor"
+msgstr "Procesor winylowy"
+
+#: ../src/skin/eqPerSong.cpp:215
+msgid "Vinyl Type"
+msgstr "Typ winylu"
+
+#: ../src/skin/eqPerSong.cpp:233
+msgid "Dynamic Normalizer"
+msgstr "Normalizator dynamiczny"
+
+#: ../src/skin/eqPerSong.cpp:251 ../src/skin/eqPerSong.cpp:262
+msgid "Remove"
+msgstr "Usuń"
+
+#: ../src/skin/eqPerSong.cpp:253
+msgid "Removed"
+msgstr "Usunięto"
+
+#: ../src/skin/eqPerSong.cpp:255
+msgid "Remove failed"
+msgstr "Usunięcie nie powiodło się"
+
+#: ../src/skin/eqPerSong.cpp:283 ../src/skin/volumeTables.cpp:409
+#: ../src/skin/volumeTables.cpp:423 ../src/skin/volumeTables.cpp:615
+#: ../src/skin/volumeTables.cpp:629 ../src/skin/volumeTables.cpp:820
+#: ../src/skin/volumeTables.cpp:834
+msgid "Set as default"
+msgstr "Ustaw jako domyślny"
+
+#: ../src/skin/eqPerSong.cpp:285
+msgid "Default EQ set"
+msgstr "Ustawiono domyślny EQ"
+
+#: ../src/skin/eqPerSong.cpp:287
+msgid "Set EQ as default failed"
+msgstr "Nie udało się ustawić EQ jako domyślnego"
+
+#: ../src/skin/eqPerSong.cpp:293 ../src/skin/volumeTables.cpp:366
+#: ../src/skin/volumeTables.cpp:577 ../src/skin/volumeTables.cpp:781
+msgid "Save"
+msgstr "Zapisz"
+
+#: ../src/skin/eqPerSong.cpp:295 ../src/skin/volumeTables.cpp:371
+#: ../src/skin/volumeTables.cpp:582 ../src/skin/volumeTables.cpp:786
+msgid "Saved"
+msgstr "Zapisano"
+
+#: ../src/skin/eqPerSong.cpp:297
+msgid "Save failed"
+msgstr "Zapis nie powiódł się"
+
+#: ../src/skin/eqPerSong.cpp:303
+msgid "Save dir"
+msgstr "Zapisz katalog"
+
+#: ../src/skin/eqPerSong.cpp:305
+msgid "Saved dir"
+msgstr "Zapisano katalog"
+
+#: ../src/skin/eqPerSong.cpp:307
+msgid "Save dir failed"
+msgstr "Zapis katalogu nie powiódł się"
+
+#: ../src/skin/eqPerSong.cpp:314 ../src/skin/eqPerSong.cpp:324
+msgid "Remove dir"
+msgstr "Usuń katalog"
+
+#: ../src/skin/eqPerSong.cpp:316
+msgid "Dir removed"
+msgstr "Katalog usunięty"
+
+#: ../src/skin/eqPerSong.cpp:318
+msgid "Dir remove failed"
+msgstr "Usunięcie katalogu nie powiodło się"
+
+#: ../src/skin/eqTabs.cpp:6
+msgid "Type:"
+msgstr "Typ:"
+
+#: ../src/skin/eqTabs.cpp:34
+msgid "VPT type:"
+msgstr "Typ VPT:"
+
+#: ../src/skin/eqTabs.cpp:62 ../src/skin/eqTabs.cpp:63
+#: ../src/skin/eqTabs.cpp:64
+msgid "No options"
+msgstr "Brak opcji"
+
+#: ../src/skin/eqTabs.cpp:73
+msgid "Preset:"
+msgstr "Preset:"
+
+#: ../src/skin/eqTabs.cpp:174
+msgid "Tone:"
+msgstr "Ton:"
+
+#: ../src/skin/eqTabs.cpp:209
+msgid "Tone frequency type:"
+msgstr "Typ częstotliwości tonu:"
+
+#: ../src/skin/eqTabs.cpp:281
+msgid "Vinylizer type:"
+msgstr "Typ winylizatora:"
+
+#: ../src/skin/fm.cpp:36
+msgid "FM radio is unavailable on this device"
+msgstr "Radio FM jest niedostępne na tym urządzeniu"
+
+#: ../src/skin/fm.cpp:38
+msgid "Hide this tab"
+msgstr "Ukryj tę zakładkę"
+
+#: ../src/skin/fm.cpp:67 ../src/skin/fm.cpp:69
+msgid "Recording"
+msgstr "Nagrywanie"
+
+#: ../src/skin/fm.cpp:73 ../src/skin/fm.cpp:75
+msgid "Stereo"
+msgstr "Stereo"
+
+#: ../src/skin/fm.cpp:146 ../src/skin/fm.cpp:151
+msgid "Recording settings"
+msgstr "Ustawienia nagrywania"
+
+#: ../src/skin/fm.cpp:154
+msgid "Storage: "
+msgstr "Pamięć: "
+
+#: ../src/skin/fm.cpp:168
+msgid "Codec: "
+msgstr "Kodek: "
+
+#: ../src/skin/fm.cpp:250
+msgid "Internal ("
+msgstr "Wewnętrzna ("
+
+#: ../src/skin/fm.cpp:251
+msgid "SD Card ("
+msgstr "Karta SD ("
+
+#: ../src/skin/fm.cpp:264 ../src/skin/fm.cpp:281
+msgid " hour"
+msgstr " godzina"
+
+#: ../src/skin/fm.cpp:266 ../src/skin/fm.cpp:283
+msgid " hours"
+msgstr " godziny"
+
+#: ../src/skin/fm.cpp:270 ../src/skin/fm.cpp:287
+msgid " minute"
+msgstr " minuta"
+
+#: ../src/skin/fm.cpp:272 ../src/skin/fm.cpp:289
+msgid " minutes"
+msgstr " minuty"
+
+#: ../src/skin/misc.cpp:16
+msgid "Swap prev/next buttons"
+msgstr "Zamień przyciski poprzedni/następny"
+
+#: ../src/skin/misc.cpp:23
+msgid "Export Walkman bookmarks"
+msgstr "Eksportuj zakładki Walkman"
+
+#: ../src/skin/misc.cpp:25
+msgid "Exported"
+msgstr "Wyeksportowano"
+
+#: ../src/skin/misc.cpp:37
+msgid "Huge cover art"
+msgstr "Duża okładka"
+
+#: ../src/skin/misc.cpp:46
+msgid "Removed!"
+msgstr "Usunięto!"
+
+#: ../src/skin/misc.cpp:61 ../src/skin/misc.cpp:64
+msgid "Show time"
+msgstr "Pokaż czas"
+
+#: ../src/skin/misc.cpp:72
+msgid "Set default volume tables"
+msgstr "Ustaw domyślne tabele głośności"
+
+#: ../src/skin/misc.cpp:77
+msgid "OK!"
+msgstr "OK!"
+
+#: ../src/skin/misc.cpp:99
+msgid "Limit max volume"
+msgstr "Ogranicz maksymalną głośność"
+
+#: ../src/skin/misc.cpp:106
+msgid "Window position"
+msgstr "Pozycja okna"
+
+#: ../src/skin/misc.cpp:110
+msgid "Enable EQ per song"
+msgstr "Włącz EQ dla każdej piosenki"
+
+#: ../src/skin/misc.cpp:130
+msgid "Disable touchscreen"
+msgstr "Wyłącz ekran dotykowy"
+
+#: ../src/skin/misc.cpp:140
+msgid "Lock when screen is off"
+msgstr "Blokuj, gdy ekran jest wyłączony"
+
+#: ../src/skin/misc.cpp:163
+msgid "Control filters"
+msgstr "Steruj filtrami"
+
+#: ../src/skin/misc.cpp:174
+msgid "Show FM tab"
+msgstr "Pokaż zakładkę FM"
+
+#: ../src/skin/misc.cpp:189
+msgid "License"
+msgstr "Licencja"
+
+#: ../src/skin/misc.cpp:195
+msgid "License 3rdparty"
+msgstr "Licencje stron trzecich"
+
+#: ../src/skin/misc.cpp:203
+msgid "Website / Donate"
+msgstr "Strona internetowa / Wsparcie"
+
+#: ../src/skin/volumeTables.cpp:211 ../src/skin/volumeTables.cpp:447
+#: ../src/skin/volumeTables.cpp:654
+msgid "File:"
+msgstr "Plik:"
+
+#: ../src/skin/volumeTables.cpp:227 ../src/skin/volumeTables.cpp:307
+#: ../src/skin/volumeTables.cpp:373 ../src/skin/volumeTables.cpp:390
+#: ../src/skin/volumeTables.cpp:464 ../src/skin/volumeTables.cpp:519
+#: ../src/skin/volumeTables.cpp:584 ../src/skin/volumeTables.cpp:600
+#: ../src/skin/volumeTables.cpp:670 ../src/skin/volumeTables.cpp:726
+#: ../src/skin/volumeTables.cpp:788 ../src/skin/volumeTables.cpp:805
+msgid "Failed"
+msgstr "Niepowodzenie"
+
+#: ../src/skin/volumeTables.cpp:251 ../src/skin/volumeTables.cpp:487
+#: ../src/skin/volumeTables.cpp:694
+msgid "Table type:"
+msgstr "Typ tabeli:"
+
+#: ../src/skin/volumeTables.cpp:272
+msgid "Value type:"
+msgstr "Typ wartości:"
+
+#: ../src/skin/volumeTables.cpp:292
+msgid "Sound effect"
+msgstr "Efekt dźwiękowy"
+
+#: ../src/skin/volumeTables.cpp:304 ../src/skin/volumeTables.cpp:516
+#: ../src/skin/volumeTables.cpp:723
+msgid "Load"
+msgstr "Załaduj"
+
+#: ../src/skin/volumeTables.cpp:329 ../src/skin/volumeTables.cpp:540
+#: ../src/skin/volumeTables.cpp:745
+msgid "Copy and edit"
+msgstr "Kopiuj i edytuj"
+
+#: ../src/skin/volumeTables.cpp:346 ../src/skin/volumeTables.cpp:557
+#: ../src/skin/volumeTables.cpp:762
+msgid "Edit"
+msgstr "Edytuj"
+
+#: ../src/skin/volumeTables.cpp:384 ../src/skin/volumeTables.cpp:594
+#: ../src/skin/volumeTables.cpp:799
+msgid "Apply"
+msgstr "Zastosuj"
+
+#: ../src/skin/volumeTables.cpp:388 ../src/skin/volumeTables.cpp:598
+#: ../src/skin/volumeTables.cpp:803
+msgid "Applied"
+msgstr "Zastosowano"
+
+#: ../src/skin/volumeTables.cpp:394 ../src/skin/volumeTables.cpp:604
+#: ../src/skin/volumeTables.cpp:809
+msgid "Copy val"
+msgstr "Kopiuj wartość"
+
+#: ../src/skin/volumeTables.cpp:398 ../src/skin/volumeTables.cpp:811
+msgid "Copied"
+msgstr "Skopiowano"
+
+#: ../src/skin/volumeTables.cpp:402 ../src/skin/volumeTables.cpp:610
+#: ../src/skin/volumeTables.cpp:815
+msgid "Paste val"
+msgstr "Wklej wartość"
+
+#: ../src/skin/volumeTables.cpp:406 ../src/skin/volumeTables.cpp:612
+#: ../src/skin/volumeTables.cpp:817
+msgid "Pasted"
+msgstr "Wklejono"
+
+#: ../src/skin/volumeTables.cpp:847
+msgid "Status"
+msgstr "Status"
+
+#: ../src/skin/volumeTables.cpp:852
+msgid "Refresh"
+msgstr "Odśwież"
+
+#: ../src/skin/volumeTables.cpp:881
+msgid "Model ID"
+msgstr "ID modelu"
+
+#: ../src/skin/volumeTables.cpp:887
+msgid "Region ID"
+msgstr "ID regionu"
+
+#: ../src/skin/volumeTables.cpp:895
+msgid "Device product"
+msgstr "Produkt urządzenia"
+
+#: ../src/skin/volumeTables.cpp:901
+msgid "Master volume table"
+msgstr "Tabela głośności głównej"
+
+#: ../src/skin/volumeTables.cpp:907
+msgid "Master volume table (DSD)"
+msgstr "Tabela głośności głównej (DSD)"
+
+#: ../src/skin/volumeTables.cpp:919
+msgid "Audio card"
+msgstr "Karta dźwiękowa"
+
+#: ../src/skin/volumeTables.cpp:925
+msgid "Audio device"
+msgstr "Urządzenie audio"
+
+#: ../src/skin/volumeTables.cpp:931
+msgid "Sample rate"
+msgstr "Częstotliwość próbkowania"
+
+#: ../src/skin/volumeTables.cpp:937
+msgid "CPU frequency (min/cur)"
+msgstr "Częstotliwość CPU (min/obecna)"
+
+#: ../src/skin/volumeTables.cpp:998
+msgid "Zoom in"
+msgstr "Przybliż"
+
+#: ../src/skin/volumeTables.cpp:1006
+msgid "Zoom out"
+msgstr "Oddal"
+
+#: ../src/skin/volumeTables.cpp:1014 ../src/config.cpp:12
+msgid "Left"
+msgstr "Lewo"
+
+#: ../src/skin/volumeTables.cpp:1020 ../src/config.cpp:12
+msgid "Right"
+msgstr "Prawo"
+
+#: ../src/skin/volumeTables.cpp:1026
+msgid "Up"
+msgstr "Góra"
+
+#: ../src/skin/volumeTables.cpp:1032
+msgid "Down"
+msgstr "Dół"
+
+#: ../src/skin/volumeTables.cpp:1049
+msgid "Back"
+msgstr "Wstecz"
+
+#: ../src/skin/w1.cpp:12
+msgid "Walkman One settings"
+msgstr "Ustawienia Walkman One"
+
+#: ../src/skin/w1.cpp:16
+msgid "Config file not found\n"
+msgstr "Nie znaleziono pliku konfiguracyjnego\n"
+
+#: ../src/skin/w1.cpp:27 ../src/skin/w1.cpp:156
+msgid "Interface color"
+msgstr "Kolor interfejsu"
+
+#: ../src/skin/w1.cpp:48
+msgid "Sound signature"
+msgstr "Sygnatura dźwiękowa"
+
+#: ../src/skin/w1.cpp:69
+msgid "Region"
+msgstr "Region"
+
+#: ../src/skin/w1.cpp:89
+msgid "Remote option with any region"
+msgstr "Opcja zdalna z dowolnym regionem"
+
+#: ../src/skin/w1.cpp:99
+msgid "Plus mode v2"
+msgstr "Tryb Plus v2"
+
+#: ../src/skin/w1.cpp:109
+msgid "Plus mode by default"
+msgstr "Tryb Plus domyślnie"
+
+#: ../src/skin/w1.cpp:119
+msgid "Lower gain mode"
+msgstr "Tryb niższego wzmocnienia"
+
+#: ../src/skin/w1.cpp:129
+msgid "Different DAC init mode"
+msgstr "Inny tryb inicjalizacji DAC"
+
+#: ../src/skin/w1.cpp:144
+msgid "Apply tuning and reboot"
+msgstr "Zastosuj strojenie i uruchom ponownie"
+
+#: ../src/skin/w1.cpp:148 ../src/skin/w1.cpp:178
+msgid "Reboot the device to apply changes"
+msgstr "Uruchom ponownie urządzenie, aby zastosować zmiany"
+
+#: ../src/skin/w1.cpp:171
+msgid "Change color"
+msgstr "Zmień kolor"
+
+#: ../src/skin/winamp.cpp:27
+msgid "Load skin"
+msgstr "Załaduj skórkę"
+
+#: ../src/skin/winamp.cpp:28
+msgid "Loading "
+msgstr "Ładowanie "
+
+#: ../src/skin/winamp.cpp:47
+msgid "Use bitmap font"
+msgstr "Użyj czcionki bitmapowej"
+
+#: ../src/skin/winamp.cpp:54
+msgid "Enable visualizer"
+msgstr "Włącz wizualizator"
+
+#: ../src/skin/winamp.cpp:60
+msgid "Use bitmap font in playlist"
+msgstr "Użyj czcionki bitmapowej w playliście"
+
+#: ../src/skin/winamp.cpp:67
+msgid "Visualizer Winamp mode"
+msgstr "Tryb wizualizatora Winamp"
+
+#: ../src/skin/winamp.cpp:73
+msgid "Prefer time remaining"
+msgstr "Preferuj pozostały czas"
+
+#: ../src/skin/winamp.cpp:77
+msgid "Visualizer sensitivity"
+msgstr "Czułość wizualizatora"
+
+#: ../src/skin/winamp.cpp:81
+msgid "Show clutterbar"
+msgstr "Pokaż pasek narzędzi"
+
+#: ../src/skin/winamp.cpp:96
+msgid "Skin transparency"
+msgstr "Przezroczystość skórki"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Default"
+msgstr "Domyślny"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Peach"
+msgstr "Brzoskwiniowy"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Red"
+msgstr "Czerwony"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Blue"
+msgstr "Niebieski"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Green"
+msgstr "Zielony"
+
+#: ../src/w1/w1.cpp:49
+msgid "neutral"
+msgstr "neutralny"
+
+#: ../src/w1/w1.cpp:49
+msgid "warm"
+msgstr "ciepły"
+
+#: ../src/w1/w1.cpp:49
+msgid "bright"
+msgstr "jasny"
+
+#: ../src/w1/w1.cpp:49
+msgid "wm1z"
+msgstr "wm1z"
+
+#: ../src/config.cpp:12
+msgid "Center"
+msgstr "Środek"
+
+#: ../src/skin.cpp:212
+msgid "✓ Loaded "
+msgstr "✓ Załadowano "
+
+#: ../src/skin.cpp:372 ../src/skin.cpp:389
+msgid "Skin"
+msgstr "Skórka"
+
+#: ../src/skin.cpp:373 ../src/skin.cpp:412
+msgid "Close"
+msgstr "Zamknij"
+
+#: ../src/skin.cpp:428
+msgid "Skin:"
+msgstr "Skórka:"
+
+#: ../src/skin.cpp:433
+msgid "Cassette"
+msgstr "Kaseta"
+
+#: ../src/skin.cpp:437
+msgid "DigiClock"
+msgstr "Zegar cyfrowy"
+
+#: ../src/skin.cpp:446
+msgid "Set as active"
+msgstr "Ustaw jako aktywną"
+
+#: ../src/skin.cpp:681
+msgid "Remove Wampy logs ("
+msgstr "Usuń logi Wampy ("
+
+#: ../src/sound_settings_fw/sound_settings_fw.h:14
+#: ../src/sound_settings_fw/sound_settings_fw.h:15
+msgid "Bass"
+msgstr "Bas"
+
+#: ../src/sound_settings_fw/sound_settings_fw.h:14
+#: ../src/sound_settings_fw/sound_settings_fw.h:15
+msgid "Middle"
+msgstr "Środki"
+
+#: ../src/sound_settings_fw/sound_settings_fw.h:14
+#: ../src/sound_settings_fw/sound_settings_fw.h:15
+msgid "Treble"
+msgstr "Wysokie tony"
+
+#: ../src/sound_settings_fw/sound_settings_fw.h:25
+msgid "invalid filter"
+msgstr "nieprawidłowy filtr"
+
+#: ../src/skin.h:55
+msgid "Change enqueued"
+msgstr "Zmiana w kolejce"

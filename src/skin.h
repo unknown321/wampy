@@ -30,6 +30,7 @@ enum SettingsTab {
     TabEQOld = 10,
     TabDAC = 11,
     TabFM = 12,
+    TabDebug = 13,
 };
 
 enum EActiveFilterTab {
@@ -292,6 +293,8 @@ struct Skin {
     void ToggleAudioAnalyzerOn() const;
 
     void ToggleAudioAnalyzerOff() const;
+
+    void TabDebug();
 
     static void ToggleDrawSettings(void *skin, void *);
 

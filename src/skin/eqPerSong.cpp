@@ -65,7 +65,7 @@ void Skin::TabEQOld() {
         ImGui::TableNextColumn();
         ImGui::Text(gettext("EQ6 Preset"));
         ImGui::TableNextColumn();
-        ImGui::Text("%s", eq6PresetToString.at(connector->soundSettings.s->status.eq6Preset).c_str());
+        ImGui::Text("%s", gettext(eq6PresetToString.at(connector->soundSettings.s->status.eq6Preset).c_str()));
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
@@ -130,7 +130,7 @@ void Skin::TabEQOld() {
         ImGui::TableNextColumn();
         ImGui::Text(gettext("DSEE custom mode"));
         ImGui::TableNextColumn();
-        ImGui::Text("%s", dseeModeToString.at(connector->soundSettings.s->status.dseeCustMode).c_str());
+        ImGui::Text("%s", gettext(dseeModeToString.at(connector->soundSettings.s->status.dseeCustMode).c_str()));
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
@@ -142,7 +142,7 @@ void Skin::TabEQOld() {
         ImGui::TableNextColumn();
         ImGui::Text(gettext("DC Phase Filter"));
         ImGui::TableNextColumn();
-        ImGui::Text("%s", dcFilterToString.at(connector->soundSettings.s->status.dcLinearFilter).c_str());
+        ImGui::Text("%s", gettext(dcFilterToString.at(connector->soundSettings.s->status.dcLinearFilter).c_str()));
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
@@ -154,7 +154,7 @@ void Skin::TabEQOld() {
         ImGui::TableNextColumn();
         ImGui::Text(gettext("VPT Mode"));
         ImGui::TableNextColumn();
-        ImGui::Text("%s", vptA50SmallToString.at(connector->soundSettings.s->status.vptMode).c_str());
+        ImGui::Text("%s", gettext(vptA50SmallToString.at(connector->soundSettings.s->status.vptMode).c_str()));
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
@@ -214,7 +214,7 @@ void Skin::TabEQOld() {
         ImGui::TableNextColumn();
         ImGui::Text(gettext("Vinyl Type"));
         ImGui::TableNextColumn();
-        ImGui::Text("%s", vinylTypeToString.at(connector->soundSettings.s->status.vinylType).c_str());
+        ImGui::Text("%s", gettext(vinylTypeToString.at(connector->soundSettings.s->status.vinylType).c_str()));
 
         //            ImGui::TableNextRow();
         //            ImGui::TableNextColumn();

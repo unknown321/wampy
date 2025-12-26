@@ -5,14 +5,14 @@
 #include <string>
 
 std::map<int, std::string> eq6PresetToString = {
-    {0, "Off"},
-    {5, "Bright"},
-    {7, "Excited"},
-    {8, "Mellow"},
-    {6, "Relaxed"},
-    {2, "Vocal"},
-    {9, "Custom 1"},
-    {10, "Custom 2"},
+    {0, gettext("Off")},
+    {5, gettext("Bright")},
+    {7, gettext("Excited")},
+    {8, gettext("Mellow")},
+    {6, gettext("Relaxed")},
+    {2, gettext("Vocal")},
+    {9, gettext("Custom 1")},
+    {10, gettext("Custom 2")},
 };
 
 std::map<int, std::string> vptA50SmallToString = {

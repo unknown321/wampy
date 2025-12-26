@@ -157,9 +157,9 @@ void Skin::Wee1() {
 
     ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
-    if (ImGui::BeginCombo("##w1color", W1::colorByValue.at(w1Options.deviceColor).c_str(), ImGuiComboFlags_HeightRegular)) {
+    if (ImGui::BeginCombo("##w1color", gettext(W1::colorByValue.at(w1Options.deviceColor).c_str()), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : W1::colorByName) {
-            if (ImGui::Selectable(entry.first.c_str(), false)) {
+            if (ImGui::Selectable(gettext(entry.first.c_str()), false)) {
                 w1Options.deviceColor = entry.second;
                 DLOG("selected %s\n", W1::colorByValue.at(w1Options.deviceColor).c_str());
             }

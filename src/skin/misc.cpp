@@ -1,4 +1,6 @@
+#include "langToString/langToString.h"
 #include "skin.h"
+
 #include <libintl.h>
 
 void Skin::Misc() {
@@ -9,7 +11,6 @@ void Skin::Misc() {
     }
 
     if (ImGui::BeginTable("##misctable", 4, ImGuiTableFlags_None)) {
-        // #ifndef DESKTOP
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
         if (ImGui::Checkbox(gettext("Swap prev/next buttons"), &config->misc.swapTrackButtons)) {
@@ -112,9 +113,9 @@ void Skin::Misc() {
 
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
-        if (ImGui::BeginCombo("##windowPos", WindowOffsetToString.at(config->windowOffset).c_str(), ImGuiComboFlags_HeightRegular)) {
+        if (ImGui::BeginCombo("##windowPos", gettext(WindowOffsetToString.at(config->windowOffset).c_str()), ImGuiComboFlags_HeightRegular)) {
             for (const auto &entry : WindowOffsetToString) {
-                if (ImGui::Selectable(entry.second.c_str(), false)) {
+                if (ImGui::Selectable(gettext(entry.second.c_str()), false)) {
                     config->windowOffset = entry.first;
                     DLOG("selected offset %s\n", WindowOffsetToString.at(config->windowOffset).c_str());
                     config->Save();
@@ -132,13 +133,32 @@ void Skin::Misc() {
 
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
-        if (ImGui::Checkbox(gettext("Lock when screen is off"), &config->disableKeysWhenPowerOff)) {
-            config->Save();
-        }
+        ImGui::Text("Language (need restart)");
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
+        if (ImGui::Checkbox(gettext("Lock when screen is off"), &config->disableKeysWhenPowerOff)) {
+            config->Save();
+        }
         ImGui::TableNextColumn();
+        ImGui::TableNextColumn();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
+        if (ImGui::BeginCombo("##lang", gettext(LangToString.at(config->language).c_str()), ImGuiComboFlags_HeightRegular)) {
+            for (const auto &entry : LangToString) {
+                if (ImGui::Selectable(gettext(entry.second.c_str()), false)) {
+                    config->language = entry.first;
+                    DLOG("selected lang %s\n", entry.first.c_str());
+                    config->Save();
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopStyleVar(2);
+
+        ImGui::TableNextColumn();
+        ImGui::TableNextRow();
         ImGui::TableNextColumn();
         if (ImGui::Checkbox(gettext("Control filters"), &config->controlFilters)) {
             for (auto f : connector->soundSettingsFw.s->FilterStatus) {
@@ -146,25 +166,12 @@ void Skin::Misc() {
             }
             config->Save();
         }
-
+        ImGui::TableNextColumn();
         ImGui::TableNextColumn();
 
         ImGui::TableNextRow();
-        ImGui::TableNextColumn();
-        if (ImGui::Checkbox(gettext("Debug"), &config->debug)) {
-            winamp.debug = config->debug;
-            cassette.debug = config->debug;
-            config->Save();
-        }
-        ImGui::TableNextColumn();
         ImGui::TableNextColumn();
         if (ImGui::Checkbox(gettext("Show FM tab"), &config->showFmInSettings)) {
-            config->Save();
-        }
-
-        ImGui::TableNextRow();
-        ImGui::TableNextColumn();
-        if (ImGui::Checkbox(gettext("Limit fps"), &config->limitFPS)) {
             config->Save();
         }
         ImGui::TableNextColumn();
@@ -172,53 +179,34 @@ void Skin::Misc() {
         ImGui::EndTable();
     }
 
-    auto website = ImGui::CalcTextSize(gettext("Website / Donate"));
-    auto verSize = ImGui::CalcTextSize(SOFTWARE_VERSION);
-    auto licenseSize = ImGui::CalcTextSize(gettext("License"));
-    auto license3Size = ImGui::CalcTextSize(gettext("License 3rdparty"));
-    auto offset = 15.0f;
+    ImGui::NewLine();
 
-    // #ifndef DESKTOP
-    if (config->debug) {
-
-        ImGui::SetCursorPosY(480 - verSize.y - license3Size.y * 2 - ImGui::GetStyle().FramePadding.y * 3 - offset);
-        if (ImGui::Button(gettext("Start ADB daemon (next boot)"))) {
-            startADB();
-        }
-
-        ImGui::SetCursorPosY(480 - verSize.y - license3Size.y - ImGui::GetStyle().FramePadding.y * 2);
-        if (ImGui::Button(gettext("Create log file"))) {
-            createDump();
-        }
+    if (ImGui::Button(gettext("Debug"))) {
+        displayTab = SettingsTab::TabDebug;
     }
-    // #endif
-    ImGui::SetCursorPosY(480 - verSize.y - ImGui::GetStyle().FramePadding.y);
-    printFPS();
 
-    ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 3 - ImGui::GetStyle().FramePadding.y * 2 - offset * 2 - 30);
-    ImGui::SetCursorPosX(800 - website.x - ImGui::GetStyle().FramePadding.x - offset - 9);
-    ImGui::PushStyleColor(ImGuiCol_Button, GOLD_DONATE);
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1.0f));
-    if (ImGui::Button(gettext("Website / Donate"), ImVec2(200, 60))) {
-        displayTab = SettingsTab::TabWebsite;
-        loadStatusStr = "";
-    }
-    ImGui::PopStyleColor(2);
-
-    ImGui::SetCursorPosY(480 - verSize.y - licenseSize.y * 2 - ImGui::GetStyle().FramePadding.y * 2 - offset);
-    ImGui::SetCursorPosX(800 - licenseSize.x - ImGui::GetStyle().FramePadding.x - offset);
+    ImGui::SameLine();
     if (ImGui::Button(gettext("License"))) {
         displayTab = SettingsTab::TabLicense;
         loadStatusStr = "";
     }
 
-    ImGui::SetCursorPosY(480 - verSize.y - license3Size.y - ImGui::GetStyle().FramePadding.y * 2);
-    ImGui::SetCursorPosX(800 - license3Size.x - ImGui::GetStyle().FramePadding.x - offset);
+    ImGui::SameLine();
     if (ImGui::Button(gettext("License 3rdparty"))) {
         displayTab = SettingsTab::TabLicense3rd;
         loadStatusStr = "";
     }
 
+    ImGui::SameLine();
+    ImGui::PushStyleColor(ImGuiCol_Button, GOLD_DONATE);
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1.0f));
+    if (ImGui::Button(gettext("Website / Donate"))) {
+        displayTab = SettingsTab::TabWebsite;
+        loadStatusStr = "";
+    }
+    ImGui::PopStyleColor(2);
+
+    auto verSize = ImGui::CalcTextSize(SOFTWARE_VERSION);
     ImGui::SetCursorPosX(800 - verSize.x - ImGui::GetStyle().FramePadding.x);
     ImGui::SetCursorPosY(480 - verSize.y - ImGui::GetStyle().FramePadding.y);
     ImGui::Text("%s", SOFTWARE_VERSION);

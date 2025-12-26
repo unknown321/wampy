@@ -1,5 +1,9 @@
 #include "cassette.h"
 #include "imgui_impl_opengl3.h"
+#include "langToString/langToString.h"
+#include "wstring.h"
+
+#include <config.h>
 #include <fstream>
 #include <sstream>
 #include <thread>
@@ -80,6 +84,23 @@ namespace Cassette {
         getCharRange(&allchars);
         for (const auto c : allchars) {
             range.AddChar(c);
+        }
+
+        // current tl must have all characters
+        auto res = ReadFile(localeDir + "/" + config->language + "/LC_MESSAGES/range");
+        size_t index = 0;
+        while (index < res.size()) {
+            auto v = utfToPoint(res, index);
+            range.AddChar(v);
+        }
+
+        // make sure language name is displayed correctly
+        for (const auto &q : LangToString) {
+            size_t index2 = 0;
+            while (index2 < q.second.size()) {
+                auto v = utfToPoint(q.second, index2);
+                range.AddChar(v);
+            }
         }
 
         range.BuildRanges(&gr);
@@ -640,14 +661,12 @@ namespace Cassette {
         auto tapeConfig = Tapes[config->Get(tapeType)->tape];
 
         char duration[20];
-        snprintf(
-            duration,
+        snprintf(duration,
             19,
             tapeConfig.formatDuration.c_str(),
             connector->status.Duration / 60,
             connector->status.Duration % 60,
-            connector->status.Duration / 3600
-        );
+            connector->status.Duration / 3600);
 
         if (tapeConfig.artistCoords.x > 0) {
             auto formatArtist = tapeConfig.formatArtist;
@@ -988,13 +1007,11 @@ namespace Cassette {
                 ImGui::SetCursorPos(ActiveTape->reelCoords);
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
-                ImGui::Image(
-                    (ImTextureID)ActiveAtlas->atlas.textureID,
+                ImGui::Image((ImTextureID)ActiveAtlas->atlas.textureID,
                     ImVec2(vvv.width, vvv.height),
                     ImVec2(vvv.u0, vvv.v0),
                     ImVec2(vvv.u1, vvv.v1),
-                    ImVec4(1, 1, 1, 1)
-                );
+                    ImVec4(1, 1, 1, 1));
 #pragma GCC diagnostic pop
             }
         }

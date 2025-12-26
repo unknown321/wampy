@@ -126,7 +126,6 @@ void Skin::Load() {
         exit(1);
     }
 
-    DLOG("loading %d\n", config->activeSkin);
     if (onlyFont && activeSkinVariant == CASSETTE) {
         DLOG("reloading font for cassette\n");
         ReloadFont();
@@ -515,6 +514,9 @@ void Skin::DrawSettings() {
     case SettingsTab::TabWebsite:
         Website();
         break;
+    case SettingsTab::TabDebug:
+        TabDebug();
+        break;
     case SettingsTab::TabWalkmanOne:
         WalkmanOneTab();
         break;
@@ -676,7 +678,7 @@ void Skin::GetLogsDirSize() {
 
     res = res / 1024 / 1024;
 
-    logCleanupButtonLabel = "Remove Wampy logs (" + std::to_string(res) + " MB)";
+    logCleanupButtonLabel = gettext("Remove Wampy logs (") + std::to_string(res) + " MB)";
 }
 
 void Skin::CalcWindowPos() const {

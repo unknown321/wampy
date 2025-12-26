@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "connector/mpd.h"
+#include "langToString/langToString.h"
 #include "mkpath.h"
 #include "util/util.h"
 #include <libgen.h>
@@ -41,6 +42,7 @@ namespace AppConfig {
         ini["wampy"]["forceConnector"] = forceConnector;
         ini["wampy"]["windowOffset"] = std::to_string(windowOffset);
         ini["wampy"]["disableKeysWhenPowerOff"] = std::to_string(disableKeysWhenPowerOff);
+        ini["wampy"]["language"] = language;
 
         ini["cassette:mp3_128"].set({{"tape", cassette.Get(Tape::MP3_128)->tape}, {"reel", cassette.Get(Tape::MP3_128)->reel}});
         ini["cassette:mp3_160"].set({{"tape", cassette.Get(Tape::MP3_160)->tape}, {"reel", cassette.Get(Tape::MP3_160)->reel}});
@@ -147,6 +149,14 @@ namespace AppConfig {
         disableKeysWhenPowerOff = (bool)std::atoi(ini["wampy"]["disableKeysWhenPowerOff"].c_str());
         auto windowOffsetTemp = std::atoi(ini["wampy"]["windowOffset"].c_str());
         // NOLINTEND
+
+        language = ini["wampy"]["language"];
+        if (LangToString.count(language) != 1) {
+            language = "en";
+        }
+        digitalClock.language = language;
+        winamp.language = "ru";
+        cassette.language = language;
 
         switch (windowOffsetTemp) {
         case EWindowOffset_LEFT:

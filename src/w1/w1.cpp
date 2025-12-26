@@ -3,16 +3,17 @@
 #include "../util/util.h"
 #include "mkpath.h"
 #include <fstream>
+#include <libintl.h>
 #include <sstream>
 #include <string>
 #include <sys/stat.h>
 
 namespace W1 {
-    std::map<std::string, uint> colorByName = {{"Default", 0}, {"Peach", 3}, {"Red", 5}, {"Blue", 7}, {"Green", 9}};
-    std::map<uint, std::string> colorByValue = {{0, "Default"}, {3, "Peach"}, {5, "Red"}, {7, "Blue"}, {9, "Green"}};
+    std::map<std::string, uint> colorByName = {{gettext("Default"), 0}, {gettext("Peach"), 3}, {gettext("Red"), 5}, {gettext("Blue"), 7}, {gettext("Green"), 9}};
+    std::map<uint, std::string> colorByValue = {{0, gettext("Default")}, {3, gettext("Peach")}, {5, gettext("Red")}, {7, gettext("Blue")}, {9, gettext("Green")}};
 
-    std::map<std::string, uint> colorByNameWalkmanOne = {{"Default", 0}, {"Peach", 1}, {"Red", 2}, {"Blue", 3}, {"Green", 4}};
-    std::map<uint, std::string> colorByValueWalkmanOne = {{0, "Default"}, {1, "Peach"}, {2, "Red"}, {3, "Blue"}, {4, "Green"}};
+    std::map<std::string, uint> colorByNameWalkmanOne = {{gettext("Default"), 0}, {gettext("Peach"), 1}, {gettext("Red"), 2}, {gettext("Blue"), 3}, {gettext("Green"), 4}};
+    std::map<uint, std::string> colorByValueWalkmanOne = {{0, gettext("Default")}, {1, gettext("Peach")}, {2, gettext("Red")}, {3, gettext("Blue")}, {4, gettext("Green")}};
 
     std::map<std::string, uint> signatureByNameWalkmanOne = {
         {"Neutral", 0}, {"Warm (Midnight v2)", 1}, {"Bright (Dawn v2.1)", 2}, {"WM1Z", 3}};
@@ -45,7 +46,7 @@ namespace W1 {
         {2, "/contents/CFW/External_Tunings/Bright_external_tuning/"},
         {3, "/contents/CFW/External_Tunings/WM1Z_external_tuning/"}};
 
-    std::map<uint, std::string> signatureToSigNameWalkmanOne = {{0, "neutral"}, {1, "warm"}, {2, "bright"}, {3, "wm1z"}};
+    std::map<uint, std::string> signatureToSigNameWalkmanOne = {{0, gettext("neutral")}, {1, gettext("warm")}, {2, gettext("bright")}, {3, gettext("wm1z")}};
 
     std::map<uint, std::string> modelByID = {{0x21000004, "NW-A50Series"}, {0x21000008, "NW-WM1Z"}};
 

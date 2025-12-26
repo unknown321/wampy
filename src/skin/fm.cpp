@@ -2,6 +2,8 @@
 #include "rec/rec.h"
 #include "skin.h"
 
+#include <libintl.h>
+
 void Skin::ReadFMButtons() {
     const std::map<std::string *, GLuint *> m = {
         {&fmDelete, &fmDeleteTexture},
@@ -31,9 +33,9 @@ void Skin::TabFM() {
 
     ImGui::NewLine();
     if (!radioAvailable) {
-        ImGui::Text("FM radio is unavailable on this device");
+        ImGui::Text(gettext("FM radio is unavailable on this device"));
         ImGui::NewLine();
-        if (ImGui::Button("Hide this tab", ImVec2(200, 60))) {
+        if (ImGui::Button(gettext("Hide this tab"), ImVec2(200, 60))) {
             config->showFmInSettings = false;
             displayTab = SettingsTab::SkinOpts;
             config->Save();
@@ -42,12 +44,12 @@ void Skin::TabFM() {
     }
 
     if (connector->soundSettings.s->fmStatus.state == 2) {
-        if (ImGui::Button("Disable", ImVec2(186, 60))) {
+        if (ImGui::Button(gettext("Disable"), ImVec2(186, 60))) {
             RadioOff();
             connector->soundSettings.SetFM(0);
         }
     } else {
-        if (ImGui::Button("Enable", ImVec2(186, 60))) {
+        if (ImGui::Button(gettext("Enable"), ImVec2(186, 60))) {
             if (connector->status.State == PlayStateE::PLAYING) {
                 connector->Pause();
             }
@@ -62,15 +64,15 @@ void Skin::TabFM() {
 
     ImGui::SameLine();
     if (fmRecordingActive) {
-        const auto rsize = ImGui::CalcTextSize("Recording").x + ImGui::GetStyle().FramePadding.x * 2.f;
+        const auto rsize = ImGui::CalcTextSize(gettext("Recording")).x + ImGui::GetStyle().FramePadding.x * 2.f;
         ImGui::SetCursorPosX(windowSize.x / 2 - rsize / 2);
-        ImGui::TextColored(TEXT_RECORDING, "Recording");
+        ImGui::TextColored(TEXT_RECORDING, gettext("Recording"));
     }
 
     ImGui::SameLine();
-    ImGui::SetCursorPosX(windowSize.x - ImGui::CalcTextSize("Stereo").x - 50);
+    ImGui::SetCursorPosX(windowSize.x - ImGui::CalcTextSize(gettext("Stereo")).x - 50);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 15);
-    if (ImGui::Checkbox("Stereo", &connector->soundSettings.s->fmStatus.stereo)) {
+    if (ImGui::Checkbox(gettext("Stereo"), &connector->soundSettings.s->fmStatus.stereo)) {
         connector->soundSettings.SetFMStereo(connector->soundSettings.s->fmStatus.stereo);
     }
 
@@ -141,15 +143,15 @@ void Skin::TabFM() {
     ImGui::SameLine();
     if (ImGui::ImageButton("Settings", reinterpret_cast<ImTextureID>(fmSettingsTexture), ImVec2(buttonSize, buttonSize))) {
         calcFMStorageLabels();
-        ImGui::OpenPopup("Recording settings");
+        ImGui::OpenPopup(gettext("Recording settings"));
     }
 
     ImGui::SetNextWindowPos(ImVec2(windowSize.x / 2, windowSize.y / 2), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
-    if (ImGui::BeginPopupModal("Recording settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (ImGui::BeginPopupModal(gettext("Recording settings"), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::NewLine();
 
-        ImGui::Text("Storage: ");
+        ImGui::Text(gettext("Storage: "));
         ImGui::SameLine();
         if (ImGui::RadioButton(fm_storage_internal_free_label.c_str(), reinterpret_cast<int *>(&fm_storage), static_cast<int>(RecordStorage::INTERNAL))) {
             config->fmRecording.Storage = "internal";
@@ -163,7 +165,7 @@ void Skin::TabFM() {
 
         ImGui::NewLine();
 
-        ImGui::Text("Codec: ");
+        ImGui::Text(gettext("Codec: "));
         ImGui::SameLine();
         if (ImGui::RadioButton("MP3 320kbps", reinterpret_cast<int *>(&fm_codec), static_cast<int>(RecordCodec::MP3))) {
             calcFMStorageLabels();
@@ -245,8 +247,8 @@ void Skin::calcFMStorageLabels() {
     fm_storage_sd_card_free = GetFreeSpace("/contents_ext");
 #endif
 
-    fm_storage_internal_free_label = "Internal (" + std::to_string(fm_storage_internal_free / 1024 / 1024) + " MB)\n";
-    fm_storage_sd_card_free_label = "SD Card (" + std::to_string(fm_storage_sd_card_free / 1024 / 1024) + " MB)\n";
+    fm_storage_internal_free_label = gettext("Internal (") + std::to_string(fm_storage_internal_free / 1024 / 1024) + " MB)\n";
+    fm_storage_sd_card_free_label = gettext("SD Card (") + std::to_string(fm_storage_sd_card_free / 1024 / 1024) + " MB)\n";
 
     unsigned int one_second_bytes = 0;
     if (fm_codec == RecordCodec::WAV) {
@@ -259,15 +261,15 @@ void Skin::calcFMStorageLabels() {
         auto hours = 0;
         hours = std::floor(minutes_internal / 60);
         if (hours == 1) {
-            fm_storage_internal_free_label += "~" + std::to_string(hours) + " hour";
+            fm_storage_internal_free_label += "~" + std::to_string(hours) + gettext(" hour");
         } else {
-            fm_storage_internal_free_label += "~" + std::to_string(hours) + " hours";
+            fm_storage_internal_free_label += "~" + std::to_string(hours) + gettext(" hours");
         }
     } else {
         if (minutes_internal == 1) {
-            fm_storage_internal_free_label += "~" + std::to_string(minutes_internal) + " minute";
+            fm_storage_internal_free_label += "~" + std::to_string(minutes_internal) + gettext(" minute");
         } else {
-            fm_storage_internal_free_label += "~" + std::to_string(minutes_internal) + " minutes";
+            fm_storage_internal_free_label += "~" + std::to_string(minutes_internal) + gettext(" minutes");
         }
     }
 
@@ -276,15 +278,15 @@ void Skin::calcFMStorageLabels() {
         auto hours = 0;
         hours = std::floor(minutes_sd_card / 60);
         if (hours == 1) {
-            fm_storage_sd_card_free_label += "~" + std::to_string(hours) + " hour";
+            fm_storage_sd_card_free_label += "~" + std::to_string(hours) + gettext(" hour");
         } else {
-            fm_storage_sd_card_free_label += "~" + std::to_string(hours) + " hours";
+            fm_storage_sd_card_free_label += "~" + std::to_string(hours) + gettext(" hours");
         }
     } else {
         if (minutes_sd_card == 1) {
-            fm_storage_sd_card_free_label += "~" + std::to_string(minutes_sd_card) + " minute";
+            fm_storage_sd_card_free_label += "~" + std::to_string(minutes_sd_card) + gettext(" minute");
         } else {
-            fm_storage_sd_card_free_label += "~" + std::to_string(minutes_sd_card) + " minutes";
+            fm_storage_sd_card_free_label += "~" + std::to_string(minutes_sd_card) + gettext(" minutes");
         }
     }
 }

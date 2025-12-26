@@ -23,6 +23,7 @@ namespace Cassette {
 
         configInternal data{};
         bool randomize{};
+        std::string language{};
 
         ConfigEntry *Get(const Tape::TapeType t) { return &data.at(t); };
 

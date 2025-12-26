@@ -52,7 +52,8 @@ namespace AppConfig {
         bool vinylizer;
         bool vpt;
     };
- struct FMRecording {
+
+    struct FMRecording {
         std::string Storage;
         std::string Codec;
     };
@@ -83,6 +84,7 @@ namespace AppConfig {
         bool showFmInSettings = true;
         bool controlFilters = false;
         bool disableKeysWhenPowerOff = false;
+        std::string language = "en";
 
         int FindConfig();
 

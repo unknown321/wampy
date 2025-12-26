@@ -1,6 +1,7 @@
 #include "dac.h"
 #include "cxd3778gf_table.h"
 #include <fstream>
+#include <libintl.h>
 
 #define TABLE_SIZE_OUTPUT_VOLUME (sizeof(struct cxd3778gf_master_volume) * (MASTER_VOLUME_MAX + 1) * (MASTER_VOLUME_TABLE_MAX + 1) * 2)
 #define TABLE_SIZE_OUTPUT_VOLUME_DSD (sizeof(unsigned int) * (MASTER_VOLUME_TABLE_MAX + 1) * (MASTER_VOLUME_MAX + 1))
@@ -20,10 +21,10 @@ namespace Dac {
 #endif
 
     std::map<int, std::string> TableTypeToString = {
-        {TABLE_ID_MASTER_VOLUME, "Master volume"},
+        {TABLE_ID_MASTER_VOLUME, gettext("Master volume")},
         //        {TABLE_ID_DEVICE_GAIN, "Device gain"}, // used for audio recording
-        {TABLE_ID_TONE_CONTROL, "Tone control"},
-        {TABLE_ID_MASTER_VOLUME_DSD, "Master volume (DSD)"},
+        {TABLE_ID_TONE_CONTROL, gettext("Tone control")},
+        {TABLE_ID_MASTER_VOLUME_DSD, gettext("Master volume (DSD)")},
     };
 
     // BTL here refers to the Balanced output on the players that have it, "Bridge Tied Load"

@@ -7,12 +7,12 @@ void Skin::TabEQ_DCPhase() {
     ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
     ImGui::PushItemWidth(-FLT_MIN);
-    if (ImGui::BeginCombo("##DcPhaseValues", dcFilterToString.at(connector->soundSettingsFw.dcValue).c_str(), ImGuiComboFlags_HeightRegular)) {
+    if (ImGui::BeginCombo("##DcPhaseValues", gettext(dcFilterToString.at(connector->soundSettingsFw.dcValue).c_str()), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : dcFilterToString) {
             if (entry.second == "?") {
                 continue;
             }
-            if (ImGui::Selectable(entry.second.c_str(), false)) {
+            if (ImGui::Selectable(gettext(entry.second.c_str()), false)) {
                 connector->soundSettingsFw.SetDcFilterType(entry.first);
                 nanosleep(&ssfwUpdateDelay, nullptr);
                 connector->soundSettingsFw.Update();
@@ -35,12 +35,12 @@ void Skin::TabEQ_Vpt() {
     ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
     ImGui::PushItemWidth(-FLT_MIN);
-    if (ImGui::BeginCombo("##vptValues", vptA50SmallToString.at(connector->soundSettingsFw.vptValue).c_str(), ImGuiComboFlags_HeightRegular)) {
+    if (ImGui::BeginCombo("##vptValues", gettext(vptA50SmallToString.at(connector->soundSettingsFw.vptValue).c_str()), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : vptA50SmallToString) {
             if (entry.second == "?") {
                 continue;
             }
-            if (ImGui::Selectable(entry.second.c_str(), false)) {
+            if (ImGui::Selectable(gettext(entry.second.c_str()), false)) {
                 connector->soundSettingsFw.SetVptMode(entry.first);
                 nanosleep(&ssfwUpdateDelay, nullptr);
                 connector->soundSettingsFw.Update();
@@ -72,9 +72,9 @@ void Skin::TabEQ_Eq6Band() {
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
     ImGui::SeparatorText(gettext("Preset:"));
     ImGui::PushItemWidth(-FLT_MIN);
-    if (ImGui::BeginCombo("##eq6preset", eq6PresetToString.at(connector->soundSettingsFw.eq6Value).c_str(), ImGuiComboFlags_HeightRegular)) {
+    if (ImGui::BeginCombo("##eq6preset", gettext(eq6PresetToString.at(connector->soundSettingsFw.eq6Value).c_str()), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : eq6PresetToString) {
-            if (ImGui::Selectable(entry.second.c_str(), false)) {
+            if (ImGui::Selectable(gettext(entry.second.c_str()), false)) {
                 connector->soundSettingsFw.SetEq6Preset(entry.first);
                 nanosleep(&ssfwUpdateDelay, nullptr);
                 connector->soundSettingsFw.Update();
@@ -181,7 +181,7 @@ void Skin::TabEQ_EqTone() {
         for (int i = 0; i < 3; i++) {
             ImGui::TableNextRow(0, 40.0f);
             ImGui::TableNextColumn();
-            ImGui::Text(connector->soundSettingsFw.eqtone.at(i).first.c_str());
+            ImGui::Text(gettext(connector->soundSettingsFw.eqtone.at(i).first.c_str()));
 
             ImGui::TableNextColumn();
             ImGui::PushID(i);
@@ -217,7 +217,7 @@ void Skin::TabEQ_EqTone() {
         for (int i = 0; i < 3; i++) {
             ImGui::TableNextRow(0, 40.0f);
             ImGui::TableNextColumn();
-            ImGui::Text(connector->soundSettingsFw.eqtoneFreq.at(i).first.c_str());
+            ImGui::Text(gettext(connector->soundSettingsFw.eqtoneFreq.at(i).first.c_str()));
 
             ImGui::TableNextColumn();
             ImGui::PushID(10 + i);
@@ -282,12 +282,13 @@ void Skin::TabEQ_Vinylizer() {
     ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 40.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 40.0f);
     ImGui::PushItemWidth(-FLT_MIN);
-    if (ImGui::BeginCombo("##vinylizerValues", vinylTypeToString.at(connector->soundSettingsFw.vinylizerValue).c_str(), ImGuiComboFlags_HeightRegular)) {
+    if (ImGui::BeginCombo(
+            "##vinylizerValues", gettext(vinylTypeToString.at(connector->soundSettingsFw.vinylizerValue).c_str()), ImGuiComboFlags_HeightRegular)) {
         for (const auto &entry : vinylTypeToString) {
             if (entry.second == "?") {
                 continue;
             }
-            if (ImGui::Selectable(entry.second.c_str(), false)) {
+            if (ImGui::Selectable(gettext(entry.second.c_str()), false)) {
                 connector->soundSettingsFw.SetVinylizerType(entry.first);
                 nanosleep(&ssfwUpdateDelay, nullptr);
                 connector->soundSettingsFw.Update();
@@ -320,7 +321,7 @@ void Skin::TabEQ_Misc() {
         ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 35.0);
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        ImGui::Text(gettext("Direct Source"));
+        ImGui::Text("Direct Source");
 
         ImGui::TableNextColumn();
         if (connector->soundSettingsFw.s->directSourceOn) {

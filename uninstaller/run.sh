@@ -72,8 +72,11 @@ uninstall() {
     log "no valid libqeglfs backup found, leaving as is"
   fi
 
-  log "removing skins, licenses, qr code, tunings, icons"
+  log "removing skins, licenses, qr code, tunings, icons, localization files"
   ${RM} -rf ${VENDOR}/usr/share/${BINARY}/
+
+  log "removing locales"
+  ${RM} -rf /system/usr/lib/locale/
 
   log "removing modules"
   ${RM} -rf ${VENDOR}/modules/

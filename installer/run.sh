@@ -144,6 +144,14 @@ install() {
   ${MKDIR} -p ${VENDOR}/usr/share/${BINARY}/sound_settings/
   ${TAR} -C ${VENDOR}/usr/share/${BINARY}/sound_settings/ -xf tunings.tar.gz
 
+  log "installing localization files"
+  ${MKDIR} -p ${VENDOR}/usr/share/${BINARY}/locale/
+  ${TAR} -C ${VENDOR}/usr/share/${BINARY}/locale/ -xf tl.tar.gz
+
+  log "installing locale files"
+  ${MKDIR} -p /system/usr/lib/locale/
+  ${TAR} -C  /system/usr/lib/locale/ -xf locales.tar.gz
+
   log "installing llusbdac"
   ${MKDIR} -p ${VENDOR}/modules/
   ${RM} -f ${VENDOR}/modules/llusbdac.ko

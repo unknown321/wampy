@@ -1,6 +1,8 @@
 #include "digital_clock.h"
 #include "../skin.h"
 #include "imgui_impl_opengl3.h"
+#include "langToString/langToString.h"
+#include "wstring.h"
 
 namespace DigitalClock {
 #ifdef DESKTOP
@@ -351,12 +353,30 @@ namespace DigitalClock {
         range.AddChar(ImWchar(0x24c8)); // Ⓢ
         range.AddChar(ImWchar(0x2713)); // ✓
 
+        // current tl must have all characters
+        auto res = ReadFile(localeDir + "/" + config->language + "/LC_MESSAGES/range");
+        size_t index = 0;
+        while (index < res.size()) {
+            auto v = utfToPoint(res, index);
+            range.AddChar(v);
+        }
+
+        // make sure language name is displayed correctly
+        for (const auto &q : LangToString) {
+            size_t index2 = 0;
+            while (index2 < q.second.size()) {
+                auto v = utfToPoint(q.second, index2);
+                range.AddChar(v);
+            }
+        }
+
         range.BuildRanges(&gr);
 
         std::string fp = FontPath;
         if (exists(FontPathCustom)) {
             fp = FontPathCustom;
         }
+
         if (exists(FontPathCustom2)) {
             fp = FontPathCustom2;
         }

@@ -1,0 +1,902 @@
+# Korean translations for wampy package.
+# Copyright (C) 2025 THE wampy'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the wampy package.
+# Automatically generated, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: wampy 1.0\n"
+"Report-Msgid-Bugs-To: unknown.at.github@yandex.com\n"
+"POT-Creation-Date: 2025-12-26 09:48+0300\n"
+"PO-Revision-Date: 2025-12-26 09:20+0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../src/connector/hagoromoToString.cpp:8 ../src/skin/eqPerSong.cpp:42
+#: ../src/skin/eqPerSong.cpp:50 ../src/skin/eqPerSong.cpp:115
+#: ../src/skin/eqPerSong.cpp:127 ../src/skin/eqPerSong.cpp:139
+#: ../src/skin/eqPerSong.cpp:151 ../src/skin/eqPerSong.cpp:211
+#: ../src/skin/eqPerSong.cpp:235
+msgid "Off"
+msgstr "끄기"
+
+#: ../src/connector/hagoromoToString.cpp:9 ../src/langToString/main.cpp:24
+msgid "Bright"
+msgstr "밝은"
+
+#: ../src/connector/hagoromoToString.cpp:10
+msgid "Excited"
+msgstr "신나는"
+
+#: ../src/connector/hagoromoToString.cpp:11
+msgid "Mellow"
+msgstr "부드러운"
+
+#: ../src/connector/hagoromoToString.cpp:12
+msgid "Relaxed"
+msgstr "편안한"
+
+#: ../src/connector/hagoromoToString.cpp:13
+msgid "Vocal"
+msgstr "보컬"
+
+#: ../src/connector/hagoromoToString.cpp:14
+msgid "Custom 1"
+msgstr "사용자 정의 1"
+
+#: ../src/connector/hagoromoToString.cpp:15
+msgid "Custom 2"
+msgstr "사용자 정의 2"
+
+#: ../src/connector/hagoromoToString.cpp:20
+msgid "Studio"
+msgstr "스튜디오"
+
+#: ../src/connector/hagoromoToString.cpp:21
+msgid "Club"
+msgstr "클럽"
+
+#: ../src/connector/hagoromoToString.cpp:22
+msgid "Concert hall"
+msgstr "콘서트홀"
+
+#: ../src/connector/hagoromoToString.cpp:23
+msgid "Matrix"
+msgstr "매트릭스"
+
+#: ../src/connector/hagoromoToString.cpp:28
+msgid "A Low"
+msgstr "A 낮음"
+
+#: ../src/connector/hagoromoToString.cpp:29
+msgid "A Standard"
+msgstr "A 표준"
+
+#: ../src/connector/hagoromoToString.cpp:30
+msgid "A High"
+msgstr "A 높음"
+
+#: ../src/connector/hagoromoToString.cpp:31
+msgid "B Low"
+msgstr "B 낮음"
+
+#: ../src/connector/hagoromoToString.cpp:32
+msgid "B Standard"
+msgstr "B 표준"
+
+#: ../src/connector/hagoromoToString.cpp:33
+msgid "B High"
+msgstr "B 높음"
+
+#: ../src/connector/hagoromoToString.cpp:38
+msgid "Standard"
+msgstr "표준"
+
+#: ../src/connector/hagoromoToString.cpp:39
+msgid "Arm resonance"
+msgstr "암 공진"
+
+#: ../src/connector/hagoromoToString.cpp:40
+msgid "Turntable resonance"
+msgstr "턴테이블 공진"
+
+#: ../src/connector/hagoromoToString.cpp:41
+msgid "Surface noise"
+msgstr "표면 노이즈"
+
+#: ../src/connector/hagoromoToString.cpp:44
+msgid "NW-A50 default mode?"
+msgstr "NW-A50 기본 모드?"
+
+#: ../src/connector/hagoromoToString.cpp:49
+msgid "AI"
+msgstr "AI"
+
+#: ../src/connector/hagoromoToString.cpp:50
+msgid "Female vocal"
+msgstr "여성 보컬"
+
+#: ../src/connector/hagoromoToString.cpp:51
+msgid "Male vocal"
+msgstr "남성 보컬"
+
+#: ../src/connector/hagoromoToString.cpp:52
+msgid "Percussion"
+msgstr "타악기"
+
+#: ../src/connector/hagoromoToString.cpp:53
+msgid "Strings"
+msgstr "현악기"
+
+#: ../src/dac/dac.cpp:24
+msgid "Master volume"
+msgstr "마스터 볼륨"
+
+#: ../src/dac/dac.cpp:26 ../src/skin/volumeTables.cpp:913
+msgid "Tone control"
+msgstr "톤 컨트롤"
+
+#: ../src/dac/dac.cpp:27
+msgid "Master volume (DSD)"
+msgstr "마스터 볼륨 (DSD)"
+
+#: ../src/skin/cassette.cpp:6 ../src/skin/digiclock.cpp:7
+#: ../src/skin/eqPerSong.cpp:7 ../src/skin/misc.cpp:9
+#: ../src/skin/volumeTables.cpp:10 ../src/skin/w1.cpp:7
+#: ../src/skin/winamp.cpp:7
+msgid "Disable USB mass storage mode"
+msgstr "USB 대용량 저장소 모드 비활성화"
+
+#: ../src/skin/cassette.cpp:10
+msgid "Randomize?"
+msgstr "랜덤 재생?"
+
+#: ../src/skin/cassette.cpp:23
+msgid "Codec"
+msgstr "코덱"
+
+#: ../src/skin/cassette.cpp:24
+msgid "Tape"
+msgstr "테이프"
+
+#: ../src/skin/cassette.cpp:25
+msgid "Reel"
+msgstr "릴"
+
+#: ../src/skin/cassette.cpp:87 ../src/skin/volumeTables.cpp:1041
+msgid "Reset"
+msgstr "초기화"
+
+#: ../src/skin/dac.cpp:8
+msgid "Stop music first."
+msgstr "먼저 음악을 중지하세요."
+
+#: ../src/skin/dac.cpp:10
+msgid "Stop music"
+msgstr "음악 중지"
+
+#: ../src/skin/dac.cpp:17 ../src/skin/eqTabs.cpp:248 ../src/skin/eqTabs.cpp:328
+#: ../src/skin/eqTabs.cpp:363 ../src/skin/fm.cpp:47
+msgid "Disable"
+msgstr "비활성화"
+
+#: ../src/skin/dac.cpp:17 ../src/skin/eqPerSong.cpp:14
+#: ../src/skin/eqTabs.cpp:340 ../src/skin/eqTabs.cpp:377 ../src/skin/fm.cpp:52
+msgid "Enable"
+msgstr "활성화"
+
+#: ../src/skin/dac.cpp:21
+msgid "Unloaded"
+msgstr "로드되지 않음"
+
+#: ../src/skin/dac.cpp:21 ../src/skin/dac.cpp:24
+msgid "Failure"
+msgstr "실패"
+
+#: ../src/skin/dac.cpp:24 ../src/skin/volumeTables.cpp:230
+#: ../src/skin/volumeTables.cpp:310 ../src/skin/volumeTables.cpp:467
+#: ../src/skin/volumeTables.cpp:522 ../src/skin/volumeTables.cpp:673
+#: ../src/skin/volumeTables.cpp:729
+msgid "Loaded"
+msgstr "로드됨"
+
+#: ../src/skin/debug.cpp:5 ../src/skin/misc.cpp:184
+msgid "Debug"
+msgstr "디버그"
+
+#: ../src/skin/debug.cpp:7
+msgid "Skin debug"
+msgstr "스킨 디버그"
+
+#: ../src/skin/debug.cpp:16
+msgid "Start ADB daemon (next boot)"
+msgstr "ADB 데몬 시작 (다음 부팅 시)"
+
+#: ../src/skin/debug.cpp:22
+msgid "Create log file"
+msgstr "로그 파일 생성"
+
+#: ../src/skin/debug.cpp:27
+msgid "Limit fps"
+msgstr "FPS 제한"
+
+#: ../src/skin/eq.cpp:13 ../src/skin/eqPerSong.cpp:279
+#: ../src/skin/volumeTables.cpp:868 ../src/skin.cpp:339 ../src/skin.cpp:352
+msgid "Refreshed"
+msgstr "새로 고침됨"
+
+#: ../src/skin/eq.cpp:29
+msgid "Direct Source is on, filters disabled"
+msgstr "다이렉트 소스 켜짐, 필터 비활성화됨"
+
+#: ../src/skin/eq.cpp:36 ../src/skin/eq.cpp:38 ../src/skin/eq.cpp:39
+msgid "Select filter"
+msgstr "필터 선택"
+
+#: ../src/skin/eq.cpp:83
+msgid "Filter"
+msgstr "필터"
+
+#: ../src/skin/eq.cpp:137 ../src/skin/eq.cpp:142 ../src/skin.cpp:371
+#: ../src/skin.cpp:406
+msgid "Misc"
+msgstr "기타"
+
+#: ../src/skin/eq.cpp:152 ../src/skin/website.cpp:10 ../src/skin/website.cpp:16
+#: ../src/skin/website.cpp:17
+msgid "Donate"
+msgstr "기부"
+
+#: ../src/skin/eqPerSong.cpp:12
+msgid "Feature disabled. Toggle it on 'Misc' tab or use button below."
+msgstr "기능이 비활성화되었습니다. '기타' 탭에서 토글하거나 아래 버튼을 사용하세요."
+
+#: ../src/skin/eqPerSong.cpp:26
+#, c-format
+msgid "File: %s\n"
+msgstr "파일: %s\n"
+
+#: ../src/skin/eqPerSong.cpp:42 ../src/skin/eqPerSong.cpp:50
+#: ../src/skin/eqPerSong.cpp:115 ../src/skin/eqPerSong.cpp:127
+#: ../src/skin/eqPerSong.cpp:139 ../src/skin/eqPerSong.cpp:151
+#: ../src/skin/eqPerSong.cpp:211 ../src/skin/eqPerSong.cpp:235
+msgid "On"
+msgstr "켜기"
+
+#: ../src/skin/eqPerSong.cpp:43 ../src/skin/eqPerSong.cpp:51
+msgid "available"
+msgstr "사용 가능"
+
+#: ../src/skin/eqPerSong.cpp:43 ../src/skin/eqPerSong.cpp:51
+msgid "unavailable"
+msgstr "사용 불가"
+
+#: ../src/skin/eqPerSong.cpp:66
+msgid "EQ6 Preset"
+msgstr "EQ6 프리셋"
+
+#: ../src/skin/eqPerSong.cpp:72
+msgid "EQ6 Bands"
+msgstr "EQ6 밴드"
+
+#: ../src/skin/eqPerSong.cpp:91
+msgid "EQ10 Preset"
+msgstr "EQ10 프리셋"
+
+#: ../src/skin/eqPerSong.cpp:97
+msgid "EQ10 Bands"
+msgstr "EQ10 밴드"
+
+#: ../src/skin/eqPerSong.cpp:125
+msgid "DSEE custom"
+msgstr "DSEE 사용자 정의"
+
+#: ../src/skin/eqPerSong.cpp:131
+msgid "DSEE custom mode"
+msgstr "DSEE 사용자 정의 모드"
+
+#: ../src/skin/eqPerSong.cpp:137
+msgid "DC Phase"
+msgstr "DC 위상"
+
+#: ../src/skin/eqPerSong.cpp:143
+msgid "DC Phase Filter"
+msgstr "DC 위상 필터"
+
+#: ../src/skin/eqPerSong.cpp:155
+msgid "VPT Mode"
+msgstr "VPT 모드"
+
+#: ../src/skin/eqPerSong.cpp:161
+msgid "Tone Control or 10 band EQ?"
+msgstr "톤 컨트롤 또는 10밴드 EQ?"
+
+#: ../src/skin/eqPerSong.cpp:163
+msgid "10 band EQ"
+msgstr "10밴드 EQ"
+
+#: ../src/skin/eqPerSong.cpp:163
+msgid "Tone Control"
+msgstr "톤 컨트롤"
+
+#: ../src/skin/eqPerSong.cpp:173
+msgid "Tone Control Low"
+msgstr "저음"
+
+#: ../src/skin/eqPerSong.cpp:179
+msgid "Tone Control Mid"
+msgstr "중음"
+
+#: ../src/skin/eqPerSong.cpp:185
+msgid "Tone Control High"
+msgstr "고음"
+
+#: ../src/skin/eqPerSong.cpp:209
+msgid "Vinyl Processor"
+msgstr "바이닐 프로세서"
+
+#: ../src/skin/eqPerSong.cpp:215
+msgid "Vinyl Type"
+msgstr "바이닐 타입"
+
+#: ../src/skin/eqPerSong.cpp:233
+msgid "Dynamic Normalizer"
+msgstr "다이나믹 노멀라이저"
+
+#: ../src/skin/eqPerSong.cpp:251 ../src/skin/eqPerSong.cpp:262
+msgid "Remove"
+msgstr "삭제"
+
+#: ../src/skin/eqPerSong.cpp:253
+msgid "Removed"
+msgstr "삭제됨"
+
+#: ../src/skin/eqPerSong.cpp:255
+msgid "Remove failed"
+msgstr "삭제 실패"
+
+#: ../src/skin/eqPerSong.cpp:283 ../src/skin/volumeTables.cpp:409
+#: ../src/skin/volumeTables.cpp:423 ../src/skin/volumeTables.cpp:615
+#: ../src/skin/volumeTables.cpp:629 ../src/skin/volumeTables.cpp:820
+#: ../src/skin/volumeTables.cpp:834
+msgid "Set as default"
+msgstr "기본값으로 설정"
+
+#: ../src/skin/eqPerSong.cpp:285
+msgid "Default EQ set"
+msgstr "기본 EQ 설정됨"
+
+#: ../src/skin/eqPerSong.cpp:287
+msgid "Set EQ as default failed"
+msgstr "EQ 기본값 설정 실패"
+
+#: ../src/skin/eqPerSong.cpp:293 ../src/skin/volumeTables.cpp:366
+#: ../src/skin/volumeTables.cpp:577 ../src/skin/volumeTables.cpp:781
+msgid "Save"
+msgstr "저장"
+
+#: ../src/skin/eqPerSong.cpp:295 ../src/skin/volumeTables.cpp:371
+#: ../src/skin/volumeTables.cpp:582 ../src/skin/volumeTables.cpp:786
+msgid "Saved"
+msgstr "저장됨"
+
+#: ../src/skin/eqPerSong.cpp:297
+msgid "Save failed"
+msgstr "저장 실패"
+
+#: ../src/skin/eqPerSong.cpp:303
+msgid "Save dir"
+msgstr "디렉토리 저장"
+
+#: ../src/skin/eqPerSong.cpp:305
+msgid "Saved dir"
+msgstr "디렉토리 저장됨"
+
+#: ../src/skin/eqPerSong.cpp:307
+msgid "Save dir failed"
+msgstr "디렉토리 저장 실패"
+
+#: ../src/skin/eqPerSong.cpp:314 ../src/skin/eqPerSong.cpp:324
+msgid "Remove dir"
+msgstr "디렉토리 삭제"
+
+#: ../src/skin/eqPerSong.cpp:316
+msgid "Dir removed"
+msgstr "디렉토리 삭제됨"
+
+#: ../src/skin/eqPerSong.cpp:318
+msgid "Dir remove failed"
+msgstr "디렉토리 삭제 실패"
+
+#: ../src/skin/eqTabs.cpp:6
+msgid "Type:"
+msgstr "유형:"
+
+#: ../src/skin/eqTabs.cpp:34
+msgid "VPT type:"
+msgstr "VPT 유형:"
+
+#: ../src/skin/eqTabs.cpp:62 ../src/skin/eqTabs.cpp:63
+#: ../src/skin/eqTabs.cpp:64
+msgid "No options"
+msgstr "옵션 없음"
+
+#: ../src/skin/eqTabs.cpp:73
+msgid "Preset:"
+msgstr "프리셋:"
+
+#: ../src/skin/eqTabs.cpp:174
+msgid "Tone:"
+msgstr "톤:"
+
+#: ../src/skin/eqTabs.cpp:209
+msgid "Tone frequency type:"
+msgstr "톤 주파수 유형:"
+
+#: ../src/skin/eqTabs.cpp:281
+msgid "Vinylizer type:"
+msgstr "바이닐라이저 유형:"
+
+#: ../src/skin/fm.cpp:36
+msgid "FM radio is unavailable on this device"
+msgstr "이 기기에서는 FM 라디오를 사용할 수 없습니다"
+
+#: ../src/skin/fm.cpp:38
+msgid "Hide this tab"
+msgstr "이 탭 숨기기"
+
+#: ../src/skin/fm.cpp:67 ../src/skin/fm.cpp:69
+msgid "Recording"
+msgstr "녹음"
+
+#: ../src/skin/fm.cpp:73 ../src/skin/fm.cpp:75
+msgid "Stereo"
+msgstr "스테레오"
+
+#: ../src/skin/fm.cpp:146 ../src/skin/fm.cpp:151
+msgid "Recording settings"
+msgstr "녹음 설정"
+
+#: ../src/skin/fm.cpp:154
+msgid "Storage: "
+msgstr "저장소: "
+
+#: ../src/skin/fm.cpp:168
+msgid "Codec: "
+msgstr "코덱: "
+
+#: ../src/skin/fm.cpp:250
+msgid "Internal ("
+msgstr "내부 저장소 ("
+
+#: ../src/skin/fm.cpp:251
+msgid "SD Card ("
+msgstr "SD 카드 ("
+
+#: ../src/skin/fm.cpp:264 ../src/skin/fm.cpp:281
+msgid " hour"
+msgstr " 시간"
+
+#: ../src/skin/fm.cpp:266 ../src/skin/fm.cpp:283
+msgid " hours"
+msgstr " 시간"
+
+#: ../src/skin/fm.cpp:270 ../src/skin/fm.cpp:287
+msgid " minute"
+msgstr " 분"
+
+#: ../src/skin/fm.cpp:272 ../src/skin/fm.cpp:289
+msgid " minutes"
+msgstr " 분"
+
+#: ../src/skin/misc.cpp:16
+msgid "Swap prev/next buttons"
+msgstr "이전/다음 버튼 교체"
+
+#: ../src/skin/misc.cpp:23
+msgid "Export Walkman bookmarks"
+msgstr "워크맨 북마크 내보내기"
+
+#: ../src/skin/misc.cpp:25
+msgid "Exported"
+msgstr "내보냄"
+
+#: ../src/skin/misc.cpp:37
+msgid "Huge cover art"
+msgstr "대형 커버 아트"
+
+#: ../src/skin/misc.cpp:46
+msgid "Removed!"
+msgstr "제거됨!"
+
+#: ../src/skin/misc.cpp:61 ../src/skin/misc.cpp:64
+msgid "Show time"
+msgstr "시간 표시"
+
+#: ../src/skin/misc.cpp:72
+msgid "Set default volume tables"
+msgstr "기본 볼륨 테이블 설정"
+
+#: ../src/skin/misc.cpp:77
+msgid "OK!"
+msgstr "확인!"
+
+#: ../src/skin/misc.cpp:99
+msgid "Limit max volume"
+msgstr "최대 볼륨 제한"
+
+#: ../src/skin/misc.cpp:106
+msgid "Window position"
+msgstr "창 위치"
+
+#: ../src/skin/misc.cpp:110
+msgid "Enable EQ per song"
+msgstr "곡별 EQ 활성화"
+
+#: ../src/skin/misc.cpp:130
+msgid "Disable touchscreen"
+msgstr "터치스크린 비활성화"
+
+#: ../src/skin/misc.cpp:140
+msgid "Lock when screen is off"
+msgstr "화면 꺼짐 시 잠금"
+
+#: ../src/skin/misc.cpp:163
+msgid "Control filters"
+msgstr "필터 제어"
+
+#: ../src/skin/misc.cpp:174
+msgid "Show FM tab"
+msgstr "FM 탭 표시"
+
+#: ../src/skin/misc.cpp:189
+msgid "License"
+msgstr "라이선스"
+
+#: ../src/skin/misc.cpp:195
+msgid "License 3rdparty"
+msgstr "제3자 라이선스"
+
+#: ../src/skin/misc.cpp:203
+msgid "Website / Donate"
+msgstr "웹사이트 / 기부"
+
+#: ../src/skin/volumeTables.cpp:211 ../src/skin/volumeTables.cpp:447
+#: ../src/skin/volumeTables.cpp:654
+msgid "File:"
+msgstr "파일:"
+
+#: ../src/skin/volumeTables.cpp:227 ../src/skin/volumeTables.cpp:307
+#: ../src/skin/volumeTables.cpp:373 ../src/skin/volumeTables.cpp:390
+#: ../src/skin/volumeTables.cpp:464 ../src/skin/volumeTables.cpp:519
+#: ../src/skin/volumeTables.cpp:584 ../src/skin/volumeTables.cpp:600
+#: ../src/skin/volumeTables.cpp:670 ../src/skin/volumeTables.cpp:726
+#: ../src/skin/volumeTables.cpp:788 ../src/skin/volumeTables.cpp:805
+msgid "Failed"
+msgstr "실패"
+
+#: ../src/skin/volumeTables.cpp:251 ../src/skin/volumeTables.cpp:487
+#: ../src/skin/volumeTables.cpp:694
+msgid "Table type:"
+msgstr "테이블 유형:"
+
+#: ../src/skin/volumeTables.cpp:272
+msgid "Value type:"
+msgstr "값 유형:"
+
+#: ../src/skin/volumeTables.cpp:292
+msgid "Sound effect"
+msgstr "사운드 효과"
+
+#: ../src/skin/volumeTables.cpp:304 ../src/skin/volumeTables.cpp:516
+#: ../src/skin/volumeTables.cpp:723
+msgid "Load"
+msgstr "로드"
+
+#: ../src/skin/volumeTables.cpp:329 ../src/skin/volumeTables.cpp:540
+#: ../src/skin/volumeTables.cpp:745
+msgid "Copy and edit"
+msgstr "복사 및 편집"
+
+#: ../src/skin/volumeTables.cpp:346 ../src/skin/volumeTables.cpp:557
+#: ../src/skin/volumeTables.cpp:762
+msgid "Edit"
+msgstr "편집"
+
+#: ../src/skin/volumeTables.cpp:384 ../src/skin/volumeTables.cpp:594
+#: ../src/skin/volumeTables.cpp:799
+msgid "Apply"
+msgstr "적용"
+
+#: ../src/skin/volumeTables.cpp:388 ../src/skin/volumeTables.cpp:598
+#: ../src/skin/volumeTables.cpp:803
+msgid "Applied"
+msgstr "적용됨"
+
+#: ../src/skin/volumeTables.cpp:394 ../src/skin/volumeTables.cpp:604
+#: ../src/skin/volumeTables.cpp:809
+msgid "Copy val"
+msgstr "값 복사"
+
+#: ../src/skin/volumeTables.cpp:398 ../src/skin/volumeTables.cpp:811
+msgid "Copied"
+msgstr "복사됨"
+
+#: ../src/skin/volumeTables.cpp:402 ../src/skin/volumeTables.cpp:610
+#: ../src/skin/volumeTables.cpp:815
+msgid "Paste val"
+msgstr "값 붙여넣기"
+
+#: ../src/skin/volumeTables.cpp:406 ../src/skin/volumeTables.cpp:612
+#: ../src/skin/volumeTables.cpp:817
+msgid "Pasted"
+msgstr "붙여넣기됨"
+
+#: ../src/skin/volumeTables.cpp:847
+msgid "Status"
+msgstr "상태"
+
+#: ../src/skin/volumeTables.cpp:852
+msgid "Refresh"
+msgstr "새로 고침"
+
+#: ../src/skin/volumeTables.cpp:881
+msgid "Model ID"
+msgstr "모델 ID"
+
+#: ../src/skin/volumeTables.cpp:887
+msgid "Region ID"
+msgstr "지역 ID"
+
+#: ../src/skin/volumeTables.cpp:895
+msgid "Device product"
+msgstr "기기 제품"
+
+#: ../src/skin/volumeTables.cpp:901
+msgid "Master volume table"
+msgstr "마스터 볼륨 테이블"
+
+#: ../src/skin/volumeTables.cpp:907
+msgid "Master volume table (DSD)"
+msgstr "마스터 볼륨 테이블 (DSD)"
+
+#: ../src/skin/volumeTables.cpp:919
+msgid "Audio card"
+msgstr "오디오 카드"
+
+#: ../src/skin/volumeTables.cpp:925
+msgid "Audio device"
+msgstr "오디오 장치"
+
+#: ../src/skin/volumeTables.cpp:931
+msgid "Sample rate"
+msgstr "샘플 레이트"
+
+#: ../src/skin/volumeTables.cpp:937
+msgid "CPU frequency (min/cur)"
+msgstr "CPU 주파수 (최소/현재)"
+
+#: ../src/skin/volumeTables.cpp:998
+msgid "Zoom in"
+msgstr "확대"
+
+#: ../src/skin/volumeTables.cpp:1006
+msgid "Zoom out"
+msgstr "축소"
+
+#: ../src/skin/volumeTables.cpp:1014 ../src/config.cpp:12
+msgid "Left"
+msgstr "왼쪽"
+
+#: ../src/skin/volumeTables.cpp:1020 ../src/config.cpp:12
+msgid "Right"
+msgstr "오른쪽"
+
+#: ../src/skin/volumeTables.cpp:1026
+msgid "Up"
+msgstr "위"
+
+#: ../src/skin/volumeTables.cpp:1032
+msgid "Down"
+msgstr "아래"
+
+#: ../src/skin/volumeTables.cpp:1049
+msgid "Back"
+msgstr "뒤로"
+
+#: ../src/skin/w1.cpp:12
+msgid "Walkman One settings"
+msgstr "워크맨 원 설정"
+
+#: ../src/skin/w1.cpp:16
+msgid "Config file not found\n"
+msgstr "구성 파일을 찾을 수 없음\n"
+
+#: ../src/skin/w1.cpp:27 ../src/skin/w1.cpp:156
+msgid "Interface color"
+msgstr "인터페이스 색상"
+
+#: ../src/skin/w1.cpp:48
+msgid "Sound signature"
+msgstr "사운드 시그니처"
+
+#: ../src/skin/w1.cpp:69
+msgid "Region"
+msgstr "지역"
+
+#: ../src/skin/w1.cpp:89
+msgid "Remote option with any region"
+msgstr "모든 지역에서 원격 옵션"
+
+#: ../src/skin/w1.cpp:99
+msgid "Plus mode v2"
+msgstr "플러스 모드 v2"
+
+#: ../src/skin/w1.cpp:109
+msgid "Plus mode by default"
+msgstr "기본적으로 플러스 모드"
+
+#: ../src/skin/w1.cpp:119
+msgid "Lower gain mode"
+msgstr "낮은 이득 모드"
+
+#: ../src/skin/w1.cpp:129
+msgid "Different DAC init mode"
+msgstr "다른 DAC 초기화 모드"
+
+#: ../src/skin/w1.cpp:144
+msgid "Apply tuning and reboot"
+msgstr "튜닝 적용 및 재부팅"
+
+#: ../src/skin/w1.cpp:148 ../src/skin/w1.cpp:178
+msgid "Reboot the device to apply changes"
+msgstr "변경사항을 적용하려면 기기를 재부팅하세요"
+
+#: ../src/skin/w1.cpp:171
+msgid "Change color"
+msgstr "색상 변경"
+
+#: ../src/skin/winamp.cpp:27
+msgid "Load skin"
+msgstr "스킨 로드"
+
+#: ../src/skin/winamp.cpp:28
+msgid "Loading "
+msgstr "로드 중 "
+
+#: ../src/skin/winamp.cpp:47
+msgid "Use bitmap font"
+msgstr "비트맵 글꼴 사용"
+
+#: ../src/skin/winamp.cpp:54
+msgid "Enable visualizer"
+msgstr "비주얼라이저 활성화"
+
+#: ../src/skin/winamp.cpp:60
+msgid "Use bitmap font in playlist"
+msgstr "재생 목록에서 비트맵 글꼴 사용"
+
+#: ../src/skin/winamp.cpp:67
+msgid "Visualizer Winamp mode"
+msgstr "비주얼라이저 Winamp 모드"
+
+#: ../src/skin/winamp.cpp:73
+msgid "Prefer time remaining"
+msgstr "남은 시간 선호"
+
+#: ../src/skin/winamp.cpp:77
+msgid "Visualizer sensitivity"
+msgstr "비주얼라이저 감도"
+
+#: ../src/skin/winamp.cpp:81
+msgid "Show clutterbar"
+msgstr "클러터바 표시"
+
+#: ../src/skin/winamp.cpp:96
+msgid "Skin transparency"
+msgstr "스킨 투명도"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Default"
+msgstr "기본"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Peach"
+msgstr "복숭아"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Red"
+msgstr "빨강"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Blue"
+msgstr "파랑"
+
+#: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
+#: ../src/w1/w1.cpp:16
+msgid "Green"
+msgstr "초록"
+
+#: ../src/w1/w1.cpp:49
+msgid "neutral"
+msgstr "중립적"
+
+#: ../src/w1/w1.cpp:49
+msgid "warm"
+msgstr "따뜻한"
+
+#: ../src/w1/w1.cpp:49
+msgid "bright"
+msgstr "밝은"
+
+#: ../src/w1/w1.cpp:49
+msgid "wm1z"
+msgstr "WM1Z"
+
+#: ../src/config.cpp:12
+msgid "Center"
+msgstr "중앙"
+
+#: ../src/skin.cpp:212
+msgid "✓ Loaded "
+msgstr "✓ 로드됨 "
+
+#: ../src/skin.cpp:372 ../src/skin.cpp:389
+msgid "Skin"
+msgstr "스킨"
+
+#: ../src/skin.cpp:373 ../src/skin.cpp:412
+msgid "Close"
+msgstr "닫기"
+
+#: ../src/skin.cpp:428
+msgid "Skin:"
+msgstr "스킨:"
+
+#: ../src/skin.cpp:433
+msgid "Cassette"
+msgstr "카세트"
+
+#: ../src/skin.cpp:437
+msgid "DigiClock"
+msgstr "디지클락"
+
+#: ../src/skin.cpp:446
+msgid "Set as active"
+msgstr "활성화로 설정"
+
+#: ../src/skin.cpp:681
+msgid "Remove Wampy logs ("
+msgstr "Wampy 로그 삭제 ("
+
+#: ../src/sound_settings_fw/sound_settings_fw.h:14
+#: ../src/sound_settings_fw/sound_settings_fw.h:15
+msgid "Bass"
+msgstr "저음"
+
+#: ../src/sound_settings_fw/sound_settings_fw.h:14
+#: ../src/sound_settings_fw/sound_settings_fw.h:15
+msgid "Middle"
+msgstr "중음"
+
+#: ../src/sound_settings_fw/sound_settings_fw.h:14
+#: ../src/sound_settings_fw/sound_settings_fw.h:15
+msgid "Treble"
+msgstr "고음"
+
+#: ../src/sound_settings_fw/sound_settings_fw.h:25
+msgid "invalid filter"
+msgstr "잘못된 필터"
+
+#: ../src/skin.h:55
+msgid "Change enqueued"
+msgstr "변경 대기 중"

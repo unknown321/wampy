@@ -24,8 +24,11 @@
 #include "shader.h"
 
 #include "connector/hagoromo.h"
+#include "langToString/langToString.h"
 #include "mkpath.h"
 #include "wampy.h"
+
+#include <libintl.h>
 
 #define IMGUI_WIDTH 800.0f
 #define IMGUI_HEIGHT 480.0f
@@ -462,6 +465,24 @@ int main(int, char **) {
 
     config.badBoots = 0;
     config.Save();
+
+#ifndef DESKTOP
+    setenv("LC_ALL", config.language.c_str(), 1);
+    setenv("LC_MESSAGES", "", 1);
+    setlocale(LC_MESSAGES, "");
+    textdomain("wampy");
+
+    bind_textdomain_codeset("wampy", "UTF-8");
+    setenv("LANGUAGE", config.language.c_str(), 1);
+    bindtextdomain("wampy", localeDir.c_str());
+#else
+    setenv("LANGUAGE", config.language.c_str(), 1);
+    setlocale(LC_ALL, "");
+    bindtextdomain("wampy", "../tl/locale");
+    textdomain("wampy");
+#endif
+
+    DLOG("using language %s\n", config.language.c_str());
 
 #ifndef DESKTOP
     auto events = []() { glfwPollEvents(); };

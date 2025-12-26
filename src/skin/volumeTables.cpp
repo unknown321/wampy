@@ -197,7 +197,7 @@ void Skin::CopyTableEntry(TableLike *table, std::vector<directoryEntry> *fileLis
 }
 
 void Skin::TabMasterVolume() {
-    if (ImGui::BeginTabItem(Dac::TableTypeToString.at(TABLE_ID_MASTER_VOLUME).c_str())) {
+    if (ImGui::BeginTabItem(gettext(Dac::TableTypeToString.at(TABLE_ID_MASTER_VOLUME).c_str()))) {
         curveEditorTarget = (float *)masterVolumeValues[int(soundEffectOn)][MasterVolumeTableType][MasterVolumeValueType];
         curveYLimit = (1 << 8) - 1; // 255
         curveElementCount = MASTER_VOLUME_MAX + 1;
@@ -432,7 +432,7 @@ void Skin::TabMasterVolume() {
 }
 
 void Skin::TabMasterDSDVolume() {
-    if (ImGui::BeginTabItem(Dac::TableTypeToString.at(TABLE_ID_MASTER_VOLUME_DSD).c_str())) {
+    if (ImGui::BeginTabItem(gettext(Dac::TableTypeToString.at(TABLE_ID_MASTER_VOLUME_DSD).c_str()))) {
         curveEditorTarget = (float *)masterVolumeDSDValues[MasterVolumeDSDTableType];
         curveYLimit = (1 << 15) - 1; // 32767
         curveElementCount = MASTER_VOLUME_MAX + 1;
@@ -601,13 +601,13 @@ void Skin::TabMasterDSDVolume() {
                     }
                 }
 
-                if (ImGui::Button("Copy val", ImVec2(121, 60))) {
+                if (ImGui::Button(gettext("Copy val"), ImVec2(121, 60))) {
                     memcpy(masterVolumeDSDValueBuffer, masterVolumeDSDValues[MasterVolumeDSDTableType], sizeof(masterVolumeDSDValueBuffer));
                     statusStringMasterVolumeDSD = "Copied";
                 }
 
                 ImGui::SameLine();
-                if (ImGui::Button(gettext("Paste val"), ImVec2(121, 60))) {
+                if (ImGui::Button(gettext(gettext("Paste val")), ImVec2(121, 60))) {
                     memcpy(masterVolumeDSDValues[MasterVolumeDSDTableType], masterVolumeDSDValueBuffer, sizeof(masterVolumeDSDValueBuffer));
                     statusStringMasterVolumeDSD = gettext("Pasted");
                 }
@@ -640,7 +640,7 @@ void Skin::TabMasterDSDVolume() {
 }
 
 void Skin::TabToneControl() {
-    if (ImGui::BeginTabItem(Dac::TableTypeToString.at(TABLE_ID_TONE_CONTROL).c_str())) {
+    if (ImGui::BeginTabItem(gettext(Dac::TableTypeToString.at(TABLE_ID_TONE_CONTROL).c_str()))) {
         curveEditorTarget = (float *)toneControlValues[toneControlTableType];
         curveYLimit = (1 << 8) - 1; // 255
         curveElementCount = CODEC_RAM_SIZE;

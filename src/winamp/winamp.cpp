@@ -3,6 +3,8 @@
 #include "../unzip/unzip.cpp"
 #include "../wstring.h"
 #include "imgui_impl_opengl3.h"
+#include "langToString/langToString.h"
+
 #include <thread>
 
 namespace Winamp {
@@ -39,8 +41,7 @@ namespace Winamp {
     const char *defaultSkinPath = "/system/vendor/unknown321/usr/share/skins/winamp/base-2.91.wsz";
 #endif
 
-    const std::list<const char *> filenames = {
-        "main.bmp",
+    const std::list<const char *> filenames = {"main.bmp",
         "titlebar.bmp",
         "cbuttons.bmp",
         "shufrep.bmp",
@@ -854,9 +855,7 @@ namespace Winamp {
 
         if (value >= 1) {
             // bar
-            ImGui::SetCursorPos(
-                ImVec2(70 + Elements.VisBarPeak.upscaled.width * index + space * index, 128 + Elements.VisBar.upscaled.height * coeff)
-            );
+            ImGui::SetCursorPos(ImVec2(70 + Elements.VisBarPeak.upscaled.width * index + space * index, 128 + Elements.VisBar.upscaled.height * coeff));
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
@@ -875,11 +874,7 @@ namespace Winamp {
                 break;
             }
             ImGui::Image(
-                tid,
-                ImVec2(Elements.VisBar.upscaled.width * uvx, Elements.VisBar.upscaled.height * (1 - coeff)),
-                ImVec2(0, coeff),
-                ImVec2(1 * uvx, 1)
-            );
+                tid, ImVec2(Elements.VisBar.upscaled.width * uvx, Elements.VisBar.upscaled.height * (1 - coeff)), ImVec2(0, coeff), ImVec2(1 * uvx, 1));
         }
 
         auto coeffPeak = (float)(100 - peakValues[index].first) / 100;
@@ -896,12 +891,10 @@ namespace Winamp {
             // peak
             ImGui::SetCursorPos(ImVec2(70 + Elements.VisBarPeak.upscaled.width * index + space * index, 125 + offset));
 
-            ImGui::Image(
-                (ImTextureID)Elements.VisBarPeak.textureID,
+            ImGui::Image((ImTextureID)Elements.VisBarPeak.textureID,
                 ImVec2(Elements.VisBarPeak.upscaled.width * uvx, Elements.VisBarPeak.upscaled.height),
                 ImVec2(0, 0),
-                ImVec2(1 * uvx, 1)
-            );
+                ImVec2(1 * uvx, 1));
         }
 #pragma GCC diagnostic pop
     }
@@ -973,10 +966,7 @@ namespace Winamp {
 
         if (textures["titlebar.bmp"].len > 0) {
             Elements.Title.FromPair(textures["titlebar.bmp"])->WithCrop(Magick::RectangleInfo{275, 14, 27, 0})->Load();
-            Elements.ClutterBar.FromPair(textures["titlebar.bmp"])
-                ->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})
-                ->WithPosition(ImVec2(29.0f, 64.0f))
-                ->Load();
+            Elements.ClutterBar.FromPair(textures["titlebar.bmp"])->WithCrop(Magick::RectangleInfo{8, 43, 304, 0})->WithPosition(ImVec2(29.0f, 64.0f))->Load();
         }
 
         if (textures["monoster.bmp"].len > 0) {
@@ -1048,10 +1038,7 @@ namespace Winamp {
             ->WithScale({72, 480 - 58}, false)
             ->WithPosition(ImVec2(800.0f - 72.0f, PlaylistY + 58))
             ->Load();
-        Elements.PlaylistScrollButton.FromPair(textures["pledit.bmp"])
-            ->WithCrop({8, 18, 52, 53})
-            ->WithPosition(ImVec2(800 - 44, PlaylistY + 58))
-            ->Load();
+        Elements.PlaylistScrollButton.FromPair(textures["pledit.bmp"])->WithCrop({8, 18, 52, 53})->WithPosition(ImVec2(800 - 44, PlaylistY + 58))->Load();
 
         Elements.PlaylistBG.FromColor({800 - 35 - 58, 480, 0, 0}, Magick::Color(colors.PlaylistNormalBG));
         Elements.PlaylistBG.WithPosition(ImVec2(35.0f, PlaylistY + 58.0f));
@@ -1116,10 +1103,7 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["shufrep.bmp"])->WithCrop({23, 12, 46, 73})->WithScale({67, 35}, false)->Load();
         bts[1] = bt;
-        Elements.EQButton.WithPosition(637.0f, 168.0f)
-            ->WithTextures(bts)
-            ->WithCallback(Skin::Skin::ToggleDrawEQTab, skin, nullptr)
-            ->WithID("eq");
+        Elements.EQButton.WithPosition(637.0f, 168.0f)->WithTextures(bts)->WithCallback(Skin::Skin::ToggleDrawEQTab, skin, nullptr)->WithID("eq");
 
         //=========
         bts.clear();
@@ -1182,10 +1166,7 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 23, 18})->Load();
         bts[0] = bt;
-        Elements.PlayButton.WithPosition((float)buttonWidth, 256.0f)
-            ->WithTextures(bts)
-            ->WithID("play")
-            ->WithCallback(Winamp::Play, this, nullptr);
+        Elements.PlayButton.WithPosition((float)buttonWidth, 256.0f)->WithTextures(bts)->WithID("play")->WithCallback(Winamp::Play, this, nullptr);
 
         buttonWidth += (int)Elements.PlayButton.textures[0].size.x;
 
@@ -1197,10 +1178,7 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 23 * 2, 18})->Load();
         bts[0] = bt;
-        Elements.PauseButton.WithPosition((float)(buttonWidth), 256.0f)
-            ->WithTextures(bts)
-            ->WithID("pause")
-            ->WithCallback(Winamp::Pause, this, nullptr);
+        Elements.PauseButton.WithPosition((float)(buttonWidth), 256.0f)->WithTextures(bts)->WithID("pause")->WithCallback(Winamp::Pause, this, nullptr);
         buttonWidth += (int)Elements.PauseButton.textures[0].size.x;
 
         //=========
@@ -1211,10 +1189,7 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({23, 18, 23 * 3, 18})->Load();
         bts[0] = bt;
-        Elements.StopButton.WithPosition((float)(buttonWidth), 256.0f)
-            ->WithTextures(bts)
-            ->WithID("stop")
-            ->WithCallback(Winamp::Stop, this, nullptr);
+        Elements.StopButton.WithPosition((float)(buttonWidth), 256.0f)->WithTextures(bts)->WithID("stop")->WithCallback(Winamp::Stop, this, nullptr);
         buttonWidth += (int)Elements.StopButton.textures[0].size.x;
 
         //=========
@@ -1222,23 +1197,18 @@ namespace Winamp {
         // scaling isn't discrete, grow button to regular size plus 1 pixel to fully cover buttons area
         bts.clear();
         flatTexture.Reset();
-        bt.active =
-            flatTexture.FromPair(textures["cbuttons.bmp"])
-                ->WithCrop({22, 18, 23 * 4, 0})
-                ->WithScale({(size_t)Elements.StopButton.textures[0].size.x + 1, (size_t)Elements.StopButton.textures[0].size.y}, false)
-                ->Load();
+        bt.active = flatTexture.FromPair(textures["cbuttons.bmp"])
+                        ->WithCrop({22, 18, 23 * 4, 0})
+                        ->WithScale({(size_t)Elements.StopButton.textures[0].size.x + 1, (size_t)Elements.StopButton.textures[0].size.y}, false)
+                        ->Load();
         bt.size = flatTexture.GetSize();
         flatTexture.Reset();
-        bt.pressed =
-            flatTexture.FromPair(textures["cbuttons.bmp"])
-                ->WithCrop({22, 18, 23 * 4, 18})
-                ->WithScale({(size_t)Elements.StopButton.textures[0].size.x + 1, (size_t)Elements.StopButton.textures[0].size.y}, false)
-                ->Load();
+        bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])
+                         ->WithCrop({22, 18, 23 * 4, 18})
+                         ->WithScale({(size_t)Elements.StopButton.textures[0].size.x + 1, (size_t)Elements.StopButton.textures[0].size.y}, false)
+                         ->Load();
         bts[0] = bt;
-        Elements.NextButton.WithPosition((float)(buttonWidth), 256.0f)
-            ->WithTextures(bts)
-            ->WithID("next")
-            ->WithCallback(Winamp::Next, this, nullptr);
+        Elements.NextButton.WithPosition((float)(buttonWidth), 256.0f)->WithTextures(bts)->WithID("next")->WithCallback(Winamp::Next, this, nullptr);
 
         //=========
         bts.clear();
@@ -1248,10 +1218,7 @@ namespace Winamp {
         flatTexture.Reset();
         bt.pressed = flatTexture.FromPair(textures["cbuttons.bmp"])->WithCrop({22, 16, 114, 16})->Load();
         bts[0] = bt;
-        Elements.EjectButton.WithPosition(396.0f, 259.0f)
-            ->WithTextures(bts)
-            ->WithCallback(Skin::Skin::ToggleDrawSettings, skin, nullptr)
-            ->WithID("eject");
+        Elements.EjectButton.WithPosition(396.0f, 259.0f)->WithTextures(bts)->WithCallback(Skin::Skin::ToggleDrawSettings, skin, nullptr)->WithID("eject");
     }
 
     void Winamp::initializeSliders() {
@@ -1808,16 +1775,14 @@ namespace Winamp {
         formatDuration();
 
         char currentSongTitleTemp[PLAYLIST_SONG_SIZE]{};
-        snprintf(
-            currentSongTitleTemp,
+        snprintf(currentSongTitleTemp,
             PLAYLIST_SONG_SIZE,
             "%s. %s - %s (%d:%02d)",
             n.Track.c_str(),
             n.Artist.c_str(),
             n.Title.c_str(),
             n.Duration / 60,
-            n.Duration % 60
-        );
+            n.Duration % 60);
 
         if (strcmp(m.title, currentSongTitleTemp) == 0) {
             if (!force) {
@@ -1876,6 +1841,23 @@ namespace Winamp {
         getCharRange(&allchars);
         for (const auto c : allchars) {
             range.AddChar(c);
+        }
+
+        // current tl must have all characters
+        auto res = ReadFile(localeDir + "/" + config->language + "/LC_MESSAGES/range");
+        size_t index = 0;
+        while (index < res.size()) {
+            auto v = utfToPoint(res, index);
+            range.AddChar(v);
+        }
+
+        // make sure language name is displayed correctly
+        for (const auto &q : LangToString) {
+            size_t index2 = 0;
+            while (index2 < q.second.size()) {
+                auto v = utfToPoint(q.second, index2);
+                range.AddChar(v);
+            }
         }
 
         range.BuildRanges(&gr);
@@ -2033,12 +2015,10 @@ namespace Winamp {
                 auto really = (sourceNum.size().width() / 9);
                 if (really < glyphsNum) {
                     glyphsNum = (int)really;
-                    DLOG(
-                        "nums_ex is smaller than expected, %d px, can fit %d glyphs, but want %d\n",
+                    DLOG("nums_ex is smaller than expected, %d px, can fit %d glyphs, but want %d\n",
                         sourceNum.size().width(),
                         really,
-                        IM_ARRAYSIZE(rect_ids_num)
-                    );
+                        IM_ARRAYSIZE(rect_ids_num));
                 }
             }
         }

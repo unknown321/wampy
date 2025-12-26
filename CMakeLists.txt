@@ -139,7 +139,9 @@ add_executable(${PROJECT_NAME}
         src/skin/eqTabs.cpp
         src/skin/license.cpp
         src/skin/eqPerSong.cpp
+        src/skin/debug.cpp
         src/skin.cpp
+        src/langToString/langToString.cpp
         src/dac/cxd3778gf_table.cpp
         src/util/util_string.cpp
         src/util/mkpath.cpp
@@ -272,7 +274,6 @@ add_executable(rec
 target_link_libraries(rec PkgConfig::SHINE)
 target_link_libraries(rec "${ICU_DATA_LIBRARIES}" "${ICU_LIBRARIES}")
 
-
 if (DESKTOP EQUAL 1)
     target_compile_definitions(rec PRIVATE DESKTOP=1)
     find_package(ALSA REQUIRED)
@@ -282,6 +283,21 @@ else ()
 endif ()
 
 set_target_properties(rec PROPERTIES
+        BUILD_WITH_INSTALL_RPATH FALSE
+        INSTALL_RPATH_USE_LINK_PATH FALSE
+        INSTALL_RPATH " ./;../lib/;/system/lib;/system/vendor/unknown321/lib;/lib;/system/vendor/sony/lib")
+
+
+add_executable(tl
+        src/langToString/langToString.cpp
+        src/langToString/main.cpp
+)
+
+if (DESKTOP EQUAL 1)
+    target_compile_definitions(tl PRIVATE DESKTOP=1)
+endif ()
+
+set_target_properties(tl PROPERTIES
         BUILD_WITH_INSTALL_RPATH FALSE
         INSTALL_RPATH_USE_LINK_PATH FALSE
         INSTALL_RPATH " ./;../lib/;/system/lib;/system/vendor/unknown321/lib;/lib;/system/vendor/sony/lib")

@@ -6,7 +6,8 @@
 namespace DigitalClock {
     struct Config {
         std::string color{};
-        void Default() { color = "silver"; };
+        std::string language{};
+        void Default() { color = "silver"; }
     };
 } // namespace DigitalClock
 #endif // WAMPY_CONFIG_H
