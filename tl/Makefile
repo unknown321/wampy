@@ -8,7 +8,7 @@ MO_FILES_DIR = locale
 LOCALES_DIR = locales
 MSGID_BUGS_ADDRESS = unknown.at.github@yandex.com
 
-LANGUAGES = en ru ja zh_CN vi es fr de ko pt_BR it pl
+LANGUAGES = en ru ja zh_CN vi es fr de ko pt_BR it pl zh_TW
 
 # PO files for each language - EXPLICIT TARGETS
 PO_FILES = $(addprefix $(PO_FILES_DIR)/,$(addsuffix .po,$(LANGUAGES)))

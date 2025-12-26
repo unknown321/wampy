@@ -8,6 +8,7 @@ std::map<std::string, std::string> LangToString = {
     {"ru", "Русский"},
     {"ja", "日本語"},
     {"zh_CN", "简体中文"},
+    {"zh_TW", "繁體中文 (台灣)"},
     {"vi", "Tiếng Việt"},
     {"es", "Español"},
     {"fr", "Français"},

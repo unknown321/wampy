@@ -478,8 +478,8 @@ this mode, set volume to 120 in default player app and toggle Wampy on.
 `Language` allows you to change UI language. Restart the device to apply changes. Some characters from your
 language might be missing, see [relevant section](#some-characters-are-missing) for fixes.
 
-List of languages: English, Russian, Japanese, Simplified Chinese, Vietnamese, Spanish, French, German,
-Korean, Portuguese (Brazil), Italian, Polish.
+List of languages: English, Russian, Japanese, Simplified Chinese, Traditional Chinese, Vietnamese, Spanish, French,
+German, Korean, Portuguese (Brazil), Italian, Polish.
 
 `Debug` button opens debug page, which you (the user) don't need.
 
