@@ -107,9 +107,11 @@ namespace Cassette {
 
         std::string fp = FontPath;
         if (exists(FontPathCustom)) {
+            DLOG("using custom font %s\n", FontPathCustom.c_str());
             fp = FontPathCustom;
         }
         if (exists(FontPathCustom2)) {
+            DLOG("using custom font %s\n", FontPathCustom2.c_str());
             fp = FontPathCustom2;
         }
 
