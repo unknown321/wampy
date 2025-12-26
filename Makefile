@@ -90,7 +90,7 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 	$(MAKE) -C dmp_feature
 	cp dmp_feature/libdmp_feature.so installer/
 	$(UPX) -qqq --best installer/pstserver
-	$(MAKE) -C tl
+	$(MAKE) -C tl all
 	cp tl/tl.tar.gz installer/
 	cp tl/locales.tar.gz installer/
 	cp libs/llusbdac/llusbdac/llusbdac.ko_bbdmp5 installer/
