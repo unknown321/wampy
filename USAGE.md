@@ -104,7 +104,7 @@ Wampy stores its data on internal storage. In USB mass storage mode these files 
 
 Wampy is limited to one font due to framework specifics. If some characters are replaced with `?`, you can provide
 custom font file, overriding the default one. File must be named `font.tff` (or `font.otf`) and put
-into `internal storage/wampy/fonts/` directory. Supported formats: `.ttf`, `.otf`. Changes are applied after reboot.
+into `<internal storage>/wampy/fonts/` directory. Supported formats: `.ttf`, `.otf`. Changes are applied after reboot.
 Invalid font files will crash Wampy; there will be no graphical indication.
 
 You can get font files with other character sets from https://fonts.google.com/noto. Default is `NotoSansKR-Regular`.
@@ -475,11 +475,13 @@ this mode, set volume to 120 in default player app and toggle Wampy on.
 
 `Show FM tab` shows/hides FM tab, useful for those without FM chip on board (WM1A/Z, ZX300).
 
-`Debug` checkbox enables some logging, which you (the user) don't need. It also shows codec/bitrate when active skin is
-cassette.
+`Language` allows you to change UI language. Restart the device to apply changes. Some characters from your
+language might be missing, see [relevant section](#some-characters-are-missing) for fixes.
 
-`Limit fps`, target fps = 24. Does it really help to save battery/improve performance? Don't know, off by default.
-Applied after restart.
+List of languages: English, Russian, Japanese, Simplified Chinese, Vietnamese, Spanish, French, German,
+Korean, Portuguese (Brazil), Italian, Polish.
+
+`Debug` button opens debug page, which you (the user) don't need.
 
 `Website / Donate` is the most important button with links to GitHub and donation page.
 
