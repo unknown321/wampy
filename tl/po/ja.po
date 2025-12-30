@@ -71,27 +71,27 @@ msgstr "マトリックス"
 
 #: ../src/connector/hagoromoToString.cpp:28
 msgid "A Low"
-msgstr "A ロー"
+msgstr "A LOW"
 
 #: ../src/connector/hagoromoToString.cpp:29
 msgid "A Standard"
-msgstr "A スタンダード"
+msgstr "A STANDARD"
 
 #: ../src/connector/hagoromoToString.cpp:30
 msgid "A High"
-msgstr "A ハイ"
+msgstr "A HIGH"
 
 #: ../src/connector/hagoromoToString.cpp:31
 msgid "B Low"
-msgstr "B ロー"
+msgstr "B LOW"
 
 #: ../src/connector/hagoromoToString.cpp:32
 msgid "B Standard"
-msgstr "B スタンダード"
+msgstr "B STANDARD"
 
 #: ../src/connector/hagoromoToString.cpp:33
 msgid "B High"
-msgstr "B ハイ"
+msgstr "B HIGH"
 
 #: ../src/connector/hagoromoToString.cpp:38
 msgid "Standard"
@@ -99,15 +99,15 @@ msgstr "スタンダード"
 
 #: ../src/connector/hagoromoToString.cpp:39
 msgid "Arm resonance"
-msgstr "アーム共振"
+msgstr "アームレゾナンス"
 
 #: ../src/connector/hagoromoToString.cpp:40
 msgid "Turntable resonance"
-msgstr "ターンテーブル共振"
+msgstr "ターンテーブル"
 
 #: ../src/connector/hagoromoToString.cpp:41
 msgid "Surface noise"
-msgstr "サーフェスノイズ"
+msgstr "サーフェイスノイズ"
 
 #: ../src/connector/hagoromoToString.cpp:44
 msgid "NW-A50 default mode?"
@@ -135,7 +135,7 @@ msgstr "ストリングス"
 
 #: ../src/dac/dac.cpp:24
 msgid "Master volume"
-msgstr "マスターボリューム"
+msgstr "マスター音量"
 
 #: ../src/dac/dac.cpp:26 ../src/skin/volumeTables.cpp:913
 msgid "Tone control"
@@ -143,7 +143,7 @@ msgstr "トーンコントロール"
 
 #: ../src/dac/dac.cpp:27
 msgid "Master volume (DSD)"
-msgstr "マスターボリューム (DSD)"
+msgstr "マスター音量(DSD)"
 
 #: ../src/skin/cassette.cpp:6 ../src/skin/digiclock.cpp:7
 #: ../src/skin/eqPerSong.cpp:7 ../src/skin/misc.cpp:9
@@ -154,7 +154,7 @@ msgstr "USBマスストレージモードを無効化"
 
 #: ../src/skin/cassette.cpp:10
 msgid "Randomize?"
-msgstr "シャッフルしますか？"
+msgstr "ランダムにしますか？"
 
 #: ../src/skin/cassette.cpp:23
 msgid "Codec"
@@ -162,7 +162,7 @@ msgstr "コーデック"
 
 #: ../src/skin/cassette.cpp:24
 msgid "Tape"
-msgstr "カセット"
+msgstr "テープ"
 
 #: ../src/skin/cassette.cpp:25
 msgid "Reel"
@@ -178,7 +178,7 @@ msgstr "最初に音楽を停止してください。"
 
 #: ../src/skin/dac.cpp:10
 msgid "Stop music"
-msgstr "音楽停止"
+msgstr "音楽を停止"
 
 #: ../src/skin/dac.cpp:17 ../src/skin/eqTabs.cpp:248 ../src/skin/eqTabs.cpp:328
 #: ../src/skin/eqTabs.cpp:363 ../src/skin/fm.cpp:47
@@ -211,15 +211,15 @@ msgstr "デバッグ"
 
 #: ../src/skin/debug.cpp:7
 msgid "Skin debug"
-msgstr "スキンデバッグ"
+msgstr "スキンのデバッグ"
 
 #: ../src/skin/debug.cpp:16
 msgid "Start ADB daemon (next boot)"
-msgstr "ADBデーモンを起動（次回起動時）"
+msgstr "ADBデーモンを起動(次回の起動時)"
 
 #: ../src/skin/debug.cpp:22
 msgid "Create log file"
-msgstr "ログファイル作成"
+msgstr "ログファイルを作成"
 
 #: ../src/skin/debug.cpp:27
 msgid "Limit fps"
@@ -255,7 +255,7 @@ msgstr "寄付"
 #: ../src/skin/eqPerSong.cpp:12
 msgid "Feature disabled. Toggle it on 'Misc' tab or use button below."
 msgstr ""
-"機能が無効です。'その他'タブで有効にするか、下のボタンを使用してください。"
+"機能が無効です。「その他」のタブで有効にするか、下のボタンを使用してください。"
 
 #: ../src/skin/eqPerSong.cpp:26
 #, c-format
@@ -327,23 +327,23 @@ msgstr "トーンコントロール"
 
 #: ../src/skin/eqPerSong.cpp:173
 msgid "Tone Control Low"
-msgstr "ロー（低音）"
+msgstr "トーン:低"
 
 #: ../src/skin/eqPerSong.cpp:179
 msgid "Tone Control Mid"
-msgstr "ミッド（中音）"
+msgstr "トーン:中"
 
 #: ../src/skin/eqPerSong.cpp:185
 msgid "Tone Control High"
-msgstr "ハイ（高音）"
+msgstr "トーン:高"
 
 #: ../src/skin/eqPerSong.cpp:209
 msgid "Vinyl Processor"
-msgstr "ヴァイナルプロセッサー"
+msgstr "バイナルプロセッサー"
 
 #: ../src/skin/eqPerSong.cpp:215
 msgid "Vinyl Type"
-msgstr "ヴァイナルタイプ"
+msgstr "バイナルタイプ"
 
 #: ../src/skin/eqPerSong.cpp:233
 msgid "Dynamic Normalizer"
@@ -355,11 +355,11 @@ msgstr "削除"
 
 #: ../src/skin/eqPerSong.cpp:253
 msgid "Removed"
-msgstr "削除済み"
+msgstr "削除しました"
 
 #: ../src/skin/eqPerSong.cpp:255
 msgid "Remove failed"
-msgstr "削除失敗"
+msgstr "削除に失敗しました"
 
 #: ../src/skin/eqPerSong.cpp:283 ../src/skin/volumeTables.cpp:409
 #: ../src/skin/volumeTables.cpp:423 ../src/skin/volumeTables.cpp:615
@@ -370,11 +370,11 @@ msgstr "デフォルトに設定"
 
 #: ../src/skin/eqPerSong.cpp:285
 msgid "Default EQ set"
-msgstr "デフォルトEQ設定済み"
+msgstr "デフォルトのEQに設定"
 
 #: ../src/skin/eqPerSong.cpp:287
 msgid "Set EQ as default failed"
-msgstr "EQのデフォルト設定失敗"
+msgstr "デフォルトのEQ設定に失敗"
 
 #: ../src/skin/eqPerSong.cpp:293 ../src/skin/volumeTables.cpp:366
 #: ../src/skin/volumeTables.cpp:577 ../src/skin/volumeTables.cpp:781
@@ -384,11 +384,11 @@ msgstr "保存"
 #: ../src/skin/eqPerSong.cpp:295 ../src/skin/volumeTables.cpp:371
 #: ../src/skin/volumeTables.cpp:582 ../src/skin/volumeTables.cpp:786
 msgid "Saved"
-msgstr "保存済み"
+msgstr "保存しました"
 
 #: ../src/skin/eqPerSong.cpp:297
 msgid "Save failed"
-msgstr "保存失敗"
+msgstr "保存に失敗しました"
 
 #: ../src/skin/eqPerSong.cpp:303
 msgid "Save dir"
@@ -396,11 +396,11 @@ msgstr "ディレクトリ保存"
 
 #: ../src/skin/eqPerSong.cpp:305
 msgid "Saved dir"
-msgstr "ディレクトリ保存済み"
+msgstr "保存しました"
 
 #: ../src/skin/eqPerSong.cpp:307
 msgid "Save dir failed"
-msgstr "ディレクトリ保存失敗"
+msgstr "保存に失敗しました"
 
 #: ../src/skin/eqPerSong.cpp:314 ../src/skin/eqPerSong.cpp:324
 msgid "Remove dir"
@@ -408,11 +408,11 @@ msgstr "ディレクトリ削除"
 
 #: ../src/skin/eqPerSong.cpp:316
 msgid "Dir removed"
-msgstr "ディレクトリ削除済み"
+msgstr "削除しました"
 
 #: ../src/skin/eqPerSong.cpp:318
 msgid "Dir remove failed"
-msgstr "ディレクトリ削除失敗"
+msgstr "削除に失敗しました"
 
 #: ../src/skin/eqTabs.cpp:6
 msgid "Type:"
@@ -441,7 +441,7 @@ msgstr "トーン周波数タイプ:"
 
 #: ../src/skin/eqTabs.cpp:281
 msgid "Vinylizer type:"
-msgstr "ヴァイナライザータイプ:"
+msgstr "バイナライザータイプ:"
 
 #: ../src/skin/fm.cpp:36
 msgid "FM radio is unavailable on this device"
@@ -453,7 +453,7 @@ msgstr "このタブを非表示"
 
 #: ../src/skin/fm.cpp:67 ../src/skin/fm.cpp:69
 msgid "Recording"
-msgstr "レコーディング"
+msgstr "録音"
 
 #: ../src/skin/fm.cpp:73 ../src/skin/fm.cpp:75
 msgid "Stereo"
@@ -461,7 +461,7 @@ msgstr "ステレオ"
 
 #: ../src/skin/fm.cpp:146 ../src/skin/fm.cpp:151
 msgid "Recording settings"
-msgstr "レコーディング設定"
+msgstr "録音の設定"
 
 #: ../src/skin/fm.cpp:154
 msgid "Storage: "
@@ -473,7 +473,7 @@ msgstr "コーデック:"
 
 #: ../src/skin/fm.cpp:250
 msgid "Internal ("
-msgstr "内部ストレージ ("
+msgstr "内部 ("
 
 #: ../src/skin/fm.cpp:251
 msgid "SD Card ("
@@ -497,31 +497,31 @@ msgstr " 分"
 
 #: ../src/skin/misc.cpp:16
 msgid "Swap prev/next buttons"
-msgstr "前/次ボタンを入れ替え"
+msgstr "前/次のボタンを入れ替え"
 
 #: ../src/skin/misc.cpp:23
 msgid "Export Walkman bookmarks"
-msgstr "ウォークマンブックマークをエクスポート"
+msgstr "ブックマークをエクスポート"
 
 #: ../src/skin/misc.cpp:25
 msgid "Exported"
-msgstr "エクスポート済み"
+msgstr "エクスポートしました"
 
 #: ../src/skin/misc.cpp:37
 msgid "Huge cover art"
-msgstr "特大カバーアート"
+msgstr "特大のカバーアート"
 
 #: ../src/skin/misc.cpp:46
 msgid "Removed!"
-msgstr "削除済み！"
+msgstr "削除しました！"
 
 #: ../src/skin/misc.cpp:61 ../src/skin/misc.cpp:64
 msgid "Show time"
-msgstr "時間表示"
+msgstr "時間を表示"
 
 #: ../src/skin/misc.cpp:72
 msgid "Set default volume tables"
-msgstr "デフォルトボリュームテーブルを設定"
+msgstr "デフォルト音量テーブルを設定"
 
 #: ../src/skin/misc.cpp:77
 msgid "OK!"
@@ -529,11 +529,11 @@ msgstr "OK！"
 
 #: ../src/skin/misc.cpp:99
 msgid "Limit max volume"
-msgstr "最大ボリューム制限"
+msgstr "最大音量の制限"
 
 #: ../src/skin/misc.cpp:106
 msgid "Window position"
-msgstr "ウィンドウ位置"
+msgstr "ウィンドウの位置"
 
 #: ../src/skin/misc.cpp:110
 msgid "Enable EQ per song"
@@ -541,7 +541,7 @@ msgstr "曲ごとのEQを有効化"
 
 #: ../src/skin/misc.cpp:130
 msgid "Disable touchscreen"
-msgstr "タッチスクリーン無効化"
+msgstr "タッチスクリーンを無効化"
 
 #: ../src/skin/misc.cpp:140
 msgid "Lock when screen is off"
@@ -565,7 +565,7 @@ msgstr "サードパーティライセンス"
 
 #: ../src/skin/misc.cpp:203
 msgid "Website / Donate"
-msgstr "ウェブサイト / 寄付"
+msgstr "ウェブサイト/寄付"
 
 #: ../src/skin/volumeTables.cpp:211 ../src/skin/volumeTables.cpp:447
 #: ../src/skin/volumeTables.cpp:654
@@ -579,7 +579,7 @@ msgstr "ファイル:"
 #: ../src/skin/volumeTables.cpp:670 ../src/skin/volumeTables.cpp:726
 #: ../src/skin/volumeTables.cpp:788 ../src/skin/volumeTables.cpp:805
 msgid "Failed"
-msgstr "失敗"
+msgstr "失敗しました"
 
 #: ../src/skin/volumeTables.cpp:251 ../src/skin/volumeTables.cpp:487
 #: ../src/skin/volumeTables.cpp:694
@@ -588,7 +588,7 @@ msgstr "テーブルタイプ:"
 
 #: ../src/skin/volumeTables.cpp:272
 msgid "Value type:"
-msgstr "値タイプ:"
+msgstr "値のタイプ:"
 
 #: ../src/skin/volumeTables.cpp:292
 msgid "Sound effect"
@@ -597,7 +597,7 @@ msgstr "サウンドエフェクト"
 #: ../src/skin/volumeTables.cpp:304 ../src/skin/volumeTables.cpp:516
 #: ../src/skin/volumeTables.cpp:723
 msgid "Load"
-msgstr "ロード"
+msgstr "読み込み"
 
 #: ../src/skin/volumeTables.cpp:329 ../src/skin/volumeTables.cpp:540
 #: ../src/skin/volumeTables.cpp:745
@@ -617,7 +617,7 @@ msgstr "適用"
 #: ../src/skin/volumeTables.cpp:388 ../src/skin/volumeTables.cpp:598
 #: ../src/skin/volumeTables.cpp:803
 msgid "Applied"
-msgstr "適用済み"
+msgstr "適用しました"
 
 #: ../src/skin/volumeTables.cpp:394 ../src/skin/volumeTables.cpp:604
 #: ../src/skin/volumeTables.cpp:809
@@ -626,17 +626,17 @@ msgstr "値をコピー"
 
 #: ../src/skin/volumeTables.cpp:398 ../src/skin/volumeTables.cpp:811
 msgid "Copied"
-msgstr "コピー済み"
+msgstr "コピーしました"
 
 #: ../src/skin/volumeTables.cpp:402 ../src/skin/volumeTables.cpp:610
 #: ../src/skin/volumeTables.cpp:815
 msgid "Paste val"
-msgstr "値をペースト"
+msgstr "値を貼り付け"
 
 #: ../src/skin/volumeTables.cpp:406 ../src/skin/volumeTables.cpp:612
 #: ../src/skin/volumeTables.cpp:817
 msgid "Pasted"
-msgstr "ペースト済み"
+msgstr "貼り付けました"
 
 #: ../src/skin/volumeTables.cpp:847
 msgid "Status"
@@ -644,7 +644,7 @@ msgstr "ステータス"
 
 #: ../src/skin/volumeTables.cpp:852
 msgid "Refresh"
-msgstr "リフレッシュ"
+msgstr "更新"
 
 #: ../src/skin/volumeTables.cpp:881
 msgid "Model ID"
@@ -660,11 +660,11 @@ msgstr "デバイスプロダクト"
 
 #: ../src/skin/volumeTables.cpp:901
 msgid "Master volume table"
-msgstr "マスターボリュームテーブル"
+msgstr "マスター音量テーブル"
 
 #: ../src/skin/volumeTables.cpp:907
 msgid "Master volume table (DSD)"
-msgstr "マスターボリュームテーブル (DSD)"
+msgstr "マスター音量テーブル(DSD)"
 
 #: ../src/skin/volumeTables.cpp:919
 msgid "Audio card"
@@ -680,15 +680,15 @@ msgstr "サンプルレート"
 
 #: ../src/skin/volumeTables.cpp:937
 msgid "CPU frequency (min/cur)"
-msgstr "CPU周波数 (最小/現在)"
+msgstr "CPU周波数(最小/現在)"
 
 #: ../src/skin/volumeTables.cpp:998
 msgid "Zoom in"
-msgstr "ズームイン"
+msgstr "拡大"
 
 #: ../src/skin/volumeTables.cpp:1006
 msgid "Zoom out"
-msgstr "ズームアウト"
+msgstr "縮小"
 
 #: ../src/skin/volumeTables.cpp:1014 ../src/config.cpp:12
 msgid "Left"
@@ -712,15 +712,15 @@ msgstr "戻る"
 
 #: ../src/skin/w1.cpp:12
 msgid "Walkman One settings"
-msgstr "ウォークマンワン設定"
+msgstr "Walkman Oneの設定"
 
 #: ../src/skin/w1.cpp:16
 msgid "Config file not found\n"
-msgstr "設定ファイルが見つかりません\n"
+msgstr "構成ファイルが見つかりません\n"
 
 #: ../src/skin/w1.cpp:27 ../src/skin/w1.cpp:156
 msgid "Interface color"
-msgstr "インターフェースカラー"
+msgstr "インターフェースの色"
 
 #: ../src/skin/w1.cpp:48
 msgid "Sound signature"
@@ -732,19 +732,19 @@ msgstr "リージョン"
 
 #: ../src/skin/w1.cpp:89
 msgid "Remote option with any region"
-msgstr "任意のリージョンでのリモートオプション"
+msgstr "リモートのリージョン制限を解除"
 
 #: ../src/skin/w1.cpp:99
 msgid "Plus mode v2"
-msgstr "プラスモードv2"
+msgstr "Plus mode v2"
 
 #: ../src/skin/w1.cpp:109
 msgid "Plus mode by default"
-msgstr "デフォルトでプラスモード"
+msgstr "Plus modeをデフォルトに設定"
 
 #: ../src/skin/w1.cpp:119
 msgid "Lower gain mode"
-msgstr "ロワーゲインモード"
+msgstr "低ゲインモード"
 
 #: ../src/skin/w1.cpp:129
 msgid "Different DAC init mode"
@@ -760,15 +760,15 @@ msgstr "変更を適用するにはデバイスを再起動してください"
 
 #: ../src/skin/w1.cpp:171
 msgid "Change color"
-msgstr "カラー変更"
+msgstr "色を変更"
 
 #: ../src/skin/winamp.cpp:27
 msgid "Load skin"
-msgstr "スキンをロード"
+msgstr "スキン読み込み"
 
 #: ../src/skin/winamp.cpp:28
 msgid "Loading "
-msgstr "ロード中 "
+msgstr "読み込み中 "
 
 #: ../src/skin/winamp.cpp:47
 msgid "Use bitmap font"
@@ -784,7 +784,7 @@ msgstr "プレイリストでビットマップフォントを使用"
 
 #: ../src/skin/winamp.cpp:67
 msgid "Visualizer Winamp mode"
-msgstr "ビジュアライザーウイナンプモード"
+msgstr "ビジュアライザーWinampモード"
 
 #: ../src/skin/winamp.cpp:73
 msgid "Prefer time remaining"
@@ -800,7 +800,7 @@ msgstr "クラッターバーを表示"
 
 #: ../src/skin/winamp.cpp:96
 msgid "Skin transparency"
-msgstr "スキントランスペアレンシー"
+msgstr "スキンの透過"
 
 #: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
 #: ../src/w1/w1.cpp:16
@@ -829,15 +829,15 @@ msgstr "緑"
 
 #: ../src/w1/w1.cpp:49
 msgid "neutral"
-msgstr "ニュートラル"
+msgstr "Neutral"
 
 #: ../src/w1/w1.cpp:49
 msgid "warm"
-msgstr "ウォーム"
+msgstr "Warm"
 
 #: ../src/w1/w1.cpp:49
 msgid "bright"
-msgstr "明るい"
+msgstr "Bright"
 
 #: ../src/w1/w1.cpp:49
 msgid "wm1z"
@@ -849,7 +849,7 @@ msgstr "中央"
 
 #: ../src/skin.cpp:212
 msgid "✓ Loaded "
-msgstr "✓ ロード済み "
+msgstr "✓ 読み込み済み "
 
 #: ../src/skin.cpp:372 ../src/skin.cpp:389
 msgid "Skin"
@@ -869,11 +869,11 @@ msgstr "カセット"
 
 #: ../src/skin.cpp:437
 msgid "DigiClock"
-msgstr "デジクロック"
+msgstr "デジタル時計"
 
 #: ../src/skin.cpp:446
 msgid "Set as active"
-msgstr "アクティブに設定"
+msgstr "有効に設定"
 
 #: ../src/skin.cpp:681
 msgid "Remove Wampy logs ("
