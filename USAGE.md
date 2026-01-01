@@ -39,6 +39,7 @@
 * [Equalizer per song settings (EQ/Song)](#equalizer-per-song-settings-eqsong)
 * [FM radio](#fm-radio)
 * [ATRAC support](#atrac-support)
+* [CUE Sheets](#cue-sheets)
 * [Providing debug information](#providing-debug-information)
 
 <!-- TOC -->
@@ -117,7 +118,7 @@ Wampy does not work with:
 
 - Language study
 - SensMe
-- Radio
+- CUE Sheets
 
 ### Winamp
 
@@ -566,6 +567,11 @@ the device to play them.
 
 By default, [ATRAC](https://en.wikipedia.org/wiki/ATRAC) is locked to JP region (0x0). Wampy disables that restriction
 during installation.
+
+## CUE Sheets
+
+Some regions (CN, 0x4) have "CUE Sheets" icon on library view screen. Wampy enables that icon for all regions. Note:
+CUE works only with APE; other files won't show.
 
 ## Providing debug information
 

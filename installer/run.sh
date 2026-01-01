@@ -208,6 +208,50 @@ install() {
     ;;
   esac
 
+   # patch to enable "CUE Sheets" icon
+   log "patching HgrmMediaPlayerApp"
+   test -f /system/vendor/sony/bin/HgrmMediaPlayerApp_vendor
+   if test $? -ne 0; then
+     ${CP} -fp /system/vendor/sony/bin/HgrmMediaPlayerApp /system/vendor/sony/bin/HgrmMediaPlayerApp_vendor
+   fi
+   HgrmMD5=$(${MD5} /system/vendor/sony/bin/HgrmMediaPlayerApp | ${AWK} '{print $1}')
+   case "${HgrmMD5}" in
+   "f42a69b4cc8efd6aa2444312edcd5530")
+     log "HgrmMediaPlayerApp, CUE icon already patched"
+     ;;
+   "deb923000c89b87c0253d1b866baa9b3")
+     log "patching HgrmMediaPlayerApp (Walkman One)"
+     ${PRINTF} "\x00" > /tmp/zero
+     ${DD} if=/tmp/zero of=/system/vendor/sony/bin/HgrmMediaPlayerApp obs=1 seek=2542992 conv=notrunc
+     HgrmMD5=$(${MD5} /system/vendor/sony/bin/HgrmMediaPlayerApp | ${AWK} '{print $1}')
+     log "patched, new hash is ${HgrmMD5}"
+     if test "${HgrmMD5}" == "f42a69b4cc8efd6aa2444312edcd5530"; then
+       log "success"
+     else
+       log "failure, rolling back"
+       ${CP} -p /system/vendor/sony/bin/HgrmMediaPlayerApp_vendor /system/vendor/sony/bin/HgrmMediaPlayerApp
+       ${CHMOD} 0755 /system/vendor/sony/bin/HgrmMediaPlayerApp
+     fi
+     ;;
+    "609961954aed9d7e9fbbd9924be8018c")
+      log "patching HgrmMediaPlayerApp (stock)"
+      ${PRINTF} "\x00" > /tmp/zero
+      ${DD} if=/tmp/zero of=/system/vendor/sony/bin/HgrmMediaPlayerApp obs=1 seek=2542992 conv=notrunc
+      HgrmMD5=$(${MD5} /system/vendor/sony/bin/HgrmMediaPlayerApp | ${AWK} '{print $1}')
+      log "patched, new hash is ${HgrmMD5}"
+      if test "${HgrmMD5}" == "f96c52d789ba078d797f417921fa7412"; then
+        log "success"
+      else
+        log "failure, rolling back"
+        ${CP} -p /system/vendor/sony/bin/HgrmMediaPlayerApp_vendor /system/vendor/sony/bin/HgrmMediaPlayerApp
+        ${CHMOD} 0755 /system/vendor/sony/bin/HgrmMediaPlayerApp
+      fi
+      ;;
+   *)
+     log "unexpected HgrmMediaPlayerApp hash ${HgrmMD5}"
+     ;;
+   esac
+
   log "installing tuner library"
   test -f /system/vendor/sony/lib/libTunerPlayerService.so_vendor
   if test $? -ne 0; then

@@ -114,6 +114,14 @@ uninstall() {
     ${CHMOD} 0755 /system/vendor/sony/lib/libTunerPlayerService.so
     ${CHOWN} root:shell /system/vendor/sony/lib/libTunerPlayerService.so
   fi
+
+  test -f /system/vendor/sony/bin/HgrmMediaPlayerApp_vendor
+  if busybox test $? -eq 0; then
+    log "restoring HgrmMediaPlayerApp from backup"
+    ${CP} -f /system/vendor/sony/bin/HgrmMediaPlayerApp_vendor /system/vendor/sony/bin/HgrmMediaPlayerApp
+    ${CHMOD} 0755 /system/vendor/sony/bin/HgrmMediaPlayerApp
+    ${CHOWN} root:shell /system/vendor/sony/bin/HgrmMediaPlayerApp
+  fi
 }
 
 log "uninstaller for $(cat product_info)"
