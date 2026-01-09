@@ -86,7 +86,7 @@ day_%.jpg:
 	@convert -size 140x92 xc:"#$(COLOR_BG)" temp_base.png
 	@convert temp_base.png \
 	  -fill "rgba(0,0,0,0.05)" -font "DSEG14-Modern$(STYLE)" -pointsize 80 \
-	  -draw "gravity center text 0,0 '88'" temp_back.png
+	  -draw "gravity center text 0,0 '~~'" temp_back.png
 	@convert temp_back.png \
 	  -fill "#343434" -font "DSEG14-Modern$(STYLE)" -pointsize 80 \
 	  -draw "gravity center text 0,0 '$(word $(shell expr $* + 1),$(DAY_MAP))'" \
