@@ -1,0 +1,125 @@
+COLOR_BG ?= ff8e00
+STYLE ?=
+STYLE_BOLD ?=
+
+%_big.jpg:
+	@rm -f temp_*.png
+	@convert -size 104x204 xc:"#$(COLOR_BG)" temp_base.png
+	@convert temp_base.png \
+	  -fill "rgba(0,0,0,0.05)" -font "DSEG7-Classic-Bold$(STYLE_BOLD)" -pointsize 140 \
+	  -draw "gravity center text 0,0 '8'" temp_back.png
+	@convert temp_back.png \
+	  -fill "#343434" -font "DSEG7-Classic-Bold$(STYLE_BOLD)" -pointsize 140 \
+	  -draw "gravity center text 0,0 '$*'" \
+	  -rotate -90 \
+	  $@
+	@rm -f temp_*.png
+
+%_medium.jpg:
+	@rm -f temp_*.png
+	@convert -size 62x92 xc:"#$(COLOR_BG)" temp_base.png
+	@convert temp_base.png \
+	  -fill "rgba(0,0,0,0.05)" -font "DSEG7-Modern$(STYLE)" -pointsize 80 \
+	  -draw "gravity center text 0,0 '8'" temp_back.png
+	@convert temp_back.png \
+	  -fill "#343434" -font "DSEG7-Modern$(STYLE)" -pointsize 80 \
+	  -draw "gravity center text 0,0 '$*'" \
+	  -rotate -90 \
+	  $@
+	@rm -f *.png
+
+%_small.jpg:
+	@rm -f temp_*.png
+	@convert -size 30x48 xc:"#$(COLOR_BG)" temp_base.png
+	@convert temp_base.png \
+	  -fill "rgba(0,0,0,0.05)" -font "DSEG7-Modern$(STYLE)" -pointsize 40 \
+	  -draw "gravity center text 0,0 '8'" temp_back.png
+	@convert temp_back.png \
+	  -fill "#343434" -font "DSEG7-Modern$(STYLE)" -pointsize 40 \
+	  -draw "gravity center text 0,0 '$*'" \
+	  -rotate -90 \
+	  $@
+	@rm -f *.png
+
+colon.jpg:
+	@rm -f temp_*.png
+	@convert -size 30x114 xc:"#$(COLOR_BG)" temp_base.png
+	@convert temp_base.png \
+	  -fill "rgba(0,0,0,0.05)" -font "DSEG14-Classic-Bold$(STYLE_BOLD)" -pointsize 140 \
+	  -draw "gravity center text 0,10 ':'" temp_back.png
+	@convert temp_back.png \
+	  -fill "#343434" -font "DSEG14-Classic-Bold$(STYLE_BOLD)" -pointsize 140 \
+	  -draw "gravity center text 0,10 ':'" \
+	  -rotate -90 \
+	  $@
+	@rm -f *.png
+
+minus.jpg:
+	@rm -f temp_*.png
+	@convert -size 34x22 xc:"#$(COLOR_BG)" temp_base.png
+	@convert temp_base.png \
+	  -fill "rgba(0,0,0,0.05)" -font "DSEG7-Modern$(STYLE)" -pointsize 40 \
+	  -draw "gravity center text 0,0 '-'" temp_back.png
+	@convert temp_back.png \
+	  -fill "#343434" -font "DSEG7-Modern$(STYLE)" -pointsize 40 \
+	  -draw "gravity center text 0,0 '-'" \
+	  -rotate -90 \
+	  $@
+	@rm -f *.png
+
+dot.jpg:
+	@rm -f temp_*.png
+	@convert -size 30x74 xc:"#$(COLOR_BG)" temp_base.png
+	@convert temp_base.png \
+	  -fill "rgba(0,0,0,0.05)" -font "DSEG14-Classic-Regular" -pointsize 90 \
+	  -draw "gravity center text 0,-10 '.'" temp_back.png
+	@convert temp_back.png \
+	  -fill "#343434" -font "DSEG14-Classic-Regular" -pointsize 90 \
+	  -draw "gravity center text 0,-10 '.'" \
+	  -rotate -90 \
+	  $@
+	@rm -f *.png
+
+
+day_%.jpg:
+	@rm -f temp_*.png
+	@convert -size 140x92 xc:"#$(COLOR_BG)" temp_base.png
+	@convert temp_base.png \
+	  -fill "rgba(0,0,0,0.05)" -font "DSEG14-Modern$(STYLE)" -pointsize 80 \
+	  -draw "gravity center text 0,0 '88'" temp_back.png
+	@convert temp_back.png \
+	  -fill "#343434" -font "DSEG14-Modern$(STYLE)" -pointsize 80 \
+	  -draw "gravity center text 0,0 '$(word $(shell expr $* + 1),$(DAY_MAP))'" \
+	  -rotate -90 \
+	  $@
+	@rm -f *.png
+
+shoe.jpg:
+	@convert -size 132x132 xc:"#$(COLOR_BG)" $@
+
+background.jpg:
+	@convert -size 800x480 xc:"#$(COLOR_BG)" $@
+
+foreground.png:
+	@convert -size 800x480 xc:"#$(COLOR_BG)" $@
+
+NUMBERS := 0 1 2 3 4 5 6 7 8 9
+DAYS := 0 1 2 3 4 5 6
+DAY_MAP := su mo tu we th fr sa
+
+BIG_TARGETS := $(addsuffix _big.jpg,$(NUMBERS))
+SMALL_TARGETS := $(addsuffix _small.jpg,$(NUMBERS))
+MEDIUM_TARGETS := $(addsuffix _medium.jpg,$(NUMBERS))
+DAYS := $(addprefix day_,$(addsuffix .jpg,$(DAYS)))
+
+build: $(BIG_TARGETS) $(SMALL_TARGETS) $(MEDIUM_TARGETS) $(DAYS) colon.jpg dot.jpg minus.jpg shoe.jpg background.jpg foreground.png
+
+%:
+	mkdir $@
+	cd $@ && $(MAKE) -f ../Makefile-segment build
+
+clean: 
+	-@rm -f segment-*
+
+.DEFAULT_GOAL=build
+.PHONY: build

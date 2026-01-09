@@ -22,10 +22,11 @@ namespace DigitalClock {
         std::vector<FlatTexture> NumbersSmall;
         std::vector<FlatTexture> Days;
         FlatTexture Colon;
-        FlatTexture Dot;
-        FlatTexture Shoe;
+        FlatTexture Dot;  // unused
+        FlatTexture Shoe; // unused
         FlatTexture Minus;
         Button ToggleSettings;
+        FlatTexture Background;
     };
 
     class DigitalClock : public SkinVariant {
@@ -40,6 +41,7 @@ namespace DigitalClock {
         Config *config{};
         time_t rawtime{};
         tm *timeinfo{};
+        bool hasBackground = false;
 
         uint H1{};
         uint H2{};
