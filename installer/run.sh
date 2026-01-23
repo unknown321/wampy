@@ -41,6 +41,16 @@ clearBadBoots() {
   log "badboots = $(${GREP} badboots /contents/wampy/config.ini)"
 }
 
+preflightCheck() {
+  if ! test -f /system/vendor/sony/lib/libicudata.so.61; then
+      log "------------------------"
+      log "Outdated firmware, please upgrade to latest firmware version first."
+      log "Aborting installation."
+      log "------------------------"
+      exit 0
+  fi
+}
+
 install() {
   log "installing ${BINARY}"
   ${MKDIR} -p ${VENDOR}/bin/
@@ -268,6 +278,7 @@ log "installing $(cat product_info)"
 
 mount -t ext4 -o rw /emmc@android /system
 
+preflightCheck
 install
 
 sync
