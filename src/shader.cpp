@@ -1,6 +1,13 @@
 #include "shader.h"
 #include "util/util.h"
 
+// use glslangValidator beforehand
+// https:// registry.khronos.org/OpenGL-Refpages/es2.0/
+// https://www.khronos.org/files/opengles_shading_language.pdf
+
+// setting variables during execution (Texture to 0):
+// glUniform1i(glGetUniformLocation(sp, "Texture"), 0);
+
 const GLchar *vertexSource = "#version 100\n"
                              "uniform mat4 ProjMtx;\n"
                              "attribute vec3 Position;\n"
@@ -16,7 +23,8 @@ const GLchar *vertexSource = "#version 100\n"
                              "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
                              "}\n";
 
-const GLchar *fragmentSource = "#ifdef GL_ES\n"
+const GLchar *fragmentSource = "#version 100\n"
+                               "#ifdef GL_ES\n"
                                "    precision mediump float;\n"
                                "#endif\n"
                                "uniform sampler2D Texture;\n"
@@ -25,12 +33,11 @@ const GLchar *fragmentSource = "#ifdef GL_ES\n"
                                "void main()\n"
                                "{\n"
                                "    gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV.st);\n"
-                               //        "    gl_FragColor = vec4(0.3,0.5,0.4,0.4);\n"
                                "}\n";
 
-GLuint ShaderProgram() {
+GLuint ShaderProgram(const GLchar *vertex, const GLchar *fragment) {
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexSource, nullptr);
+    glShaderSource(vertexShader, 1, &vertex, nullptr);
     glCompileShader(vertexShader);
 
     GLint status;
@@ -43,7 +50,7 @@ GLuint ShaderProgram() {
     }
 
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
+    glShaderSource(fragmentShader, 1, &fragment, nullptr);
     glCompileShader(fragmentShader);
 
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
@@ -85,13 +92,6 @@ GLuint ShaderProgram() {
     return shaderProgram;
 }
 
-void GLAPIENTRY
-GlMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
-    DLOG(
-        "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-        type,
-        severity,
-        message
-    );
+void GLAPIENTRY GlMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
+    DLOG("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);
 }

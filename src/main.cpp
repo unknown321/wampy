@@ -351,7 +351,7 @@ int main(int, char **) {
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-    GLuint shaderProgram = ShaderProgram();
+    GLuint shaderProgram = ShaderProgram(vertexSource, fragmentSource);
 
     ImVec2 imguiWindowPos = ImVec2(0, 0);
     ImVec2 imguiWindowSize = ImVec2(IMGUI_WIDTH, IMGUI_HEIGHT);

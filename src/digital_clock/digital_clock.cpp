@@ -20,8 +20,7 @@ namespace DigitalClock {
     const int numberWidth = 104;
     const int screenWidth = 480;
 
-    std::map<std::string, std::string> colorsDigitalClock = {
-        {"Silver", "silver"},
+    std::map<std::string, std::string> colorsDigitalClock = {{"Silver", "silver"},
         {"Gold", "gold"},
         {"Blue", "blue"},
         {"Blue 2012", "blue_2012"},
@@ -32,8 +31,22 @@ namespace DigitalClock {
         {"Purple", "purple"},
         {"Red product", "red_product"},
         {"Space Gray", "space_gray"},
-    };
-
+        {"Segments Amber LCD", "segments-amberlcd"},
+        {"Segments Green LCD", "segments-greenlcd"},
+        {"Segments Grey LCD", "segments-greylcd"},
+        {"Segments Amber LCD Regular", "segments-amberlcd-regular"},
+        {"Segments Green LCD Regular", "segments-greenlcd-regular"},
+        {"Segments Grey LCD Regular", "segments-greylcd-regular"},
+        {"Segments Default", "segments-default"},
+        {"Segments Peach", "segments-peach"},
+        {"Segments Red", "segments-red"},
+        {"Segments Blue", "segments-blue"},
+        {"Segments Green", "segments-green"},
+        {"Segments Default Regular", "segments-default-regular"},
+        {"Segments Peach Regular", "segments-peach-regular"},
+        {"Segments Red Regular", "segments-red-regular"},
+        {"Segments Blue Regular", "segments-blue-regular"},
+        {"Segments Green Regular", "segments-green-regular"}};
     std::string DefaultColor = "silver";
     std::string DefaultColorPreview = "Silver";
 
@@ -41,6 +54,11 @@ namespace DigitalClock {
         if (loading) {
             return;
         }
+
+        if (hasBackground) {
+            elements.Background.DrawAt(0, 0);
+        }
+
         // no leading zeroes except seconds
         elements.ToggleSettings.Draw();
         if (H1 > 0) {
@@ -84,8 +102,27 @@ namespace DigitalClock {
         DLOG("loading clock %s\n", c.c_str());
 
         std::ifstream f;
+        char p[256];
+        sprintf(p, "%s/%s/background.jpg", basePath, c.c_str());
+        hasBackground = false;
+        if (exists(p)) {
+            hasBackground = true;
+            f.open(p);
+            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+
+            auto ft = FlatTexture();
+
+            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
+
+            elements.Background = ft;
+            f.close();
+        }
+        memset(p, 0, sizeof(p));
+
+        //===
+
         for (int i = 0; i < 10; i++) {
-            char p[256];
+            memset(p, 0, sizeof(p));
             sprintf(p, "%s/%s/%d_big.jpg", basePath, c.c_str(), i);
             f.open(p);
             std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -99,7 +136,7 @@ namespace DigitalClock {
         }
 
         for (int i = 0; i < 10; i++) {
-            char p[256];
+            memset(p, 0, sizeof(p));
             sprintf(p, "%s/%s/%d_medium.jpg", basePath, c.c_str(), i);
             f.open(p);
             std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -112,7 +149,7 @@ namespace DigitalClock {
         }
 
         for (int i = 0; i < 10; i++) {
-            char p[256];
+            memset(p, 0, sizeof(p));
             sprintf(p, "%s/%s/%d_small.jpg", basePath, c.c_str(), i);
             f.open(p);
             std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -125,7 +162,7 @@ namespace DigitalClock {
         }
 
         for (int i = 0; i < 7; i++) {
-            char p[256];
+            memset(p, 0, sizeof(p));
             sprintf(p, "%s/%s/day_%d.jpg", basePath, c.c_str(), i);
             f.open(p);
             std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -138,7 +175,7 @@ namespace DigitalClock {
         }
 
         // ======
-        char p[256];
+        memset(p, 0, sizeof(p));
         sprintf(p, "%s/%s/colon.jpg", basePath, c.c_str());
         f.open(p);
         std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -150,6 +187,7 @@ namespace DigitalClock {
         f.close();
 
         // ======
+        memset(p, 0, sizeof(p));
         sprintf(p, "%s/%s/dot.jpg", basePath, c.c_str());
         f.open(p);
         std::string contents2((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -162,6 +200,7 @@ namespace DigitalClock {
         f.close();
 
         // ======
+        memset(p, 0, sizeof(p));
         sprintf(p, "%s/%s/shoe.jpg", basePath, c.c_str());
         f.open(p);
         std::string contents3((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -174,6 +213,7 @@ namespace DigitalClock {
         f.close();
 
         // ======
+        memset(p, 0, sizeof(p));
         sprintf(p, "%s/%s/minus.jpg", basePath, c.c_str());
         f.open(p);
         std::string contents4((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -314,6 +354,10 @@ namespace DigitalClock {
         elements.NumbersSmall.clear();
         elements.NumbersMedium.clear();
         elements.NumbersBig.clear();
+
+        if (hasBackground) {
+            elements.Background.Unload();
+        }
 
         while (tickerThreadRunning) {
             // wait for threads to stop
