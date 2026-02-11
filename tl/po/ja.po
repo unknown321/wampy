@@ -724,7 +724,7 @@ msgstr "インターフェースの色"
 
 #: ../src/skin/w1.cpp:48
 msgid "Sound signature"
-msgstr "サウンドシグネチャ"
+msgstr "サウンドシグネチャー"
 
 #: ../src/skin/w1.cpp:69
 msgid "Region"
@@ -752,7 +752,7 @@ msgstr "異なる DAC 初期化モード"
 
 #: ../src/skin/w1.cpp:144
 msgid "Apply tuning and reboot"
-msgstr "tuning の適用と再起動"
+msgstr "Tuning の適用と再起動"
 
 #: ../src/skin/w1.cpp:148 ../src/skin/w1.cpp:178
 msgid "Reboot the device to apply changes"
@@ -829,19 +829,19 @@ msgstr "グリーン"
 
 #: ../src/w1/w1.cpp:49
 msgid "neutral"
-msgstr "neutral"
+msgstr "Neutral"
 
 #: ../src/w1/w1.cpp:49
 msgid "warm"
-msgstr "warm"
+msgstr "Warm"
 
 #: ../src/w1/w1.cpp:49
 msgid "bright"
-msgstr "bright"
+msgstr "Bright"
 
 #: ../src/w1/w1.cpp:49
 msgid "wm1z"
-msgstr "wm1z"
+msgstr "WM1Z"
 
 #: ../src/config.cpp:12
 msgid "Center"
@@ -882,17 +882,17 @@ msgstr "Wampy ログを削除 ("
 #: ../src/sound_settings_fw/sound_settings_fw.h:14
 #: ../src/sound_settings_fw/sound_settings_fw.h:15
 msgid "Bass"
-msgstr "バス"
+msgstr "低音"
 
 #: ../src/sound_settings_fw/sound_settings_fw.h:14
 #: ../src/sound_settings_fw/sound_settings_fw.h:15
 msgid "Middle"
-msgstr "ミドル"
+msgstr "中音"
 
 #: ../src/sound_settings_fw/sound_settings_fw.h:14
 #: ../src/sound_settings_fw/sound_settings_fw.h:15
 msgid "Treble"
-msgstr "トレブル"
+msgstr "高音"
 
 #: ../src/sound_settings_fw/sound_settings_fw.h:25
 msgid "invalid filter"
