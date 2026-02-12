@@ -155,7 +155,7 @@ msgstr "USB マスストレージモードを無効"
 
 #: ../src/skin/cassette.cpp:10
 msgid "Randomize?"
-msgstr "ランダマイズしますか?"
+msgstr "ランダムにしますか?"
 
 #: ../src/skin/cassette.cpp:23
 msgid "Codec"
@@ -233,7 +233,7 @@ msgstr "更新しました"
 
 #: ../src/skin/eq.cpp:29
 msgid "Direct Source is on, filters disabled"
-msgstr "ダイレクトソースがオン、フィルターは無効です"
+msgstr "ソースダイレクトがオン、フィルターは無効です"
 
 #: ../src/skin/eq.cpp:36 ../src/skin/eq.cpp:38 ../src/skin/eq.cpp:39
 msgid "Select filter"
@@ -497,7 +497,7 @@ msgstr " 分"
 
 #: ../src/skin/misc.cpp:16
 msgid "Swap prev/next buttons"
-msgstr "前/次のボタンを入れ替え"
+msgstr "前/次のボタンを反転"
 
 #: ../src/skin/misc.cpp:23
 msgid "Export Walkman bookmarks"
@@ -903,4 +903,4 @@ msgid "Change enqueued"
 msgstr "変更をキューに追加しました"
 
 msgid "Direct Source"
-msgstr "ダイレクトソース"
+msgstr "ソースダイレクト"
