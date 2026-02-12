@@ -321,7 +321,7 @@ void Skin::TabEQ_Misc() {
         ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 35.0);
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        ImGui::Text("Direct Source");
+        ImGui::Text(gettext("Direct Source"));
 
         ImGui::TableNextColumn();
         if (connector->soundSettingsFw.s->directSourceOn) {

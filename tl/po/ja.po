@@ -277,6 +277,10 @@ msgstr "利用可能"
 msgid "unavailable"
 msgstr "利用不可"
 
+#: ../src/skin/eqPerSong.cpp:47 ../src/skin/eqTabs.cpp:324
+msgid "Direct Source"
+msgstr ""
+
 #: ../src/skin/eqPerSong.cpp:66
 msgid "EQ6 Preset"
 msgstr "EQ6プリセット"

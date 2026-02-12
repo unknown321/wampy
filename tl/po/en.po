@@ -276,6 +276,10 @@ msgstr "available"
 msgid "unavailable"
 msgstr "unavailable"
 
+#: ../src/skin/eqPerSong.cpp:47 ../src/skin/eqTabs.cpp:324
+msgid "Direct Source"
+msgstr ""
+
 #: ../src/skin/eqPerSong.cpp:66
 msgid "EQ6 Preset"
 msgstr "EQ6 Preset"
@@ -900,6 +904,3 @@ msgstr "invalid filter"
 #: ../src/skin.h:55
 msgid "Change enqueued"
 msgstr "Change enqueued"
-
-#~ msgid "Direct Source"
-#~ msgstr "Direct Source"
