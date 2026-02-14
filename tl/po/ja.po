@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: wampy 1.0\n"
 "Report-Msgid-Bugs-To: unknown.at.github@yandex.com\n"
 "POT-Creation-Date: 2025-12-26 09:48+0300\n"
-"PO-Revision-Date: 2026-02-12 07:21+0900\n"
+"PO-Revision-Date: 2026-02-14 18:28+0900\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ja\n"
@@ -279,7 +279,7 @@ msgstr "利用不可"
 
 #: ../src/skin/eqPerSong.cpp:47 ../src/skin/eqTabs.cpp:324
 msgid "Direct Source"
-msgstr ""
+msgstr "ソースダイレクト"
 
 #: ../src/skin/eqPerSong.cpp:66
 msgid "EQ6 Preset"
@@ -319,7 +319,7 @@ msgstr "VPT モード"
 
 #: ../src/skin/eqPerSong.cpp:161
 msgid "Tone Control or 10 band EQ?"
-msgstr "トーンコントロールまたは 10 バンド EQ どちらにしますか?"
+msgstr "トーンコントロールまたは 10 バンド EQ のどちらにしますか?"
 
 #: ../src/skin/eqPerSong.cpp:163
 msgid "10 band EQ"
