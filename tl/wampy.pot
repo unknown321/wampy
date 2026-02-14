@@ -3,11 +3,12 @@
 # This file is distributed under the same license as the wampy package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: wampy 1.0\n"
 "Report-Msgid-Bugs-To: unknown.at.github@yandex.com\n"
-"POT-Creation-Date: 2025-12-26 10:34+0300\n"
+"POT-Creation-Date: 2026-02-12 06:05+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -273,6 +274,10 @@ msgstr ""
 
 #: ../src/skin/eqPerSong.cpp:43 ../src/skin/eqPerSong.cpp:51
 msgid "unavailable"
+msgstr ""
+
+#: ../src/skin/eqPerSong.cpp:47 ../src/skin/eqTabs.cpp:324
+msgid "Direct Source"
 msgstr ""
 
 #: ../src/skin/eqPerSong.cpp:66

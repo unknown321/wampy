@@ -44,7 +44,7 @@ void Skin::TabEQOld() {
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        ImGui::Text("Direct Source");
+        ImGui::Text(gettext("Direct Source"));
         ImGui::TableNextColumn();
         ImGui::Text("%s (%s)",
             connector->soundSettings.s->status.directSourceOn == 1 ? gettext("On") : gettext("Off"),

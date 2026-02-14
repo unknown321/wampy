@@ -276,6 +276,10 @@ msgstr "disponível"
 msgid "unavailable"
 msgstr "indisponível"
 
+#: ../src/skin/eqPerSong.cpp:47 ../src/skin/eqTabs.cpp:324
+msgid "Direct Source"
+msgstr ""
+
 #: ../src/skin/eqPerSong.cpp:66
 msgid "EQ6 Preset"
 msgstr "Predefinição EQ6"
