@@ -7,9 +7,37 @@ mock `libTunerPlayerService.so` (you can see that from service startup log). The
 bringing up standard radio interface results in error.
 
 Even though there is no chip, all devices are shipped with fm driver - `radio-si4708icx.ko` for SI4708 chip. Loading
-that driver successfully creates `/dev/radio0` device file; this is where chipless devices fail.
+that driver successfully creates `/dev/radio0` device file; this is where chipless devices fail. Chip state can
+be dumped using `regmon` command:
 
-Here are the steps so far:
+<details>
+<summary>Click</summary>
+
+```
+# regmon Si4708icx:*
+DEVICEID -> 0x00001242
+CHIPID -> 0x00001093
+POWERCFG -> 0x00004000
+CHANNEL -> 0x000001FC
+SYSCONFIG1 -> 0x000008AA
+SYSCONFIG2 -> 0x0000126F
+SYSCONFIG3 -> 0x00001000
+TEST1 -> 0x00000100
+TEST2 -> 0x00000003
+BOOTCONFIG -> 0x00000000
+STATUS_RSSI -> 0x00000100
+READCHAN -> 0x000001FC
+RDSA -> 0x000000FF
+RDSB -> 0x00000000
+RDSC -> 0x00000000
+RDSD -> 0x00000000
+```
+
+</details>
+
+---
+
+Basic steps to enable radio:
 
 - bring valid `libTunerPlayerService.so` to the device
 - load driver

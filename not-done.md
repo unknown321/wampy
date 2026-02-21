@@ -13,6 +13,8 @@ https://news.ycombinator.com/item?id=37603776
 
 https://superuser.com/questions/1780812/how-to-check-if-a-jack-port-is-ctia-or-omtp
 
+`regmon cxd3778gf:*` show no differences between Apple and non-Apple (without controls) jacks.
+
 ## Brightness
 
 NW-A50 is bright as a sun even on lowest brightness setting. There is a `/sys/class/leds/lcd-backlight/brightness` file,
