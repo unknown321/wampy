@@ -743,6 +743,7 @@ msgstr "Chế độ Plus v2"
 
 #: ../src/skin/w1.cpp:109
 msgid "Plus mode by default"
+msgstr "Chế độ Plus mặc định"
 
 #: ../src/skin/w1.cpp:119
 msgid "Lower gain mode"
