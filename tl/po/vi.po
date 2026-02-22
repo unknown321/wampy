@@ -1,4 +1,4 @@
-# Bản dịch tiếng Việt cho gói wampy.
+# Bản dịch tiếng Việt - wampy.
 # Copyright (C) 2025 CHỦ SỞ HỮU BẢN QUYỀN CỦA wampy
 # Tệp này được phân phối theo cùng giấy phép với gói wampy.
 # Được tạo tự động, 2025.
@@ -9,8 +9,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: unknown.at.github@yandex.com\n"
 "POT-Creation-Date: 2025-12-26 09:48+0300\n"
 "PO-Revision-Date: 2025-12-26 09:20+0300\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"Last-Translator: Minh Khánh\n"
+"Language-Team: mika-\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -99,7 +99,7 @@ msgstr "Chuẩn"
 
 #: ../src/connector/hagoromoToString.cpp:39
 msgid "Arm resonance"
-msgstr "Cộng hưởng cần gạt"
+msgstr "Cộng hưởng tay cần"
 
 #: ../src/connector/hagoromoToString.cpp:40
 msgid "Turntable resonance"
@@ -232,7 +232,7 @@ msgstr "Đã làm mới"
 
 #: ../src/skin/eq.cpp:29
 msgid "Direct Source is on, filters disabled"
-msgstr "Direct Source đang bật, bộ lọc bị tắt"
+msgstr "Direct Source đang bật, các bộ lọc đã tắt"
 
 #: ../src/skin/eq.cpp:36 ../src/skin/eq.cpp:38 ../src/skin/eq.cpp:39
 msgid "Select filter"
@@ -254,7 +254,7 @@ msgstr "Ủng hộ"
 
 #: ../src/skin/eqPerSong.cpp:12
 msgid "Feature disabled. Toggle it on 'Misc' tab or use button below."
-msgstr "Tính năng bị tắt. Bật nó trong tab 'Khác' hoặc sử dụng nút bên dưới."
+msgstr "Tính năng đã bị tắt. Bật nó trong tab 'Khác' hoặc sử dụng nút bên dưới."
 
 #: ../src/skin/eqPerSong.cpp:26
 #, c-format
@@ -286,7 +286,7 @@ msgstr "Cài đặt sẵn EQ6"
 
 #: ../src/skin/eqPerSong.cpp:72
 msgid "EQ6 Bands"
-msgstr "Dải EQ6"
+msgstr "6 dải EQ"
 
 #: ../src/skin/eqPerSong.cpp:91
 msgid "EQ10 Preset"
@@ -294,7 +294,7 @@ msgstr "Cài đặt sẵn EQ10"
 
 #: ../src/skin/eqPerSong.cpp:97
 msgid "EQ10 Bands"
-msgstr "Dải EQ10"
+msgstr "10 dải EQ"
 
 #: ../src/skin/eqPerSong.cpp:125
 msgid "DSEE custom"
@@ -318,7 +318,7 @@ msgstr "Chế độ VPT"
 
 #: ../src/skin/eqPerSong.cpp:161
 msgid "Tone Control or 10 band EQ?"
-msgstr "Điều chỉnh âm sắc hay EQ 10 dải?"
+msgstr "Dùng Tone Control hay EQ 10 dải?"
 
 #: ../src/skin/eqPerSong.cpp:163
 msgid "10 band EQ"
@@ -326,19 +326,19 @@ msgstr "EQ 10 dải"
 
 #: ../src/skin/eqPerSong.cpp:163
 msgid "Tone Control"
-msgstr "Điều chỉnh âm sắc"
+msgstr "Tone Control"
 
 #: ../src/skin/eqPerSong.cpp:173
 msgid "Tone Control Low"
-msgstr "Âm sắc Thấp"
+msgstr "Tone Control dải Thấp"
 
 #: ../src/skin/eqPerSong.cpp:179
 msgid "Tone Control Mid"
-msgstr "Âm sắc Trung"
+msgstr "Tone Control dải Trung"
 
 #: ../src/skin/eqPerSong.cpp:185
 msgid "Tone Control High"
-msgstr "Âm sắc Cao"
+msgstr "Tone Control dải Cao"
 
 #: ../src/skin/eqPerSong.cpp:209
 msgid "Vinyl Processor"
@@ -428,7 +428,7 @@ msgstr "Loại VPT:"
 #: ../src/skin/eqTabs.cpp:62 ../src/skin/eqTabs.cpp:63
 #: ../src/skin/eqTabs.cpp:64
 msgid "No options"
-msgstr "Không có tùy chọn"
+msgstr "Không có tùy chọn nào"
 
 #: ../src/skin/eqTabs.cpp:73
 msgid "Preset:"
@@ -444,11 +444,11 @@ msgstr "Loại tần số âm sắc:"
 
 #: ../src/skin/eqTabs.cpp:281
 msgid "Vinylizer type:"
-msgstr "Loại vinyl hóa:"
+msgstr "Loại giả lập đĩa than - Vinyl:"
 
 #: ../src/skin/fm.cpp:36
 msgid "FM radio is unavailable on this device"
-msgstr "Radio FM không khả dụng trên thiết bị này"
+msgstr "Đài FM không được hỗ trợ trên thiết bị này"
 
 #: ../src/skin/fm.cpp:38
 msgid "Hide this tab"
@@ -456,11 +456,11 @@ msgstr "Ẩn tab này"
 
 #: ../src/skin/fm.cpp:67 ../src/skin/fm.cpp:69
 msgid "Recording"
-msgstr "Đang ghi"
+msgstr "Đang ghi..."
 
 #: ../src/skin/fm.cpp:73 ../src/skin/fm.cpp:75
 msgid "Stereo"
-msgstr "Âm thanh nổi"
+msgstr "Âm thanh Stereo"
 
 #: ../src/skin/fm.cpp:146 ../src/skin/fm.cpp:151
 msgid "Recording settings"
@@ -500,7 +500,7 @@ msgstr " phút"
 
 #: ../src/skin/misc.cpp:16
 msgid "Swap prev/next buttons"
-msgstr "Hoán đổi nút trước/sau"
+msgstr "Hoán đổi nút tiến/lùi"
 
 #: ../src/skin/misc.cpp:23
 msgid "Export Walkman bookmarks"
@@ -512,7 +512,7 @@ msgstr "Đã xuất"
 
 #: ../src/skin/misc.cpp:37
 msgid "Huge cover art"
-msgstr "Ảnh bìa lớn"
+msgstr "Ảnh album lớn"
 
 #: ../src/skin/misc.cpp:46
 msgid "Removed!"
@@ -536,7 +536,7 @@ msgstr "Giới hạn âm lượng tối đa"
 
 #: ../src/skin/misc.cpp:106
 msgid "Window position"
-msgstr "Vị trí cửa sổ"
+msgstr "Vị trí của cửa sổ"
 
 #: ../src/skin/misc.cpp:110
 msgid "Enable EQ per song"
@@ -556,7 +556,7 @@ msgstr "Điều khiển bộ lọc"
 
 #: ../src/skin/misc.cpp:174
 msgid "Show FM tab"
-msgstr "Hiện tab FM"
+msgstr "Hiện tab Đài FM"
 
 #: ../src/skin/misc.cpp:189
 msgid "License"
@@ -620,7 +620,7 @@ msgstr "Áp dụng"
 #: ../src/skin/volumeTables.cpp:388 ../src/skin/volumeTables.cpp:598
 #: ../src/skin/volumeTables.cpp:803
 msgid "Applied"
-msgstr "Đã áp dụng"
+msgstr "Đã áp dụng!"
 
 #: ../src/skin/volumeTables.cpp:394 ../src/skin/volumeTables.cpp:604
 #: ../src/skin/volumeTables.cpp:809
@@ -663,11 +663,11 @@ msgstr "Sản phẩm thiết bị"
 
 #: ../src/skin/volumeTables.cpp:901
 msgid "Master volume table"
-msgstr "Bảng âm lượng chính"
+msgstr "Bảng âm lượng tổng"
 
 #: ../src/skin/volumeTables.cpp:907
 msgid "Master volume table (DSD)"
-msgstr "Bảng âm lượng chính (DSD)"
+msgstr "Bảng âm lượng tổng (DSD)"
 
 #: ../src/skin/volumeTables.cpp:919
 msgid "Audio card"
@@ -679,11 +679,11 @@ msgstr "Thiết bị âm thanh"
 
 #: ../src/skin/volumeTables.cpp:931
 msgid "Sample rate"
-msgstr "Tần số mẫu"
+msgstr "Tần số lấy mẫu"
 
 #: ../src/skin/volumeTables.cpp:937
 msgid "CPU frequency (min/cur)"
-msgstr "Tần số CPU (tối thiểu/hiện tại)"
+msgstr "Xung nhịp CPU (tối thiểu/hiện tại)"
 
 #: ../src/skin/volumeTables.cpp:998
 msgid "Zoom in"
@@ -715,11 +715,11 @@ msgstr "Quay lại"
 
 #: ../src/skin/w1.cpp:12
 msgid "Walkman One settings"
-msgstr "Cài đặt Walkman One"
+msgstr "Cài đặt Walkman One (Custom Firmware)"
 
 #: ../src/skin/w1.cpp:16
 msgid "Config file not found\n"
-msgstr "Không tìm thấy tệp cấu hình\n"
+msgstr "Không thể tìm thấy tệp cấu hình\n"
 
 #: ../src/skin/w1.cpp:27 ../src/skin/w1.cpp:156
 msgid "Interface color"
@@ -735,7 +735,7 @@ msgstr "Khu vực"
 
 #: ../src/skin/w1.cpp:89
 msgid "Remote option with any region"
-msgstr "Tùy chọn từ xa với mọi khu vực"
+msgstr "Hiện tuỳ chọn Điều khiển từ xa (mọi khu vực)"
 
 #: ../src/skin/w1.cpp:99
 msgid "Plus mode v2"
@@ -743,11 +743,10 @@ msgstr "Chế độ Plus v2"
 
 #: ../src/skin/w1.cpp:109
 msgid "Plus mode by default"
-msgstr "Chế độ Plus mặc định"
 
 #: ../src/skin/w1.cpp:119
 msgid "Lower gain mode"
-msgstr "Chế độ tăng ít hơn"
+msgstr "Chế độ gain thấp"
 
 #: ../src/skin/w1.cpp:129
 msgid "Different DAC init mode"
@@ -771,7 +770,7 @@ msgstr "Tải giao diện"
 
 #: ../src/skin/winamp.cpp:28
 msgid "Loading "
-msgstr "Đang tải "
+msgstr "Đang tải... "
 
 #: ../src/skin/winamp.cpp:47
 msgid "Use bitmap font"
@@ -791,11 +790,11 @@ msgstr "Chế độ hiển thị Winamp"
 
 #: ../src/skin/winamp.cpp:73
 msgid "Prefer time remaining"
-msgstr "Ưu tiên thời gian còn lại"
+msgstr "Ưu tiên hiển thị thời gian còn lại"
 
 #: ../src/skin/winamp.cpp:77
 msgid "Visualizer sensitivity"
-msgstr "Độ nhạy trình hiển thị"
+msgstr "Độ nhạy visualizer"
 
 #: ../src/skin/winamp.cpp:81
 msgid "Show clutterbar"
@@ -803,7 +802,7 @@ msgstr "Hiện thanh công cụ"
 
 #: ../src/skin/winamp.cpp:96
 msgid "Skin transparency"
-msgstr "Độ trong suốt giao diện"
+msgstr "Độ trong suốt của giao diện"
 
 #: ../src/w1/w1.cpp:12 ../src/w1/w1.cpp:13 ../src/w1/w1.cpp:15
 #: ../src/w1/w1.cpp:16
@@ -852,7 +851,7 @@ msgstr "Giữa"
 
 #: ../src/skin.cpp:212
 msgid "✓ Loaded "
-msgstr "✓ Đã tải "
+msgstr "✓ Đã nạp "
 
 #: ../src/skin.cpp:372 ../src/skin.cpp:389
 msgid "Skin"
@@ -880,22 +879,22 @@ msgstr "Đặt làm hoạt động"
 
 #: ../src/skin.cpp:681
 msgid "Remove Wampy logs ("
-msgstr "Xóa nhật ký Wampy ("
+msgstr "Xóa logs Wampy ("
 
 #: ../src/sound_settings_fw/sound_settings_fw.h:14
 #: ../src/sound_settings_fw/sound_settings_fw.h:15
 msgid "Bass"
-msgstr "Trầm"
+msgstr "Âm Trầm"
 
 #: ../src/sound_settings_fw/sound_settings_fw.h:14
 #: ../src/sound_settings_fw/sound_settings_fw.h:15
 msgid "Middle"
-msgstr "Trung"
+msgstr "Âm Trung"
 
 #: ../src/sound_settings_fw/sound_settings_fw.h:14
 #: ../src/sound_settings_fw/sound_settings_fw.h:15
 msgid "Treble"
-msgstr "Cao"
+msgstr "Âm Cao"
 
 #: ../src/sound_settings_fw/sound_settings_fw.h:25
 msgid "invalid filter"
@@ -903,4 +902,4 @@ msgstr "bộ lọc không hợp lệ"
 
 #: ../src/skin.h:55
 msgid "Change enqueued"
-msgstr "Thay đổi đã xếp hàng"
+msgstr "Đã xếp hàng thay đổi"
