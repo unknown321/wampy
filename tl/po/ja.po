@@ -905,6 +905,3 @@ msgstr "無効なフィルター"
 #: ../src/skin.h:55
 msgid "Change enqueued"
 msgstr "変更をキューに追加しました"
-
-msgid "Direct Source"
-msgstr "ソースダイレクト"
