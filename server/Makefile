@@ -1,5 +1,5 @@
 PWD=$(shell pwd)
-IMAGE=wampy-builder
+IMAGE ?= wampy-builder
 QT_DIR=$(PWD)/qt
 BUILD_DIR=$(PWD)/build
 PLATFORM=armv5-unknown-linux-gnueabihf

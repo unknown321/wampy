@@ -1,4 +1,4 @@
-FROM nw-crosstool
+FROM 192.168.10.102:5000/unknown/nw-crosstool:a032942e622f
 ARG CMAKE_RELEASE_VERSION=3.25.3
 ENV CMAKE_RELEASE_VERSION=$CMAKE_RELEASE_VERSION
 RUN apt-get build-dep qtbase5-dev -y && \

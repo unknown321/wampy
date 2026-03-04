@@ -1,8 +1,12 @@
-DOCKER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` nw-crosstool
+REGISTRY=192.168.10.102:5000/unknown/
+CROSSTOOL_TAG=a032942e622f
+CROSSTOOL_IMAGE=$(REGISTRY)nw-crosstool:$(CROSSTOOL_TAG)
+DOCKER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` $(CROSSTOOL_IMAGE)
 #DEVICE_SERIAL=-s 10458B75388765
 ADB=adb $(DEVICE_SERIAL) wait-for-device
-IMAGE=wampy-builder
-IMAGE_DIGITAL_CLOCK=$(IMAGE)-digital-clock
+IMAGE=$(REGISTRY)wampy-builder:431e19f2ebb6
+IMAGE_CLANG=$(REGISTRY)wampy-builder-clang:431e19f2ebb6
+IMAGE_DIGITAL_CLOCK=$(REGISTRY)wampy-builder-digital-clock:431e19f2ebb6
 DOCKER_BUILDER=docker run -it --rm -v `pwd`:`pwd` -w `pwd` $(IMAGE)
 DOCKER_DIGITAL_CLOCK=docker run -it --rm -v `pwd`:`pwd` -w `pwd` -u `id -u`:`id -g` $(IMAGE_DIGITAL_CLOCK)
 PRODUCT=wampy
@@ -12,16 +16,16 @@ UPX=nw-installer/tools/upx/upx/upx
 ECHO=/usr/bin/echo
 
 prepare:
-	$(MAKE) -C nw-installer/crosstool
+	$(MAKE) -C nw-installer/crosstool IMAGE=$(CROSSTOOL_IMAGE)
 
 docker: docker_digital_clock docker_pstserver
 	cat Dockerfile | docker image build -t $(IMAGE) -
 
 docker_digital_clock:
-	$(MAKE) -C digital_clock docker
+	$(MAKE) -C digital_clock IMAGE_DIGITAL_CLOCK=$(IMAGE_DIGITAL_CLOCK) docker
 
 docker_pstserver:
-	$(MAKE) -C pstserver docker
+	$(MAKE) -C pstserver REGISTRY=$(REGISTRY) docker
 
 build:
 	mkdir -p build && \
@@ -77,17 +81,17 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 	cp base-2.91.wsz installer/
 	$(MAKE) -C icons
 	cp icons/icons.tar.gz installer/
-	$(MAKE) -C cassette
+	$(MAKE) -C cassette IMAGE_CASSETTE=$(IMAGE_DIGITAL_CLOCK)
 	cp cassette/cassette.tar.gz installer/
-	$(MAKE) -C digital_clock
+	$(MAKE) -C digital_clock IMAGE_DIGITAL_CLOCK=$(IMAGE_DIGITAL_CLOCK)
 	cp digital_clock/digital_clock.tar.gz installer/
 	$(MAKE) -C tunings
 	cp tunings/tunings.tar.gz installer/
-	$(MAKE) -C pstserver
+	$(MAKE) -C pstserver IMAGE=$(IMAGE_CLANG)
 	cp pstserver/pstserver installer/
-	$(MAKE) -C sound_service_fw
+	$(MAKE) -C sound_service_fw IMAGE=$(IMAGE_CLANG)
 	cp sound_service_fw/libsound_service_fw.so installer/
-	$(MAKE) -C dmp_feature
+	$(MAKE) -C dmp_feature IMAGE=$(IMAGE_CLANG)
 	cp dmp_feature/libdmp_feature.so installer/
 	$(UPX) -qqq --best installer/pstserver
 	$(MAKE) -C tl all
@@ -137,10 +141,10 @@ nw-installer/installer/userdata.tar.gz: LICENSE_3rdparty qr.bmp qrDonate.bmp
 userdata: nw-installer/installer/userdata.tar.gz
 
 server:
-	$(MAKE) -C server
+	$(MAKE) -C server IMAGE=$(IMAGE)
 
 nw-installer/installer/userdata.uninstaller.tar.gz:
-	$(MAKE) -C nw-installer prepare
+	$(MAKE) -C nw-installer IMAGE=$(CROSSTOOL_IMAGE) prepare
 	cat LICENSE LICENSE_3rdparty > nw-installer/installer/windows/LICENSE.txt.user
 	echo -n "$(PRODUCT), version " > uninstaller/product_info
 	grep VERSION src/Version.h | cut -f 3,4,5 -d " " | sed 's/"//g' >> uninstaller/product_info

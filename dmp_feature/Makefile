@@ -1,4 +1,4 @@
-IMAGE=wampy-builder-clang
+IMAGE ?= $(REGISTRY)wampy-builder-clang:431e19f2ebb6
 DOCKER=docker run -t --rm
 NAME=dmp_feature
 
