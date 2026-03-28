@@ -312,7 +312,6 @@ namespace Cassette {
             Tapes[path].artist = artist;
             Tapes[path].title = title;
             Tapes[path].album = album;
-            Tapes[path].connector = connector;
 
             if (Tapes[path].Load(e.fullPath) == Tape::ERR_NO_FILES) {
                 DLOG("failed to load %s\n", e.fullPath.c_str());

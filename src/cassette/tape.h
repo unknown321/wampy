@@ -1,7 +1,6 @@
 #ifndef WAMPY_TAPE_H
 #define WAMPY_TAPE_H
 
-#include "../connector/connector.h"
 #include "../skinElement.h"
 #include "imgui.h"
 #include <string>
@@ -23,7 +22,6 @@ namespace Tape {
     struct Tape {
         TapeElements Elements;
         void *skin{};
-        Connector *connector;
         char *artist;
         char *title;
         char *album;
