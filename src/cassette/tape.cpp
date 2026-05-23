@@ -1,5 +1,9 @@
 #include "tape.h"
-#include "../skin.h"
+#include "skin.h"
+
+#include "skinlist.h"
+#include "util_string.h"
+
 #include <fstream>
 #include <map>
 #include <sstream>
@@ -146,11 +150,11 @@ namespace Tape {
         Elements.ToggleSettings.WithID("toggleSettings")
             ->WithPosition(800 - bt.size.x, 0.0f)
             ->WithTextures(bts)
-            ->WithCallback(Skin::Skin::ToggleDrawSettings, skin, nullptr);
+            ->WithCallback(Skin::ToggleDrawSettings, skin, nullptr);
         Elements.RandomizeTape.WithID("randomizeTape")
             ->WithPosition(400 - bt.size.x / 2, 240 - bt.size.y / 2)
             ->WithTextures(bts)
-            ->WithCallback(Skin::Skin::RandomizeTape, skin, nullptr);
+            ->WithCallback(Skin::RandomizeTape, skin, nullptr);
 
         return 0;
     }

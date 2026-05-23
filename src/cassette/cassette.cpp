@@ -1,6 +1,9 @@
 #include "cassette.h"
+
+#include "getCharRange.h"
 #include "imgui_impl_opengl3.h"
 #include "langToString/langToString.h"
+#include "util_string.h"
 #include "wstring.h"
 
 #include <config.h>

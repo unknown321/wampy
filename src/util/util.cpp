@@ -1,16 +1,17 @@
 #include "util.h"
 #include "../wstring.h"
+#include "dlog.h"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "imgui_impl_glfw.h"
 #include "imgui_internal.h"
 #include "mkpath.h"
-#include "pshm_ucase.h"
-#include "sqlite3.h"
-#include "unicode/unistr.h"
+#include "util_string.h"
 #include <algorithm>
+#include <dirent.h>
 #include <fcntl.h>
 #include <fstream>
+#include <libgen.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <unistd.h>
@@ -18,9 +19,8 @@
 bool dirComp(const directoryEntry &a, const directoryEntry &b) { return b.name >= a.name; }
 
 void listdir(const char *dirname, std::vector<directoryEntry> *list, const std::string &extension) {
-    DIR *d;
-    struct dirent *dir;
-    d = opendir(dirname);
+    dirent *dir;
+    DIR *d = opendir(dirname);
     if (d) {
         while ((dir = readdir(d)) != nullptr) {
             if (dir->d_type != DT_REG) {
@@ -102,7 +102,7 @@ bool LoadTextureFromMagic(unsigned char *data, GLuint *out_texture, int dstWidth
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                    GL_CLAMP_TO_EDGE);                                   // This is required on WebGL for non power-of-two textures
+        GL_CLAMP_TO_EDGE);                                               // This is required on WebGL for non power-of-two textures
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
 
     // Upload pixels into texture
@@ -254,12 +254,12 @@ bool IsMounted() {
 #ifdef DESKTOP
     return false;
 #endif
-    struct stat sb {};
+    struct stat sb{};
     return (stat("/contents/MUSIC/", &sb) != 0);
 }
 
 bool exists(const std::string &s) {
-    struct stat sb {};
+    struct stat sb{};
     return (stat(s.c_str(), &sb) == 0);
 }
 
@@ -277,7 +277,7 @@ void recoverDumps(const std::string &outdir) {
     strftime(buffer, sizeof(buffer), ".%Y-%m-%d_%H.%M.%S", timeinfo);
     auto t = std::string(buffer);
 
-    struct stat sb {};
+    struct stat sb{};
     if (stat(corePath.c_str(), &sb) == 0) {
         mkpath(outdir.c_str(), 0755);
         out = outdir + "/core......gz" + t + ".gz";
@@ -344,7 +344,7 @@ void getModel(std::string *model, bool *isWalkmanOne) {
 
     *model = ReadFile("/dev/icx_nvp/033");
 
-    struct stat info {};
+    struct stat info{};
 
     if (stat("/etc/.mod", &info) == 0) {
         if (info.st_mode & S_IFDIR) {
@@ -442,8 +442,9 @@ PKMHeader::PKMHeader(std::fstream *s) {
     swapbyte(&origWidth);
 }
 
-GLuint LoadCompressedTexture(int width, int height, ulong size, const char *data) {
+GLuint LoadCompressedTexture(int width, int height, int size, const char *data) {
     // https://arm-software.github.io/opengl-es-sdk-for-android/etc_texture.html
+
     GLuint image_texture = 0;
     glGenTextures(1, &image_texture);
     glBindTexture(GL_TEXTURE_2D, image_texture);
@@ -455,7 +456,7 @@ GLuint LoadCompressedTexture(int width, int height, ulong size, const char *data
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
 
-    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, width, height, 0, (int)size, data);
+    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, width, height, 0, size, data);
 
     return image_texture;
 }
@@ -505,7 +506,7 @@ void AtlasImage::ToUV(float w, float h) {
 }
 
 Atlas LoadAtlas(const std::string &texturePath, const std::string &coordsPath) {
-    struct stat buffer {};
+    struct stat buffer{};
     if (stat(texturePath.c_str(), &buffer) != 0) {
         DLOG("cannot find %s\n", texturePath.c_str());
         return Atlas{};
@@ -761,8 +762,7 @@ void ExportBookmarks() {
     return;
 #endif
 
-    std::vector<std::string> filenames = {
-        "/cache/bookmark01.json",
+    std::vector<std::string> filenames = {"/cache/bookmark01.json",
         "/cache/bookmark02.json",
         "/cache/bookmark03.json",
         "/cache/bookmark04.json",
@@ -774,7 +774,7 @@ void ExportBookmarks() {
         "/cache/bookmark10.json"};
 
     std::string outdir = "/contents/wampy/bookmarks/";
-    struct stat sb {};
+    struct stat sb{};
     if (stat(outdir.c_str(), &sb) != 0) {
         mkpath(outdir.c_str(), 0755);
     }
@@ -807,86 +807,6 @@ void RemoveLogs() {
     for (const auto &e : files) {
         DLOG("removing log %s\n", e.fullPath.c_str());
         std::remove(e.fullPath.c_str());
-    }
-}
-
-const char *query = "WITH RECURSIVE split_chars AS (\n"
-                    "    SELECT\n"
-                    "        SUBSTR(value, 1, 1) AS char,\n"
-                    "        SUBSTR(value, 2) AS rest\n"
-                    "    FROM artists\n"
-                    "    UNION ALL\n"
-                    "    SELECT\n"
-                    "        SUBSTR(title, 1, 1) AS char,\n"
-                    "        SUBSTR(title, 2) AS rest\n"
-                    "    FROM object_body\n"
-                    "    UNION ALL\n"
-                    "    SELECT\n"
-                    "        SUBSTR(rest, 1, 1) AS char,\n"
-                    "        SUBSTR(rest, 2) AS rest\n"
-                    "    FROM split_chars\n"
-                    "    WHERE LENGTH(rest) > 0\n"
-                    ")\n"
-                    "SELECT DISTINCT char\n"
-                    "FROM(\n"
-                    "SELECT char FROM split_chars\n"
-                    ")\n"
-                    "WHERE char != ''\n"
-                    "ORDER BY char";
-
-static int callback(void *output, int argc, char **argv, char **notUsed) {
-    auto res = (std::string *)output;
-    res->append(argv[0]);
-    return 0;
-}
-
-void getCharRange(std::vector<uint32_t> *points) {
-    sqlite3 *db;
-    char *zErrMsg = nullptr;
-    int rc;
-    DLOG("getting char range\n");
-#ifdef DESKTOP
-    auto path = "../MTPDB.dat";
-#else
-    auto path = "/db/MTPDB.dat";
-#endif
-    rc = sqlite3_open_v2(path, &db, SQLITE_OPEN_READONLY, nullptr);
-    if (rc) {
-        DLOG("Can't open database: %s\n", sqlite3_errmsg(db));
-        sqlite3_close(db);
-        return;
-    }
-
-    std::string res;
-    rc = sqlite3_exec(db, query, callback, &res, &zErrMsg);
-    if (rc != SQLITE_OK) {
-        DLOG("SQL error: %s\n", zErrMsg);
-        sqlite3_free(zErrMsg);
-    }
-    sqlite3_close(db);
-
-    DLOG("%d characters found\n", utfLen(res));
-
-    size_t index = 0;
-    size_t pointsize = 0;
-    size_t index_before = 0;
-    std::string resUpper;
-    while (index < res.size()) {
-        index_before = index;
-        pointsize = 0;
-
-        auto v = utfToPoint(res, index);
-        points->push_back(v);
-        pointsize = index - index_before;
-
-        resUpper.clear();
-        auto point = res.substr(index_before, pointsize);
-        icu::UnicodeString(point.c_str()).toUpper().toUTF8String(resUpper);
-        if (point != resUpper) {
-            //            printf("%s -> %s\n", point.c_str(), resUpper.c_str());
-            size_t i = 0;
-            points->push_back(utfToPoint(resUpper, i));
-        }
     }
 }
 

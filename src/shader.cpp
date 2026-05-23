@@ -1,4 +1,6 @@
 #include "shader.h"
+
+#include "dlog.h"
 #include "util/util.h"
 
 // use glslangValidator beforehand

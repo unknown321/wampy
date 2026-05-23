@@ -145,6 +145,7 @@ add_executable(${PROJECT_NAME}
         src/dac/cxd3778gf_table.cpp
         src/util/util_string.cpp
         src/util/mkpath.cpp
+        src/util/getCharRange.cpp
         src/util/util.cpp
         src/wstring.cpp
         src/w1/w1.cpp

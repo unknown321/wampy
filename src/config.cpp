@@ -1,9 +1,11 @@
 #include "config.h"
 
 #include "connector/mpd.h"
+#include "dlog.h"
 #include "langToString/langToString.h"
 #include "mkpath.h"
 #include "util/util.h"
+#include "util_string.h"
 #include <libgen.h>
 #include <libintl.h>
 #include <sys/stat.h>
@@ -147,7 +149,7 @@ namespace AppConfig {
         }
         debug = (bool)std::atoi(ini["debug"]["enabled"].c_str());
         disableKeysWhenPowerOff = (bool)std::atoi(ini["wampy"]["disableKeysWhenPowerOff"].c_str());
-        auto windowOffsetTemp = std::atoi(ini["wampy"]["windowOffset"].c_str());
+        int windowOffsetTemp = std::atoi(ini["wampy"]["windowOffset"].c_str());
         // NOLINTEND
 
         language = ini["wampy"]["language"];
@@ -160,11 +162,13 @@ namespace AppConfig {
 
         switch (windowOffsetTemp) {
         case EWindowOffset_LEFT:
-        case EWindowOffset_RIGHT:
         case EWindowOffset_CENTER:
-            windowOffset = (EWindowOffset)windowOffsetTemp;
+        case EWindowOffset_RIGHT:
+            windowOffset = static_cast<EWindowOffset>(windowOffsetTemp);
+            break;
         default:
             windowOffset = EWindowOffset_LEFT;
+            break;
         }
 
         forceConnector = ini["wampy"]["forceConnector"];

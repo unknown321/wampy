@@ -19,7 +19,7 @@ patch:
 alsa-lib/src:
 	make -C alsa-lib
 
-ImageMagick/build-x86: IMAGE=nw-crosstool
+ImageMagick/build-x86: IMAGE='192.168.10.102:5000/unknown/nw-crosstool:a032942e622f'
 ImageMagick/build-x86:
 	$(DOCKER) bash -c "\
 	cd ImageMagick && \

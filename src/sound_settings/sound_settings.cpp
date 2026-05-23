@@ -1,6 +1,10 @@
 #include "sound_settings.h"
+
 #include "../util/util.h"
+#include "dlog.h"
 #include "sqlite3.h"
+#include "util_string.h"
+
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>

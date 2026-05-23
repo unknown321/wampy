@@ -11,6 +11,7 @@
 #include "imgui_widgets.h"
 #include "magick/magick.h"
 
+#include "dlog.h"
 #include "util/util.h"
 
 typedef struct {
@@ -93,7 +94,7 @@ struct FlatTexture {
 
         std::string contents;
 
-        char *b = new char[length - ETC_PKM_HEADER_SIZE];
+        auto b = new char[length - ETC_PKM_HEADER_SIZE];
         s.read(b, length - ETC_PKM_HEADER_SIZE);
 
         textureID = LoadCompressedTexture(header.width, header.height, length - ETC_PKM_HEADER_SIZE, b);
@@ -246,7 +247,7 @@ struct FlatTexture {
 #pragma GCC diagnostic pop
     }
 
-    ImTextureID FromColor(const Magick::Geometry &g, const Magick::Color &color) {
+    ImTextureID FromColor(const Magick::Geometry &g, const Magick::ColorRGB &color) {
         this->image = new Magick::Image(g, color);
         this->image->magick("RGBA");
         this->image->fillColor(color);
@@ -332,9 +333,7 @@ struct FlatTexture {
         //            image->size().width() * image->size().height() * 4,
         //            image->magick().c_str()
         //        );
-        bool ret = LoadTextureFromMagic(
-            (unsigned char *)blob.data(), &textureID, (int)this->image->size().width(), (int)this->image->size().height()
-        );
+        bool ret = LoadTextureFromMagic((unsigned char *)blob.data(), &textureID, (int)this->image->size().width(), (int)this->image->size().height());
         //        DLOG("tid %d\n", textureID);
         IM_ASSERT(ret);
     }
@@ -372,13 +371,13 @@ struct FlatTexture {
         }
         ImGui::SetCursorPos(ImVec2(x, y));
         auto size = ImVec2(float(upscaled.width), float(upscaled.height));
-        ImGui::Image((void *)(intptr_t)textureID, size);
+        ImGui::Image((ImTextureID)(intptr_t)textureID, size);
     }
 
     void DrawAt(ImVec2 pos) const {
         ImGui::SetCursorPos(pos);
         auto size = ImVec2(float(upscaled.width), float(upscaled.height));
-        ImGui::Image((void *)(intptr_t)textureID, size);
+        ImGui::Image((ImTextureID)(intptr_t)textureID, size);
     }
 
     void Release() const { delete this->image; }

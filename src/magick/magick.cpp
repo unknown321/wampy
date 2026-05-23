@@ -1,6 +1,7 @@
 #include "magick.h"
 #include "../util/util.h"
 #include "MagickCore/draw.h"
+#include "dlog.h"
 
 void MyMagick::InitMagick() { Magick::InitializeMagick(""); }
 
@@ -53,7 +54,7 @@ void MyMagick::Crop(Magick::Image *image, Magick::RectangleInfo g) {
 
     if ((g.width + g.x) > image->columns() || (g.height + g.y) > image->rows()) {
         DLOG("unexpected crop %zux%zu, at %zd:%zd, image size %zux%zu\n", g.width, g.height, g.x, g.y, image->columns(), image->rows());
-        auto transparent = Magick::Color{0.0f, 0.0f, 0.0f, 0.0f}; // alpha 0->255
+        auto transparent = Magick::ColorRGB{0, 0, 0, 0}; // alpha 0->255
         image->backgroundColor(transparent);
         image->erase();
         return;
@@ -63,7 +64,7 @@ void MyMagick::Crop(Magick::Image *image, Magick::RectangleInfo g) {
         image->crop(g);
     } catch (Magick::WarningOption &warningOption) {
         DLOG("WARNING: %s\n", warningOption.what());
-        auto transparent = Magick::Color{0.0f, 0.0f, 0.0f, 0.0f}; // alpha 0->255
+        auto transparent = Magick::ColorRGB{0, 0, 0, 0}; // alpha 0->255
         image->backgroundColor(transparent);
         image->erase();
     }

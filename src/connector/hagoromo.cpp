@@ -15,6 +15,7 @@
 #include "asoundlib.h"
 #include "hagoromo.h"
 #include "sqlite3.h"
+#include "util_string.h"
 #include "wampy.h"
 #include <fcntl.h>
 

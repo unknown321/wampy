@@ -8,17 +8,22 @@
 #include <string>
 #include <sys/stat.h>
 
+#include "dlog.h"
+#include "util_string.h"
+
 namespace W1 {
-    std::map<std::string, uint> colorByName = {{gettext("Default"), 0}, {gettext("Peach"), 3}, {gettext("Red"), 5}, {gettext("Blue"), 7}, {gettext("Green"), 9}};
-    std::map<uint, std::string> colorByValue = {{0, gettext("Default")}, {3, gettext("Peach")}, {5, gettext("Red")}, {7, gettext("Blue")}, {9, gettext("Green")}};
+    std::map<std::string, uint> colorByName = {
+        {gettext("Default"), 0}, {gettext("Peach"), 3}, {gettext("Red"), 5}, {gettext("Blue"), 7}, {gettext("Green"), 9}};
+    std::map<uint, std::string> colorByValue = {
+        {0, gettext("Default")}, {3, gettext("Peach")}, {5, gettext("Red")}, {7, gettext("Blue")}, {9, gettext("Green")}};
 
-    std::map<std::string, uint> colorByNameWalkmanOne = {{gettext("Default"), 0}, {gettext("Peach"), 1}, {gettext("Red"), 2}, {gettext("Blue"), 3}, {gettext("Green"), 4}};
-    std::map<uint, std::string> colorByValueWalkmanOne = {{0, gettext("Default")}, {1, gettext("Peach")}, {2, gettext("Red")}, {3, gettext("Blue")}, {4, gettext("Green")}};
+    std::map<std::string, uint> colorByNameWalkmanOne = {
+        {gettext("Default"), 0}, {gettext("Peach"), 1}, {gettext("Red"), 2}, {gettext("Blue"), 3}, {gettext("Green"), 4}};
+    std::map<uint, std::string> colorByValueWalkmanOne = {
+        {0, gettext("Default")}, {1, gettext("Peach")}, {2, gettext("Red")}, {3, gettext("Blue")}, {4, gettext("Green")}};
 
-    std::map<std::string, uint> signatureByNameWalkmanOne = {
-        {"Neutral", 0}, {"Warm (Midnight v2)", 1}, {"Bright (Dawn v2.1)", 2}, {"WM1Z", 3}};
-    std::map<uint, std::string> signatureByValueWalkmanOne = {
-        {0, "Neutral"}, {1, "Warm (Midnight v2)"}, {2, "Bright (Dawn v2.1)"}, {3, "WM1Z"}};
+    std::map<std::string, uint> signatureByNameWalkmanOne = {{"Neutral", 0}, {"Warm (Midnight v2)", 1}, {"Bright (Dawn v2.1)", 2}, {"WM1Z", 3}};
+    std::map<uint, std::string> signatureByValueWalkmanOne = {{0, "Neutral"}, {1, "Warm (Midnight v2)"}, {2, "Bright (Dawn v2.1)"}, {3, "WM1Z"}};
 
     std::vector<std::string> regionWalkmanOne = {
         "J",    // 0x00000000
@@ -40,8 +45,7 @@ namespace W1 {
         "TW",   // 0x00000007
     };
 
-    std::map<uint, std::string> signatureToPathWalkmanOne = {
-        {0, "/contents/CFW/External_Tunings/Neutral_&_Warm_external_tuning/"},
+    std::map<uint, std::string> signatureToPathWalkmanOne = {{0, "/contents/CFW/External_Tunings/Neutral_&_Warm_external_tuning/"},
         {1, "/contents/CFW/External_Tunings/Neutral_&_Warm_external_tuning/"},
         {2, "/contents/CFW/External_Tunings/Bright_external_tuning/"},
         {3, "/contents/CFW/External_Tunings/WM1Z_external_tuning/"}};
@@ -78,7 +82,7 @@ namespace W1 {
     }
 
     int ParseSettings(WalkmanOneOptions *w) {
-        struct stat info {};
+        struct stat info{};
 
         if (stat(settingsPath, &info) == 0) {
             w->configFound = true;
@@ -238,7 +242,7 @@ namespace W1 {
 
     // system() sucks, but it's faster than dealing with fork()
     void WalkmanOneOptions::ApplyTuning() const {
-        struct stat info {};
+        struct stat info{};
 
         if (signatureToPathWalkmanOne.count(signature) == 0) {
             DLOG("invalid signature %d\n", signature);
@@ -260,8 +264,7 @@ namespace W1 {
             return;
         }
 
-        std::string command =
-            "/system/vendor/unknown321/bin/upgtool-linux-arm5 -w -m nw-wm1a -z 2 -z 3 -e -o " + workdir + " '" + upg + "'";
+        std::string command = "/system/vendor/unknown321/bin/upgtool-linux-arm5 -w -m nw-wm1a -z 2 -z 3 -e -o " + workdir + " '" + upg + "'";
         DLOG("command %s\n", command.c_str());
         err = system(command.c_str());
         if (err != 0) {

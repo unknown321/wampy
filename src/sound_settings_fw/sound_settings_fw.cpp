@@ -1,5 +1,7 @@
 #include "sound_settings_fw.h"
+
 #include "../util/util.h"
+#include "dlog.h"
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -7,8 +9,7 @@
 void SoundSettingsFww::Start() {
 #ifdef DESKTOP
     s = new sound_settings_fw();
-    char a[11][50] = {
-        "dynamicnormalizer", "dseehxlegacy", "attn", "vpt", "eq6band", "eq10band", "eqtone", "dcphaselinear", "vinylizer", "clearphase"};
+    char a[11][50] = {"dynamicnormalizer", "dseehxlegacy", "attn", "vpt", "eq6band", "eq10band", "eqtone", "dcphaselinear", "vinylizer", "clearphase"};
     int i = 0;
     for (auto v : a) {
         strcpy(s->FilterStatus[i].name, v);

@@ -3,6 +3,7 @@
 
 #include "connector/connector.h"
 #include "imgui.h"
+#include "skinlist.h"
 #include "util/util.h"
 
 struct Fonts {
@@ -12,8 +13,6 @@ struct Fonts {
 };
 
 typedef std::pair<char *, size_t> bitmapData;
-
-typedef std::vector<directoryEntry> SkinList;
 
 bool SkinExists(const std::string &name, SkinList *l, std::string *filepath);
 

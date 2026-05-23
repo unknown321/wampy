@@ -1,9 +1,12 @@
 #include "winamp.h"
+
 #include "../skin.h"
 #include "../unzip/unzip.cpp"
 #include "../wstring.h"
+#include "getCharRange.h"
 #include "imgui_impl_opengl3.h"
 #include "langToString/langToString.h"
+#include "util_string.h"
 
 #include <thread>
 

@@ -3,6 +3,8 @@
 
 #include <libintl.h>
 
+#include "Version.h"
+
 void Skin::Misc() {
     ImGui::NewLine();
     if (!connector->storagePresent) {

@@ -9,6 +9,9 @@
 
 #include "mpd.h"
 
+#include "dlog.h"
+#include "util_string.h"
+
 const char *commandStatus = "command_list_begin\n"
                             "status\n"
                             "currentsong\n"
@@ -27,7 +30,7 @@ int RESP_BUF_SIZE = 8192;
 namespace MPD {
     void MPDConnector::Connect() {
         int server_socket = socket(AF_UNIX, SOCK_STREAM, 0);
-        struct sockaddr_un server_addr {};
+        struct sockaddr_un server_addr{};
 
         if (strcmp(address, "") == 0) {
             address = MPDDefaultAddress;
@@ -364,13 +367,13 @@ namespace MPD {
         memset(buf, 0, BUF_SIZE);
     }
 
-    __attribute__((unused)) void MPDConnector::volumeLoop(){};
+    __attribute__((unused)) void MPDConnector::volumeLoop() {};
 
-    void MPDConnector::powerLoop(bool *render, bool *power){};
+    void MPDConnector::powerLoop(bool *render, bool *power) {};
 
-    void MPDConnector::TestCommand(){};
+    void MPDConnector::TestCommand() {};
 
-    void MPDConnector::ToggleHgrm(HgrmToggleAction action, bool *render){};
+    void MPDConnector::ToggleHgrm(HgrmToggleAction action, bool *render) {};
 
     void MPDConnector::ReadLoop() {
         char buf[RESP_BUF_SIZE];

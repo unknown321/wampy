@@ -1,20 +1,16 @@
 #ifndef WAMPY_UTIL_H
 #define WAMPY_UTIL_H
 
+#include <glad/glad.h>
+
 #include "GLFW/glfw3.h"
 #include "direntry.h"
-#include "dlog.h"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "util_string.h"
-#include <dirent.h>
-#include <glad/glad.h>
 #include <map>
 #include <string>
 #include <vector>
-
-// #define DLOG(fmt, ...) printf("[wampy] " fmt, ##__VA_ARGS__)
 
 struct TextureMapEntry {
     char *data;
@@ -85,7 +81,7 @@ struct PKMHeader {
     explicit PKMHeader(std::fstream *s);
 };
 
-GLuint LoadCompressedTexture(int width, int height, ulong size, const char *data);
+GLuint LoadCompressedTexture(int width, int height, int size, const char *data);
 
 struct AtlasImage {
     uint16_t width;
@@ -144,8 +140,6 @@ void rstrip(std::string *s, const char &what);
 void ExportBookmarks();
 
 void RemoveLogs();
-
-void getCharRange(std::vector<uint32_t> *points);
 
 bool replace(std::string &str, const std::string &from, const std::string &to);
 

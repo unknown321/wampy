@@ -1,7 +1,6 @@
 #ifndef WAMPY_SKIN_H
 #define WAMPY_SKIN_H
 
-#include "Version.h"
 #include "cassette/cassette.h"
 #include "config.h"
 #include "connector/hagoromoToString.h"
@@ -10,10 +9,8 @@
 #include "implot.h"
 #include "rec/rec.h"
 #include "skinVariant.h"
-#include "sound_settings/sound_settings.h"
 #include "w1/w1.h"
 #include "winamp/winamp.h"
-#include <thread>
 
 #define SETTINGS_FONT_SIZE 25
 
@@ -249,7 +246,7 @@ struct Skin {
     bool fmRecordingActive = false;
     bool fmRecordingStop = false;
 
-    struct timespec ssfwUpdateDelay = {0, 500000000};
+    timespec ssfwUpdateDelay = {0, 500000000};
 
     void WithWinampSkinDir(const std::string &d);
 

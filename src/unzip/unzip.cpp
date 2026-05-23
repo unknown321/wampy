@@ -12,6 +12,7 @@
          Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 */
 
+#include "util_string.h"
 #if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(__APPLE__))
 #ifndef __USE_FILE_OFFSET64
 #define __USE_FILE_OFFSET64
@@ -27,7 +28,6 @@
 #endif
 #endif
 
-
 #define FOPEN_FUNC(filename, mode) fopen64(filename, mode)
 #define FTELLO_FUNC(stream) ftello64(stream)
 #define FSEEKO_FUNC(stream, offset, origin) fseeko64(stream, offset, origin)
@@ -41,8 +41,7 @@
 #define CASESENSITIVITY (0)
 #define WRITEBUFFERSIZE (8192)
 
-static int
-do_extract_currentfile(unzFile uf, char **res, size_t *length) {
+static int do_extract_currentfile(unzFile uf, char **res, size_t *length) {
     char filename_inzip[256];
     int err = UNZ_OK;
     void *buf;
@@ -57,7 +56,7 @@ do_extract_currentfile(unzFile uf, char **res, size_t *length) {
     }
 
     size_buf = WRITEBUFFERSIZE;
-    buf = (void *) malloc(size_buf);
+    buf = (void *)malloc(size_buf);
     if (buf == nullptr) {
         printf("Error allocating memory\n");
         free(buf);
@@ -69,21 +68,21 @@ do_extract_currentfile(unzFile uf, char **res, size_t *length) {
         printf("error %d with zipfile in unzOpenCurrentFilePassword\n", err);
     }
 
-//    printf(" extracting: %s\n", filename_inzip);
+    //    printf(" extracting: %s\n", filename_inzip);
 
     if (*res != nullptr) {
         printf("%s not null, freeing %p\n", *res);
         free(*res);
     }
 
-    *res = (char *) malloc(file_info.uncompressed_size);
+    *res = (char *)malloc(file_info.uncompressed_size);
     if (*res == nullptr) {
         printf("malloc failure\n");
         free(*res);
         exit(1);
     }
 
-//    printf("%s res: %p, %s\n", __FUNCTION__, *res, filename_inzip);
+    //    printf("%s res: %p, %s\n", __FUNCTION__, *res, filename_inzip);
 
     int pos = 0;
     do {
@@ -94,12 +93,12 @@ do_extract_currentfile(unzFile uf, char **res, size_t *length) {
             return 1;
         }
 
-        memcpy(((char *) *res + pos), buf, err);
+        memcpy(((char *)*res + pos), buf, err);
         pos += err;
     } while (err > 0);
 
     *length = size_t(file_info.uncompressed_size);
-//    printf("%x\n", ((char *) res)[0]);
+    //    printf("%x\n", ((char *) res)[0]);
 
     free(buf);
     return err;
@@ -124,7 +123,6 @@ static int do_list(unzFile uf, std::vector<std::string> *res) {
         }
         res->push_back(std::string(filename_inzip));
 
-
         if ((i + 1) < gi.number_entry) {
             err = unzGoToNextFile(uf);
             if (err != UNZ_OK) {
@@ -147,10 +145,9 @@ static int do_extract_onefile(unzFile uf, const char *filename, char **res, size
     if (*res == nullptr) {
         printf("returned null\n");
     }
-//    printf("%s res is %p, %d\n", __FUNCTION__, *res, *length);
+    //    printf("%s res is %p, %d\n", __FUNCTION__, *res, *length);
     return ret;
 }
-
 
 int unzipFiles(const char *zipfilename, std::map<std::string, TextureMapEntry> *result) {
     unzFile uf;
@@ -163,9 +160,9 @@ int unzipFiles(const char *zipfilename, std::map<std::string, TextureMapEntry> *
     std::vector<std::string> filenames;
     do_list(uf, &filenames);
 
-    for (std::string &filename: filenames) {
+    for (std::string &filename : filenames) {
         std::string lowered;
-        for (char &c: filename) {
+        for (char &c : filename) {
             lowered += std::tolower(c, std::locale());
         }
 
@@ -176,7 +173,7 @@ int unzipFiles(const char *zipfilename, std::map<std::string, TextureMapEntry> *
             // two files with different names in archive
             // BALANCE.BMP and balance.bmp
             if ((*result)[basename].data != nullptr) {
-//                printf("%s freeing already existing entry in map %s: %p\n", __PRETTY_FUNCTION__, lowered.c_str(), result[lowered].first);
+                //                printf("%s freeing already existing entry in map %s: %p\n", __PRETTY_FUNCTION__, lowered.c_str(), result[lowered].first);
                 free((*result)[basename].data);
             }
 
@@ -188,7 +185,6 @@ int unzipFiles(const char *zipfilename, std::map<std::string, TextureMapEntry> *
                 printf("fail\n");
                 return ret_value;
             }
-
 
             if (data == nullptr) {
                 printf("%s panic\n", __FUNCTION__);
