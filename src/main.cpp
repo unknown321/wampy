@@ -430,6 +430,7 @@ int main(int, char **) {
     skin.ReadQR();
     skin.ReadFMButtons();
     skin.GetLogsDirSize();
+    skin.CalcWindowPos();
     connector->soundSettings.Start();
     connector->soundSettingsFw.Start();
     skin.Load();
