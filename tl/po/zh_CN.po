@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: wampy 1.0\n"
 "Report-Msgid-Bugs-To: unknown.at.github@yandex.com\n"
 "POT-Creation-Date: 2025-12-26 09:48+0300\n"
-"PO-Revision-Date: 2025-12-26 09:20+0300\n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-6-15 17:02+0800\n"
+"Last-Translator: 2333-not-found\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -191,7 +191,7 @@ msgstr "启用"
 
 #: ../src/skin/dac.cpp:21
 msgid "Unloaded"
-msgstr "未加载"
+msgstr "已卸载"
 
 #: ../src/skin/dac.cpp:21 ../src/skin/dac.cpp:24
 msgid "Failure"
@@ -231,7 +231,7 @@ msgstr "已刷新"
 
 #: ../src/skin/eq.cpp:29
 msgid "Direct Source is on, filters disabled"
-msgstr "直接音源已开启，滤波器已禁用"
+msgstr "直接源已开启，滤波器已禁用"
 
 #: ../src/skin/eq.cpp:36 ../src/skin/eq.cpp:38 ../src/skin/eq.cpp:39
 msgid "Select filter"
@@ -277,23 +277,23 @@ msgstr "不可用"
 
 #: ../src/skin/eqPerSong.cpp:47 ../src/skin/eqTabs.cpp:324
 msgid "Direct Source"
-msgstr ""
+msgstr "直接源"
 
 #: ../src/skin/eqPerSong.cpp:66
 msgid "EQ6 Preset"
-msgstr "EQ6 预设"
+msgstr "6 段均衡器预设"
 
 #: ../src/skin/eqPerSong.cpp:72
 msgid "EQ6 Bands"
-msgstr "EQ6 频段"
+msgstr "6 段均衡器频段"
 
 #: ../src/skin/eqPerSong.cpp:91
 msgid "EQ10 Preset"
-msgstr "EQ10 预设"
+msgstr "10 段均衡器预设"
 
 #: ../src/skin/eqPerSong.cpp:97
 msgid "EQ10 Bands"
-msgstr "EQ10 频段"
+msgstr "10 段均衡器频段"
 
 #: ../src/skin/eqPerSong.cpp:125
 msgid "DSEE custom"
@@ -317,7 +317,7 @@ msgstr "VPT 模式"
 
 #: ../src/skin/eqPerSong.cpp:161
 msgid "Tone Control or 10 band EQ?"
-msgstr "音调控制 还是 10 段均衡器？"
+msgstr "音调控制 / 10 段均衡器"
 
 #: ../src/skin/eqPerSong.cpp:163
 msgid "10 band EQ"
@@ -670,7 +670,7 @@ msgstr "主音量表 (DSD)"
 
 #: ../src/skin/volumeTables.cpp:919
 msgid "Audio card"
-msgstr "音频卡"
+msgstr "声卡"
 
 #: ../src/skin/volumeTables.cpp:925
 msgid "Audio device"
@@ -754,7 +754,7 @@ msgstr "不同的 DAC 初始化模式"
 
 #: ../src/skin/w1.cpp:144
 msgid "Apply tuning and reboot"
-msgstr "应用调谐并重启"
+msgstr "应用调音并重启"
 
 #: ../src/skin/w1.cpp:148 ../src/skin/w1.cpp:178
 msgid "Reboot the device to apply changes"
