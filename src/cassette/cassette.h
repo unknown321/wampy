@@ -26,6 +26,8 @@ namespace Cassette {
 
     class Cassette : public SkinVariant, public INotifiable {
       public:
+        ~Cassette() {childThreadsStop=true;if(render)render->notify();if(reelWorker.joinable())reelWorker.join();if(updateWorker.joinable())updateWorker.join();}
+
         Cassette() = default;
 
         Cassette(Cassette const &other);
@@ -86,6 +88,7 @@ namespace Cassette {
         char album[FIELD_SIZE]{};
 
         std::atomic<bool> childThreadsStop{false};
+        std::thread reelWorker,updateWorker;
         bool reelThreadRunning{};
         bool updateThreadRunning{};
 

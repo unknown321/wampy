@@ -34,13 +34,12 @@ namespace DigitalClock {
         DigitalClockElements elements;
         std::string color;
         std::string newColor;
-        bool tickerThreadRunning{};
-        bool childThreadsStop{};
         bool loading{};
         ImFont *FontRegular{};
         Config *config{};
         time_t rawtime{};
-        tm *timeinfo{};
+        tm timeSnapshot{};
+        tm *timeinfo{&timeSnapshot};
         bool hasBackground = false;
 
         uint H1{};
@@ -64,7 +63,6 @@ namespace DigitalClock {
 
         void loadTextures(const std::string &color);
 
-        void ticker();
 
         void formatTime();
 

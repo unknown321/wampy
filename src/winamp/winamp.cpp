@@ -1485,12 +1485,10 @@ namespace Winamp {
         childThreadsStop = false;
 
         auto exec = [this]() { MarqueeLoop(); };
-        std::thread t(exec);
-        t.detach();
+        marqueeWorker=std::thread(exec);
 
         auto update = [this]() { processUpdate(); };
-        std::thread v(update);
-        v.detach();
+        updateWorker=std::thread(update);
     }
 
     void Winamp::Stop(void *winamp, void *) {
@@ -1606,13 +1604,12 @@ namespace Winamp {
     }
 
     void Winamp::Unload() {
-        Elements.Unload();
         childThreadsStop = true;
         if (render) render->notify();
+        if(marqueeWorker.joinable())marqueeWorker.join();
+        if(updateWorker.joinable())updateWorker.join();
+        Elements.Unload();
         pointList.clear();
-        while (marqueeThreadRunning || updateThreadRunning) {
-            // wait for threads to stop
-        }
 
         memset(m.title, 0, PLAYLIST_SONG_SIZE);
         memset(m.text, 0, PLAYLIST_SONG_SIZE);

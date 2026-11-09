@@ -121,6 +121,8 @@ namespace Winamp {
 
     class Winamp : public SkinVariant, public INotifiable {
       public:
+        ~Winamp() {childThreadsStop=true;if(render)render->notify();if(marqueeWorker.joinable())marqueeWorker.join();if(updateWorker.joinable())updateWorker.join();}
+
         int barUpdateFC = 0;
         int barFalloff = 16;
         float peakFalloff = 1.1f;
@@ -191,6 +193,7 @@ namespace Winamp {
         elements Elements{};
         bool MarqueeRunning{};
         std::atomic<bool> childThreadsStop{false};
+        std::thread marqueeWorker,updateWorker;
         bool marqueeThreadRunning{};
         bool updateThreadRunning{};
 

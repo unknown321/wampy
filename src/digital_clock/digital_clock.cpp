@@ -55,6 +55,8 @@ namespace DigitalClock {
             return;
         }
 
+        time_t now=time(nullptr);
+        if(now!=rawtime){rawtime=now;gmtime_r(&rawtime,&timeSnapshot);timeinfo=&timeSnapshot;formatTime();}
         if (hasBackground) {
             elements.Background.DrawAt(0, 0);
         }
@@ -228,13 +230,12 @@ namespace DigitalClock {
 
     int DigitalClock::Load(std::string filename, ImFont **fontRegular) {
         loading = true;
-        childThreadsStop = false;
 
         if (filename.empty()) {
             filename = DefaultColor;
         }
 
-        bool found;
+        bool found=false;
         for (const auto &v : colorsDigitalClock) {
             if (v.second == filename) {
                 found = true;
@@ -254,12 +255,9 @@ namespace DigitalClock {
         color = filename;
 
         time(&rawtime);
-        timeinfo = gmtime(&rawtime);
+        gmtime_r(&rawtime,&timeSnapshot);
+        timeinfo=&timeSnapshot;
         formatTime();
-
-        auto update = [this]() { ticker(); };
-        std::thread v(update);
-        v.detach();
 
         loading = false;
 
@@ -287,28 +285,6 @@ namespace DigitalClock {
         Sec2 = timeinfo->tm_sec % 10;
     }
 
-    void DigitalClock::ticker() {
-        tickerThreadRunning = true;
-
-        while (true) {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            if (childThreadsStop) {
-                break;
-            }
-
-            if (!*render) {
-                continue;
-            }
-
-            time(&rawtime);
-            timeinfo = gmtime(&rawtime);
-            formatTime();
-        }
-
-        tickerThreadRunning = false;
-        DLOG("ticker thread stopped\n");
-    }
-
     void DigitalClock::LoadNewSkin() {
         if (color == newColor) {
             DLOG("not updating current skin %s\n", color.c_str());
@@ -323,7 +299,6 @@ namespace DigitalClock {
     ImFont *DigitalClock::GetFont() { return FontRegular; }
 
     void DigitalClock::Unload() {
-        childThreadsStop = true;
 
         elements.ToggleSettings.Unload();
 
@@ -359,9 +334,6 @@ namespace DigitalClock {
             elements.Background.Unload();
         }
 
-        while (tickerThreadRunning) {
-            // wait for threads to stop
-        }
     }
 
     void DigitalClock::WithConfig(Config *c) { config = c; };
