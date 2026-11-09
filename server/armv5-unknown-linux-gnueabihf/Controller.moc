@@ -2,6 +2,9 @@
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QWindow>
+#include <QQuickWindow>
+#include <QPointer>
+#include <atomic>
 
 #include "Provider.moc"
 #include "QTimer"
@@ -69,6 +72,10 @@ class Controller : public QObject {
     int setVinylMode(int);
     void initializeVolumeValue();
 
+    std::atomic<bool> gpuDrained{false};
+    QPointer<QQuickWindow> handoffWindow;
+    quint64 handoffGeneration = 0;
+    void ObserveHandoff(Command::Command *c);
     QWindow *window = nullptr;
     QQmlContext *context = nullptr;
     QObject *FrameWork = nullptr;

@@ -27,6 +27,26 @@ index 79b06288..910fc394 100644
  /*! @} */
  
  /*! @defgroup mods Modifier key flags
+diff --git a/src/egl_context.c b/src/egl_context.c
+index 517c64cb..35d1a016 100644
+--- a/src/egl_context.c
++++ b/src/egl_context.c
+@@ -290,7 +290,14 @@ static void swapBuffersEGL(_GLFWwindow* window)
+     }
+ #endif
+ 
+-    eglSwapBuffers(_glfw.egl.display, window->context.egl.surface);
++    /* Research diagnostic: report failure; do not recreate graphics resources here. */
++    if (!eglSwapBuffers(_glfw.egl.display, window->context.egl.surface))
++    {
++        const EGLint error = eglGetError();
++        _glfwInputError(GLFW_PLATFORM_ERROR,
++                        "EGL: SwapBuffers failed (0x%04x): %s",
++                        error, getEGLErrorString(error));
++    }
+ }
+ 
+ static void swapIntervalEGL(int interval)
 diff --git a/src/init.c b/src/init.c
 index dbd5a900..9561c552 100644
 --- a/src/init.c
@@ -280,10 +300,15 @@ index a9b528f0..681df56f 100644
  }
  
 diff --git a/src/null_window.c b/src/null_window.c
-index f0e1dcc9..82fd78e9 100644
+index f0e1dcc9..27b29b98 100644
 --- a/src/null_window.c
 +++ b/src/null_window.c
-@@ -30,6 +30,16 @@
+@@ -1,3 +1,4 @@
++#include <sys/ioctl.h>
+ //========================================================================
+ // GLFW 3.5 - www.glfw.org
+ //------------------------------------------------------------------------
+@@ -30,6 +31,16 @@
  #include <stdlib.h>
  #include <string.h>
  
@@ -300,11 +325,12 @@ index f0e1dcc9..82fd78e9 100644
  static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
  {
      if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
-@@ -485,8 +495,273 @@ GLFWbool _glfwWindowVisibleNull(_GLFWwindow* window)
+@@ -485,8 +496,153 @@ GLFWbool _glfwWindowVisibleNull(_GLFWwindow* window)
      return window->null.visible;
  }
  
 -void _glfwPollEventsNull(void)
+-{
 +void handleKeyEvent(int key, int value) {
 +    _glfwInputKey(_glfw.windowListHead, key, 0, value, 0);
 +}
@@ -421,157 +447,37 @@ index f0e1dcc9..82fd78e9 100644
 +const static char * KEYBOARD_POWER_PATH = "/dev/input/event0";
 +const static char * TOUCHSCREEN_PATH = "/dev/input/event1";
 +
-+// man inotify
-+static void
-+handle_events(int fd, int *wd)
- {
-+   /* Some systems cannot read integer variables if they are not
-+      properly aligned. On other systems, incorrect alignment may
-+      decrease performance. Hence, the buffer used for reading from
-+      the inotify file descriptor should have the same alignment as
-+      struct inotify_event. */
-+
-+   char buf[4096]
-+       __attribute__ ((aligned(__alignof__(struct inotify_event))));
-+   const struct inotify_event *event;
-+   ssize_t len;
-+
-+   /* Loop while events can be read from inotify file descriptor. */
-+
-+   struct input_event e;
-+
-+   for (;;) {
-+       /* Read some events. */
-+       len = read(fd, buf, sizeof(buf));
-+       if (len == -1 && errno != EAGAIN) {
-+           perror("read");
-+           exit(EXIT_FAILURE);
-+       }
-+
-+       /* If the nonblocking read() found no events to read, then
-+          it returns -1 with errno set to EAGAIN. In that case,
-+          we exit the loop. */
-+
-+       if (len <= 0)
-+           break;
-+
-+       /* Loop over all events in the buffer. */
-+
-+       for (char *ptr = buf; ptr < buf + len; ptr += sizeof(struct inotify_event) + event->len) {
-+           event = (const struct inotify_event *) ptr;
-+
-+           for (size_t i = 0; i < 3; ++i) {
-+               if (wd[i] == event->wd) {
-+                   memset(&e, 0, sizeof e);
-+                   if (i == 0) {
-+                       if (read(_glfw.keyboard.fdPower, &e, sizeof(e)) >= 0) {
-+                           if (e.type == EV_KEY) {
-+                               handleKeyEvent(e.code, e.value);
-+                           }
-+                       }
-+                   }
-+
-+                   if (i == 1) {
-+                       if (read(_glfw.keyboard.fd, &e, sizeof(e)) >= 0) {
-+                           if (e.type == EV_KEY) {
-+                               handleKeyEvent(e.code, e.value);
-+                           }
-+                       }
-+                   }
-+
-+                   if (i == 2) {
-+                       if (read(_glfw.touchscreen.fd, &e, sizeof(e)) >= 0 ) {
-+                               handleTSEvent(e.code, e.value, e.type);
-+                       }
-+                   }
-+
-+                   break;
-+               }
-+           }
-+       }
-+   }
++// Altered Wampy backend. All callbacks execute on the GLFW/UI owner thread.
++static int dropped[3] = {0,0,0};
++static int inputReset = 0;
++int wampyInputWasReset(void) { int value=inputReset; inputReset=0; return value; }
++static void resyncInput(int fd,int index) {
++ unsigned char keys[(KEY_MAX+8)/8]={0};
++ if(ioctl(fd,EVIOCGKEY(sizeof(keys)),keys)<0)return;
++ inputReset=1;
++ if(index<2){const int media[]={KEY_ENTER,KEY_LEFT,KEY_RIGHT,KEY_VOLUMEUP,KEY_VOLUMEDOWN};for(int k=0;k<5;++k)handleKeyEvent(media[k],GLFW_RELEASE);}
++ if(index==1)handleKeyEvent(KEY_H,!!(keys[KEY_H/8]&(1<<(KEY_H%8))));
++ if(index==2)_glfwInputMouseClick(_glfw.windowListHead,GLFW_MOUSE_BUTTON_1,GLFW_RELEASE,0);
 +}
-+
-+
 +void _glfwPollEventsNull(void) {
-+    int fd, poll_num;
-+    struct pollfd fds[1];
-+    int nfds = 1;
-+    int *wd;
-+
-+    wd = calloc(3, sizeof(int));
-+    if (wd == NULL) {
-+       perror("calloc");
-+       exit(EXIT_FAILURE);
-+    }
-+
-+    fd = inotify_init1(IN_NONBLOCK);
-+    if (fd == -1) {
-+        perror("inotify_init1");
-+        exit(EXIT_FAILURE);
-+    }
-+
-+    wd[0] = inotify_add_watch(fd, KEYBOARD_POWER_PATH, IN_ACCESS);
-+    if (wd[0] < 0) {
-+        perror("inotify_add_watch");
-+        exit(EXIT_FAILURE);
-+    }
-+
-+    wd[1] = inotify_add_watch(fd, KEYBOARD_PATH, IN_ACCESS);
-+    if (wd[1] < 0) {
-+        perror("inotify_add_watch");
-+        exit(EXIT_FAILURE);
-+    }
-+
-+    // touchscreen events are not written if file is not in use (read)
-+    // if there are no applications reading from it, there will be no events
-+    wd[2] = inotify_add_watch(fd, TOUCHSCREEN_PATH, IN_ACCESS);
-+    if (wd[2] < 0) {
-+        perror("inotify_add_watch");
-+        exit(EXIT_FAILURE);
-+    }
-+
-+    fds[0].fd = fd;
-+    fds[0].events = POLLIN;
-+    while (true) {
-+        poll_num = poll(fds, nfds, -1);
-+        if (poll_num == -1) {
-+            if (errno == EINTR)
-+                continue;
-+            perror("failed to poll null window");
-+            exit(EXIT_FAILURE);
-+        }
-+
-+        if (poll_num > 0) {
-+            if (fds[0].revents & POLLIN) {
-+                handle_events(fd, wd);
-+            }
-+        }
-+    }
++ const int inputs[3]={_glfw.keyboard.fdPower,_glfw.keyboard.fd,_glfw.touchscreen.fd};
++ static int initialized=0;if(!initialized){resyncInput(inputs[1],1);initialized=1;}
++ for(int i=0;i<3;++i){if(inputs[i]<0)continue;for(int budget=0;budget<256;++budget){
++  struct input_event event;ssize_t n=read(inputs[i],&event,sizeof(event));
++  if(n<0&&errno==EINTR)continue;
++  if(n!=sizeof(event)){
++   if(n==0||(n<0&&errno!=EAGAIN&&errno!=EINTR)){
++    close(inputs[i]);if(i==0)_glfw.keyboard.fdPower=-1;if(i==1)_glfw.keyboard.fd=-1;if(i==2)_glfw.touchscreen.fd=-1;inputReset=1;
++   }break;
++  }
++  if(event.type==EV_SYN&&event.code==SYN_DROPPED){dropped[i]=1;continue;}
++  if(dropped[i]){if(event.type==EV_SYN&&event.code==SYN_REPORT){dropped[i]=0;resyncInput(inputs[i],i);}continue;}
++  if(i==2)handleTSEvent(event.code,event.value,event.type);else if(event.type==EV_KEY)handleKeyEvent(event.code,event.value);
++ }}
 +}
-+
-+void _glfwPollEventsNull_old(void)
-+{
-+    // Read all queued events (non-blocking)
-+    struct input_event e;
-+    memset(&e, 0, sizeof e);
-+    if (read(_glfw.keyboard.fdPower, &e, sizeof(e)) >= 0) {
-+        if (e.type == EV_KEY) {
-+            handleKeyEvent(e.code, e.value);
-+        }
-+    }
-+
-+    memset(&e, 0, sizeof e);
-+    if (read(_glfw.keyboard.fd, &e, sizeof(e)) >= 0) {
-+        if (e.type == EV_KEY) {
-+            handleKeyEvent(e.code, e.value);
-+        }
-+    }
-+
-+    memset(&e, 0, sizeof e);
-+    if (read(_glfw.touchscreen.fd, &e, sizeof(e)) >= 0 ) {
-+            handleTSEvent(e.code, e.value, e.type);
-+    }
++void wampyWaitInput(int extraFd,int timeoutMs){
++ struct pollfd fds[4]={{_glfw.keyboard.fdPower,POLLIN,0},{_glfw.keyboard.fd,POLLIN,0},{_glfw.touchscreen.fd,POLLIN,0},{extraFd,POLLIN,0}};
++ poll(fds,4,timeoutMs);
  }
  
  void _glfwWaitEventsNull(void)

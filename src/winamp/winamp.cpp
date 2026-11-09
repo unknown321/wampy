@@ -89,9 +89,7 @@ namespace Winamp {
                 break;
             }
 
-            if (!*render) {
-                continue;
-            }
+            if (!render->waitUntilVisible(childThreadsStop)) break;
 
             if (loading) {
                 continue;
@@ -1465,9 +1463,7 @@ namespace Winamp {
                 continue;
             }
 
-            if (!*render) {
-                continue;
-            }
+            if (!render->waitUntilVisible(childThreadsStop)) break;
 
             if (loading) {
                 continue;
@@ -1612,6 +1608,7 @@ namespace Winamp {
     void Winamp::Unload() {
         Elements.Unload();
         childThreadsStop = true;
+        if (render) render->notify();
         pointList.clear();
         while (marqueeThreadRunning || updateThreadRunning) {
             // wait for threads to stop

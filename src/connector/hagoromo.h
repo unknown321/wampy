@@ -1,3 +1,4 @@
+#include "../render_gate.hpp"
 #ifndef WAMPY_HAGOROMO_H
 #define WAMPY_HAGOROMO_H
 
@@ -76,7 +77,7 @@ namespace Hagoromo {
 
         void TestCommand() override;
 
-        void ToggleHgrm(HgrmToggleAction action, bool *render) override;
+        void ToggleHgrm(HgrmToggleAction action, wampy_resume::RenderGate *render) override;
 
         void Connect() override;
 
@@ -106,7 +107,7 @@ namespace Hagoromo {
 
         void NextTrack() override;
 
-        void powerLoop(bool *render, bool *power) override;
+        void powerLoop(wampy_resume::RenderGate *render, bool *power) override;
 
         void storageLoop();
 

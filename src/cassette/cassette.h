@@ -1,3 +1,4 @@
+#include <atomic>
 #ifndef WAMPY_CASSETTE_H
 #define WAMPY_CASSETTE_H
 
@@ -84,7 +85,7 @@ namespace Cassette {
         char title[FIELD_SIZE]{};
         char album[FIELD_SIZE]{};
 
-        bool childThreadsStop{};
+        std::atomic<bool> childThreadsStop{false};
         bool reelThreadRunning{};
         bool updateThreadRunning{};
 

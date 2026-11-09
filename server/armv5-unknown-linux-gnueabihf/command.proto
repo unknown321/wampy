@@ -95,6 +95,10 @@ message FeatureSetMaxVolume {
 
 message WindowStatus {
   required WindowVisible Visible = 1;
+  optional uint64 handoff_generation = 2;
+  optional bool render_quiescent = 3 [default = false];
+  optional uint32 handoff_protocol = 4 [default = 0];
+  optional uint64 deadline_monotonic_ms = 5;
 }
 
 message SetVolume {

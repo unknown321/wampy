@@ -1,3 +1,4 @@
+#include "../render_gate.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <sys/socket.h>
@@ -369,11 +370,11 @@ namespace MPD {
 
     __attribute__((unused)) void MPDConnector::volumeLoop() {};
 
-    void MPDConnector::powerLoop(bool *render, bool *power) {};
+    void MPDConnector::powerLoop(wampy_resume::RenderGate *render, bool *power) {};
 
     void MPDConnector::TestCommand() {};
 
-    void MPDConnector::ToggleHgrm(HgrmToggleAction action, bool *render) {};
+    void MPDConnector::ToggleHgrm(HgrmToggleAction action, wampy_resume::RenderGate *render) {};
 
     void MPDConnector::ReadLoop() {
         char buf[RESP_BUF_SIZE];

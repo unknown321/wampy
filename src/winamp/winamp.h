@@ -1,3 +1,4 @@
+#include <atomic>
 #ifndef WAMPY_WINAMP_H
 #define WAMPY_WINAMP_H
 
@@ -189,7 +190,7 @@ namespace Winamp {
         TextureMap textures{};
         elements Elements{};
         bool MarqueeRunning{};
-        bool childThreadsStop{};
+        std::atomic<bool> childThreadsStop{false};
         bool marqueeThreadRunning{};
         bool updateThreadRunning{};
 

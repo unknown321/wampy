@@ -1,3 +1,7 @@
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QThread>
+#include <time.h>
 #include "Controller.moc"
 #include "moc_Controller.cpp"
 
@@ -333,18 +337,65 @@ void Controller::StopRunning() {
     disconnect(timeInHeader);
 }
 
+void Controller::ObserveHandoff(Command::Command *c) {
+    auto status = c->mutable_windowstatus();
+    status->set_handoff_protocol(1);
+    status->set_handoff_generation(handoffGeneration);
+    status->set_render_quiescent(handoffWindow && !handoffWindow->isVisible() &&
+                                !handoffWindow->isExposed() && gpuDrained.load());
+}
+
 void Controller::Hide(Command::Command *c) {
+    if (c->has_windowstatus() && c->windowstatus().has_handoff_generation()) {
+        const auto request = c->windowstatus();
+        c->set_code(Command::FAIL);
+        auto now = []() -> quint64 { struct timespec t; clock_gettime(CLOCK_MONOTONIC, &t); return quint64(t.tv_sec)*1000+t.tv_nsec/1000000; };
+        if (!request.has_deadline_monotonic_ms() || now() >= request.deadline_monotonic_ms() ||
+            !window || !FrameWork || provider.usbMounted ||
+            QThread::currentThread() != window->thread() || FrameWork->thread() != window->thread()) return;
+        auto quick = qobject_cast<QQuickWindow *>(window);
+        if (!quick) return;
+        if (handoffWindow != quick) {
+            handoffWindow = quick; gpuDrained.store(false);
+            QObject::connect(quick, &QObject::destroyed, this, [this, quick]() {
+                if (window == quick) window = nullptr;
+                gpuDrained.store(false); handoffGeneration = 0;
+            });
+            QObject::connect(quick, &QQuickWindow::visibleChanged, this, [this](bool visible) {
+                if (visible) { gpuDrained.store(false); handoffGeneration = 0; }
+            });
+            QObject::connect(quick, &QQuickWindow::sceneGraphAboutToStop, this, [this, quick]() {
+                auto context = QOpenGLContext::currentContext();
+                if (context && context == quick->openglContext()) {
+                    context->functions()->glFinish(); gpuDrained.store(true);
+                }
+            }, Qt::DirectConnection);
+        }
+        if (!QMetaObject::invokeMethod(FrameWork, "hide", Qt::DirectConnection)) return;
+        quick->hide(); // Qt GUI hide waits for render-loop obscurity; drain must be observed.
+        if (now() >= request.deadline_monotonic_ms()) {
+            gpuDrained.store(false); handoffGeneration = 0;
+            QMetaObject::invokeMethod(FrameWork, "show", Qt::DirectConnection); quick->show();
+            ObserveHandoff(c); return;
+        }
+        if (!quick->isVisible() && !quick->isExposed() && gpuDrained.load()) {
+            handoffGeneration = request.handoff_generation(); c->set_code(Command::OK);
+        }
+        ObserveHandoff(c); return;
+    }
     goToPlayer();
 
     if (!QMetaObject::invokeMethod(FrameWork, "hide", Qt::QueuedConnection)) {
         DLOG("failed to hide framework\n");
         c->set_code(Command::FAIL);
+        return;
     }
 
     c->set_code(Command::OK);
 }
 
 void Controller::Show(Command::Command *c) {
+    gpuDrained.store(false); handoffGeneration = 0;
     if (!QMetaObject::invokeMethod(FrameWork, "show", Qt::QueuedConnection)) {
         DLOG("failed to show framework\n");
         c->set_code(Command::FAIL);
@@ -355,11 +406,13 @@ void Controller::Show(Command::Command *c) {
 }
 
 void Controller::GetWindowStatus(Command::Command *s) {
+    if (!window || QThread::currentThread() != window->thread()) { s->set_code(Command::FAIL); return; }
     s->mutable_windowstatus()->set_visible(Command::VISIBILITY_YES);
     if (window->isVisible() == false) {
         s->mutable_windowstatus()->set_visible(Command::VISIBILITY_NO);
     }
 
+    ObserveHandoff(s);
     s->set_code(Command::OK);
 }
 

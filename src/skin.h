@@ -1,3 +1,4 @@
+#include "render_gate.hpp"
 #ifndef WAMPY_SKIN_H
 #define WAMPY_SKIN_H
 
@@ -52,7 +53,7 @@ enum EActiveFilterTab {
 #define EFFECT_CHANGE_QUEUE_TEXT gettext("Change enqueued")
 
 struct Skin {
-    bool *render{};
+    wampy_resume::RenderGate *render{};
     ImFont *FontRegular{};
     SkinList skinListWinamp{};
     SkinList reelListCassette{};

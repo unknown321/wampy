@@ -1,3 +1,5 @@
+#include "../bounded_socket.hpp"
+#include "../render_gate.hpp"
 #include "command.pb.h"
 #include "command_names.h"
 #include <cstdio>
@@ -90,54 +92,10 @@ namespace Hagoromo {
     };
 
     void HagoromoConnector::sendData(char *data, size_t len, std::string *res) {
-        int server_socket;
-        struct sockaddr_un server_addr{};
-        int connection_result;
-
-        server_socket = socket(AF_UNIX, SOCK_STREAM, 0);
-
-        server_addr.sun_family = AF_UNIX;
-        strcpy(server_addr.sun_path, WAMPY_SOCKET);
-
-        connection_result = connect(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr));
-
-        if (connection_result == -1) {
-            perror("failed to connect\n");
-            return;
+        res->clear();
+        if (!wampy_resume::exchange(WAMPY_SOCKET, data, len, res, 200)) {
+            res->clear(); DLOG("IPC failure/deadline\n");
         }
-
-        ssize_t sent = send(server_socket, data, len, MSG_NOSIGNAL);
-        if (sent < 0) {
-            perror("send failed\n");
-            return;
-        }
-
-        //        DLOG("sent %d bytes\n", sent);
-
-        while (true) {
-            char buf[1024];
-            auto count = read(server_socket, buf, sizeof buf);
-
-            if (count < 0) {
-                perror("read failed\n");
-                return;
-            }
-
-            if (count == 0) {
-                break;
-            }
-            //            DLOG("read %d bytes\n", count);
-            for (int i = 0; i < count; i++) {
-                *res += buf[i];
-            }
-        }
-
-        //        for (auto c: *res) {
-        //            printf("0x%02x ", c);
-        //        }
-        //        printf("\n");
-
-        close(server_socket);
     }
 
     bool HagoromoConnector::sendCMD(Command::Command *c) {
@@ -257,7 +215,7 @@ namespace Hagoromo {
         sendCMD(&c);
     }
 
-    void HagoromoConnector::ToggleHgrm(HgrmToggleAction action, bool *render) {
+    void HagoromoConnector::ToggleHgrm(HgrmToggleAction action, wampy_resume::RenderGate *render) {
         auto c = Command::Command();
         c.set_type(Command::Type::CMD_GET_WINDOW_STATUS);
         if (!sendCMD(&c)) {
@@ -959,13 +917,13 @@ namespace Hagoromo {
                 auto event = events[n];
                 if (event.data.fd == procMountsFd) {
                     storagePresent = exists("/contents/MUSIC/");
-                    DLOG("storagePresent: %d\n", storagePresent);
+                    DLOG("storagePresent: %d\n", storagePresent.load());
                 }
             }
         }
     }
 
-    void HagoromoConnector::powerLoop(bool *render, bool *power) {
+    void HagoromoConnector::powerLoop(wampy_resume::RenderGate *render, bool *power) {
 #ifdef DESKTOP
         return;
 #endif
@@ -1067,9 +1025,7 @@ namespace Hagoromo {
         std::thread storT(stor);
         storT.detach();
 
-        auto pwr = [this]() { powerLoop(render, &power); };
-        std::thread powert(pwr);
-        powert.detach();
+        // Display state is read on the UI thread; do not launch the legacy writer.
 
         auto snd = [this]() { volumeLoop(); };
         std::thread voll(snd);

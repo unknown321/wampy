@@ -571,6 +571,7 @@ void Skin::Draw() {
 }
 
 void Skin::KeyHandler() {
+    #ifdef DESKTOP
     if (*hold_toggled) {
         *hold_toggled = false;
 
@@ -579,7 +580,7 @@ void Skin::KeyHandler() {
             action = Hide;
         }
 
-        DLOG("hold toggled, value %d, render %d, action %d\n", *hold_value, *render, action);
+        DLOG("hold toggled, value %d, render %d, action %d\n", *hold_value, render->load(), action);
         connector->ToggleHgrm(action, render);
 
         if (action == Hide) {
@@ -614,13 +615,8 @@ void Skin::KeyHandler() {
         ImGui::GetIO().AddMousePosEvent(0.0f, 0.0f);
     }
 
-    if (*power_pressed) {
-        *power_pressed = false;
-
-        if (*render) {
-            *render = false;
-        }
-    }
+    #endif
+    *power_pressed = false; // a release does not distinguish blank from wake
 
     if ((config->disableKeysWhenPowerOff) && (!connector->power)) {
         return;

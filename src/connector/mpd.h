@@ -1,3 +1,4 @@
+#include "../render_gate.hpp"
 #ifndef WAMPY_MPD_H
 #define WAMPY_MPD_H
 
@@ -27,7 +28,7 @@ namespace MPD {
 
         void TestCommand() override;
 
-        void ToggleHgrm(HgrmToggleAction action, bool *render) override;
+        void ToggleHgrm(HgrmToggleAction action, wampy_resume::RenderGate *render) override;
 
         void ReadLoop() override;
 
@@ -53,7 +54,7 @@ namespace MPD {
 
         void NextTrack() override;
 
-        void powerLoop(bool *render, bool *power) override;
+        void powerLoop(wampy_resume::RenderGate *render, bool *power) override;
 
         __attribute__((unused)) void volumeLoop() override;
 

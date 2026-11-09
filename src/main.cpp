@@ -27,6 +27,13 @@
 #include "langToString/langToString.h"
 #include "mkpath.h"
 #include "wampy.h"
+#include "resume_policy.hpp"
+#include "bounded_socket.hpp"
+#include "display_monitor.hpp"
+#ifndef DESKTOP
+extern "C" void wampyWaitInput(int displayFd,int timeoutMs);
+extern "C" int wampyInputWasReset(void);
+#endif
 
 #include <libintl.h>
 
@@ -49,7 +56,8 @@ std::string dumpDir = "/contents/wampy/log";
 
 #define TARGET_FPS 24
 
-static void glfw_error_callback(int error, const char *description) { DLOG("Glfw Error %d: %s\n", error, description); }
+static bool graphicsFailure=false;
+static void glfw_error_callback(int error,const char* description){graphicsFailure=true;DLOG("Glfw Error %d: %s\n",error,description);}
 
 void drawCallback(const ImDrawList *dl, const ImDrawCmd *cmd) {
     //    printf("cliprect %f %f %f %f\n", cmd->ClipRect.x, cmd->ClipRect.y, cmd->ClipRect.z, cmd->ClipRect.w);
@@ -183,24 +191,21 @@ GLFWwindow *CreateWindow() {
 #define ACTION_PRESS 1
 
 #ifdef DESKTOP
-bool render = true;
+wampy_resume::RenderGate render{true};
 #else
-bool render = false;
+wampy_resume::RenderGate render{false};
 #endif
 bool hold_toggled = false;
 bool power_pressed = false;
 int hold_value = ACTION_RELEASE;
+std::vector<int> sleepingKeys;
 struct timespec tw = {0, 300000000};
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_HOLD) {
         hold_toggled = true;
         hold_value = action;
-        if (action == ACTION_PRESS) {
-            render = true;
-        } else {
-            render = false;
-        }
+        render = false; // HOLD intent is resolved by the UI lifecycle owner.
     }
 
     if (key == GLFW_KEY_POWER) {
@@ -210,6 +215,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         }
     }
 
+    if(!render && action==ACTION_RELEASE && sleepingKeys.size()<64) sleepingKeys.push_back(key);
     if (render) {
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     }
@@ -486,9 +492,7 @@ int main(int, char **) {
     DLOG("using language %s\n", config.language.c_str());
 
 #ifndef DESKTOP
-    auto events = []() { glfwPollEvents(); };
-    std::thread f(events);
-    f.detach();
+    // No input worker: the bounded Null backend is drained on the UI thread.
 
     mkpath("/contents/wampy/fonts/", 0777);
     mkpath("/contents/wampy/skins/cassette", 0777);
@@ -500,19 +504,79 @@ int main(int, char **) {
     mkpath("/contents/wampy/sound_settings/tone_control/", 0777);
 #endif
 
+#ifndef DESKTOP
+    wampy_review::ResumePolicy resume;
+    wampy_resume::DisplayMonitor display("/sys/class/leds/lcd-backlight/brightness");
+    long long nextNativeCheck=0;
+    auto observeNative=[&](bool hide,std::uint64_t generation){
+        Command::Command command;
+        command.set_type(hide?Command::CMD_HIDE_WINDOW:Command::CMD_GET_WINDOW_STATUS);
+        if(hide){auto request=command.mutable_windowstatus();request->set_visible(Command::VISIBILITY_UNKNOWN);request->set_handoff_generation(generation);request->set_deadline_monotonic_ms(wampy_resume::monotonicMs()+200);}
+        bool ok=Hagoromo::HagoromoConnector::sendCMD(&command)&&command.code()==Command::OK;
+        const auto& status=command.windowstatus();auto visible=wampy_review::Visibility::Unknown;
+        if(ok&&status.visible()==Command::VISIBILITY_YES)visible=wampy_review::Visibility::Visible;
+        if(ok&&status.visible()==Command::VISIBILITY_NO)visible=wampy_review::Visibility::Hidden;
+        bool protocol=ok&&status.has_handoff_protocol()&&status.handoff_protocol()==1;
+        bool drained=protocol&&status.handoff_generation()==generation&&status.render_quiescent();
+        resume.observeNative(generation,visible,protocol,drained);
+        if(!protocol)DLOG("resume: missing compatible handoff acknowledgment\n");
+    };
+#endif
     int display_w, display_h;
     auto lastTime = glfwGetTime();
+    bool wasRendering=false;
     while (!glfwWindowShouldClose(window)) {
-#ifdef DESKTOP
-        glfwPollEvents();
+        glfwPollEvents(); // bounded Null backend; callbacks are on this thread
+#ifndef DESKTOP
+        if(wampyInputWasReset()){ImGui::GetIO().ClearInputKeys();ImGui::GetIO().ClearInputMouse();sleepingKeys.clear();}
+        auto now=wampy_resume::monotonicMs();bool on=false;bool known=display.sample(on);
+        connector->power=known&&on;resume.observeDisplay(known,on,now);
+        resume.setStorageExported(!connector->storagePresent.load(),now);
+        if(hold_toggled){hold_toggled=false;resume.preferWampy(hold_value==ACTION_PRESS,now);}
+        if(power_pressed){power_pressed=false;resume.powerReleased();}
+        if(resume.phase()==wampy_review::Phase::Active && now>=nextNativeCheck){observeNative(false,resume.generation());nextNativeCheck=wampy_resume::monotonicMs()+1000;}
+        if(known&&!on&&resume.wanted()&&!config.disableKeysWhenPowerOff){for(int key:sleepingKeys){
+            if(key==GLFW_KEY_PLAY)connector->Play();
+            if(key==GLFW_KEY_PREV){if(config.misc.swapTrackButtons)connector->NextTrack();else connector->PrevTrack();}
+            if(key==GLFW_KEY_NEXT){if(config.misc.swapTrackButtons)connector->PrevTrack();else connector->NextTrack();}
+            if(key==GLFW_KEY_VOLUMEDOWN)connector->SetVolume(-1,true);
+            if(key==GLFW_KEY_VOLUMEUP)connector->SetVolume(1,true);
+        }}sleepingKeys.clear();
+        auto decision=resume.step(wampy_resume::monotonicMs());render=decision.render;
+        using wampy_review::Action;
+        if(decision.action==Action::QueryNative||decision.action==Action::HideNative)observeNative(decision.action==Action::HideNative,decision.generation);
+        else if(decision.action==Action::ShowNative){
+            if(glfwGetCurrentContext()==window&&glGetString(GL_VERSION))glFinish();
+            Command::Command command;command.set_type(Command::CMD_SHOW_WINDOW);Hagoromo::HagoromoConnector::sendCMD(&command);
+        }else if(decision.action==Action::RecoverGraphics){
+            // Never reuse stale texture IDs after suspected context loss.
+            resume.giveUp();Command::Command command;command.set_type(Command::CMD_SHOW_WINDOW);Hagoromo::HagoromoConnector::sendCMD(&command);
+        }
 #endif
+        if(wasRendering&&!render){ImGui::GetIO().ClearInputKeys();ImGui::GetIO().ClearInputMouse();}
+        wasRendering=render.load();
+#ifdef DESKTOP
         skin.KeyHandler();
+#else
+        if(render)skin.KeyHandler();
+#endif
 
         if (!render) {
-            nanosleep(&tw, nullptr);
+            lastTime=glfwGetTime();
+#ifndef DESKTOP
+            wampyWaitInput(display.fd(),resume.phase()==wampy_review::Phase::Waiting?25:-1);
+#else
+            nanosleep(&tw,nullptr);
+#endif
             continue;
         }
 
+#ifndef DESKTOP
+        bool stillOn=false;
+        if(!display.sample(stillOn)||!stillOn){render=false;resume.observeDisplay(false,false,wampy_resume::monotonicMs());continue;}
+        graphicsFailure=false;glfwMakeContextCurrent(window);
+        if(graphicsFailure||glfwGetCurrentContext()!=window||!glGetString(GL_VERSION)){render=false;resume.setGraphicsHealthy(false);continue;}
+#endif
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -545,18 +609,22 @@ int main(int, char **) {
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwSwapBuffers(window);
+        graphicsFailure=false;glfwSwapBuffers(window);
+#ifndef DESKTOP
+        if(graphicsFailure){render=false;resume.setGraphicsHealthy(false);}
+#endif
 
         skin.LoadUpdatedSkin();
 
         if (config.limitFPS) {
             // https://github.com/glfw/glfw/issues/1308
-            while (glfwGetTime() < lastTime + (1.0 / TARGET_FPS)) {
-            }
-            lastTime += 1.0 / TARGET_FPS;
+            auto delay=lastTime+(1.0/TARGET_FPS)-glfwGetTime();
+            if(delay>0)std::this_thread::sleep_for(std::chrono::duration<double>(delay));
+            lastTime=glfwGetTime();
         }
     }
 
+    render=false;
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImPlot::DestroyContext();

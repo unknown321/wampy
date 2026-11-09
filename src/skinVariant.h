@@ -1,3 +1,4 @@
+#include "render_gate.hpp"
 #ifndef WAMPY_SKINVARIANT_H
 #define WAMPY_SKINVARIANT_H
 
@@ -21,7 +22,7 @@ class SkinVariant {
     SkinVariant() = default;
 
     Connector *connector{};
-    bool *render{};
+    wampy_resume::RenderGate *render{};
     void *skin{};
     std::string loadStatusStr{};
     bool debug = false;

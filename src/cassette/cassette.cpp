@@ -144,9 +144,7 @@ namespace Cassette {
                 break;
             }
 
-            if (!*render) {
-                continue;
-            }
+            if (!render->waitUntilVisible(childThreadsStop)) break;
 
             if (loading) {
                 continue;
@@ -333,6 +331,7 @@ namespace Cassette {
 
     void Cassette::Unload() {
         childThreadsStop = true;
+        if (render) render->notify();
 
         ActiveReel = nullptr;
         ActiveTape = nullptr;
@@ -1046,9 +1045,7 @@ namespace Cassette {
                 continue;
             }
 
-            if (!*render) {
-                continue;
-            }
+            if (!render->waitUntilVisible(childThreadsStop)) break;
 
             if (loading) {
                 continue;
