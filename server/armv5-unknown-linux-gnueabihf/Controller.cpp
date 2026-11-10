@@ -5,7 +5,7 @@
 #include "Controller.moc"
 #include "moc_Controller.cpp"
 
-#include "../qt/qtbase/src/corelib/kernel/qobject_p.h"
+#include <private/qobject_p.h>
 #include "command.pb.h"
 #include "helpers.h"
 #include <QVector>

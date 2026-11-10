@@ -10,7 +10,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include "../qt/qtbase/src/corelib/kernel/qobject_p.h"
+#include <private/qobject_p.h>
 
 class QObjectConnectionListVector : public QVector<QObjectPrivate::ConnectionList> {
   public:
