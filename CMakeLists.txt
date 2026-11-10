@@ -91,7 +91,7 @@ add_subdirectory(libs/mINI)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMAGICKCORE_HDRI_ENABLE=1 ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMAGICKCORE_HDRI_ENABLE=1 ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMAGICKCORE_QUANTUM_DEPTH=32")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMAGICKCORE_QUANTUM_DEPTH=8")
 
 # profiling
 # exec; kill -10 <pid>
@@ -224,7 +224,7 @@ else ()
     set_target_properties(${PROJECT_NAME} PROPERTIES
             BUILD_WITH_INSTALL_RPATH FALSE
             INSTALL_RPATH_USE_LINK_PATH FALSE
-            INSTALL_RPATH "./;../lib/;/system/lib;/system/vendor/unknown321/lib;/lib;/system/vendor/sony/lib")
+            INSTALL_RPATH "$ORIGIN/../lib;$ORIGIN;/system/lib;/system/vendor/unknown321/lib;/lib;/system/vendor/sony/lib")
 
     find_library(MALI Mali_linux PATHS libs/sysroot/lib/)
     target_link_libraries(${PROJECT_NAME} ${MALI})

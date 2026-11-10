@@ -17,6 +17,9 @@ def compile_checked(final,command,log,readelf='readelf'):
  with open(tmp,'rb') as f:os.fsync(f.fileno())
  os.replace(tmp,final)
  d=os.open(final.parent,os.O_RDONLY);os.fsync(d);os.close(d)
+ published=inspect(final,readelf)
+ if published['sha256']!=result['sha256']:raise RuntimeError('Published object hash changed')
+ result=published
  result['path']=str(final)
  pathlib.Path(str(final)+'.verified.json').write_text(json.dumps(result,indent=2))
  return result
