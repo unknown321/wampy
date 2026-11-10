@@ -200,33 +200,25 @@ void utfFits(const char *s, int start, int len, bool *result, int *endWhenFits) 
     *endWhenFits = end;
 }
 
+// Always consume input on malformed UTF-8; glyph-range loops must make progress.
 uint32_t utfToPoint(const std::string &str, size_t &index) {
-    uint32_t code_point = 0;
-    unsigned char byte = str[index];
-
-    if (byte <= 0x7F) {
-        // 1-byte character (ASCII)
-        code_point = byte;
-        index += 1;
-    } else if ((byte & 0xE0) == 0xC0) {
-        // 2-byte character
-        code_point = byte & 0x1F;
-        code_point = (code_point << 6) | (str[index + 1] & 0x3F);
-        index += 2;
-    } else if ((byte & 0xF0) == 0xE0) {
-        // 3-byte character
-        code_point = byte & 0x0F;
-        code_point = (code_point << 12) | ((str[index + 1] & 0x3F) << 6) | (str[index + 2] & 0x3F);
-        index += 3;
-    } else if ((byte & 0xF8) == 0xF0) {
-        // 4-byte character
-        code_point = byte & 0x07;
-        code_point = (code_point << 18) | ((str[index + 1] & 0x3F) << 12) | ((str[index + 2] & 0x3F) << 6) | (str[index + 3] & 0x3F);
-        index += 4;
-    } else {
-        // Invalid UTF-8 byte
-        printf("Unrecognized lead byte (%02x)\n", byte);
+    if (index >= str.size()) return 0xFFFD;
+    const size_t start = index++;
+    const unsigned char first = static_cast<unsigned char>(str[start]);
+    if (first < 0x80) return first;
+    unsigned count = first >= 0xC2 && first <= 0xDF ? 2 :
+                     first >= 0xE0 && first <= 0xEF ? 3 :
+                     first >= 0xF0 && first <= 0xF4 ? 4 : 0;
+    if (!count || count > str.size() - start) return 0xFFFD;
+    uint32_t point = first & (count == 2 ? 0x1F : count == 3 ? 0x0F : 0x07);
+    for (unsigned i = 1; i < count; ++i) {
+        const unsigned char next = static_cast<unsigned char>(str[start+i]);
+        if ((next & 0xC0) != 0x80) return 0xFFFD;
+        point = (point << 6) | (next & 0x3F);
     }
-
-    return code_point;
+    if ((count == 2 && point < 0x80) || (count == 3 && point < 0x800) ||
+        (count == 4 && point < 0x10000) || point > 0x10FFFF ||
+        (point >= 0xD800 && point <= 0xDFFF)) return 0xFFFD;
+    index = start + count;
+    return point;
 }

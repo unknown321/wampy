@@ -3,6 +3,8 @@
 #include "imgui_impl_opengl3.h"
 #include "langToString/langToString.h"
 #include "wstring.h"
+#include <memory>
+#include <stdexcept>
 
 namespace DigitalClock {
 #ifdef DESKTOP
@@ -55,6 +57,11 @@ namespace DigitalClock {
             return;
         }
 
+        if (!loadStatusStr.empty()) {
+            ImGui::TextWrapped("%s", loadStatusStr.c_str());
+            if (ImGui::Button("Settings")) Skin::Skin::ToggleDrawSettings(skin, nullptr);
+            return;
+        }
         time_t now=time(nullptr);
         if(now!=rawtime){rawtime=now;gmtime_r(&rawtime,&timeSnapshot);timeinfo=&timeSnapshot;formatTime();}
         if (hasBackground) {
@@ -101,135 +108,44 @@ namespace DigitalClock {
     }
 
     void DigitalClock::loadTextures(const std::string &c) {
-        DLOG("loading clock %s\n", c.c_str());
-
-        std::ifstream f;
-        char p[256];
-        sprintf(p, "%s/%s/background.jpg", basePath, c.c_str());
-        hasBackground = false;
-        if (exists(p)) {
-            hasBackground = true;
-            f.open(p);
-            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-            auto ft = FlatTexture();
-
-            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-
-            elements.Background = ft;
-            f.close();
-        }
-        memset(p, 0, sizeof(p));
-
-        //===
-
-        for (int i = 0; i < 10; i++) {
-            memset(p, 0, sizeof(p));
-            sprintf(p, "%s/%s/%d_big.jpg", basePath, c.c_str(), i);
-            f.open(p);
-            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-            auto ft = FlatTexture();
-
-            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-
-            elements.NumbersBig.emplace_back(ft);
-            f.close();
-        }
-
-        for (int i = 0; i < 10; i++) {
-            memset(p, 0, sizeof(p));
-            sprintf(p, "%s/%s/%d_medium.jpg", basePath, c.c_str(), i);
-            f.open(p);
-            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-            auto ft = FlatTexture();
-
-            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-            elements.NumbersMedium.emplace_back(ft);
-            f.close();
-        }
-
-        for (int i = 0; i < 10; i++) {
-            memset(p, 0, sizeof(p));
-            sprintf(p, "%s/%s/%d_small.jpg", basePath, c.c_str(), i);
-            f.open(p);
-            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-            auto ft = FlatTexture();
-
-            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-            elements.NumbersSmall.emplace_back(ft);
-            f.close();
-        }
-
-        for (int i = 0; i < 7; i++) {
-            memset(p, 0, sizeof(p));
-            sprintf(p, "%s/%s/day_%d.jpg", basePath, c.c_str(), i);
-            f.open(p);
-            std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-            auto ft = FlatTexture();
-
-            ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-            elements.Days.emplace_back(ft);
-            f.close();
-        }
-
-        // ======
-        memset(p, 0, sizeof(p));
-        sprintf(p, "%s/%s/colon.jpg", basePath, c.c_str());
-        f.open(p);
-        std::string contents((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-        auto ft = FlatTexture();
-
-        ft.WithMagick("JPEG")->FromData((char *)contents.c_str(), contents.size())->WithRatio(1.0f)->Load();
-        elements.Colon = ft;
-        f.close();
-
-        // ======
-        memset(p, 0, sizeof(p));
-        sprintf(p, "%s/%s/dot.jpg", basePath, c.c_str());
-        f.open(p);
-        std::string contents2((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-        ft.Reset();
-        ft = FlatTexture();
-
-        ft.WithMagick("JPEG")->FromData((char *)contents2.c_str(), contents2.size())->WithRatio(1.0f)->Load();
-        elements.Dot = ft;
-        f.close();
-
-        // ======
-        memset(p, 0, sizeof(p));
-        sprintf(p, "%s/%s/shoe.jpg", basePath, c.c_str());
-        f.open(p);
-        std::string contents3((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-        ft.Reset();
-        ft = FlatTexture();
-
-        ft.WithMagick("JPEG")->FromData((char *)contents3.c_str(), contents3.size())->WithRatio(1.0f)->Load();
-        elements.Shoe = ft;
-        f.close();
-
-        // ======
-        memset(p, 0, sizeof(p));
-        sprintf(p, "%s/%s/minus.jpg", basePath, c.c_str());
-        f.open(p);
-        std::string contents4((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-        ft.Reset();
-        ft = FlatTexture();
-
-        ft.WithMagick("JPEG")->FromData((char *)contents4.c_str(), contents4.size())->WithRatio(1.0f)->Load();
-        elements.Minus = ft;
-        f.close();
+        const std::string dir = std::string(basePath) + "/" + c + "/";
+        auto load = [&](const std::string &name) {
+            const std::string path = dir + name + ".jpg";
+            std::ifstream file(path, std::ios::binary);
+            if (!file) throw std::runtime_error("missing clock image: " + name);
+            std::string bytes((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+            if (bytes.empty()) throw std::runtime_error("empty clock image: " + name);
+            std::unique_ptr<Magick::Image> image(new Magick::Image());
+            image->magick("JPEG"); image->read(Magick::Blob(bytes.data(), bytes.size()));
+            if (!image->isValid() || !image->columns() || !image->rows())
+                throw std::runtime_error("invalid clock image: " + name);
+            FlatTexture texture; texture.image=image.get(); texture.ratio=1.0f;
+            try {
+                texture.Upscale(); texture.LoadTexture();
+            } catch (...) {
+                texture.Unload(); throw;
+            }
+            texture.image=nullptr; // image stays owned by this scope, GL texture transfers to elements
+            return texture;
+        };
+        hasBackground=false;
+        if (exists(dir+"background.jpg")) { elements.Background=load("background"); hasBackground=true; }
+        // Reserve before creating GL textures so vector growth cannot orphan one.
+        elements.NumbersBig.reserve(10); elements.NumbersMedium.reserve(10);
+        elements.NumbersSmall.reserve(10); elements.Days.reserve(7);
+        for (int i=0;i<10;++i) elements.NumbersBig.push_back(load(std::to_string(i)+"_big"));
+        for (int i=0;i<10;++i) elements.NumbersMedium.push_back(load(std::to_string(i)+"_medium"));
+        for (int i=0;i<10;++i) elements.NumbersSmall.push_back(load(std::to_string(i)+"_small"));
+        for (int i=0;i<7;++i) elements.Days.push_back(load("day_"+std::to_string(i)));
+        elements.Colon=load("colon"); elements.Minus=load("minus");
+        // dot and shoe are not drawn; their absence must not fail the clock.
     }
 
     int DigitalClock::Load(std::string filename, ImFont **fontRegular) {
+        Unload();
         loading = true;
+        loadStatusStr.clear();
+        FontRegular = *fontRegular;
 
         if (filename.empty()) {
             filename = DefaultColor;
@@ -248,9 +164,16 @@ namespace DigitalClock {
             filename = DefaultColor;
         }
 
-        initializeButton();
-        addFonts(fontRegular);
-        loadTextures(filename);
+        try {
+            initializeButton();
+            addFonts(fontRegular);
+            FontRegular = *fontRegular;
+            loadTextures(filename);
+        } catch (const std::exception &error) {
+            loadStatusStr = "Clock resources could not be loaded. Open Settings to change skin.";
+            DLOG("clock load failed: %s\n", error.what());
+            Unload(); loading = false; return -1;
+        }
 
         color = filename;
 
@@ -273,7 +196,7 @@ namespace DigitalClock {
 
         Year1 = (timeinfo->tm_year + 1900) / 1000;
         Year2 = ((timeinfo->tm_year + 1900) / 100) % 10;
-        Year3 = ((timeinfo->tm_year + 1900) / 10) % 100;
+        Year3 = ((timeinfo->tm_year + 1900) / 10) % 10;
         Year4 = (timeinfo->tm_year + 1900) % 10;
 
         Month1 = (timeinfo->tm_mon + 1) / 10;
@@ -291,7 +214,6 @@ namespace DigitalClock {
             return;
         }
 
-        Unload();
         Load(newColor, &FontRegular);
         config->color = color;
     }
@@ -333,6 +255,7 @@ namespace DigitalClock {
         if (hasBackground) {
             elements.Background.Unload();
         }
+        hasBackground=false;
 
     }
 
@@ -399,7 +322,8 @@ namespace DigitalClock {
             fp = FontPathCustom2;
         }
 
-        *fontRegular = io.Fonts->AddFontFromFileTTF(fp.c_str(), fontSizeTTF, nullptr, gr.Data);
+        *fontRegular = exists(fp) ? io.Fonts->AddFontFromFileTTF(fp.c_str(), fontSizeTTF, nullptr, gr.Data) : nullptr;
+        if (!*fontRegular) *fontRegular = io.Fonts->AddFontDefault();
 
         ImGui_ImplOpenGL3_DestroyFontsTexture();
         ImGui_ImplOpenGL3_CreateFontsTexture();
