@@ -119,6 +119,7 @@ namespace DigitalClock {
             image->magick("JPEG"); image->read(Magick::Blob(bytes.data(), bytes.size()));
             if (!image->isValid() || !image->columns() || !image->rows())
                 throw std::runtime_error("invalid clock image: " + name);
+            image->magick("RGBA");
             FlatTexture texture; texture.image=image.get(); texture.ratio=1.0f;
             try {
                 texture.Upscale(); texture.LoadTexture();
