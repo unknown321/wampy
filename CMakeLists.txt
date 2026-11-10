@@ -248,6 +248,10 @@ get_filename_component(PROTOBUF_NAME ${PROTOBUF} REALPATH)
 install(FILES ${PROTOBUF_NAME} DESTINATION lib)
 
 foreach (Library ${ICU_LIBRARIES})
+    get_filename_component(IcuBasename ${Library} NAME)
+    if (NOT IcuBasename MATCHES "^libicu")
+        continue() # never package toolchain libc/libm as an ICU dependency
+    endif ()
     get_filename_component(Libname ${Library} REALPATH)
     get_filename_component(Libdir ${Libname} DIRECTORY)
     get_filename_component(LibnameWLE ${Libname} NAME_WLE)

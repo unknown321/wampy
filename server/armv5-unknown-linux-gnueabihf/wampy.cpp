@@ -3,7 +3,11 @@
 
 #if SECOND_PASS == 1
 
+#ifdef WAMPY_LOCAL_BUILD
+#include "Version.h"
+#else
 #include "/Version.h"
+#endif
 #include <future>
 
 // clang-format off

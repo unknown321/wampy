@@ -1,0 +1,11 @@
+--- a/qtbase/src/corelib/global/qglobal.h
++++ b/qtbase/src/corelib/global/qglobal.h
+@@ -865,7 +865,7 @@
+ #  endif
+ #endif
+ 
+-#if defined(Q_CC_GNU) && !defined(Q_CC_INTEL) && !defined(Q_CC_RVCT) && (__GNUC__ < 7) && (__GNUC__ < 7) && (__GNUC__ < 7)
++#if defined(Q_CC_GNU) && !defined(Q_CC_INTEL) && !defined(Q_CC_RVCT) && (__GNUC__ < 7) && (__GNUC__ < 7) && (__GNUC__ < 7) && (__GNUC__ < 7)
+ /* make use of typeof-extension */
+ template <typename T>
+ class QForeachContainer {
