@@ -1,4 +1,5 @@
 #include "digital_clock.h"
+#include "font_file.hpp"
 #include "../skin.h"
 #include "imgui_impl_opengl3.h"
 #include "langToString/langToString.h"
@@ -323,7 +324,8 @@ namespace DigitalClock {
             fp = FontPathCustom2;
         }
 
-        *fontRegular = exists(fp) ? io.Fonts->AddFontFromFileTTF(fp.c_str(), fontSizeTTF, nullptr, gr.Data) : nullptr;
+        if (!wampy_clock::plausibleFontFile(fp)) fp = FontPath;
+        *fontRegular = wampy_clock::plausibleFontFile(fp) ? io.Fonts->AddFontFromFileTTF(fp.c_str(), fontSizeTTF, nullptr, gr.Data) : nullptr;
         if (!*fontRegular) *fontRegular = io.Fonts->AddFontDefault();
 
         ImGui_ImplOpenGL3_DestroyFontsTexture();
