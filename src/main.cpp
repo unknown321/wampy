@@ -594,6 +594,13 @@ int main(int, char **) {
         graphicsFailure=false;glfwMakeContextCurrent(window);
         if(graphicsFailure||glfwGetCurrentContext()!=window||!glGetString(GL_VERSION)){render=false;resume.setGraphicsHealthy(false);continue;}
 #endif
+        // Reload queued resources only with confirmed ownership, before a frame.
+        // Never create textures after a failed swap or inside a locked font atlas.
+        skin.LoadUpdatedSkin();
+#ifndef DESKTOP
+        if(!display.sample(stillOn)||!stillOn){render=false;resume.observeDisplay(false,false,wampy_resume::monotonicMs());continue;}
+        if(graphicsFailure||glfwGetCurrentContext()!=window||!glGetString(GL_VERSION)){render=false;resume.setGraphicsHealthy(false);continue;}
+#endif
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -631,7 +638,6 @@ int main(int, char **) {
         if(graphicsFailure){render=false;resume.setGraphicsHealthy(false);}
 #endif
 
-        skin.LoadUpdatedSkin();
 
         if (config.limitFPS) {
             // https://github.com/glfw/glfw/issues/1308
