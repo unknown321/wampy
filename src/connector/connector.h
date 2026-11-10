@@ -189,6 +189,8 @@ struct Connector {
         p->NextTrack();
     }
 
+    virtual void ApplyUserSelection(bool) {}
+
     virtual void ToggleHgrm(HgrmToggleAction action, wampy_resume::RenderGate *render) = 0;
 
     virtual void volumeLoop() = 0;

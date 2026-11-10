@@ -570,20 +570,9 @@ void Skin::Draw() {
     }
 }
 
-void Skin::KeyHandler() {
-    #ifdef DESKTOP
-    if (*hold_toggled) {
-        *hold_toggled = false;
-
-        HgrmToggleAction action = Show;
-        if (*hold_value == 1) {
-            action = Hide;
-        }
-
-        DLOG("hold toggled, value %d, render %d, action %d\n", *hold_value, render->load(), action);
-        connector->ToggleHgrm(action, render);
-
-        if (action == Hide) {
+void Skin::ApplyUserSelection(bool entering) {
+    connector->ApplyUserSelection(entering);
+        if (entering) {
             RefreshWinampSkinList();
             RefreshCassetteTapeReelLists();
             RefreshMasterVolumeTableFiles();
@@ -597,7 +586,7 @@ void Skin::KeyHandler() {
         eqStatus = "Refreshed";
 
         if (activeSkinVariant == WINAMP) {
-            if (action == Hide) {
+            if (entering) {
                 if (config->winamp.visualizerEnable) {
                     ToggleAudioAnalyzerOn();
                 } else {
@@ -613,6 +602,22 @@ void Skin::KeyHandler() {
         }
 
         ImGui::GetIO().AddMousePosEvent(0.0f, 0.0f);
+}
+
+void Skin::KeyHandler() {
+    #ifdef DESKTOP
+    if (*hold_toggled) {
+        *hold_toggled = false;
+
+        HgrmToggleAction action = Show;
+        if (*hold_value == 1) {
+            action = Hide;
+        }
+
+        DLOG("hold toggled, value %d, render %d, action %d\n", *hold_value, render->load(), action);
+        connector->ToggleHgrm(action, render);
+
+        ApplyUserSelection(action == Hide);
     }
 
     #endif

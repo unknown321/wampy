@@ -77,6 +77,8 @@ namespace Hagoromo {
 
         void TestCommand() override;
 
+        void ApplyUserSelection(bool entering) override;
+
         void ToggleHgrm(HgrmToggleAction action, wampy_resume::RenderGate *render) override;
 
         void Connect() override;

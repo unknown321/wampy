@@ -507,6 +507,8 @@ int main(int, char **) {
 #ifndef DESKTOP
     wampy_review::ResumePolicy resume;
     wampy_resume::DisplayMonitor display("/sys/class/leds/lcd-backlight/brightness");
+    bool bootSelectionPending=hold_toggled && hold_value==ACTION_PRESS;
+    bool firstInputPoll=true, pendingEntry=false, pendingExit=false;
     long long nextNativeCheck=0;
     auto observeNative=[&](bool hide,std::uint64_t generation){
         Command::Command command;
@@ -532,7 +534,14 @@ int main(int, char **) {
         auto now=wampy_resume::monotonicMs();bool on=false;bool known=display.sample(on);
         connector->power=known&&on;resume.observeDisplay(known,on,now);
         resume.setStorageExported(!connector->storagePresent.load(),now);
-        if(hold_toggled){hold_toggled=false;resume.preferWampy(hold_value==ACTION_PRESS,now);}
+        if(firstInputPoll && bootSelectionPending){hold_toggled=true;hold_value=ACTION_PRESS;}
+        firstInputPoll=false;
+        if(hold_toggled){
+            hold_toggled=false;
+            bool wanted=hold_value==ACTION_PRESS;
+            if(wanted!=resume.wanted()){pendingEntry=wanted;pendingExit=!wanted;}
+            resume.preferWampy(wanted,now);
+        }
         if(power_pressed){power_pressed=false;resume.powerReleased();}
         if(resume.phase()==wampy_review::Phase::Active && now>=nextNativeCheck){observeNative(false,resume.generation());nextNativeCheck=wampy_resume::monotonicMs()+1000;}
         if(known&&!on&&resume.wanted()&&!config.disableKeysWhenPowerOff){for(int key:sleepingKeys){
@@ -544,10 +553,18 @@ int main(int, char **) {
         }}sleepingKeys.clear();
         auto decision=resume.step(wampy_resume::monotonicMs());render=decision.render;
         using wampy_review::Action;
+        if(decision.action==Action::Draw && pendingEntry){
+            render=false;
+            skin.ApplyUserSelection(true);
+            pendingEntry=false;
+            observeNative(false,resume.generation());
+            continue; // validate ownership again before any GL submission
+        }
         if(decision.action==Action::QueryNative||decision.action==Action::HideNative)observeNative(decision.action==Action::HideNative,decision.generation);
         else if(decision.action==Action::ShowNative){
             if(glfwGetCurrentContext()==window&&glGetString(GL_VERSION))glFinish();
             Command::Command command;command.set_type(Command::CMD_SHOW_WINDOW);Hagoromo::HagoromoConnector::sendCMD(&command);
+            if(pendingExit){skin.ApplyUserSelection(false);pendingExit=false;}
         }else if(decision.action==Action::RecoverGraphics){
             // Never reuse stale texture IDs after suspected context loss.
             resume.giveUp();Command::Command command;command.set_type(Command::CMD_SHOW_WINDOW);Hagoromo::HagoromoConnector::sendCMD(&command);

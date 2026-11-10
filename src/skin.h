@@ -350,6 +350,8 @@ struct Skin {
 
     void Draw();
 
+    void ApplyUserSelection(bool entering);
+
     void KeyHandler();
 
     void GetLogsDirSize();

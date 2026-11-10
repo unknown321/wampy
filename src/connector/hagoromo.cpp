@@ -305,11 +305,14 @@ namespace Hagoromo {
             DLOG("hidden\n");
         }
 
+        *render = !visible;
+        ApplyUserSelection(!visible);
+    }
+
+    // Entry side effects are separate from window ownership and rendering.
+    void HagoromoConnector::ApplyUserSelection(bool entering) {
         stateString = "";
-        if (visible) {
-            *render = false;
-        } else {
-            *render = true;
+        if (entering) {
 
             if (!*touchscreenStaysOFF || status.Volume == 100 || status.VolumeRaw == HAGOROMO_DEFAULT_VOLUME_MAX) {
                 enableTouchscreen();
