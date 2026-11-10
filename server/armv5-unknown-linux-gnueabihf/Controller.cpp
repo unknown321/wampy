@@ -395,14 +395,18 @@ void Controller::Hide(Command::Command *c) {
 }
 
 void Controller::Show(Command::Command *c) {
+    c->set_code(Command::FAIL);
+    if (!window || !FrameWork || QThread::currentThread() != window->thread() ||
+        FrameWork->thread() != window->thread()) return;
     gpuDrained.store(false); handoffGeneration = 0;
-    if (!QMetaObject::invokeMethod(FrameWork, "show", Qt::QueuedConnection)) {
+    if (!QMetaObject::invokeMethod(FrameWork, "show", Qt::DirectConnection)) {
         DLOG("failed to show framework\n");
-        c->set_code(Command::FAIL);
         return;
     }
-
-    c->set_code(Command::OK);
+    // Hide() explicitly hides the QWindow as well as the QML framework.
+    // Restore both on the GUI owner thread, including timeout/failure fallback.
+    window->show();
+    if (window->isVisible()) c->set_code(Command::OK);
 }
 
 void Controller::GetWindowStatus(Command::Command *s) {

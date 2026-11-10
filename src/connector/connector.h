@@ -87,7 +87,7 @@ struct Connector {
     std::vector<Song> playlist{};
     Status status{};
     wampy_resume::RenderGate *render{};
-    bool power = true;
+    std::atomic<bool> power{true}; // UI writer; FM volume worker reads this.
     bool updateVolume{};
     std::atomic<bool> storagePresent{false};
     // it takes ~2 status calls to update current track position on hagoromo side
