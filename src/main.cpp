@@ -30,6 +30,10 @@
 
 #include <libintl.h>
 
+#ifndef DESKTOP
+extern "C" int wampyInputWasReset(void);
+#endif
+
 #define IMGUI_WIDTH 800.0f
 #define IMGUI_HEIGHT 480.0f
 
@@ -486,10 +490,6 @@ int main(int, char **) {
     DLOG("using language %s\n", config.language.c_str());
 
 #ifndef DESKTOP
-    auto events = []() { glfwPollEvents(); };
-    std::thread f(events);
-    f.detach();
-
     mkpath("/contents/wampy/fonts/", 0777);
     mkpath("/contents/wampy/skins/cassette", 0777);
     mkpath("/contents/wampy/skins/winamp/", 0777);
@@ -503,8 +503,12 @@ int main(int, char **) {
     int display_w, display_h;
     auto lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
-#ifdef DESKTOP
         glfwPollEvents();
+#ifndef DESKTOP
+        if (wampyInputWasReset()) {
+            ImGui::GetIO().ClearInputKeys();
+            ImGui::GetIO().ClearInputMouse();
+        }
 #endif
         skin.KeyHandler();
 
